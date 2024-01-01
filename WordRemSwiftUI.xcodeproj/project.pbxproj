@@ -11,6 +11,7 @@
 		E879EC682B3B3E2C003534B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879EC672B3B3E2C003534B5 /* ContentView.swift */; };
 		E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC692B3B3E2E003534B5 /* Assets.xcassets */; };
 		E879EC6D2B3B3E2E003534B5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */; };
+		E8C02A522B3C91E600B1D5AF /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C02A512B3C91E600B1D5AF /* ImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		E879EC672B3B3E2C003534B5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E879EC692B3B3E2E003534B5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E8C02A512B3C91E600B1D5AF /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +53,7 @@
 		E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				E8C02A502B3C91D700B1D5AF /* View */,
 				E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */,
 				E879EC672B3B3E2C003534B5 /* ContentView.swift */,
 				E879EC692B3B3E2E003534B5 /* Assets.xcassets */,
@@ -65,6 +68,14 @@
 				E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E8C02A502B3C91D700B1D5AF /* View */ = {
+			isa = PBXGroup;
+			children = (
+				E8C02A512B3C91E600B1D5AF /* ImageView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +148,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8C02A522B3C91E600B1D5AF /* ImageView.swift in Sources */,
 				E879EC682B3B3E2C003534B5 /* ContentView.swift in Sources */,
 				E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */,
 			);
