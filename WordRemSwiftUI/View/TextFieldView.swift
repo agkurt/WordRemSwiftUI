@@ -24,13 +24,13 @@ struct TextFieldView: View {
                 TextField("Username", text: $userName)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: 300, height: 50)
+                    .frame(width: 350, height: 50)
                     .font(Font.system(size: 18, weight: .regular))
                 
                 TextField("Password", text: $password)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: 300, height: 50)
+                    .frame(width: 350, height: 50)
                     .font(Font.system(size: 18, weight: .regular))
             }
             .padding()

@@ -19,12 +19,10 @@ class UrlSessionApiService: ApiServiceProtocol {
             "X-RapidAPI-Key": "30c9e7ec39msheded83facd06704p1ef228jsnf8acccb45fa8",
             "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com"
         ]
-        
-        let word: String
-        
-        let request = NSMutableURLRequest(url: NSURL(string: "https://wordsapiv1.p.rapidapi.com/words/word/examples")! as URL,
-                                          cachePolicy: .useProtocolCachePolicy,
-                                          timeoutInterval: 10.0)
+                
+        let request = NSMutableURLRequest(url: NSURL(string: "https://wordsapiv1.p.rapidapi.com/words/?random=true")! as URL,
+                                                cachePolicy: .useProtocolCachePolicy,
+                                            timeoutInterval: 10.0)
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = headers
         
@@ -33,6 +31,7 @@ class UrlSessionApiService: ApiServiceProtocol {
                 print(error as Any)
             }else {
                 let httpResponse = response as? HTTPURLResponse
+                print(httpResponse!)
             }
             
             guard let data = data else {
@@ -46,10 +45,11 @@ class UrlSessionApiService: ApiServiceProtocol {
             }catch {
                 completion(.failure(error))
             }
-        }.resume()
-        
+        }
+        .resume()
     }
 }
+
 
 
 

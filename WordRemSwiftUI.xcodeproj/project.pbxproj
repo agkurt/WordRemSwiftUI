@@ -13,10 +13,13 @@
 		E86B99772B5190DC00538090 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B99762B5190DC00538090 /* Protocol.swift */; };
 		E86B997B2B51964000538090 /* ExampleApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B997A2B51964000538090 /* ExampleApiService.swift */; };
 		E86B997E2B5198BC00538090 /* Example.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B997D2B5198BC00538090 /* Example.swift */; };
+		E86B99832B51EF9500538090 /* ExampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B99822B51EF9500538090 /* ExampleViewModel.swift */; };
+		E86B99852B51F1E100538090 /* ExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B99842B51F1E100538090 /* ExampleView.swift */; };
 		E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */; };
 		E879EC682B3B3E2C003534B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879EC672B3B3E2C003534B5 /* ContentView.swift */; };
 		E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC692B3B3E2E003534B5 /* Assets.xcassets */; };
 		E879EC6D2B3B3E2E003534B5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */; };
+		E89673B22B52FB2E004CAD90 /* ExampleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89673B12B52FB2E004CAD90 /* ExampleDetailView.swift */; };
 		E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C02A512B3C91E600B1D5AF /* IconImageView.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,11 +30,14 @@
 		E86B99762B5190DC00538090 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		E86B997A2B51964000538090 /* ExampleApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApiService.swift; sourceTree = "<group>"; };
 		E86B997D2B5198BC00538090 /* Example.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Example.swift; sourceTree = "<group>"; };
+		E86B99822B51EF9500538090 /* ExampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewModel.swift; sourceTree = "<group>"; };
+		E86B99842B51F1E100538090 /* ExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleView.swift; sourceTree = "<group>"; };
 		E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordRemSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordRemSwiftUIApp.swift; sourceTree = "<group>"; };
 		E879EC672B3B3E2C003534B5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E879EC692B3B3E2E003534B5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E89673B12B52FB2E004CAD90 /* ExampleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDetailView.swift; sourceTree = "<group>"; };
 		E8C02A512B3C91E600B1D5AF /* IconImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -57,9 +63,9 @@
 		E86B99722B51909200538090 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				E86B99752B5190CE00538090 /* Protocol */,
 				E86B99792B5193EA00538090 /* New Group */,
 				E86B99782B5193DB00538090 /* BaseService */,
-				E86B99752B5190CE00538090 /* Protocol */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -96,6 +102,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		E86B997F2B51EF5A00538090 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				E86B99822B51EF9500538090 /* ExampleViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		E879EC592B3B3E2C003534B5 = {
 			isa = PBXGroup;
 			children = (
@@ -115,6 +129,7 @@
 		E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				E86B997F2B51EF5A00538090 /* ViewModel */,
 				E86B997C2B5198B400538090 /* Model */,
 				E86B99722B51909200538090 /* Services */,
 				E86B994C2B50027400538090 /* Extensions */,
@@ -140,6 +155,8 @@
 				E879EC672B3B3E2C003534B5 /* ContentView.swift */,
 				E8C02A512B3C91E600B1D5AF /* IconImageView.swift */,
 				E86B99512B5024B700538090 /* TextFieldView.swift */,
+				E86B99842B51F1E100538090 /* ExampleView.swift */,
+				E89673B12B52FB2E004CAD90 /* ExampleDetailView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -217,9 +234,12 @@
 				E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */,
 				E86B997B2B51964000538090 /* ExampleApiService.swift in Sources */,
 				E86B99742B5190A900538090 /* UrlSessionApiService.swift in Sources */,
+				E86B99852B51F1E100538090 /* ExampleView.swift in Sources */,
 				E86B99522B5024B700538090 /* TextFieldView.swift in Sources */,
 				E86B99772B5190DC00538090 /* Protocol.swift in Sources */,
+				E86B99832B51EF9500538090 /* ExampleViewModel.swift in Sources */,
 				E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */,
+				E89673B22B52FB2E004CAD90 /* ExampleDetailView.swift in Sources */,
 				E879EC682B3B3E2C003534B5 /* ContentView.swift in Sources */,
 				E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */,
 				E86B997E2B5198BC00538090 /* Example.swift in Sources */,

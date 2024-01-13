@@ -8,7 +8,15 @@
 
 import Foundation
 
-struct Example: Codable {
+// MARK: - Example
+struct Example: Codable, Identifiable {
+    var id: Int
     let word: String
-    let examples: [String] // foreach
+    let pronunciation: Pronunciation
 }
+
+// MARK: - Pronunciation
+struct Pronunciation: Codable {
+    let all: String
+}
+

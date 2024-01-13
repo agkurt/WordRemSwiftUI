@@ -17,8 +17,14 @@ class ExampleApiService {
    
      
     func getRequest(completion: @escaping (Result<[Example],Error>) ->Void) {
-        
-        
+        apiService.getRequest { (result: Result<[Example],Error>) in
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
         
     }
 }
