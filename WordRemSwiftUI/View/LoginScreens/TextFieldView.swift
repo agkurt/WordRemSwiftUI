@@ -8,35 +8,38 @@
 import SwiftUI
 
 struct TextFieldView: View {
+    @ObservedObject var registerScreenViewModel: RegisterScreenViewModel
     
-    @State var email:String = ""
-    @State var userName:String = ""
-    @State var password:String = ""
-    
+    init(viewModel: RegisterScreenViewModel) {
+        self.registerScreenViewModel = viewModel
+    }
+
     var body: some View {
-            VStack(spacing: 16) { // Alt alta sıralı, aralarında 16 birim boşluklu VStack
-                TextField("Email", text: $email)
+        GeometryReader { geometry in
+            VStack(spacing: 20) {
+                TextField("Email", text: $registerScreenViewModel.email)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: 350, height: 50)
+                    .frame(width: geometry.size.width * 0.90, height: geometry.size.height * 0.10)
                     .font(Font.system(size: 18, weight: .regular))
                 
-                TextField("Username", text: $userName)
+                TextField("Username", text: $registerScreenViewModel.userName)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: 350, height: 50)
+                    .frame(width: geometry.size.width * 0.90, height: geometry.size.height * 0.10)
                     .font(Font.system(size: 18, weight: .regular))
                 
-                TextField("Password", text: $password)
+                SecureField("Password", text: $registerScreenViewModel.password)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: 350, height: 50)
+                    .frame(width: geometry.size.width * 0.90, height: geometry.size.height * 0.10)
                     .font(Font.system(size: 18, weight: .regular))
             }
             .padding()
         }
     }
+}
 
 #Preview {
-    TextFieldView()
+    TextFieldView(viewModel: RegisterScreenViewModel())
 }

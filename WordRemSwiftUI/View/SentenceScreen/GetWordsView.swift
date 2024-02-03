@@ -57,6 +57,7 @@ struct GetWordsView: View {
         .onReceive(sentenceViewModel.$errorMessage) { errorMessage in
             if let errorMessage = errorMessage {
                 showAlert = true
+                print(errorMessage)
             }
         }
     }

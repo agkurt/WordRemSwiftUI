@@ -12,14 +12,18 @@ struct IconImageView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .center) {
+                Spacer()
                 Image("logo")
                     .resizable()
                     .aspectRatio(1, contentMode: .fit)
-                    .frame(maxWidth: geometry.size.width * 1.5,maxHeight:geometry.size.height * 0.15)
+                    .frame(maxWidth: geometry.size.width * 1,maxHeight:geometry.size.height * 0.30)
                     .shadow(radius: 15)
+                Spacer()
+                Spacer()
+             
             }
             .padding()
-        }
+        } 
     }
 }
 
