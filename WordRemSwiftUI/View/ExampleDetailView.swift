@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct ExampleDetailView: View {
-    
     let example: Example
-    
     var body: some View {
         NavigationStack {
             List {
@@ -28,6 +26,6 @@ struct ExampleDetailView: View {
 }
 
 #Preview {
-    PostDetailView(post: Post(userId: 1, id: 1, title: "Başlık", body: "Mesaj"))
+    ExampleDetailView()
 }
 

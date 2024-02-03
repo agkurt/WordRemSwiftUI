@@ -21,8 +21,6 @@ struct IconImageView: View {
             .padding()
         }
     }
-    
-    
 }
 
 #Preview {

@@ -9,7 +9,6 @@ import Foundation
 
 class ExampleViewModel: ObservableObject {
     
-    @Published var example :[Example] = []
     
     let exampleApiService : ExampleApiService
     

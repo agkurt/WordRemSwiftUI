@@ -11,7 +11,6 @@ struct ContentView: View {
     
     var body: some View {
         
-        
         GeometryReader { geometry in
             NavigationStack {
                 ZStack {
@@ -29,7 +28,6 @@ struct ContentView: View {
                         Spacer()
                         
                     }
-                    
                 }
                 .edgesIgnoringSafeArea(.all)
             }
@@ -40,5 +38,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ExampleView()
+   ContentView()
 }
