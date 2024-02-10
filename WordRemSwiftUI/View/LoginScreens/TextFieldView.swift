@@ -8,11 +8,7 @@
 import SwiftUI
 
 struct TextFieldView: View {
-    @ObservedObject var registerScreenViewModel: RegisterScreenViewModel
-    
-    init(viewModel: RegisterScreenViewModel) {
-        self.registerScreenViewModel = viewModel
-    }
+    @ObservedObject var registerScreenViewModel = RegisterScreenViewModel()
 
     var body: some View {
         GeometryReader { geometry in
@@ -41,5 +37,5 @@ struct TextFieldView: View {
 }
 
 #Preview {
-    TextFieldView(viewModel: RegisterScreenViewModel())
+    TextFieldView()
 }

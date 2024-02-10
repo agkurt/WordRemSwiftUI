@@ -10,7 +10,9 @@ import SwiftUI
 struct RegisterScreenView: View {
     
     @State var isRegisterSuccess = false
-    @ObservedObject var registerScreenViewModel = RegisterScreenViewModel()
+    
+    @StateObject var registerScreenViewModel = RegisterScreenViewModel() 
+    
     
     var body: some View {
         
@@ -24,7 +26,7 @@ struct RegisterScreenView: View {
                     )
                     VStack {
                         IconImageView()
-                        TextFieldView(viewModel: RegisterScreenViewModel())
+                        TextFieldView(registerScreenViewModel: registerScreenViewModel)
                         NavigationLink(destination: GetWordsView(), isActive: $isRegisterSuccess) {
                             EmptyView()
                         }
