@@ -9,33 +9,20 @@ import SwiftUI
 
 struct TextFieldView: View {
     @ObservedObject var registerScreenViewModel = RegisterScreenViewModel()
+    @Binding var text : String
+    var placeholder:String = ""
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 20) {
-                TextField("Email", text: $registerScreenViewModel.email)
+            VStack{
+                TextField(placeholder, text: $text)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: geometry.size.width * 0.90, height: geometry.size.height * 0.10)
                     .font(Font.system(size: 18, weight: .regular))
                 
-                TextField("Username", text: $registerScreenViewModel.userName)
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: geometry.size.width * 0.90, height: geometry.size.height * 0.10)
-                    .font(Font.system(size: 18, weight: .regular))
-                
-                SecureField("Password", text: $registerScreenViewModel.password)
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
-                    .frame(width: geometry.size.width * 0.90, height: geometry.size.height * 0.10)
-                    .font(Font.system(size: 18, weight: .regular))
             }
+           
             .padding()
         }
     }
-}
-
-#Preview {
-    TextFieldView()
 }

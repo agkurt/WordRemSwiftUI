@@ -7,12 +7,12 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct RegisterScreenView: View {
     
     @State var isRegisterSuccess = false
-    
-    @StateObject var registerScreenViewModel = RegisterScreenViewModel() 
-    
+    @StateObject var registerScreenViewModel = RegisterScreenViewModel()
     
     var body: some View {
         
@@ -24,21 +24,30 @@ struct RegisterScreenView: View {
                         startPoint: .top,
                         endPoint: .bottom
                     )
-                    VStack {
+                    VStack(spacing:0) {
                         IconImageView()
-                        TextFieldView(registerScreenViewModel: registerScreenViewModel)
-                        NavigationLink(destination: GetWordsView(), isActive: $isRegisterSuccess) {
-                            EmptyView()
+                        VStack(spacing:-120) {
+                            TextFieldView(text: $registerScreenViewModel.email, placeholder: "Email")
+                            TextFieldView(text: $registerScreenViewModel.userName, placeholder: "Username")
+                            TextFieldView(text: $registerScreenViewModel.password, placeholder: "Password")
                         }
-                        
+
                         Button ("Register") {
                             registerScreenViewModel.registerRequest()
                         }
                         .buttonStyle(LoginButtonStyle())
+                        .onTapGesture {
+                            if registerScreenViewModel.isRegisterSuccess {
+                                isRegisterSuccess = true
+                            }
+                        }
+                        NavigationLink(destination:LoginScreenView(), isActive: $isRegisterSuccess) {
+                            Text("I have already account")
+                                .font(.caption)
+                        }
+                        .padding()
                         
                     }
-                    .padding()
-                    
                 }
                 .edgesIgnoringSafeArea(.all)
                 .navigationTitle("RegisterScreen")
@@ -47,6 +56,7 @@ struct RegisterScreenView: View {
         }
     }
 }
+
 
 #Preview {
     RegisterScreenView()

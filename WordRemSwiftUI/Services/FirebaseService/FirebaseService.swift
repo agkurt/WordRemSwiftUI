@@ -22,11 +22,7 @@ class FirebaseService: ObservableObject {
         let email = userRequest.email
         let password = userRequest.password
         
-        print("Before createUser - Password Count: \(password.count), Email Count: \(email.count)")
-
-        
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            print("Inside createUser - Password Count: \(password.count), Email Count: \(email.count)")
             
             if let error = error {
                 completion(false, error)
@@ -35,10 +31,6 @@ class FirebaseService: ObservableObject {
             
             guard let user = authResult?.user else {
                 completion(false, nil)
-                return
-            }
-            guard password.count >= 6, email.count > 0 else {
-                completion(false, NSError(domain: "FirebaseService", code: 1, userInfo: ["description": "Invalid password or email length."]))
                 return
             }
             
@@ -57,6 +49,38 @@ class FirebaseService: ObservableObject {
                     completion(true, nil)
                 }
         }
+    }
+    
+    func loginUser(loginModel:LoginModel,completion: @escaping (Bool,Error?)->Void) {
+        
+        let email = loginModel.email
+        let password = loginModel.password
+        
+        Auth.auth().signIn(withEmail:email, password: password) { result, error in
+            
+            if let error = error {
+                completion(false,error)
+                return
+            }
+            
+            guard let user = result?.user else {
+                completion(false, nil)
+                return
+            }
+            
+            let db = Firestore.firestore()
+            let userRef = db.collection("users").document(user.uid)
+            
+            userRef.updateData(["lastLogin": FieldValue.serverTimestamp()]) { error in
+                if let error = error {
+                    completion(false, error)
+                } else {
+                    completion(true, nil)
+                }
+            }
+        }
+        
+        
     }
 }
 

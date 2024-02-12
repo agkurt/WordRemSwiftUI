@@ -20,8 +20,6 @@ class SentenceViewModel:ObservableObject {
                 DispatchQueue.main.async {
                     self.exampleWords = exampleWord
                 }
-                print("Word: \(exampleWord.word)")
-                print("Examples: \(exampleWord.examples)")
             case .failure(let error):
                 self.errorMessage = error.localizedDescription
                 print("Error: \(error)")
