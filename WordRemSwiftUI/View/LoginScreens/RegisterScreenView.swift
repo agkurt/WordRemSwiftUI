@@ -7,51 +7,52 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct RegisterScreenView: View {
-    
-    @State var isRegisterSuccess = false
-    @StateObject var registerScreenViewModel = RegisterScreenViewModel()
-    
-    var body: some View {
-        
-        GeometryReader { geometry in
-            NavigationStack {
-                ZStack {
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.init(hex:"#00b4d8")]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    VStack(spacing:0) {
-                        IconImageView()
-                        VStack(spacing:-120) {
-                            TextFieldView(text: $registerScreenViewModel.email, placeholder: "Email")
-                            TextFieldView(text: $registerScreenViewModel.userName, placeholder: "Username")
-                            TextFieldView(text: $registerScreenViewModel.password, placeholder: "Password")
-                        }
+    @StateObject var viewModel = RegisterScreenViewModel()
+    @ObservedObject private var keyboard = KeyboardResponder()
 
-                        Button ("Register") {
-                            registerScreenViewModel.registerRequest()
+    var body: some View {
+        NavigationView {
+            ZStack {
+                LinearBackgroundView()
+                GeometryReader { geometry in
+                    VStack {
+                        IconImageView()
+                        VStack {
+                            TextFieldView(text: $viewModel.email, placeholder: "Email")
+                            TextFieldView(text: $viewModel.userName, placeholder: "Username")
+                            SecureFieldView(text: $viewModel.password)
                         }
-                        .buttonStyle(LoginButtonStyle())
-                        .onTapGesture {
-                            if registerScreenViewModel.isRegisterSuccess {
-                                isRegisterSuccess = true
-                            }
-                        }
-                        NavigationLink(destination:LoginScreenView(), isActive: $isRegisterSuccess) {
-                            Text("I have already account")
-                                .font(.caption)
-                        }
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(20)
                         .padding()
-                        
+                        .frame(width: geometry.size.width * 1,height: geometry.size.height * 0.60)
+                        .padding(.bottom, keyboard.currentHeight)
+                        .animation(.easeOut(duration: 0.16))
+
+                        VStack {
+                            NavigationLink(destination: LoginScreenView(), isActive: $viewModel.isRegisterSuccess) {
+                                Text("I have already have an account")
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+                            }
+                            Button(action: {
+                                if viewModel.registerRequest() {
+                                    viewModel.isRegisterSuccess = true
+                                }
+                            }) {
+                                Text("Register")
+                                    .fontWeight(.bold)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color(hex: "393E46"))
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
                     }
                 }
-                .edgesIgnoringSafeArea(.all)
-                .navigationTitle("RegisterScreen")
-                .navigationBarTitleDisplayMode(.inline)
             }
         }
     }
@@ -61,3 +62,4 @@ struct RegisterScreenView: View {
 #Preview {
     RegisterScreenView()
 }
+

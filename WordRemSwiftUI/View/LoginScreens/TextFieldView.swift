@@ -17,12 +17,24 @@ struct TextFieldView: View {
             VStack{
                 TextField(placeholder, text: $text)
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#00a2d8")))
+                    .autocapitalization(.none)
+                    .background(Color.init(hex: "EEEEEE"),in:.capsule)
+                    .disableAutocorrection(true)
                     .font(Font.system(size: 18, weight: .regular))
-                
+                    .opacity(0.85)
+                    .foregroundStyle(Color(hex: "393E46"))
+                    .keyboardType(.emailAddress)
             }
-           
             .padding()
         }
     }
 }
+
+struct TextFieldView_Previews: PreviewProvider {
+    static var previews: some View {
+        let text: Binding<String> = .constant("random")
+        return TextFieldView(text: text)
+    }
+}
+
+

@@ -9,41 +9,55 @@ import SwiftUI
 
 struct LoginScreenView: View {
     
-    @StateObject var loginScreenViewModel = LoginScreenViewModel()
+    @StateObject var viewModel = LoginScreenViewModel()
     @State var isLoggedIn = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient (
-                    gradient: Gradient(colors: [Color.init(hex:"#00b4d8")]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                VStack(spacing:20) {
-                    IconImageView()
-                    TextFieldView(text: $loginScreenViewModel.email, placeholder: "Email")
-                    TextFieldView(text: $loginScreenViewModel.password, placeholder: "Password")
-                    Spacer()
-                    
-                    NavigationLink(destination: GetWordsView(), isActive: $isLoggedIn)  {
-                        Button("Login") {
-                            loginScreenViewModel.loginRequest()
+                LinearBackgroundView()
+                GeometryReader { geometry in
+                    VStack {
+                        IconImageView()
+                        
+                        VStack(spacing: 0) {
+                            TextFieldView(text: $viewModel.email, placeholder: "Email")
+                            TextFieldView(text: $viewModel.password, placeholder: "Password")
+                        }
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(20)
+                        .padding()
+                        .frame(height: geometry.size.height * 0.55) // Aynı yükseklikte olmasını sağlar
+                        VStack {
+                            NavigationLink(destination: GetWordsView().navigationBarBackButtonHidden(true), isActive: $isLoggedIn)  {
+                                Text("Continue as guest")
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+
+                            }
+                            
+                            Button(action: {
+                                viewModel.loginRequest()
+
+                            }, label: {
+                                Text("Login")
+                                    .fontWeight(.bold)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color(hex: "393E46"))
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            })
+                            .buttonStyle(PlainButtonStyle())
+                            .padding(.top, 10)
                         }
                     }
-                    
-                    .buttonStyle(LoginButtonStyle())
-                    
                 }
-                
             }
-            .edgesIgnoringSafeArea(.all)
-            .navigationTitle("LoginScreen")
-            .navigationBarTitleDisplayMode(.inline)
         }
-        
     }
 }
+
 
 #Preview {
     LoginScreenView()

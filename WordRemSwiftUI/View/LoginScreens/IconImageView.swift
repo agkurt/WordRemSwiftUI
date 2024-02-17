@@ -10,24 +10,19 @@ import SwiftUI
 struct IconImageView: View {
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .center) {
-                Spacer()
-                Image("logo")
-                    .resizable()
-                    .aspectRatio(1, contentMode: .fit)
-                    .frame(maxWidth: geometry.size.width * 1,maxHeight:geometry.size.height * 0.30)
-                    .shadow(radius: 15)
-                Spacer()
-                Spacer()
-             
-            }
-            .padding()
-        } 
+        VStack{
+            Image("logo")
+                .resizable()
+                .allowedDynamicRange(.constrainedHigh)
+                .aspectRatio(1, contentMode: .fit)
+                .frame(maxWidth: 150, maxHeight: 150)
+                .shadow(radius: 20)
+        }
+        .padding()
     }
 }
 
 #Preview {
     IconImageView()
 }
-    
+

@@ -15,7 +15,7 @@ class RegisterScreenViewModel:ObservableObject {
     @Published var password: String = ""
     @Published var isRegisterSuccess = false
     
-    func registerRequest() {
+    func registerRequest() -> Bool {
         let registerModel = RegisterModel(username: userName, email: email, password: password)
         
         FirebaseService.shared.registerUser(userRequest: registerModel) { [weak self] result, error in
@@ -30,5 +30,6 @@ class RegisterScreenViewModel:ObservableObject {
                 }
             }
         }
+        return true
     }
 }
