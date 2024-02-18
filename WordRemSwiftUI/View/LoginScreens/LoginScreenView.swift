@@ -8,37 +8,47 @@
 import SwiftUI
 
 struct LoginScreenView: View {
-    
     @StateObject var viewModel = LoginScreenViewModel()
     @State var isLoggedIn = false
+    @FocusState private var focusedField: FocusableField?
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             ZStack {
                 LinearBackgroundView()
                 GeometryReader { geometry in
                     VStack {
                         IconImageView()
-                        
-                        VStack(spacing: 0) {
+                        VStack {
                             TextFieldView(text: $viewModel.email, placeholder: "Email")
-                            TextFieldView(text: $viewModel.password, placeholder: "Password")
+                                .focused($focusedField,equals: .email)
+                                .keyboardType(.emailAddress)
+                            SecureFieldView(text: $viewModel.password)
+                                .focused($focusedField,equals: .password)
                         }
+                        
                         .background(Color.white.opacity(0.1))
                         .cornerRadius(20)
                         .padding()
-                        .frame(height: geometry.size.height * 0.55) // Aynı yükseklikte olmasını sağlar
+                        .frame(width: geometry.size.width * 1,height: geometry.size.height * 0.45)
+                        .animation(.easeOut(duration: 0.20))
+                      
+                        Spacer()
+                        
                         VStack {
-                            NavigationLink(destination: GetWordsView().navigationBarBackButtonHidden(true), isActive: $isLoggedIn)  {
+                            NavigationLink(destination: GetWordsView().navigationBarBackButtonHidden(true), isActive: $isLoggedIn) {
                                 Text("Continue as guest")
                                     .font(.caption)
                                     .foregroundColor(.white)
-
                             }
                             
                             Button(action: {
-                                viewModel.loginRequest()
-
+                                if viewModel.loginRequest() {
+                                    DispatchQueue.main.async {
+                                        self.isLoggedIn = true
+                                    }
+                                }
+                                
                             }, label: {
                                 Text("Login")
                                     .fontWeight(.bold)
@@ -49,14 +59,36 @@ struct LoginScreenView: View {
                                     .cornerRadius(10)
                             })
                             .buttonStyle(PlainButtonStyle())
-                            .padding(.top, 10)
                         }
                     }
                 }
             }
+            .onSubmit(focusNextField)
+            .onTapGesture {
+                UIApplication.shared.hideKeyboard()
+            }
+        }
+    }
+    
+    private func focusFirstField() {
+        focusedField = FocusableField.allCases.first
+    }
+
+    private func focusNextField() {
+        switch focusedField {
+        case .email:
+            focusedField = .password
+        case .username:
+            focusedField = .password
+        case .password:
+            focusedField = .email
+        case .none:
+            break
         }
     }
 }
+
+
 
 
 #Preview {

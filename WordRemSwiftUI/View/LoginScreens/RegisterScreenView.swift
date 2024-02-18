@@ -9,7 +9,8 @@ import SwiftUI
 
 struct RegisterScreenView: View {
     @StateObject var viewModel = RegisterScreenViewModel()
-    @ObservedObject private var keyboard = KeyboardResponder()
+    @State var isRegisterSuccess = false
+    @FocusState var focusedField: FocusableField?
 
     var body: some View {
         NavigationView {
@@ -20,25 +21,30 @@ struct RegisterScreenView: View {
                         IconImageView()
                         VStack {
                             TextFieldView(text: $viewModel.email, placeholder: "Email")
+                                .focused($focusedField, equals: .email)
+                                .keyboardType(.emailAddress)
                             TextFieldView(text: $viewModel.userName, placeholder: "Username")
+                                .focused($focusedField, equals: .username)
                             SecureFieldView(text: $viewModel.password)
+                                .focused($focusedField, equals: .password)
                         }
+                        
                         .background(Color.white.opacity(0.1))
                         .cornerRadius(20)
                         .padding()
-                        .frame(width: geometry.size.width * 1,height: geometry.size.height * 0.60)
-                        .padding(.bottom, keyboard.currentHeight)
-                        .animation(.easeOut(duration: 0.16))
-
+                        .frame(width: geometry.size.width * 1, height: geometry.size.height * 0.65)
+                        .animation(.easeOut(duration: 0.35))
+                        
                         VStack {
                             NavigationLink(destination: LoginScreenView(), isActive: $viewModel.isRegisterSuccess) {
-                                Text("I have already have an account")
+                                Text("I already have an account")
                                     .font(.caption)
                                     .foregroundColor(.white)
                             }
+
                             Button(action: {
                                 if viewModel.registerRequest() {
-                                    viewModel.isRegisterSuccess = true
+                                    self.isRegisterSuccess = true
                                 }
                             }) {
                                 Text("Register")
@@ -49,11 +55,33 @@ struct RegisterScreenView: View {
                                     .foregroundColor(.white)
                                     .cornerRadius(10)
                             }
-                            .buttonStyle(PlainButtonStyle())
+                            .buttonStyle(PlainButtonStyle())  
                         }
                     }
                 }
             }
+            .onSubmit(focusNextField)
+            .onTapGesture() {
+                UIApplication.shared.hideKeyboard()
+            }
+        }
+        
+    }
+    
+    private func focusFirstField() {
+        focusedField = FocusableField.allCases.first
+    }
+
+    private func focusNextField() {
+        switch focusedField {
+        case .email:
+            focusedField = .username
+        case .username:
+            focusedField = .password
+        case .password:
+            focusedField = .email
+        case .none:
+            break
         }
     }
 }
@@ -62,4 +90,5 @@ struct RegisterScreenView: View {
 #Preview {
     RegisterScreenView()
 }
+
 

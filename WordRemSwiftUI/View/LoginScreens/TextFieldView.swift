@@ -23,7 +23,7 @@ struct TextFieldView: View {
                     .font(Font.system(size: 18, weight: .regular))
                     .opacity(0.85)
                     .foregroundStyle(Color(hex: "393E46"))
-                    .keyboardType(.emailAddress)
+                    .submitLabel(.next)
             }
             .padding()
         }

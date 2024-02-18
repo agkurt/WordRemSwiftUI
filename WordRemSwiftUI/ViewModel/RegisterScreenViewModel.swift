@@ -14,7 +14,7 @@ class RegisterScreenViewModel:ObservableObject {
     @Published var userName: String = ""
     @Published var password: String = ""
     @Published var isRegisterSuccess = false
-    
+
     func registerRequest() -> Bool {
         let registerModel = RegisterModel(username: userName, email: email, password: password)
         
@@ -32,4 +32,6 @@ class RegisterScreenViewModel:ObservableObject {
         }
         return true
     }
+    
+  
 }
