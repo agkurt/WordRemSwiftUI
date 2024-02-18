@@ -13,21 +13,21 @@ class LoginScreenViewModel : ObservableObject {
     @Published var password:String = ""
     @Published var isLoginSuccess = false
     
-    func loginRequest() -> Bool {
-          let loginModel = LoginModel(email: email, password: password)
-          
-          FirebaseService.shared.loginUser(loginModel: loginModel) { [weak self] success, error in
-              guard let self = self else { return }
-              
-              if let error = error {
-                  print("Login error: \(error.localizedDescription)")
-              } else {
-                  DispatchQueue.main.async {
-                      self.isLoginSuccess = true
-                      print("başarılı giriş")
-                  }
-              }
-          }
-        return true
-      }
+    func loginRequest() {
+        let loginModel = LoginModel(email: email, password: password)
+        
+        FirebaseService.shared.loginUser(loginModel: loginModel) { [weak self] success, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Login error: \(error.localizedDescription)")
+            } else if success {
+                DispatchQueue.main.async {
+                    self.isLoginSuccess = true
+                    print("Successful login")
+                }
+            }
+        }
+    }
+    
 }

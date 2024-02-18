@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LoginScreenView: View {
     @StateObject var viewModel = LoginScreenViewModel()
-    @State var isLoggedIn = false
+    @State private var isLoggedIn = false
     @FocusState private var focusedField: FocusableField?
     
     var body: some View {
@@ -21,16 +21,15 @@ struct LoginScreenView: View {
                         IconImageView()
                         VStack {
                             TextFieldView(text: $viewModel.email, placeholder: "Email")
-                                .focused($focusedField,equals: .email)
+                                .focused($focusedField, equals: .email)
                                 .keyboardType(.emailAddress)
                             SecureFieldView(text: $viewModel.password)
-                                .focused($focusedField,equals: .password)
+                                .focused($focusedField, equals: .password)
                         }
-                        
                         .background(Color.white.opacity(0.1))
                         .cornerRadius(20)
                         .padding()
-                        .frame(width: geometry.size.width * 1,height: geometry.size.height * 0.45)
+                        .frame(width: geometry.size.width * 1, height: geometry.size.height * 0.45)
                         .animation(.easeOut(duration: 0.20))
                       
                         Spacer()
@@ -43,12 +42,7 @@ struct LoginScreenView: View {
                             }
                             
                             Button(action: {
-                                if viewModel.loginRequest() {
-                                    DispatchQueue.main.async {
-                                        self.isLoggedIn = true
-                                    }
-                                }
-                                
+                                viewModel.loginRequest()
                             }, label: {
                                 Text("Login")
                                     .fontWeight(.bold)
@@ -63,6 +57,11 @@ struct LoginScreenView: View {
                     }
                 }
             }
+            .onReceive(viewModel.$isLoginSuccess) { success in
+                if success {
+                    isLoggedIn = true
+                }
+            }
             .onSubmit(focusNextField)
             .onTapGesture {
                 UIApplication.shared.hideKeyboard()
@@ -70,25 +69,19 @@ struct LoginScreenView: View {
         }
     }
     
-    private func focusFirstField() {
-        focusedField = FocusableField.allCases.first
-    }
-
     private func focusNextField() {
         switch focusedField {
         case .email:
-            focusedField = .password
-        case .username:
             focusedField = .password
         case .password:
             focusedField = .email
         case .none:
             break
+        case .username:
+            focusedField = .password
         }
     }
 }
-
-
 
 
 #Preview {
