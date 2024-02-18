@@ -11,7 +11,8 @@ struct RegisterScreenView: View {
     @StateObject var viewModel = RegisterScreenViewModel()
     @State var isRegisterSuccess = false
     @FocusState var focusedField: FocusableField?
-
+    @State var isAnimating: Bool = false
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -28,7 +29,6 @@ struct RegisterScreenView: View {
                             SecureFieldView(text: $viewModel.password)
                                 .focused($focusedField, equals: .password)
                         }
-                        
                         .background(Color.white.opacity(0.1))
                         .cornerRadius(20)
                         .padding()
@@ -41,10 +41,10 @@ struct RegisterScreenView: View {
                                     .font(.caption)
                                     .foregroundColor(.white)
                             }
-
                             Button(action: {
-                                if viewModel.registerRequest() {
-                                    self.isRegisterSuccess = true
+                                self.isAnimating = true // Start animation here
+                                Task {
+                                    await self.registerAsync()
                                 }
                             }) {
                                 Text("Register")
@@ -55,9 +55,20 @@ struct RegisterScreenView: View {
                                     .foregroundColor(.white)
                                     .cornerRadius(10)
                             }
-                            .buttonStyle(PlainButtonStyle())  
+                            .buttonStyle(PlainButtonStyle())
                         }
                     }
+                }
+                
+                if isAnimating {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea() // This makes the overlay cover the entire screen
+                }
+                
+                if isAnimating {
+                    ActivityIndicatorView(color: Color(.purple), isAnimating: $isAnimating)
+                        .frame(width: 100, height: 100)
+                        .zIndex(1) // Ensure the indicator is on top
                 }
             }
             .onSubmit(focusNextField)
@@ -65,13 +76,12 @@ struct RegisterScreenView: View {
                 UIApplication.shared.hideKeyboard()
             }
         }
-        
     }
     
     private func focusFirstField() {
         focusedField = FocusableField.allCases.first
     }
-
+    
     private func focusNextField() {
         switch focusedField {
         case .email:
@@ -84,8 +94,15 @@ struct RegisterScreenView: View {
             break
         }
     }
+    
+    private func registerAsync() async {
+        self.isAnimating = true // Start animation here
+        let result = await viewModel.registerRequest()
+        self.isAnimating = false // Stop animation here
+        self.isRegisterSuccess = result
+    }
+    
 }
-
 
 #Preview {
     RegisterScreenView()
