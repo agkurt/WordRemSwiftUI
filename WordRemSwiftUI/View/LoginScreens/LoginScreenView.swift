@@ -39,7 +39,7 @@ struct LoginScreenView: View {
                         Spacer()
                         
                         VStack {
-                            NavigationLink(destination: HomeScreenView().navigationBarBackButtonHidden(true), isActive: $isLoggedIn) {
+                            NavigationLink(destination: TabBarCustom().navigationBarBackButtonHidden(true), isActive: $isLoggedIn) {
                                 Text("Continue as guest")
                                     .font(.caption)
                                     .foregroundColor(.white)

@@ -9,13 +9,8 @@ import SwiftUI
 
 struct HomeScreenView: View {
     var body: some View {
-        ZStack {
-            LinearBackgroundView()
-            ScrollView {
-                VStack{
-                    
-                }
-            }
+        VStack{
+            Text("Homescreen View")
         }
     }
 }
