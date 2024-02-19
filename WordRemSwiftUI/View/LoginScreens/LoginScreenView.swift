@@ -11,11 +11,16 @@ struct LoginScreenView: View {
     @StateObject var viewModel = LoginScreenViewModel()
     @State private var isLoggedIn = false
     @FocusState private var focusedField: FocusableField?
+    @State var isAnimating: Bool = false
+
     
     var body: some View {
         NavigationView {
             ZStack {
                 LinearBackgroundView()
+                ActivityIndicatorView(color: Color(hex: "393E46"), isAnimating: $isAnimating)
+                    .frame(width: 100,height: 100)
+                    .animation(.easeInOut(duration: 1), value: 0)
                 GeometryReader { geometry in
                     VStack {
                         IconImageView()
@@ -30,12 +35,11 @@ struct LoginScreenView: View {
                         .cornerRadius(20)
                         .padding()
                         .frame(width: geometry.size.width * 1, height: geometry.size.height * 0.45)
-                        .animation(.easeOut(duration: 0.20))
-                      
+
                         Spacer()
                         
                         VStack {
-                            NavigationLink(destination: GetWordsView().navigationBarBackButtonHidden(true), isActive: $isLoggedIn) {
+                            NavigationLink(destination: HomeScreenView().navigationBarBackButtonHidden(true), isActive: $isLoggedIn) {
                                 Text("Continue as guest")
                                     .font(.caption)
                                     .foregroundColor(.white)

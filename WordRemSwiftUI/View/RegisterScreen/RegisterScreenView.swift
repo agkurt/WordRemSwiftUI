@@ -29,20 +29,21 @@ struct RegisterScreenView: View {
                             SecureFieldView(text: $viewModel.password)
                                 .focused($focusedField, equals: .password)
                         }
+                        
                         .background(Color.white.opacity(0.1))
                         .cornerRadius(20)
                         .padding()
                         .frame(width: geometry.size.width * 1, height: geometry.size.height * 0.65)
-                        .animation(.easeOut(duration: 0.35))
+                        .animation(.easeOut(duration: 0.35),value: 0)
                         
                         VStack {
-                            NavigationLink(destination: LoginScreenView(), isActive: $viewModel.isRegisterSuccess) {
-                                Text("I already have an account")
+                            NavigationLink(destination: LoginScreenView().navigationBarBackButtonHidden(true), isActive: $viewModel.isRegisterSuccess) {
+                                Text("I have already an account")
                                     .font(.caption)
                                     .foregroundColor(.white)
                             }
                             Button(action: {
-                                self.isAnimating = true // Start animation here
+                                self.isAnimating = true
                                 Task {
                                     await self.registerAsync()
                                 }
@@ -61,14 +62,11 @@ struct RegisterScreenView: View {
                 }
                 
                 if isAnimating {
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea() // This makes the overlay cover the entire screen
-                }
-                
-                if isAnimating {
                     ActivityIndicatorView(color: Color(.purple), isAnimating: $isAnimating)
                         .frame(width: 100, height: 100)
-                        .zIndex(1) // Ensure the indicator is on top
+                        .zIndex(1)
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
                 }
             }
             .onSubmit(focusNextField)
@@ -96,12 +94,11 @@ struct RegisterScreenView: View {
     }
     
     private func registerAsync() async {
-        self.isAnimating = true // Start animation here
+        self.isAnimating = true
         let result = await viewModel.registerRequest()
-        self.isAnimating = false // Stop animation here
+        self.isAnimating = false
         self.isRegisterSuccess = result
     }
-    
 }
 
 #Preview {

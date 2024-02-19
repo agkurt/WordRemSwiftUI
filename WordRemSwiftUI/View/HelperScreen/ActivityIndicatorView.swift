@@ -18,20 +18,20 @@ struct ActivityIndicatorView: View {
                 .opacity(0.15)
                 .scaleEffect(isAnimating ? 0.8 : 1)
                 .animation(Animation.easeInOut
-                    .repeatForever(autoreverses: true))
+                    .repeatForever(autoreverses: true),value: 0)
             
             Circle()
                 .fill(color)
                 .opacity(0.30)
                 .scaleEffect(isAnimating ? 0.6 : 1)
                 .frame(width: 75,height: 75)
-                .animation(Animation.easeInOut.repeatForever(autoreverses: true))
+                .animation(Animation.easeInOut.repeatForever(autoreverses: true),value: 0)
             
             Circle()
                 .fill(color)
                 .frame(width: 50,height: 50)
                 .scaleEffect(isAnimating ? 0.4 : 1)
-                .animation(Animation.easeInOut.repeatForever(autoreverses: true))
+                .animation(Animation.easeInOut.repeatForever(autoreverses: true),value: 0)
             
             
         }
