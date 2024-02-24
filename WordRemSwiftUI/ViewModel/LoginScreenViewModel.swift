@@ -12,7 +12,8 @@ class LoginScreenViewModel : ObservableObject {
     @Published var email:String = ""
     @Published var password:String = ""
     @Published var isLoginSuccess = false
-    
+    @FocusState private var focusedField: FocusableField?
+
     func loginRequest() {
         let loginModel = LoginModel(email: email, password: password)
         
@@ -27,6 +28,19 @@ class LoginScreenViewModel : ObservableObject {
                     print("Successful login")
                 }
             }
+        }
+    }
+    
+    func focusNextField() {
+        switch focusedField {
+        case .email:
+            focusedField = .password
+        case .password:
+            focusedField = .email
+        case .none:
+            break
+        case .username:
+            focusedField = .password
         }
     }
     

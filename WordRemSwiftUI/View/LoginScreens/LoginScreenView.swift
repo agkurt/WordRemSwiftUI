@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LoginScreenView: View {
+    
     @StateObject var viewModel = LoginScreenViewModel()
     @State private var isLoggedIn = false
     @FocusState private var focusedField: FocusableField?
@@ -66,23 +67,10 @@ struct LoginScreenView: View {
                     isLoggedIn = true
                 }
             }
-            .onSubmit(focusNextField)
+            .onSubmit(viewModel.focusNextField)
             .onTapGesture {
                 UIApplication.shared.hideKeyboard()
             }
-        }
-    }
-    
-    private func focusNextField() {
-        switch focusedField {
-        case .email:
-            focusedField = .password
-        case .password:
-            focusedField = .email
-        case .none:
-            break
-        case .username:
-            focusedField = .password
         }
     }
 }
