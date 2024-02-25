@@ -13,7 +13,8 @@ struct ProfileView: View {
         ZStack {
             LinearBackgroundView()
             VStack(spacing:0) {
-               IconImageView()
+                IconImageView()
+                    .padding(.top,20)
                 GeometryReader { geometry in
                     HStack {
                         Image(systemName: "person.crop.circle")
@@ -28,8 +29,8 @@ struct ProfileView: View {
                     NavigationLink(destination: PremiumView()) {
                         Text("Get Premium")
                             .font(.largeTitle)
-                            .padding()
                             .foregroundStyle(Color(hex:"#c7c9b1"))
+                            
                     }
                     
                     Text("Logout")
@@ -37,14 +38,14 @@ struct ProfileView: View {
                         .foregroundStyle(Color(hex: "#8b8e62"))
                     
                 }
-               
-               
-
+                .frame(maxHeight: 200)
+                .padding()
+                .padding(.bottom,20)
             }
             .frame(maxWidth: .infinity,maxHeight: .infinity)
             .padding()
-           
         }
+        .ignoresSafeArea(.container)
     }
 }
 

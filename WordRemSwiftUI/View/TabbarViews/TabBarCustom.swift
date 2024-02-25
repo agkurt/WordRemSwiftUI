@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabBarCustom: View {
     @State var selectedTab = "house.circle"
+    @State var cardName:[String] = []
     var body: some View {
         NavigationStack {
             ZStack {
@@ -46,7 +47,7 @@ struct TabBarCustom: View {
                             .background(Color(hex: "#37414f"))
                         }
                         
-                        NavigationLink(destination: PlusView()) {
+                        NavigationLink(destination: PlusView().navigationBarBackButtonHidden()) {
                             Image(systemName: "plus.circle")
                                 .resizable()
                                 .frame(width: 75, height: 75)
@@ -54,7 +55,7 @@ struct TabBarCustom: View {
                                 .background(Color(hex: "#37414f"))
                                 .shadow(radius: 10)
                                 .clipShape(.capsule(style: .circular))
-                                
+ 
                         }
                         .padding(.bottom, 12)
                     }

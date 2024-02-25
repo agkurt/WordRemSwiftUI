@@ -7,12 +7,9 @@
 
 import SwiftUI
 
-
 struct CardView: View {
     var title: String
-    var subtitle: String
     var image: Image
-
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -25,13 +22,12 @@ struct CardView: View {
                 Text(title)
                     .font(.title)
                     .fontWeight(.bold)
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.white)
+               
             }
             
             .frame(maxWidth: geometry.size.width * 1)
-            .background(Color.white)
+            .background(Color(hex: "#8b6072"))
             .cornerRadius(20)
             .shadow(radius: 10)
             .padding()
@@ -40,5 +36,5 @@ struct CardView: View {
 }
 
 #Preview {
-    CardView(title: "Pencil", subtitle: "Use the for write process", image: Image(systemName: "pencil"))
+    CardView(title: "Pencil", image: Image(systemName: "pencil"))
 }
