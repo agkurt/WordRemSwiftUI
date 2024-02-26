@@ -14,7 +14,9 @@ class RegisterScreenViewModel: ObservableObject {
     @Published var userName: String = ""
     @Published var password: String = ""
     @Published var isRegisterSuccess = false
-
+    @Published var isAnimating: Bool = false
+    @FocusState private var focusedField: FocusableField?
+    
     func registerRequest() async -> Bool {
         let registerModel = RegisterModel(username: userName, email: email, password: password)
         var isSuccess = false
@@ -36,5 +38,27 @@ class RegisterScreenViewModel: ObservableObject {
         }
         return isSuccess
     }
-}
     
+    func registerAsync() async {
+        self.isAnimating = true
+        let result = await registerRequest()
+        self.isAnimating = false
+        self.isRegisterSuccess = result
+    }
+    
+    func focusNextField() {
+        switch focusedField {
+        case .email:
+            focusedField = .username
+        case .username:
+            focusedField = .password
+        case .password:
+            focusedField = .email
+        case .none:
+            break
+        }
+    }
+    
+    
+}
+

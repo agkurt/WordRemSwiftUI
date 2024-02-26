@@ -10,13 +10,14 @@ import SwiftUI
 struct LoginScreenView: View {
     
     @StateObject var viewModel = LoginScreenViewModel()
+    @StateObject var authManager = AuthManager()
     @State private var isLoggedIn = false
     @FocusState private var focusedField: FocusableField?
     @State var isAnimating: Bool = false
-
+    @State private var showLoginSheet = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 LinearBackgroundView()
                 ActivityIndicatorView(color: Color(hex: "393E46"), isAnimating: $isAnimating)
@@ -36,14 +37,28 @@ struct LoginScreenView: View {
                         .cornerRadius(20)
                         .padding()
                         .frame(width: geometry.size.width * 1, height: geometry.size.height * 0.45)
-
+                        
                         Spacer()
                         
                         VStack {
-                            NavigationLink(destination: TabBarCustom().navigationBarBackButtonHidden(true), isActive: $isLoggedIn) {
+                            Button(action: {
+                                Task {
+                                    do {
+                                        try await viewModel.signAnonymously()
+                                    }
+                                    catch {
+                                        print("SignInAnonymouslyError: \(error)")
+                                    }
+                                }
+                            }) {
                                 Text("Continue as guest")
                                     .font(.caption)
                                     .foregroundColor(.white)
+                            }
+                            .navigationBarBackButtonHidden(true)
+                            
+                            NavigationLink(destination: TabBarCustom().navigationBarBackButtonHidden(), isActive: .constant(authManager.authState != .signedOut)) {
+                                EmptyView()
                             }
                             
                             Button(action: {
@@ -64,7 +79,7 @@ struct LoginScreenView: View {
             }
             .onReceive(viewModel.$isLoginSuccess) { success in
                 if success {
-                    isLoggedIn = true
+                    viewModel.authManager.authState = .signedIn
                 }
             }
             .onSubmit(viewModel.focusNextField)
@@ -73,9 +88,13 @@ struct LoginScreenView: View {
             }
         }
     }
+    
+   
 }
 
 
 #Preview {
     LoginScreenView()
 }
+
+

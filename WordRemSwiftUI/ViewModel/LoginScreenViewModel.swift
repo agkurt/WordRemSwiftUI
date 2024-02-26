@@ -13,6 +13,7 @@ class LoginScreenViewModel : ObservableObject {
     @Published var password:String = ""
     @Published var isLoginSuccess = false
     @FocusState private var focusedField: FocusableField?
+    @StateObject var authManager = AuthManager()
 
     func loginRequest() {
         let loginModel = LoginModel(email: email, password: password)
@@ -44,4 +45,14 @@ class LoginScreenViewModel : ObservableObject {
         }
     }
     
+    func signAnonymously() async throws {
+        do {
+            _ = try await authManager.signInAnonymously()
+        }
+        catch {
+            print("SignInAnonymouslyError: \(error)")
+            throw error
+        }
+    }
+
 }

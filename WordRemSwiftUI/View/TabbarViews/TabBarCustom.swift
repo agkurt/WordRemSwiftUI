@@ -10,6 +10,8 @@ import SwiftUI
 struct TabBarCustom: View {
     @State var selectedTab = "house.circle"
     @State var islog = false
+    @StateObject var registerViewModel = RegisterScreenViewModel()
+
     
     var body: some View {
         NavigationStack {
@@ -18,7 +20,7 @@ struct TabBarCustom: View {
                 if selectedTab == "house.circle" {
                     HomeScreenView()
                 } else if selectedTab == "person.crop.circle" {
-                    ProfileView()
+                    ProfileView().environmentObject(registerViewModel)
                 }
                 
                 VStack {

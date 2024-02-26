@@ -10,6 +10,8 @@ import FirebaseAuth
 
 struct ProfileView: View {
     @ObservedObject var viewModel =  ProfileViewModel()
+    @EnvironmentObject var registerViewModel: RegisterScreenViewModel
+
     
     @State private var isSignOut = false
     
@@ -25,6 +27,12 @@ struct ProfileView: View {
                             .font(.largeTitle)
                             .foregroundStyle(Color(hex:"#c7c9b1"))
                             .frame(width: geometry.size.width * 0.2,height: geometry.size.height * 0.30)
+                        
+                        Text(registerViewModel.email)
+                            .font(.largeTitle)
+                            .foregroundStyle(.white)
+                            .frame(width: geometry.size.width * 0.2,height: geometry.size.height * 0.30)
+
                     }
                 }
                 Spacer()
@@ -36,7 +44,6 @@ struct ProfileView: View {
                             .foregroundStyle(Color(hex:"#c7c9b1"))
                         
                     }
-                    
                     Text("Logout")
                         .font(.callout)
                         .foregroundStyle(Color(hex: "#8b8e62"))

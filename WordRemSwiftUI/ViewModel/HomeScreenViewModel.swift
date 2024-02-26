@@ -17,6 +17,7 @@ class HomeScreenViewModel: ObservableObject {
             self.cardNames = fetchedCardNames
         }
     }
+
 }
 
 

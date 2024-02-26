@@ -9,6 +9,7 @@ import SwiftUI
 import Firebase
 
 class AuthenticationViewModel: ObservableObject {
+    
     @Published var userIsLoggedIn = false
     
     init() {

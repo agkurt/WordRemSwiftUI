@@ -44,6 +44,8 @@
 		E8B748942B8C0972007DA60A /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B748932B8C0972007DA60A /* ProfileViewModel.swift */; };
 		E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C02A512B3C91E600B1D5AF /* IconImageView.swift */; };
 		E8D566C82B6E0C7400B1E4B0 /* SentenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D566C72B6E0C7400B1E4B0 /* SentenceViewModel.swift */; };
+		E8D6F2912B8C98BB0017A523 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D6F2902B8C98BB0017A523 /* AuthState.swift */; };
+		E8D6F2932B8C9EAA0017A523 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D6F2922B8C9EAA0017A523 /* AuthManager.swift */; };
 		E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */; };
 		E8E1B4DC2B7CA1A700AE6CD0 /* HideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E1B4DB2B7CA1A700AE6CD0 /* HideKeyboard.swift */; };
 		E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */; };
@@ -85,6 +87,8 @@
 		E8B748932B8C0972007DA60A /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		E8C02A512B3C91E600B1D5AF /* IconImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImageView.swift; sourceTree = "<group>"; };
 		E8D566C72B6E0C7400B1E4B0 /* SentenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceViewModel.swift; sourceTree = "<group>"; };
+		E8D6F2902B8C98BB0017A523 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
+		E8D6F2922B8C9EAA0017A523 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearBackgroundView.swift; sourceTree = "<group>"; };
 		E8E1B4DB2B7CA1A700AE6CD0 /* HideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyboard.swift; sourceTree = "<group>"; };
 		E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureFieldView.swift; sourceTree = "<group>"; };
@@ -173,6 +177,7 @@
 			children = (
 				E8527C522B6EBD590047E4A6 /* FirebaseService */,
 				E86B99782B5193DB00538090 /* BaseService */,
+				E8D6F2922B8C9EAA0017A523 /* AuthManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -193,6 +198,7 @@
 				E84AA1B92B7A0B3200823B97 /* LoginModel.swift */,
 				E88CF0082B817DE900B06433 /* FocusableField.swift */,
 				E8B7488D2B8BE4ED007DA60A /* CardNameModel.swift */,
+				E8D6F2902B8C98BB0017A523 /* AuthState.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -264,6 +270,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		E8D6F2942B8CBA050017A523 /* ProfileViews */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB12CA2B8406FE00441F0C /* ProfileView.swift */,
+			);
+			name = ProfileViews;
+			path = "ProfileVİews";
+			sourceTree = "<group>";
+		};
 		E8E6E4382B8204D4009F5C3E /* RegisterScreen */ = {
 			isa = PBXGroup;
 			children = (
@@ -276,8 +291,8 @@
 			isa = PBXGroup;
 			children = (
 				E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */,
-				E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */,
 				E8527C172B6EAFAD0047E4A6 /* LoginButtonStyle.swift */,
+				E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */,
 				E86B99512B5024B700538090 /* TextFieldView.swift */,
 				E8C02A512B3C91E600B1D5AF /* IconImageView.swift */,
 			);
@@ -288,9 +303,9 @@
 			isa = PBXGroup;
 			children = (
 				E81941A82B8A1FDD0042EBB7 /* CardView */,
+				E8D6F2942B8CBA050017A523 /* ProfileViews */,
 				E8EB12C52B83EA9F00441F0C /* TabBarCustom.swift */,
 				E8EB12C32B83E73800441F0C /* HomeScreenView.swift */,
-				E8EB12CA2B8406FE00441F0C /* ProfileView.swift */,
 				E8EB12CC2B84071200441F0C /* PlusView.swift */,
 			);
 			path = TabbarViews;
@@ -390,6 +405,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8527C162B6EA4C60047E4A6 /* KeyboardObserver.swift in Sources */,
+				E8D6F2932B8C9EAA0017A523 /* AuthManager.swift in Sources */,
 				E8D566C82B6E0C7400B1E4B0 /* SentenceViewModel.swift in Sources */,
 				E8EB12C62B83EA9F00441F0C /* TabBarCustom.swift in Sources */,
 				E8E1B4E22B7CFF0800AE6CD0 /* KeyboardResponder.swift in Sources */,
@@ -416,6 +432,7 @@
 				E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */,
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
+				E8D6F2912B8C98BB0017A523 /* AuthState.swift in Sources */,
 				E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */,
 				E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,

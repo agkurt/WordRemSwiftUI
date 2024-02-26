@@ -9,13 +9,16 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
+import AuthenticationServices
 
 class FirebaseService: ObservableObject {
     
     static let shared = FirebaseService()
     
-    private init() { }
-    
+    private init() {
+        
+    }
+
     func registerUser(userRequest: RegisterModel, completion: @escaping (Bool, Error?) -> Void) {
         
         let username = userRequest.username
@@ -96,14 +99,14 @@ class FirebaseService: ObservableObject {
     }
     
     func fetchCardName() async -> [String] {
-            
+        
         guard let uid = Auth.auth().currentUser?.uid else {
             return []
         }
         
         let db = Firestore.firestore()
         var cardNames: [String] = []
-
+        
         do {
             let querySnapshot = try await db.collection("users").document(uid).collection("cardNames").getDocuments()
             for document in querySnapshot.documents {
@@ -117,5 +120,10 @@ class FirebaseService: ObservableObject {
         
         return cardNames
     }
-
 }
+
+
+
+
+
+

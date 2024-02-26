@@ -20,24 +20,22 @@ struct HomeScreenView: View {
                         ForEach(viewModel.cardNames.indices, id: \.self) { index in
                             CardView(title: viewModel.cardNames[index],
                                      image: Image(systemName: "pencil"))
-                                .onTapGesture {
-                                    // Shift all cards down with animation
-                                    withAnimation(.spring()) {
-                                        // Adjust animation logic as needed
-                                        // For example, use `offset` to move each card
-                                    }
-                                }
+                            
+                        }
+                    }
+                    .onAppear {
+                        Task {
+                            await viewModel.fetchCardName()
                         }
                     }
                 }
                 .padding(.top, 10)
             }
             .navigationTitle("Cards")
+            .tint(.purple)
         }
     }
 }
-
-
 
 #Preview {
     HomeScreenView()

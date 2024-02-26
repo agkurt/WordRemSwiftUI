@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct RegisterScreenView: View {
+    
     @StateObject var viewModel = RegisterScreenViewModel()
     @State var isRegisterSuccess = false
     @FocusState var focusedField: FocusableField?
     @State var isAnimating: Bool = false
+    
     
     var body: some View {
         NavigationStack {
