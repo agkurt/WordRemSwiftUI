@@ -14,7 +14,7 @@ struct RegisterScreenView: View {
     @State var isAnimating: Bool = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 LinearBackgroundView()
                 GeometryReader { geometry in

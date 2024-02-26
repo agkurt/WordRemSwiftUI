@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TabBarCustom: View {
     @State var selectedTab = "house.circle"
-    @State var cardName:[String] = []
+    @State var islog = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -28,10 +29,10 @@ struct TabBarCustom: View {
                                 VStack {
                                     Image(systemName: "house.circle")
                                         .foregroundColor(self.selectedTab == "house.circle" ? Color(hex: "#8b6072") : .gray)
-
+                                    
                                         .onTapGesture {
                                             self.selectedTab = "house.circle"
-                                    }
+                                        }
                                 }
                                 
                                 Image(systemName: "person.crop.circle")
@@ -47,20 +48,26 @@ struct TabBarCustom: View {
                             .background(Color(hex: "#37414f"))
                         }
                         
-                        NavigationLink(destination: PlusView().navigationBarBackButtonHidden()) {
-                            Image(systemName: "plus.circle")
-                                .resizable()
-                                .frame(width: 75, height: 75)
-                                .foregroundStyle(Color(hex: "#8b6072"))
-                                .background(Color(hex: "#37414f"))
-                                .shadow(radius: 10)
-                                .clipShape(.capsule(style: .circular))
- 
-                        }
-                        .padding(.bottom, 12)
+                        
+                        Image(systemName: "plus.circle")
+                            .resizable()
+                            .frame(width: 75, height: 75)
+                            .foregroundStyle(Color(hex: "#8b6072"))
+                            .background(Color(hex: "#37414f"))
+                            .shadow(radius: 10)
+                            .clipShape(.capsule(style: .circular))
+                        
+                            .padding(.bottom, 12)
+                            .onTapGesture {
+                                islog = true
+                            }.sheet(isPresented: $islog, content: {
+                                PlusView()
+                            })
+                        
                     }
                 }
             }
+            
         }
     }
 }

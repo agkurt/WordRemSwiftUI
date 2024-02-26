@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ProfileView: View {
-    @State private var isPremium = false
+    @ObservedObject var viewModel =  ProfileViewModel()
+    
+    @State private var isSignOut = false
+    
     var body: some View {
         ZStack {
             LinearBackgroundView()
@@ -30,12 +34,16 @@ struct ProfileView: View {
                         Text("Get Premium")
                             .font(.largeTitle)
                             .foregroundStyle(Color(hex:"#c7c9b1"))
-                            
+                        
                     }
                     
                     Text("Logout")
                         .font(.callout)
                         .foregroundStyle(Color(hex: "#8b8e62"))
+                        .onTapGesture {
+                            viewModel.signOut()
+                        }
+                    
                     
                 }
                 .frame(maxHeight: 200)

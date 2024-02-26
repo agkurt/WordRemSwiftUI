@@ -32,8 +32,6 @@ struct ActivityIndicatorView: View {
                 .frame(width: 50,height: 50)
                 .scaleEffect(isAnimating ? 0.4 : 1)
                 .animation(Animation.easeInOut.repeatForever(autoreverses: true),value: 0)
-            
-            
         }
     }
 }

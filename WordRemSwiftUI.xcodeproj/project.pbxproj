@@ -37,6 +37,11 @@
 		E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC692B3B3E2E003534B5 /* Assets.xcassets */; };
 		E879EC6D2B3B3E2E003534B5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */; };
 		E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88CF0082B817DE900B06433 /* FocusableField.swift */; };
+		E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488B2B8BDF7B007DA60A /* PlusViewModel.swift */; };
+		E8B7488E2B8BE4ED007DA60A /* CardNameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488D2B8BE4ED007DA60A /* CardNameModel.swift */; };
+		E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */; };
+		E8B748922B8C037C007DA60A /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B748912B8C037C007DA60A /* AuthenticationViewModel.swift */; };
+		E8B748942B8C0972007DA60A /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B748932B8C0972007DA60A /* ProfileViewModel.swift */; };
 		E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C02A512B3C91E600B1D5AF /* IconImageView.swift */; };
 		E8D566C82B6E0C7400B1E4B0 /* SentenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D566C72B6E0C7400B1E4B0 /* SentenceViewModel.swift */; };
 		E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */; };
@@ -73,6 +78,11 @@
 		E879EC692B3B3E2E003534B5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E88CF0082B817DE900B06433 /* FocusableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableField.swift; sourceTree = "<group>"; };
+		E8B7488B2B8BDF7B007DA60A /* PlusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusViewModel.swift; sourceTree = "<group>"; };
+		E8B7488D2B8BE4ED007DA60A /* CardNameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNameModel.swift; sourceTree = "<group>"; };
+		E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenViewModel.swift; sourceTree = "<group>"; };
+		E8B748912B8C037C007DA60A /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
+		E8B748932B8C0972007DA60A /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		E8C02A512B3C91E600B1D5AF /* IconImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImageView.swift; sourceTree = "<group>"; };
 		E8D566C72B6E0C7400B1E4B0 /* SentenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceViewModel.swift; sourceTree = "<group>"; };
 		E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearBackgroundView.swift; sourceTree = "<group>"; };
@@ -182,6 +192,7 @@
 				E8527C552B6EBED20047E4A6 /* RegisterModel.swift */,
 				E84AA1B92B7A0B3200823B97 /* LoginModel.swift */,
 				E88CF0082B817DE900B06433 /* FocusableField.swift */,
+				E8B7488D2B8BE4ED007DA60A /* CardNameModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -192,6 +203,10 @@
 				E8D566C72B6E0C7400B1E4B0 /* SentenceViewModel.swift */,
 				E8527C572B6EC1D00047E4A6 /* RegisterScreenViewModel.swift */,
 				E84AA1B72B7A0B1A00823B97 /* LoginScreenViewModel.swift */,
+				E8B7488B2B8BDF7B007DA60A /* PlusViewModel.swift */,
+				E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */,
+				E8B748912B8C037C007DA60A /* AuthenticationViewModel.swift */,
+				E8B748932B8C0972007DA60A /* ProfileViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -382,14 +397,18 @@
 				E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */,
 				E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */,
 				E86B99522B5024B700538090 /* TextFieldView.swift in Sources */,
+				E8B7488E2B8BE4ED007DA60A /* CardNameModel.swift in Sources */,
+				E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */,
 				E8E1B4DC2B7CA1A700AE6CD0 /* HideKeyboard.swift in Sources */,
 				E8527C582B6EC1D00047E4A6 /* RegisterScreenViewModel.swift in Sources */,
 				E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */,
 				E82B4CA22B6E028300C7AA81 /* GetWordsView.swift in Sources */,
 				E84AA1BA2B7A0B3200823B97 /* LoginModel.swift in Sources */,
+				E8B748922B8C037C007DA60A /* AuthenticationViewModel.swift in Sources */,
 				E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */,
 				E8EB12CB2B8406FE00441F0C /* ProfileView.swift in Sources */,
 				E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */,
+				E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */,
 				E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */,
 				E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */,
 				E84AA1B82B7A0B1A00823B97 /* LoginScreenViewModel.swift in Sources */,
@@ -400,6 +419,7 @@
 				E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */,
 				E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,
+				E8B748942B8C0972007DA60A /* ProfileViewModel.swift in Sources */,
 				E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */,
 				E8EB12D02B84138900441F0C /* PremiumView.swift in Sources */,
 				E8EB12CD2B84071200441F0C /* PlusView.swift in Sources */,

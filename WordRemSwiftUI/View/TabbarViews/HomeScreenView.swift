@@ -8,36 +8,35 @@
 import SwiftUI
 
 struct HomeScreenView: View {
-    @State private var offsets: [CGFloat] = Array(repeating: 0, count: 4)
+
+    @ObservedObject var viewModel = HomeScreenViewModel()
+
     var body: some View {
-        ZStack {
-            LinearBackgroundView()
-            ForEach(0..<4) { index in
-                CardView(title: "English Word", image: Image(systemName: "pencil"))
-                    .offset(x: offsets[index])
-                    .gesture(
-                        DragGesture()
-                            .onChanged { gesture in
-                                offsets[index] = gesture.translation.width
-                            }
-                            .onEnded { gesture in
-                                withAnimation(.easeOut(duration: 0.3)) {
-                                    if gesture.translation.width > 100 {
-                                        print("Word marked as learned")
-                                        offsets[index] = 400
-                                    } else if gesture.translation.width < -100 {
-                                        print("Word added to review list")
-                                        offsets[index] = -400
-                                    } else {
-                                        offsets[index] = 0
+        NavigationStack {
+            ZStack {
+                LinearBackgroundView()
+                ScrollView {
+                    VStack(spacing: 10) {
+                        ForEach(viewModel.cardNames.indices, id: \.self) { index in
+                            CardView(title: viewModel.cardNames[index],
+                                     image: Image(systemName: "pencil"))
+                                .onTapGesture {
+                                    // Shift all cards down with animation
+                                    withAnimation(.spring()) {
+                                        // Adjust animation logic as needed
+                                        // For example, use `offset` to move each card
                                     }
                                 }
-                            }
-                    )
+                        }
+                    }
+                }
+                .padding(.top, 10)
             }
+            .navigationTitle("Cards")
         }
     }
 }
+
 
 
 #Preview {

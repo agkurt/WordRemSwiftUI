@@ -10,17 +10,22 @@ import Firebase
 
 @main
 struct WordRemSwiftUIApp: App {
-    // Initialize Firebase in the initializer
+    @StateObject private var authViewModel = AuthenticationViewModel()
+    
     init() {
         FirebaseApp.configure()
     }
-
     var body: some Scene {
         WindowGroup {
-            NavigationView {
+            if authViewModel.userIsLoggedIn {
+                TabBarCustom()
+            } else {
                 RegisterScreenView()
             }
         }
     }
 }
+
+
+
 

@@ -8,32 +8,49 @@
 import SwiftUI
 
 struct PlusView: View {
-    @Binding var cardName:String
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-
     
+    @ObservedObject var viewModel = PlusViewModel()
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
                 VStack {
-                    TextFieldView(text:$cardName, placeholder: "Card name")
+                    TextFieldView(text: $viewModel.cardName, placeholder: "Card name")
                         .shadow(radius: 10)
-
+                        
                     Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
+                        Task {
+                            await viewModel.addCardName(cardName: viewModel.cardName)
+                        }
+                        dismiss()
+                        
                     }, label: {
                         Text("Done")
                     })
                     .buttonStyle(LoginButtonStyle())
+                    
                 }
-                .navigationTitle("PlusView")
+            }
+            .navigationTitle("PlusView")
+            .toolbar {
+                ToolbarItem {
+                    Button ("kapat", systemImage: "xmark") {
+                        dismiss()
+                    }
+                }
             }
         }
         
     }
 }
 
-#Preview {
-    PlusView()
+struct PlusView_Previews: PreviewProvider {
+    static var previews: some View {
+        PlusView()
+    }
 }
+
+
+

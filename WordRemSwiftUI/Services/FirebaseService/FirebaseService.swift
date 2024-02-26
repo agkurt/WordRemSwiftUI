@@ -79,8 +79,43 @@ class FirebaseService: ObservableObject {
                 }
             }
         }
-        
-        
     }
-}
+    
+    func addCardName(cardName:String) async {
+        
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        do {
+            let snapshot = try await Firestore.firestore().collection("users").document(uid).collection("cardNames").addDocument(data: ["cardName" : cardName])
+            
+        }catch {
+            print("Error fetching data: \(error.localizedDescription)")
+        }
+    }
+    
+    func fetchCardName() async -> [String] {
+            
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return []
+        }
+        
+        let db = Firestore.firestore()
+        var cardNames: [String] = []
 
+        do {
+            let querySnapshot = try await db.collection("users").document(uid).collection("cardNames").getDocuments()
+            for document in querySnapshot.documents {
+                if let cardName = document.data()["cardName"] as? String {
+                    cardNames.append(cardName)
+                }
+            }
+        } catch {
+            print("Error getting documents: \(error)")
+        }
+        
+        return cardNames
+    }
+
+}
