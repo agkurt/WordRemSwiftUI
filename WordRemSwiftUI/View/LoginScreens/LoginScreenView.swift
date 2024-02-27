@@ -14,10 +14,9 @@ struct LoginScreenView: View {
     @State private var isLoggedIn = false
     @FocusState private var focusedField: FocusableField?
     @State var isAnimating: Bool = false
-    @State private var showLoginSheet = false
     @State private var rememberMe = false
-    
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -25,8 +24,6 @@ struct LoginScreenView: View {
                 GeometryReader { geometry in
                     VStack {
                         IconImageView()
-                            .frame(minWidth: geometry.size.width * 1,minHeight: geometry.size.height * 0.1)
-                            
                         VStack(spacing:0) {
                             Text("Log in to your account")
                                 .font(.custom("Poppins-Medium", size: 25))
@@ -39,6 +36,7 @@ struct LoginScreenView: View {
                                 .padding(.leading)
                             
                             VStack(spacing:0) {
+
                                 TextFieldView(text: $viewModel.email, placeholder: "Email")
                                     .focused($focusedField, equals: .email)
                                     .keyboardType(.emailAddress)
@@ -48,26 +46,10 @@ struct LoginScreenView: View {
                                     .focused($focusedField, equals: .password)
                             }
                             
-                            HStack {
-                                Spacer()
-                                    .frame(height: 1)
-                                    .background(Color.black)
-                                
-                                Text("Or countinue with")
-                                    .padding(.horizontal)
-                                    .frame(width: 170)
-                                
-                                Spacer()
-                                    .frame(height: 1)
-                                    .background(Color.black)
-                            }
-                            .foregroundStyle(Color.init(hex: "393E46"))
+                            LineView()
                             
-                            
-                            // log in with google
                             VStack(spacing:10) {
                                 Button {
-                                    
                                 } label: {
                                     Text("\(Image("google")) Log in with Google")
                                         .font(.custom("Poppins-Light", size: 15))
@@ -78,7 +60,6 @@ struct LoginScreenView: View {
                                         .cornerRadius(10)
                                 }
                                 
-                                // log in with apple
                                 Button {
                                     
                                 } label: {
@@ -99,8 +80,7 @@ struct LoginScreenView: View {
                                 Toggle(isOn: $rememberMe) {
                                     Text("Remember Me")
                                         .font(.custom("Poppins-Light", size: 15))
-                                        
-
+                                    
                                 }
                                 .toggleStyle(CheckboxStyle())
                                 
@@ -138,12 +118,11 @@ struct LoginScreenView: View {
                             HStack {
                                 Text("Don't have an account?")
                                 
-                                Button {
-                                    
+                                NavigationLink {
+                                    RegisterScreenView().navigationBarBackButtonHidden()
                                 } label: {
                                     Text("Sign up")
                                 }
-
                             }
 
                             Button(action: {
@@ -157,14 +136,13 @@ struct LoginScreenView: View {
                                 }
                             }) {
                                 Text("Continue as guest")
-                                    .foregroundColor(.black)
                                     .font(.custom("Poppins-Light", size: 15))
                                 
                             }
                             .navigationBarBackButtonHidden(true)
                             .padding()
                         }
-                        .background(Color.white.opacity(0.7))
+                        .background(getColorBasedOnScheme())
                         .clipShape(.rect(cornerRadius:20))
                         .padding()
                         
@@ -197,9 +175,22 @@ struct LoginScreenView: View {
             break
         }
     }
+    
+    private func getColorBasedOnScheme() -> Color {
+        switch colorScheme {
+        case .light:
+            return Color.white.opacity(0.7) // Light mode background
+        case .dark:
+            return Color(hex: "#222831").opacity(0.7) // Dark mode background (adjust as needed)
+        default:
+            return Color.gray.opacity(0.7) // Fallback
+        }
+    }
 }
 #Preview {
     LoginScreenView()
 }
+
+
 
 

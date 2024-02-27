@@ -30,6 +30,7 @@
 		E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C532B6EBD6E0047E4A6 /* FirebaseService.swift */; };
 		E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C552B6EBED20047E4A6 /* RegisterModel.swift */; };
 		E8527C582B6EC1D00047E4A6 /* RegisterScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C572B6EC1D00047E4A6 /* RegisterScreenViewModel.swift */; };
+		E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B6002B8E698E009BF5E2 /* LineView.swift */; };
 		E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B994D2B50027F00538090 /* UIColor+Ext.swift */; };
 		E86B99522B5024B700538090 /* TextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B99512B5024B700538090 /* TextFieldView.swift */; };
 		E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */; };
@@ -91,6 +92,7 @@
 		E8527C532B6EBD6E0047E4A6 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 		E8527C552B6EBED20047E4A6 /* RegisterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterModel.swift; sourceTree = "<group>"; };
 		E8527C572B6EC1D00047E4A6 /* RegisterScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterScreenViewModel.swift; sourceTree = "<group>"; };
+		E855B6002B8E698E009BF5E2 /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		E86B994D2B50027F00538090 /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
 		E86B99512B5024B700538090 /* TextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldView.swift; sourceTree = "<group>"; };
 		E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordRemSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -362,6 +364,7 @@
 				E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */,
 				E86B99512B5024B700538090 /* TextFieldView.swift */,
 				E8C02A512B3C91E600B1D5AF /* IconImageView.swift */,
+				E855B6002B8E698E009BF5E2 /* LineView.swift */,
 			);
 			path = HelperScreen;
 			sourceTree = "<group>";
@@ -498,6 +501,7 @@
 				E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */,
 				E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */,
 				E86B99522B5024B700538090 /* TextFieldView.swift in Sources */,
+				E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */,
 				E8B7488E2B8BE4ED007DA60A /* CardNameModel.swift in Sources */,
 				E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */,
 				E8E1B4DC2B7CA1A700AE6CD0 /* HideKeyboard.swift in Sources */,

@@ -26,7 +26,7 @@ struct WordRemSwiftUIApp: App {
                         authManager.configureAuthStateChanges()
                     })
             } else {
-                LoginScreenView()
+                RegisterScreenView()
                     .onAppear(perform: {
                         authManager.configureAuthStateChanges()
                     })

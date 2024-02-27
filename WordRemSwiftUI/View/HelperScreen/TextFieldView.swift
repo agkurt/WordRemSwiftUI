@@ -11,6 +11,7 @@ struct TextFieldView: View {
     @ObservedObject var registerScreenViewModel = RegisterScreenViewModel()
     @Binding var text : String
     var placeholder:String = ""
+    
 
     var body: some View {
         GeometryReader { geometry in
@@ -22,8 +23,8 @@ struct TextFieldView: View {
                     .disableAutocorrection(true)
                     .font(Font.system(size: 18, weight: .regular))
                     .opacity(0.85)
-                    .foregroundStyle(Color(hex: "393E46"))
                     .submitLabel(.next)
+                    .clipShape(.rect(cornerRadius: 10))
             }
             .padding()
         }

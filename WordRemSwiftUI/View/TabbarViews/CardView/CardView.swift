@@ -12,7 +12,6 @@ struct CardView: View {
     var image: Image
 
     // State variable for individual card animation
-    @State private var cardOffset: CGFloat = 0
 
     var body: some View {
         GeometryReader { geometry in
@@ -29,19 +28,10 @@ struct CardView: View {
                     .foregroundStyle(.white)
             }
             .frame(maxWidth: geometry.size.width)
-            // Apply animation offset
-            .offset(y: cardOffset)
             .background(Color(hex: "#8b6072"))
             .cornerRadius(20)
             .shadow(radius: 10)
             .padding()
-            // Handle tap gesture for animation
-            .onTapGesture {
-                withAnimation(.spring()) {
-                    // Animate card down by 50 points (adjust as needed)
-                    cardOffset += 50
-                }
-            }
         }
     }
 }

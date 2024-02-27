@@ -10,29 +10,30 @@ import SwiftUI
 struct HomeScreenView: View {
 
     @ObservedObject var viewModel = HomeScreenViewModel()
+    @State private var currentPage: Int = 0
 
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                ScrollView {
-                    VStack(spacing: 10) {
+                GeometryReader { geometry in
+                    TabView(selection: $currentPage) {
                         ForEach(viewModel.cardNames.indices, id: \.self) { index in
                             CardView(title: viewModel.cardNames[index],
                                      image: Image(systemName: "pencil"))
-                            
                         }
                     }
-                    .onAppear {
-                        Task {
-                            await viewModel.fetchCardName()
-                        }
-                    }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                 }
-                .padding(.top, 10)
             }
             .navigationTitle("Cards")
             .tint(.purple)
+        }
+        .onAppear {
+            Task {
+                await viewModel.fetchCardName()
+            }
         }
     }
 }
@@ -40,3 +41,5 @@ struct HomeScreenView: View {
 #Preview {
     HomeScreenView()
 }
+
+

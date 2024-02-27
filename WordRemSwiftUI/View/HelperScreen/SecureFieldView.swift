@@ -20,6 +20,7 @@ struct SecureFieldView: View {
                 .font(Font.system(size: 18, weight: .regular))
                 .opacity(0.85)
                 .foregroundStyle(Color(hex: "393E46"))
+                .clipShape(.rect(cornerRadius: 10))
         }
         .padding()
     }

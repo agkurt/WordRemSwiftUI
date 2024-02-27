@@ -11,10 +11,9 @@ import FirebaseAuth
 struct ProfileView: View {
     @ObservedObject var viewModel =  ProfileViewModel()
     @EnvironmentObject var registerViewModel: RegisterScreenViewModel
-
     
     @State private var isSignOut = false
-    
+        
     var body: some View {
         ZStack {
             LinearBackgroundView()
