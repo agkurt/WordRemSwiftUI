@@ -18,7 +18,7 @@ struct TextFieldView: View {
                 TextField(placeholder, text: $text)
                     .padding()
                     .autocapitalization(.none)
-                    .background(Color.init(hex: "EEEEEE"),in:.capsule)
+                    .background(Color.init(hex: "EEEEEE"))
                     .disableAutocorrection(true)
                     .font(Font.system(size: 18, weight: .regular))
                     .opacity(0.85)

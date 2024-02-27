@@ -15,12 +15,11 @@ struct SecureFieldView: View {
             SecureField("Password", text:$text)
                 .padding()
                 .autocapitalization(.none)
-                .background(Color.init(hex: "EEEEEE"),in:.capsule)
+                .background(Color.init(hex: "EEEEEE"))
                 .disableAutocorrection(true)
                 .font(Font.system(size: 18, weight: .regular))
                 .opacity(0.85)
                 .foregroundStyle(Color(hex: "393E46"))
-            .keyboardType(.default)
         }
         .padding()
     }
