@@ -35,18 +35,18 @@ struct LoginScreenView: View {
                                 .frame(maxWidth: .infinity,alignment:.leading)
                                 .padding(.leading)
                             
-                            VStack(spacing:0) {
+                            VStack(spacing:20) {
 
                                 TextFieldView(text: $viewModel.email, placeholder: "Email")
                                     .focused($focusedField, equals: .email)
                                     .keyboardType(.emailAddress)
-                                    .frame(height: 75)
                                 
                                 SecureFieldView(text: $viewModel.password)
                                     .focused($focusedField, equals: .password)
                             }
+                            .padding()
                             
-                            LineView()
+                            LineView(textPlace: "or countinue with")
                             
                             VStack(spacing:10) {
                                 Button {

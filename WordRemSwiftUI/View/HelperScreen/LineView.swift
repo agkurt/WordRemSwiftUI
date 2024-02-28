@@ -10,6 +10,7 @@ import SwiftUI
 struct LineView: View {
     
     @Environment(\.colorScheme) private var colorScheme
+    @State var textPlace:String
     
     var body: some View {
         HStack {
@@ -17,7 +18,7 @@ struct LineView: View {
                 .frame(height: 1)
                 .background(getColorBasedOnScheme())
             
-            Text("or countinue with")
+            Text(textPlace)
                 .padding(.horizontal)
                 .frame(width: 170)
             

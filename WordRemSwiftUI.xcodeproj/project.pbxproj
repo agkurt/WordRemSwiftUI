@@ -37,6 +37,10 @@
 		E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879EC672B3B3E2C003534B5 /* RegisterScreenView.swift */; };
 		E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC692B3B3E2E003534B5 /* Assets.xcassets */; };
 		E879EC6D2B3B3E2E003534B5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */; };
+		E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */; };
+		E88AB2602B8EB6310026823A /* CardPlusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB25F2B8EB6310026823A /* CardPlusView.swift */; };
+		E88AB2622B8EB6C70026823A /* CardTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB2612B8EB6C70026823A /* CardTextField.swift */; };
+		E88AB2662B8EB7CB0026823A /* CardTextFieldViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB2652B8EB7CB0026823A /* CardTextFieldViewModel.swift */; };
 		E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88CF0082B817DE900B06433 /* FocusableField.swift */; };
 		E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488B2B8BDF7B007DA60A /* PlusViewModel.swift */; };
 		E8B7488E2B8BE4ED007DA60A /* CardNameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488D2B8BE4ED007DA60A /* CardNameModel.swift */; };
@@ -100,6 +104,10 @@
 		E879EC672B3B3E2C003534B5 /* RegisterScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterScreenView.swift; sourceTree = "<group>"; };
 		E879EC692B3B3E2E003534B5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
+		E88AB25F2B8EB6310026823A /* CardPlusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlusView.swift; sourceTree = "<group>"; };
+		E88AB2612B8EB6C70026823A /* CardTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTextField.swift; sourceTree = "<group>"; };
+		E88AB2652B8EB7CB0026823A /* CardTextFieldViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTextFieldViewModel.swift; sourceTree = "<group>"; };
 		E88CF0082B817DE900B06433 /* FocusableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableField.swift; sourceTree = "<group>"; };
 		E8B7488B2B8BDF7B007DA60A /* PlusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusViewModel.swift; sourceTree = "<group>"; };
 		E8B7488D2B8BE4ED007DA60A /* CardNameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNameModel.swift; sourceTree = "<group>"; };
@@ -164,7 +172,9 @@
 		E81941A82B8A1FDD0042EBB7 /* CardView */ = {
 			isa = PBXGroup;
 			children = (
+				E88AB25C2B8EB60A0026823A /* PlusView */,
 				E81941A92B8A1FEF0042EBB7 /* CardView.swift */,
+				E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */,
 			);
 			path = CardView;
 			sourceTree = "<group>";
@@ -255,6 +265,7 @@
 				E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */,
 				E8B748912B8C037C007DA60A /* AuthenticationViewModel.swift */,
 				E8B748932B8C0972007DA60A /* ProfileViewModel.swift */,
+				E88AB2652B8EB7CB0026823A /* CardTextFieldViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -298,6 +309,14 @@
 				E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E88AB25C2B8EB60A0026823A /* PlusView */ = {
+			isa = PBXGroup;
+			children = (
+				E88AB25F2B8EB6310026823A /* CardPlusView.swift */,
+			);
+			path = PlusView;
 			sourceTree = "<group>";
 		};
 		E8C02A502B3C91D700B1D5AF /* View */ = {
@@ -365,6 +384,7 @@
 				E86B99512B5024B700538090 /* TextFieldView.swift */,
 				E8C02A512B3C91E600B1D5AF /* IconImageView.swift */,
 				E855B6002B8E698E009BF5E2 /* LineView.swift */,
+				E88AB2612B8EB6C70026823A /* CardTextField.swift */,
 			);
 			path = HelperScreen;
 			sourceTree = "<group>";
@@ -504,18 +524,22 @@
 				E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */,
 				E8B7488E2B8BE4ED007DA60A /* CardNameModel.swift in Sources */,
 				E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */,
+				E88AB2662B8EB7CB0026823A /* CardTextFieldViewModel.swift in Sources */,
 				E8E1B4DC2B7CA1A700AE6CD0 /* HideKeyboard.swift in Sources */,
 				E8527C582B6EC1D00047E4A6 /* RegisterScreenViewModel.swift in Sources */,
 				E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */,
 				E82B4CA22B6E028300C7AA81 /* GetWordsView.swift in Sources */,
 				E84DEC9B2B8E14950014916C /* CheckBoxStyle.swift in Sources */,
 				E84AA1BA2B7A0B3200823B97 /* LoginModel.swift in Sources */,
+				E88AB2602B8EB6310026823A /* CardPlusView.swift in Sources */,
 				E8B748922B8C037C007DA60A /* AuthenticationViewModel.swift in Sources */,
 				E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */,
+				E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */,
 				E8EB12CB2B8406FE00441F0C /* ProfileView.swift in Sources */,
 				E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */,
 				E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */,
 				E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */,
+				E88AB2622B8EB6C70026823A /* CardTextField.swift in Sources */,
 				E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */,
 				E84AA1B82B7A0B1A00823B97 /* LoginScreenViewModel.swift in Sources */,
 				E84AA1B62B7A081500823B97 /* LoginScreenView.swift in Sources */,

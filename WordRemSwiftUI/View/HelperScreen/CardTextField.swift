@@ -1,17 +1,16 @@
 //
-//  TextFieldView.swift
+//  CardTextField.swift
 //  WordRemSwiftUI
 //
-//  Created by Ahmet Göktürk Kurt on 11.01.2024.
+//  Created by Ahmet Göktürk Kurt on 28.02.2024.
 //
 
 import SwiftUI
 
-struct TextFieldView: View {
-    @ObservedObject var registerScreenViewModel = RegisterScreenViewModel()
-    @Binding var text : String
+struct CardTextField: View {
+    @Binding public var text:String
     var placeholder:String = ""
-
+    
     var body: some View {
         TextField(placeholder, text: $text)
             .padding()
@@ -25,12 +24,11 @@ struct TextFieldView: View {
     }
 }
 
-struct TextFieldView_Previews: PreviewProvider {
+struct CardTextField_Previews: PreviewProvider {
     static var previews: some View {
         let text: Binding<String> = .constant("random")
         return TextFieldView(text: text)
     }
 }
-
 
 

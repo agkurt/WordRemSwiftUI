@@ -22,7 +22,6 @@ struct SecureFieldView: View {
                 .foregroundStyle(Color(hex: "393E46"))
                 .clipShape(.rect(cornerRadius: 10))
         }
-        .padding()
     }
 }
 
