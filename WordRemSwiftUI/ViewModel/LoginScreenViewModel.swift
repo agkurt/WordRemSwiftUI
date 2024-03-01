@@ -6,6 +6,10 @@
 //
 
 import SwiftUI
+import GoogleSignIn
+import FirebaseAuth
+import FirebaseCore
+import AuthenticationServices
 
 class LoginScreenViewModel : ObservableObject {
     
@@ -14,10 +18,12 @@ class LoginScreenViewModel : ObservableObject {
     @Published var isLoginSuccess = false
     @FocusState private var focusedField: FocusableField?
     var authManager: AuthManager
-    
+    @Environment(\.dismiss) private var dismiss
+
     init(authManager: AuthManager) {
         self.authManager = authManager
     }
+    
 
     func loginRequest() {
         let loginModel = LoginModel(email: email, password: password)
@@ -58,6 +64,4 @@ class LoginScreenViewModel : ObservableObject {
             throw error
         }
     }
-
-
 }

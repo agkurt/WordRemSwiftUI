@@ -15,6 +15,8 @@
 		E84AA1B62B7A081500823B97 /* LoginScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84AA1B52B7A081500823B97 /* LoginScreenView.swift */; };
 		E84AA1B82B7A0B1A00823B97 /* LoginScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84AA1B72B7A0B1A00823B97 /* LoginScreenViewModel.swift */; };
 		E84AA1BA2B7A0B3200823B97 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84AA1B92B7A0B3200823B97 /* LoginModel.swift */; };
+		E84CC1942B9255F90066FF96 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84CC1932B9255F90066FF96 /* AppDelegate.swift */; };
+		E84CC1962B9256780066FF96 /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84CC1952B9256780066FF96 /* View+Ext.swift */; };
 		E84DEC9B2B8E14950014916C /* CheckBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84DEC9A2B8E14950014916C /* CheckBoxStyle.swift */; };
 		E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C172B6EAFAD0047E4A6 /* LoginButtonStyle.swift */; };
 		E8527C1D2B6EBC110047E4A6 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E8527C1C2B6EBC110047E4A6 /* FirebaseAnalytics */; };
@@ -93,6 +95,9 @@
 		E84AA1B52B7A081500823B97 /* LoginScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreenView.swift; sourceTree = "<group>"; };
 		E84AA1B72B7A0B1A00823B97 /* LoginScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreenViewModel.swift; sourceTree = "<group>"; };
 		E84AA1B92B7A0B3200823B97 /* LoginModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
+		E84CC1932B9255F90066FF96 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		E84CC1952B9256780066FF96 /* View+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Ext.swift"; sourceTree = "<group>"; };
+		E84CC1972B92718E0066FF96 /* WordRemSwiftUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordRemSwiftUI.entitlements; sourceTree = "<group>"; };
 		E84DEC9A2B8E14950014916C /* CheckBoxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxStyle.swift; sourceTree = "<group>"; };
 		E8527C172B6EAFAD0047E4A6 /* LoginButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButtonStyle.swift; sourceTree = "<group>"; };
 		E8527C532B6EBD6E0047E4A6 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
@@ -226,6 +231,7 @@
 			children = (
 				E86B994D2B50027F00538090 /* UIColor+Ext.swift */,
 				E8E1B4DB2B7CA1A700AE6CD0 /* HideKeyboard.swift */,
+				E84CC1952B9256780066FF96 /* View+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -294,6 +300,7 @@
 		E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				E84CC1972B92718E0066FF96 /* WordRemSwiftUI.entitlements */,
 				E8D6F2BE2B8DFFB80017A523 /* Info.plist */,
 				E8527C142B6EA4BA0047E4A6 /* Helpers */,
 				E86B997F2B51EF5A00538090 /* ViewModel */,
@@ -302,6 +309,7 @@
 				E86B994C2B50027400538090 /* Extensions */,
 				E8C02A502B3C91D700B1D5AF /* View */,
 				E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */,
+				E84CC1932B9255F90066FF96 /* AppDelegate.swift */,
 				E879EC692B3B3E2E003534B5 /* Assets.xcassets */,
 				E879EC6B2B3B3E2E003534B5 /* Preview Content */,
 			);
@@ -562,6 +570,7 @@
 				E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */,
 				E84AA1B82B7A0B1A00823B97 /* LoginScreenViewModel.swift in Sources */,
 				E84AA1B62B7A081500823B97 /* LoginScreenView.swift in Sources */,
+				E84CC1942B9255F90066FF96 /* AppDelegate.swift in Sources */,
 				E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */,
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
@@ -570,6 +579,7 @@
 				E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,
 				E8B748942B8C0972007DA60A /* ProfileViewModel.swift in Sources */,
+				E84CC1962B9256780066FF96 /* View+Ext.swift in Sources */,
 				E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */,
 				E8EB12D02B84138900441F0C /* PremiumView.swift in Sources */,
 				E8EB12CD2B84071200441F0C /* PlusView.swift in Sources */,
@@ -703,6 +713,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";
@@ -733,6 +744,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";

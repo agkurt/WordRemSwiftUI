@@ -11,9 +11,9 @@ import FirebaseAuth
 struct ProfileView: View {
     @ObservedObject var viewModel =  ProfileViewModel()
     @EnvironmentObject var registerViewModel: RegisterScreenViewModel
-    
     @State private var isSignOut = false
-        
+    
+    
     var body: some View {
         ZStack {
             LinearBackgroundView()
@@ -31,7 +31,7 @@ struct ProfileView: View {
                             .font(.largeTitle)
                             .foregroundStyle(.white)
                             .frame(width: geometry.size.width * 0.2,height: geometry.size.height * 0.30)
-
+                        
                     }
                 }
                 Spacer()
@@ -43,14 +43,20 @@ struct ProfileView: View {
                             .foregroundStyle(Color(hex:"#c7c9b1"))
                         
                     }
+                    
+                    NavigationLink(destination: LoginScreenView(), isActive: $viewModel.shouldNavigateToLoginScreen) {
+                        EmptyView()
+                    }
+                    
                     Text("Logout")
                         .font(.callout)
                         .foregroundStyle(Color(hex: "#8b8e62"))
                         .onTapGesture {
                             viewModel.signOut()
+                            viewModel.shouldNavigateToLoginScreen = true
+                            
+                            
                         }
-                    
-                    
                 }
                 .frame(maxHeight: 200)
                 .padding()

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct LoginScreenView: View {
     
@@ -56,6 +57,7 @@ struct LoginScreenView: View {
                             
                             VStack(spacing:10) {
                                 Button {
+                                    authManager.handleGoogleSignIn(with: getRootViewController())
                                 } label: {
                                     Text("\(Image("google")) Log in with Google")
                                         .font(.custom("Poppins-Light", size: 15))
@@ -64,10 +66,12 @@ struct LoginScreenView: View {
                                         .background(Color(hex: "393E46"))
                                         .foregroundColor(.white)
                                         .cornerRadius(10)
-                                }
-                                
-                                Button {
                                     
+                                }
+
+                               
+                                Button {
+                                  
                                 } label: {
                                     Text("\(Image("apple")) Log in with Apple")
                                     
@@ -169,6 +173,7 @@ struct LoginScreenView: View {
             }
         }
     }
+    
     private func focusNextField() {
         switch focusedField {
         case .email:
@@ -192,6 +197,8 @@ struct LoginScreenView: View {
             return Color.gray.opacity(0.7) // Fallback
         }
     }
+    
+    
 }
 #Preview {
     LoginScreenView()

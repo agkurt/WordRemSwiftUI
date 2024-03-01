@@ -114,7 +114,6 @@ class FirebaseService: ObservableObject {
                 if let cardName = document.data()["cardName"] as? String {
                     cardNames.append(cardName)
                     cardIds.append(document.documentID)
-                    print(document.documentID)
                 }
                 
             }

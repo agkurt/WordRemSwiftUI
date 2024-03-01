@@ -14,6 +14,8 @@ import GoogleSignIn
 struct WordRemSwiftUIApp: App {
     @StateObject private var authViewModel = AuthenticationViewModel()
     @StateObject private var authManager = AuthManager()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     
     init() {
         FirebaseApp.configure()
@@ -35,12 +37,6 @@ struct WordRemSwiftUIApp: App {
             }
         }
         .environmentObject(authManager)
-    }
-    // google sign in
-    func application(_ app: UIApplication,
-                     open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        return GIDSignIn.sharedInstance.handle(url)
     }
 }
 
