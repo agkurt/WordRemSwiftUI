@@ -22,7 +22,7 @@ struct PlusView: View {
                         
                     Button(action: {
                         Task {
-                            await viewModel.addCardName(cardName: viewModel.cardName)
+                            await viewModel.addCardName()
                         }
                         dismiss()
                         

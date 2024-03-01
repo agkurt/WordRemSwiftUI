@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct CardDetailView: View {
+    
     var cardName: String
+    var cardId:String
+    
     @State private var showSheet = false
 
     var body: some View {
@@ -30,7 +33,7 @@ struct CardDetailView: View {
                     }
                 }
                 .sheet(isPresented: $showSheet) {
-                    CardPlusView()
+                    CardPlusView(cardId: cardId)
                 }
             }
         }
@@ -38,6 +41,6 @@ struct CardDetailView: View {
 }
 
 #Preview {
-    CardDetailView(cardName: "agk")
+    CardDetailView(cardName: "agk", cardId: "agk")
 }
 

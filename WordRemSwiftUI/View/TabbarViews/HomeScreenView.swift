@@ -23,18 +23,29 @@ struct HomeScreenView: View {
                 LinearBackgroundView()
                 GeometryReader { geometry in
                     VStack {
-                        TabView(selection: $currentPage) {
-                            ForEach(viewModel.cardNames.indices, id: \.self) { index in
-                                NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index])) {
-                                    CardView(title: viewModel.cardNames[index],
-                                             image: Image(systemName: "pencil"))
-                                    .foregroundStyle(.white)
+                        if viewModel.cardNames.isEmpty {
+                            ProgressView()
+                                .frame(width: 100,height: 100)
+                                .background(Color(hex:"#8b6072"))
+                                .foregroundStyle(.white)
+                                .cornerRadius(20)
+                                .shadow(radius: 10)
+                                .padding()
+                            
+                        }else {
+                            TabView(selection: $currentPage) {
+                                ForEach(viewModel.cardNames.indices, id: \.self) { index in
+                                    NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index], cardId:viewModel.cardIds[index])) {
+                                        CardView(title: viewModel.cardNames[index],
+                                                 image: Image(systemName: "pencil"))
+                                        .foregroundStyle(.white)
+                                    }
                                 }
                             }
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                            .frame(height: geometry.size.height * 0.3)
                         }
-                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-                        .frame(height: geometry.size.height * 0.3)
                         
                         LineView(textPlace: "More Features")
                         
@@ -54,13 +65,14 @@ struct HomeScreenView: View {
                 }
             }
             .navigationTitle("Cards")
-        }
-        .onAppear {
-            Task {
-                await viewModel.fetchCardName()
-            }
+            .onAppear(perform: {
+                Task {
+                    await viewModel.fetchCardName()
+                }
+            })
         }
     }
+    
     //SwiftUI’de ViewBuilder ve View döndüren fonksiyonlar genellikle View’ların içinde bulunur. Bunun nedeni, View’ların durumunu yönetme ve yeniden oluşturma yeteneğidir.
     @ViewBuilder
     func destinationView(for index: Int) -> some View {

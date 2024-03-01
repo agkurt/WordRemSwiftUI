@@ -10,6 +10,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 import AuthenticationServices
+import GoogleSignIn
 
 @MainActor
 class AuthManager: ObservableObject {
@@ -58,6 +59,7 @@ class AuthManager: ObservableObject {
         }
     }
     
+
     
 }
 

@@ -8,6 +8,7 @@
 import SwiftUI
 import Firebase
 import FirebaseCore
+import GoogleSignIn
 
 @main
 struct WordRemSwiftUIApp: App {
@@ -16,6 +17,7 @@ struct WordRemSwiftUIApp: App {
     
     init() {
         FirebaseApp.configure()
+        
     }
     
     var body: some Scene {
@@ -26,13 +28,19 @@ struct WordRemSwiftUIApp: App {
                         authManager.configureAuthStateChanges()
                     })
             } else {
-                RegisterScreenView()
+                LoginScreenView()
                     .onAppear(perform: {
                         authManager.configureAuthStateChanges()
                     })
             }
         }
         .environmentObject(authManager)
+    }
+    // google sign in
+    func application(_ app: UIApplication,
+                     open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
     }
 }
 

@@ -9,14 +9,20 @@ import SwiftUI
 
 struct LoginScreenView: View {
     
-    @StateObject var viewModel = LoginScreenViewModel()
     @StateObject var authManager = AuthManager()
+    @StateObject var viewModel: LoginScreenViewModel
     @State private var isLoggedIn = false
     @FocusState private var focusedField: FocusableField?
     @State var isAnimating: Bool = false
     @State private var rememberMe = false
     @Environment(\.colorScheme) private var colorScheme
-
+    
+    init() {
+          let authManager = AuthManager()
+          _authManager = StateObject(wrappedValue: authManager)
+          _viewModel = StateObject(wrappedValue: LoginScreenViewModel(authManager: authManager))
+      }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -36,7 +42,7 @@ struct LoginScreenView: View {
                                 .padding(.leading)
                             
                             VStack(spacing:20) {
-
+                                
                                 TextFieldView(text: $viewModel.email, placeholder: "Email")
                                     .focused($focusedField, equals: .email)
                                     .keyboardType(.emailAddress)
@@ -64,7 +70,7 @@ struct LoginScreenView: View {
                                     
                                 } label: {
                                     Text("\(Image("apple")) Log in with Apple")
-                                        
+                                    
                                         .font(.custom("Poppins-Light", size: 15))
                                         .padding()
                                         .frame(maxWidth: .infinity)
@@ -124,7 +130,7 @@ struct LoginScreenView: View {
                                     Text("Sign up")
                                 }
                             }
-
+                            
                             Button(action: {
                                 Task {
                                     do {

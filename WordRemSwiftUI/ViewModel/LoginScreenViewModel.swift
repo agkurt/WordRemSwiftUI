@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 class LoginScreenViewModel : ObservableObject {
     
@@ -14,7 +13,11 @@ class LoginScreenViewModel : ObservableObject {
     @Published var password:String = ""
     @Published var isLoginSuccess = false
     @FocusState private var focusedField: FocusableField?
-    @StateObject var authManager = AuthManager()
+    var authManager: AuthManager
+    
+    init(authManager: AuthManager) {
+        self.authManager = authManager
+    }
 
     func loginRequest() {
         let loginModel = LoginModel(email: email, password: password)

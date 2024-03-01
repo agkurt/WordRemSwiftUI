@@ -10,14 +10,17 @@ import SwiftUI
 class HomeScreenViewModel: ObservableObject {
     
     @Published public var cardNames: [String] = []
+    @Published public var cardIds: [String] = []
     
     func fetchCardName() async {
-        let fetchedCardNames = await FirebaseService.shared.fetchCardName()
+        let (fetchedCardNames, fetchedCardIds) = await FirebaseService.shared.fetchCardName()
         DispatchQueue.main.async {
             self.cardNames = fetchedCardNames
+            self.cardIds = fetchedCardIds
         }
     }
-
 }
+
+
 
 

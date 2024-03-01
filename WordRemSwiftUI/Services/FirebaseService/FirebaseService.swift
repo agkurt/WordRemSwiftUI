@@ -10,6 +10,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 import AuthenticationServices
+import GoogleSignIn
 
 class FirebaseService: ObservableObject {
     
@@ -18,7 +19,7 @@ class FirebaseService: ObservableObject {
     private init() {
         
     }
-
+    
     func registerUser(userRequest: RegisterModel, completion: @escaping (Bool, Error?) -> Void) {
         
         let username = userRequest.username
@@ -84,46 +85,60 @@ class FirebaseService: ObservableObject {
         }
     }
     
-    func addCardName(cardName:String) async {
-        
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        
-        do {
-            let snapshot = try await Firestore.firestore().collection("users").document(uid).collection("cardNames").addDocument(data: ["cardName" : cardName])
+    func addCardName(name:String) async  {
             
-        }catch {
-            print("Error fetching data: \(error.localizedDescription)")
+            guard let uid = Auth.auth().currentUser?.uid else {
+                return
+            }
+            
+            do {
+                _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name])
+                
+            }catch {
+                print("Error fetching data: \(error.localizedDescription)")
+            }
         }
-    }
     
-    func fetchCardName() async -> [String] {
-        
+    func fetchCardName() async -> ([String], [String]) {
         guard let uid = Auth.auth().currentUser?.uid else {
-            return []
+            return ([], [])
         }
         
         let db = Firestore.firestore()
         var cardNames: [String] = []
+        var cardIds: [String] = []
         
         do {
-            let querySnapshot = try await db.collection("users").document(uid).collection("cardNames").getDocuments()
+            let querySnapshot = try await db.collection("users").document(uid).collection("cards").getDocuments()
             for document in querySnapshot.documents {
                 if let cardName = document.data()["cardName"] as? String {
                     cardNames.append(cardName)
+                    cardIds.append(document.documentID)
+                    print(document.documentID)
                 }
+                
             }
         } catch {
             print("Error getting documents: \(error)")
         }
         
-        return cardNames
+        return (cardNames, cardIds)
     }
+
+    
+    func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async throws {
+        
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
+        }
+        
+        let db = Firestore.firestore()
+        
+        _ = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").addDocument(data: [
+            "wordName": wordName,
+            "wordMean": wordMean,
+            "wordDescription": wordDescription
+        ])
+    }
+    
 }
-
-
-
-
-
-

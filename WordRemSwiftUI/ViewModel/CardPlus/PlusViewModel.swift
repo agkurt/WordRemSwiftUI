@@ -10,11 +10,8 @@ import SwiftUI
 class PlusViewModel:ObservableObject {
     
     @Published public var cardName = ""
-    
-    func addCardName(cardName:String) async {
-        await FirebaseService.shared.addCardName(cardName: cardName)
-    }
-    
-   
-    
+           
+       func addCardName() async  {
+            await FirebaseService.shared.addCardName(name: cardName)
+       }
 }
