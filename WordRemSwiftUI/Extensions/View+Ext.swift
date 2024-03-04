@@ -16,8 +16,6 @@ extension View {
         guard let root = screen.windows.first?.rootViewController else {
             return .init()
         }
-        
-
         return root
     }
 }

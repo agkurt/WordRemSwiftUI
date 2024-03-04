@@ -14,8 +14,7 @@ struct HomeScreenView: View {
     @State private var currentPage: Int = 0
     @State private var selectedCard: String = ""
     
-    // Farklı ekranlara geçiş yapacak elemanların listesi
-    let features = ["Random Sentence used to word", "Top 100 most used English verbs in the world ", "The 100 most used English adjectives in the world", "The 100 most used English word in the world","News of the day"]
+    let features = ["Random Sentence used to word", "Translate", "The 100 most used English adjectives in the world", "The 100 most used English word in the world","News of the day"]
     
     var body: some View {
         NavigationStack {
@@ -80,7 +79,7 @@ struct HomeScreenView: View {
         case 0:
             GetWordsView()
         case 1:
-            Feature2View()
+            TranslateView()
         case 2:
             Feature3View()
         case 3:

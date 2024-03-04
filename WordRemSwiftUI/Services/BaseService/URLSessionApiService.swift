@@ -55,4 +55,39 @@ class URLSessionApiService {
             }
         }.resume()
     }
+    
+    
+    func getTranslation(text: String, completion: @escaping (Result<TranslateModel, Error>) -> Void) {
+        guard let url = URL(string: "https://api-free.deepl.com/v2/translate") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("58305ba3-80b3-43fb-83fe-4358876f4b2e:fx", forHTTPHeaderField: "Authorization") // Replace with your actual API key
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let jsonData = try! JSONEncoder().encode(["text": text, "target_lang": "DE"])
+        request.httpBody = jsonData
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 204, userInfo: nil)))
+                return
+            }
+
+            do {
+                let decodedData = try JSONDecoder().decode(TranslateModel.self, from: data)
+                completion(.success(decodedData))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
 }

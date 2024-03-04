@@ -16,6 +16,7 @@ class RegisterScreenViewModel: ObservableObject {
     @Published var isRegisterSuccess = false
     @Published var isAnimating: Bool = false
     @FocusState private var focusedField: FocusableField?
+    @Published var colorScheme:ColorScheme?
     
     func registerRequest() async -> Bool {
         let registerModel = RegisterModel(username: userName, email: email, password: password)
@@ -56,6 +57,17 @@ class RegisterScreenViewModel: ObservableObject {
             focusedField = .email
         case .none:
             break
+        }
+    }
+    
+    func getColorBasedOnScheme(colorScheme:ColorScheme) -> Color {
+        switch colorScheme {
+        case .light:
+            return Color.white.opacity(0.7) // Light mode background
+        case .dark:
+            return Color(hex: "#222831").opacity(0.7) // Dark mode background (adjust as needed)
+        default:
+            return Color.gray.opacity(0.7) // Fallback
         }
     }
     

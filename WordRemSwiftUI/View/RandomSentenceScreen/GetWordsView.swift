@@ -33,14 +33,16 @@ struct GetWordsView: View {
                     Spacer()
                     
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Word: \(sentenceViewModel.exampleWords?.word ?? "")")
-                            .font(.headline)
-                        Text("Examples:")
-                            .font(.headline)
-                            .foregroundColor(.blue)
-                        ForEach(sentenceViewModel.exampleWords?.examples ?? [], id: \.self) { example in
-                            Text("- \(example)")
-                        }
+
+                            Text("Word: \(sentenceViewModel.exampleWords?.word ?? "")")
+                                .font(.headline)
+                            Text("Examples:")
+                                .font(.headline)
+                                .foregroundColor(.blue)
+                            ForEach(sentenceViewModel.exampleWords?.examples ?? [], id: \.self) { example in
+                                Text("- \(example)")
+                            }
+                        
                     }
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.1)))
@@ -54,7 +56,7 @@ struct GetWordsView: View {
                 .padding()
                 .alert(isPresented: $showAlert) {
                     Alert(title: Text("Error"), message: Text("Don't use different language word.This is just perceive english word"), dismissButton: .default(Text("OK")))
-            }
+                }
             }
         }
         .onReceive(sentenceViewModel.$errorMessage) { errorMessage in

@@ -33,7 +33,7 @@ class AuthManager: ObservableObject {
     
     func removeAuthStateListener() {
         Auth.auth().removeStateDidChangeListener(authStateHandle)
-    }g
+    }
     
     private func updateState(user: User?) {
         self.user = user

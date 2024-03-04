@@ -10,19 +10,20 @@ import AuthenticationServices
 
 struct LoginScreenView: View {
     
-    @StateObject var authManager = AuthManager()
+    @StateObject var authManager: AuthManager
     @StateObject var viewModel: LoginScreenViewModel
     @State private var isLoggedIn = false
-    @FocusState private var focusedField: FocusableField?
     @State var isAnimating: Bool = false
     @State private var rememberMe = false
+    @FocusState var focusedField:FocusableField?
     @Environment(\.colorScheme) private var colorScheme
     
+    
     init() {
-          let authManager = AuthManager()
-          _authManager = StateObject(wrappedValue: authManager)
-          _viewModel = StateObject(wrappedValue: LoginScreenViewModel(authManager: authManager))
-      }
+        let authManager = AuthManager()
+        _authManager = StateObject(wrappedValue: authManager)
+        _viewModel = StateObject(wrappedValue: LoginScreenViewModel(authManager: authManager))
+    }
     
     var body: some View {
         NavigationStack {
@@ -46,10 +47,13 @@ struct LoginScreenView: View {
                                 
                                 TextFieldView(text: $viewModel.email, placeholder: "Email")
                                     .focused($focusedField, equals: .email)
+                                
                                     .keyboardType(.emailAddress)
                                 
                                 SecureFieldView(text: $viewModel.password)
                                     .focused($focusedField, equals: .password)
+                                
+                                
                             }
                             .padding()
                             
@@ -68,10 +72,8 @@ struct LoginScreenView: View {
                                         .cornerRadius(10)
                                     
                                 }
-
-                               
                                 Button {
-                                  
+                                    
                                 } label: {
                                     Text("\(Image("apple")) Log in with Apple")
                                     
@@ -85,7 +87,6 @@ struct LoginScreenView: View {
                             }
                             .padding()
                             
-                            //remember me and forgot your pasword
                             HStack {
                                 Toggle(isOn: $rememberMe) {
                                     Text("Remember Me")
@@ -152,58 +153,34 @@ struct LoginScreenView: View {
                             .navigationBarBackButtonHidden(true)
                             .padding()
                         }
-                        .background(getColorBasedOnScheme())
+                        .background(viewModel.getColorBasedOnScheme(colorScheme: colorScheme))
                         .clipShape(.rect(cornerRadius:20))
                         .padding()
                         
                     }
+                    
                     .frame(minWidth: geometry.size.width * 1,minHeight: geometry.size.height * 1)
                     .padding(.top,25)
                     .ignoresSafeArea(.keyboard, edges: .bottom)
                 }
             }
+            .onSubmit { viewModel.focusNextField(focusField: focusedField!) }
+            
             .onReceive(viewModel.$isLoginSuccess) { success in
                 if success {
                     viewModel.authManager.authState = .signedIn
                 }
             }
-            .onSubmit(focusNextField)
+            
             .onTapGesture {
                 UIApplication.shared.hideKeyboard()
             }
         }
     }
-    
-    private func focusNextField() {
-        switch focusedField {
-        case .email:
-            focusedField = .password
-        case .password:
-            focusedField = .email
-        case .username:
-            focusedField = .none
-        case .none:
-            break
-        }
-    }
-    
-    private func getColorBasedOnScheme() -> Color {
-        switch colorScheme {
-        case .light:
-            return Color.white.opacity(0.7) // Light mode background
-        case .dark:
-            return Color(hex: "#222831").opacity(0.7) // Dark mode background (adjust as needed)
-        default:
-            return Color.gray.opacity(0.7) // Fallback
-        }
-    }
-    
-    
 }
 #Preview {
     LoginScreenView()
 }
-
 
 
 

@@ -48,6 +48,9 @@
 		E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */; };
 		E8B748922B8C037C007DA60A /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B748912B8C037C007DA60A /* AuthenticationViewModel.swift */; };
 		E8B748942B8C0972007DA60A /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B748932B8C0972007DA60A /* ProfileViewModel.swift */; };
+		E8BE72702B93C43A00900217 /* TranslateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BE726F2B93C43A00900217 /* TranslateModel.swift */; };
+		E8BE72742B93C89C00900217 /* TranslateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BE72732B93C89C00900217 /* TranslateViewModel.swift */; };
+		E8BE727A2B93C97200900217 /* TranslateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BE72792B93C97200900217 /* TranslateView.swift */; };
 		E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C02A512B3C91E600B1D5AF /* IconImageView.swift */; };
 		E8D566C82B6E0C7400B1E4B0 /* SentenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D566C72B6E0C7400B1E4B0 /* SentenceViewModel.swift */; };
 		E8D6F2912B8C98BB0017A523 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D6F2902B8C98BB0017A523 /* AuthState.swift */; };
@@ -121,6 +124,9 @@
 		E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenViewModel.swift; sourceTree = "<group>"; };
 		E8B748912B8C037C007DA60A /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
 		E8B748932B8C0972007DA60A /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		E8BE726F2B93C43A00900217 /* TranslateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateModel.swift; sourceTree = "<group>"; };
+		E8BE72732B93C89C00900217 /* TranslateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateViewModel.swift; sourceTree = "<group>"; };
+		E8BE72792B93C97200900217 /* TranslateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateView.swift; sourceTree = "<group>"; };
 		E8C02A512B3C91E600B1D5AF /* IconImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImageView.swift; sourceTree = "<group>"; };
 		E8D566C72B6E0C7400B1E4B0 /* SentenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceViewModel.swift; sourceTree = "<group>"; };
 		E8D6F2902B8C98BB0017A523 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
@@ -190,20 +196,20 @@
 			path = CardView;
 			sourceTree = "<group>";
 		};
-		E8527C112B6E14520047E4A6 /* LoginScreens */ = {
+		E8527C112B6E14520047E4A6 /* LoginScreen */ = {
 			isa = PBXGroup;
 			children = (
 				E84AA1B52B7A081500823B97 /* LoginScreenView.swift */,
 			);
-			path = LoginScreens;
+			path = LoginScreen;
 			sourceTree = "<group>";
 		};
-		E8527C132B6E14770047E4A6 /* SentenceScreen */ = {
+		E8527C132B6E14770047E4A6 /* RandomSentenceScreen */ = {
 			isa = PBXGroup;
 			children = (
 				E82B4CA12B6E028300C7AA81 /* GetWordsView.swift */,
 			);
-			path = SentenceScreen;
+			path = RandomSentenceScreen;
 			sourceTree = "<group>";
 		};
 		E8527C142B6EA4BA0047E4A6 /* Helpers */ = {
@@ -239,9 +245,9 @@
 		E86B99722B51909200538090 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				E8BE726E2B93BA3E00900217 /* AuthManager */,
 				E8527C522B6EBD590047E4A6 /* FirebaseService */,
 				E86B99782B5193DB00538090 /* BaseService */,
-				E8D6F2922B8C9EAA0017A523 /* AuthManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -257,12 +263,14 @@
 		E86B997C2B5198B400538090 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				E88CF0082B817DE900B06433 /* FocusableField.swift */,
 				E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */,
 				E8527C552B6EBED20047E4A6 /* RegisterModel.swift */,
 				E84AA1B92B7A0B3200823B97 /* LoginModel.swift */,
 				E8D6F2902B8C98BB0017A523 /* AuthState.swift */,
 				E88AB2672B8EBE650026823A /* CardFocusableField.swift */,
 				E8D774762B8FE9C900E9AB1B /* CardModel.swift */,
+				E8BE726F2B93C43A00900217 /* TranslateModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -277,6 +285,7 @@
 				E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */,
 				E8B748912B8C037C007DA60A /* AuthenticationViewModel.swift */,
 				E8B748932B8C0972007DA60A /* ProfileViewModel.swift */,
+				E8BE72732B93C89C00900217 /* TranslateViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -300,18 +309,17 @@
 		E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
-				E84CC1972B92718E0066FF96 /* WordRemSwiftUI.entitlements */,
-				E8D6F2BE2B8DFFB80017A523 /* Info.plist */,
-				E8527C142B6EA4BA0047E4A6 /* Helpers */,
+				E8C02A502B3C91D700B1D5AF /* View */,
 				E86B997F2B51EF5A00538090 /* ViewModel */,
 				E86B997C2B5198B400538090 /* Model */,
 				E86B99722B51909200538090 /* Services */,
+				E8527C142B6EA4BA0047E4A6 /* Helpers */,
 				E86B994C2B50027400538090 /* Extensions */,
-				E8C02A502B3C91D700B1D5AF /* View */,
-				E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */,
-				E84CC1932B9255F90066FF96 /* AppDelegate.swift */,
+				E8D7A2F22B92A5E1001F6BA2 /* App */,
+				E8D6F2BE2B8DFFB80017A523 /* Info.plist */,
 				E879EC692B3B3E2E003534B5 /* Assets.xcassets */,
 				E879EC6B2B3B3E2E003534B5 /* Preview Content */,
+				E84CC1972B92718E0066FF96 /* WordRemSwiftUI.entitlements */,
 			);
 			path = WordRemSwiftUI;
 			sourceTree = "<group>";
@@ -332,6 +340,23 @@
 			path = PlusView;
 			sourceTree = "<group>";
 		};
+		E8BE726E2B93BA3E00900217 /* AuthManager */ = {
+			isa = PBXGroup;
+			children = (
+				E8D6F2922B8C9EAA0017A523 /* AuthManager.swift */,
+			);
+			path = AuthManager;
+			sourceTree = "<group>";
+		};
+		E8BE72752B93C8AB00900217 /* HomeScreen */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB12C32B83E73800441F0C /* HomeScreenView.swift */,
+				E8BE72792B93C97200900217 /* TranslateView.swift */,
+			);
+			path = HomeScreen;
+			sourceTree = "<group>";
+		};
 		E8C02A502B3C91D700B1D5AF /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -339,8 +364,8 @@
 				E8EB12C72B8406C200441F0C /* TabbarViews */,
 				E8E6E4392B8204ED009F5C3E /* HelperScreen */,
 				E8E6E4382B8204D4009F5C3E /* RegisterScreen */,
-				E8527C132B6E14770047E4A6 /* SentenceScreen */,
-				E8527C112B6E14520047E4A6 /* LoginScreens */,
+				E8527C132B6E14770047E4A6 /* RandomSentenceScreen */,
+				E8527C112B6E14520047E4A6 /* LoginScreen */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -389,6 +414,15 @@
 			path = CardPlus;
 			sourceTree = "<group>";
 		};
+		E8D7A2F22B92A5E1001F6BA2 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */,
+				E84CC1932B9255F90066FF96 /* AppDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 		E8E6E4382B8204D4009F5C3E /* RegisterScreen */ = {
 			isa = PBXGroup;
 			children = (
@@ -414,11 +448,10 @@
 		E8EB12C72B8406C200441F0C /* TabbarViews */ = {
 			isa = PBXGroup;
 			children = (
-				E88CF0082B817DE900B06433 /* FocusableField.swift */,
+				E8BE72752B93C8AB00900217 /* HomeScreen */,
 				E81941A82B8A1FDD0042EBB7 /* CardView */,
 				E8D6F2942B8CBA050017A523 /* ProfileViews */,
 				E8EB12C52B83EA9F00441F0C /* TabBarCustom.swift */,
-				E8EB12C32B83E73800441F0C /* HomeScreenView.swift */,
 				E8EB12CC2B84071200441F0C /* PlusView.swift */,
 			);
 			path = TabbarViews;
@@ -550,6 +583,7 @@
 				E86B99522B5024B700538090 /* TextFieldView.swift in Sources */,
 				E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */,
 				E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */,
+				E8BE72742B93C89C00900217 /* TranslateViewModel.swift in Sources */,
 				E88AB2662B8EB7CB0026823A /* CardPlusViewModel.swift in Sources */,
 				E8E1B4DC2B7CA1A700AE6CD0 /* HideKeyboard.swift in Sources */,
 				E8527C582B6EC1D00047E4A6 /* RegisterScreenViewModel.swift in Sources */,
@@ -561,6 +595,7 @@
 				E88AB2602B8EB6310026823A /* CardPlusView.swift in Sources */,
 				E8B748922B8C037C007DA60A /* AuthenticationViewModel.swift in Sources */,
 				E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */,
+				E8BE727A2B93C97200900217 /* TranslateView.swift in Sources */,
 				E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */,
 				E8EB12CB2B8406FE00441F0C /* ProfileView.swift in Sources */,
 				E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */,
@@ -575,6 +610,7 @@
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
 				E8D6F2912B8C98BB0017A523 /* AuthState.swift in Sources */,
+				E8BE72702B93C43A00900217 /* TranslateModel.swift in Sources */,
 				E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */,
 				E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,

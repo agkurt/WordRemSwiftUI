@@ -24,23 +24,22 @@ struct RegisterScreenView: View {
                     VStack() {
                         IconImageView()
                         VStack {
-                            VStack(spacing:0) {
-                                Text("Register in to your account")
-                                    .font(.custom("Poppins-Medium", size: 20))
-                                    .padding()
-                                .frame(maxWidth: .infinity,alignment:.center)
-                                
-                                Text("Sign up with email")
-                                    .font(.custom("Poppins-Light", size: 15))
-                                    .frame(maxWidth: .infinity,alignment:.leading)
-                                    .padding(.leading)
+                            Text("Register in to your account")
+                                .font(.custom("Poppins-Medium", size: 20))
+                                .padding()
+                            .frame(maxWidth: .infinity,alignment:.center)
+                            
+                            Text("Sign up with email")
+                                .font(.custom("Poppins-Light", size: 15))
+                                .frame(maxWidth: .infinity,alignment:.leading)
+                                .padding(.leading)
+                            
+                            VStack(spacing:20) {
                                 TextFieldView(text: $viewModel.email, placeholder: "Email")
                                     .focused($focusedField, equals: .email)
                                     .keyboardType(.emailAddress)
-                                    .frame(height: 75)
                                 TextFieldView(text: $viewModel.userName, placeholder: "Username")
                                     .focused($focusedField, equals: .username)
-                                    .frame(height: 75)
                                 SecureFieldView(text: $viewModel.password)
                                     .focused($focusedField, equals: .password)
                             }
@@ -69,7 +68,7 @@ struct RegisterScreenView: View {
                             }
                         }
                         .ignoresSafeArea(.keyboard, edges: .bottom)
-                        .background(getColorBasedOnScheme())
+                        .background(viewModel.getColorBasedOnScheme(colorScheme: colorScheme))
                         .cornerRadius(20)
                         .padding()
                         .animation(.easeOut(duration: 0.35),value: 0)
@@ -114,19 +113,6 @@ struct RegisterScreenView: View {
         self.isAnimating = false
         self.isRegisterSuccess = result
     }
-    
-    private func getColorBasedOnScheme() -> Color {
-        switch colorScheme {
-        case .light:
-            return Color.white.opacity(0.7) // Light mode background
-        case .dark:
-            return Color(hex: "#222831").opacity(0.7) // Dark mode background (adjust as needed)
-        default:
-            return Color.gray.opacity(0.7) // Fallback
-        }
-    }
-    
-    
 }
 
 #Preview {
