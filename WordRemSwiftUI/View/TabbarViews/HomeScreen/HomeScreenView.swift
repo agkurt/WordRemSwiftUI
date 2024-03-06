@@ -11,6 +11,7 @@ import SwiftUI
 struct HomeScreenView: View {
     
     @ObservedObject var viewModel = HomeScreenViewModel()
+    @ObservedObject var viewModel2 = TranslateViewModel()
     @State private var currentPage: Int = 0
     @State private var selectedCard: String = ""
     
@@ -79,7 +80,7 @@ struct HomeScreenView: View {
         case 0:
             GetWordsView()
         case 1:
-            TranslateView()
+            TranslationView(viewModel: viewModel2)
         case 2:
             Feature3View()
         case 3:

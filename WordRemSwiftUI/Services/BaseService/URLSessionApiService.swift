@@ -56,38 +56,42 @@ class URLSessionApiService {
         }.resume()
     }
     
-    
-    func getTranslation(text: String, completion: @escaping (Result<TranslateModel, Error>) -> Void) {
-        guard let url = URL(string: "https://api-free.deepl.com/v2/translate") else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+    func getTranslate(text: String, targetLang: String,sourceLang:String, completion: @escaping (Result<TranslationResponse, Error>) -> Void) {
+        
+        let apiKey = "58305ba3-80b3-43fb-83fe-4358876f4b2e:fx"
+        let baseURL = "https://api-free.deepl.com/v2"
+        
+        
+        guard let url = URL(string: "\(baseURL)/translate") else {
             return
         }
-
+        
+        let parameters: [String: Any] = [
+            "text": [text],
+            "target_lang": targetLang
+        ]
+        
+        let jsonData = try? JSONSerialization.data(withJSONObject: parameters)
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.addValue("58305ba3-80b3-43fb-83fe-4358876f4b2e:fx", forHTTPHeaderField: "Authorization") // Replace with your actual API key
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let jsonData = try! JSONEncoder().encode(["text": text, "target_lang": "DE"])
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("DeepL-Auth-Key \(apiKey)", forHTTPHeaderField: "Authorization")
         request.httpBody = jsonData
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
+        
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let data = data, error == nil else {
+                completion(.failure(error!))
                 return
             }
-
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: 204, userInfo: nil)))
-                return
-            }
-
+            
             do {
-                let decodedData = try JSONDecoder().decode(TranslateModel.self, from: data)
-                completion(.success(decodedData))
+                let translationResponse = try JSONDecoder().decode(TranslationResponse.self, from: data)
+                completion(.success(translationResponse))
             } catch {
                 completion(.failure(error))
             }
         }.resume()
     }
 }
+

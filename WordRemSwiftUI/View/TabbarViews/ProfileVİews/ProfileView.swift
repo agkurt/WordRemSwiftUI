@@ -2,7 +2,7 @@
 //  ProfileView.swift
 //  WordRemSwiftUI
 //
-//  Created by Ahmet Göktürk Kurt on 20.02.2024.
+//  Created by Ahmet Göktürk Kurt on 5.03.2024.
 //
 
 import SwiftUI
@@ -72,3 +72,4 @@ struct ProfileView: View {
 #Preview {
     ProfileView()
 }
+

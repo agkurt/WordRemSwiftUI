@@ -18,7 +18,6 @@ struct LoginScreenView: View {
     @FocusState var focusedField:FocusableField?
     @Environment(\.colorScheme) private var colorScheme
     
-    
     init() {
         let authManager = AuthManager()
         _authManager = StateObject(wrappedValue: authManager)
@@ -171,7 +170,6 @@ struct LoginScreenView: View {
                     viewModel.authManager.authState = .signedIn
                 }
             }
-            
             .onTapGesture {
                 UIApplication.shared.hideKeyboard()
             }

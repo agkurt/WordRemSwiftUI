@@ -1,19 +1,17 @@
 //
-//  EnglishModel.swift
+//  TranslateModel.swift
 //  WordRemSwiftUI
 //
-//  Created by Ahmet Göktürk Kurt on 2.03.2024.
+//  Created by Ahmet Göktürk Kurt on 6.03.2024.
 //
 
 import Foundation
 
-// MARK: - EnglishModel
-struct TranslateModel: Codable,Hashable {
+struct TranslationResponse: Codable {
     let translations: [Translation]
 }
 
-// MARK: - Translation
-struct Translation: Codable,Hashable {
-    let detectedSourceLanguage, text: String
+struct Translation: Codable {
+    let detected_source_language: String
+    let text: String
 }
-
