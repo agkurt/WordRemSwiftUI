@@ -93,5 +93,42 @@ class URLSessionApiService {
             }
         }.resume()
     }
+    
+    
+    func getNews(completion: @escaping (Result<NewsModel,Error>)->Void) {
+        
+        let headers = [
+            "content-type": "application/json",
+            "authorization": "apikey 4mjn1AjHx8fkRQplId3w3q:7AtWiwfJnZY5UJ7fR2OrSR"
+        ]
+        
+        let request = NSMutableURLRequest(url: NSURL(string: "https://api.collectapi.com/news/getNews?country=en&tag=general")! as URL,
+                                          cachePolicy: .useProtocolCachePolicy,
+                                          timeoutInterval: 10.0)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+        
+        URLSession.shared.dataTask(with: request as URLRequest) { data,response,error in
+            
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(error!))
+                return
+            }
+            
+            do {
+                let decodedData = try JSONDecoder().decode(NewsModel.self, from: data)
+                completion(.success(decodedData))
+            }catch {
+                completion(.failure(error))
+            }
+            
+        }
+        .resume()
+    }
 }
 

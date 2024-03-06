@@ -86,7 +86,7 @@ struct HomeScreenView: View {
         case 3:
             Feature4View()
         case 4:
-            Feature5View()
+            NewsView()
         default:
             EmptyView()
         }
