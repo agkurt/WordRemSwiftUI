@@ -28,7 +28,7 @@ struct CardView: View {
                     .foregroundStyle(.white)
             }
             .frame(maxWidth: geometry.size.width)
-            .background(Color(hex: "#8b6072"))
+            .background(Color(hex: "#1c2127"))
             .cornerRadius(20)
             .shadow(radius: 10)
             .padding()

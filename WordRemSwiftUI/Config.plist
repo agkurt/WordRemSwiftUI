@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>apikey 4mjn1AjHx8fkRQplId3w3q:7AtWiwfJnZY5UJ7fR2OrSR</key>
+	<string>NewsApiKey</string>
+	<key>58305ba3-80b3-43fb-83fe-4358876f4b2e:fx</key>
+	<string>TranslateApiKey</string>
+	<key>30c9e7ec39msheded83facd06704p1ef228jsnf8acccb45fa8</key>
+	<string>GetWordsApiKey</string>
+</dict>
+</plist>

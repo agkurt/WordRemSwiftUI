@@ -6,24 +6,41 @@
 //
 
 import Foundation
+import SwiftUI
 
 class SentenceViewModel:ObservableObject {
     
     @Published var exampleWords: ExampleWord?
     @Published var word: String = ""
     @Published var errorMessage: String?
+    @Published var colorScheme: ColorScheme?
+    @Published var isLoading = false
     
     func fetchAllWords() {
         URLSessionApiService.shared.getWords(word: word) { result in
-            switch result {
-            case .success(let exampleWord):
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let exampleWord):
                     self.exampleWords = exampleWord
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                    print("Error: \(error)")
                 }
-            case .failure(let error):
-                self.errorMessage = error.localizedDescription
-                print("Error: \(error)")
             }
         }
     }
+    
+    func getColorBasedOnScheme() -> Color  {
+        switch colorScheme {
+        case .light:
+            return Color.init(hex: "#a2a7ac")
+            
+        case .dark:
+            return Color.init(hex: "#1c2127")
+            
+        default:
+            return Color.init(hex:"#313a45")
+        }
+    }
+    
 }

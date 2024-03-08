@@ -9,6 +9,7 @@ import Foundation
 
 class NewsViewModel: ObservableObject {
     @Published var newsModel:NewsModel?
+    @Published var isLoading = false
     
     func getNews() {
         URLSessionApiService.shared.getNews { result in

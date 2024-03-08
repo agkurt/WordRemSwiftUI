@@ -8,55 +8,62 @@
 import SwiftUI
 
 struct GetWordsView: View {
-    
     @ObservedObject var sentenceViewModel = SentenceViewModel()
     @State private var showAlert = false
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 LinearBackgroundView()
                 VStack {
-                    TextField("Enter a Word", text: $sentenceViewModel.word)
+                    TextFieldView(text: $sentenceViewModel.word, placeholder: "Enter a word")
                         .padding()
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
                         .autocapitalization(.none)
                     
-                    Button("Fetch Words") {
+                    Button("Fetch The Sentence") {
                         sentenceViewModel.fetchAllWords()
                     }
                     .padding()
                     .foregroundColor(.white)
-                    .background(Color.blue)
-                    .cornerRadius(8)
-                    
-                    Spacer()
+                    .background(Color(hex: "#313a45"))
+                    .cornerRadius(30)
                     
                     VStack(alignment: .leading, spacing: 10) {
-
+                        if sentenceViewModel.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        }
+                        else {
                             Text("Word: \(sentenceViewModel.exampleWords?.word ?? "")")
                                 .font(.headline)
+                                .foregroundStyle(.primary)
                             Text("Examples:")
                                 .font(.headline)
-                                .foregroundColor(.blue)
+                                .foregroundColor(.primary)
+                            
                             ForEach(sentenceViewModel.exampleWords?.examples ?? [], id: \.self) { example in
                                 Text("- \(example)")
                             }
+                            
+                            if sentenceViewModel.exampleWords?.examples.indices.isEmpty == true {
+                                Text(" - No sentences related to this word found. Use the different word.")
+                                    .bold()
+                                    .foregroundStyle(.red)
+                            }
+                        }
                         
                     }
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.1)))
-                    .cornerRadius(10)
+                    .cornerRadius(30)
+                    .background(Color.gray.opacity(0.2))
                     .padding()
-                    
                     Spacer()
                 }
-                .navigationTitle("Get Example Word")
-                .navigationBarTitleDisplayMode(.inline)
-                .padding()
-                .alert(isPresented: $showAlert) {
-                    Alert(title: Text("Error"), message: Text("Don't use different language word.This is just perceive english word"), dismissButton: .default(Text("OK")))
-                }
+            }
+            .navigationTitle("Sentence")
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Error"), message: Text("Use only the English word to bring sentences together"), dismissButton: .default(Text("OK")))
             }
         }
         .onReceive(sentenceViewModel.$errorMessage) { errorMessage in
@@ -71,3 +78,4 @@ struct GetWordsView: View {
 #Preview {
     GetWordsView()
 }
+

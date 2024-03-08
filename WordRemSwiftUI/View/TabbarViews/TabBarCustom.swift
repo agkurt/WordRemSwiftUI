@@ -30,7 +30,7 @@ struct TabBarCustom: View {
                             HStack(spacing:200) {
                                 VStack {
                                     Image(systemName: "house.circle")
-                                        .foregroundColor(self.selectedTab == "house.circle" ? Color(hex: "#8b6072") : .gray)
+                                        .foregroundColor(self.selectedTab == "house.circle" ? Color(hex: "1c2127") : .gray)
                                     
                                         .onTapGesture {
                                             self.selectedTab = "house.circle"
@@ -38,7 +38,7 @@ struct TabBarCustom: View {
                                 }
                                 
                                 Image(systemName: "person.crop.circle")
-                                    .foregroundColor(self.selectedTab == "person.crop.circle" ? Color(hex: "#8b6072") : .gray)
+                                    .foregroundColor(self.selectedTab == "person.crop.circle" ? Color(hex: "1c2127") : .gray)
                                     .onTapGesture {
                                         self.selectedTab = "person.crop.circle"
                                     }
@@ -54,7 +54,7 @@ struct TabBarCustom: View {
                         Image(systemName: "plus.circle")
                             .resizable()
                             .frame(width: 75, height: 75)
-                            .foregroundStyle(Color(hex: "#8b6072"))
+                            .foregroundStyle(Color(hex: "1c2127"))
                             .background(Color(hex: "#37414f"))
                             .shadow(radius: 10)
                             .clipShape(.capsule(style: .circular))

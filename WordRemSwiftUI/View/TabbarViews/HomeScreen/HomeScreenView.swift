@@ -26,7 +26,7 @@ struct HomeScreenView: View {
                         if viewModel.cardNames.isEmpty {
                             ProgressView()
                                 .frame(width: 100,height: 100)
-                                .background(Color(hex:"#8b6072"))
+                                .background(Color(hex:"#1c2127"))
                                 .foregroundStyle(.white)
                                 .cornerRadius(20)
                                 .shadow(radius: 10)
@@ -54,9 +54,9 @@ struct HomeScreenView: View {
                                 NavigationLink(destination: destinationView(for: index)) {
                                     Text(features[index])
                                         .padding()
-                                        .background(Color(hex: "#8b6072"))
+                                        .background(Color(hex: "#1c2127"))
                                         .foregroundColor(.white)
-                                        .cornerRadius(10)
+                                        .cornerRadius(30)
                                 }
                             }
                         }

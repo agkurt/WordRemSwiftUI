@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E803A02F2B98338900EC3FD6 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803A02E2B98338900EC3FD6 /* Secrets.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
 		E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */; };
 		E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */; };
@@ -37,6 +38,10 @@
 		E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C552B6EBED20047E4A6 /* RegisterModel.swift */; };
 		E8527C582B6EC1D00047E4A6 /* RegisterScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C572B6EC1D00047E4A6 /* RegisterScreenViewModel.swift */; };
 		E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B6002B8E698E009BF5E2 /* LineView.swift */; };
+		E8610DE32B98A1E200402FF4 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = E8610DE22B98A1E200402FF4 /* Config.plist */; };
+		E8624A6A2B9A6D9E00425793 /* LineForTranslateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8624A692B9A6D9E00425793 /* LineForTranslateView.swift */; };
+		E869C0502B9BA64400C18852 /* NewsDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E869C04F2B9BA64400C18852 /* NewsDetailView.swift */; };
+		E869C0522B9BB6C400C18852 /* NewsRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E869C0512B9BB6C400C18852 /* NewsRowView.swift */; };
 		E86B76E92B973C5200064F62 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B76E82B973C5200064F62 /* ProfileView.swift */; };
 		E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B994D2B50027F00538090 /* UIColor+Ext.swift */; };
 		E86B99522B5024B700538090 /* TextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86B99512B5024B700538090 /* TextFieldView.swift */; };
@@ -94,6 +99,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E803A02E2B98338900EC3FD6 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
 		E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionApiService.swift; sourceTree = "<group>"; };
@@ -116,6 +122,10 @@
 		E8527C552B6EBED20047E4A6 /* RegisterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterModel.swift; sourceTree = "<group>"; };
 		E8527C572B6EC1D00047E4A6 /* RegisterScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterScreenViewModel.swift; sourceTree = "<group>"; };
 		E855B6002B8E698E009BF5E2 /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
+		E8610DE22B98A1E200402FF4 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
+		E8624A692B9A6D9E00425793 /* LineForTranslateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineForTranslateView.swift; sourceTree = "<group>"; };
+		E869C04F2B9BA64400C18852 /* NewsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsDetailView.swift; sourceTree = "<group>"; };
+		E869C0512B9BB6C400C18852 /* NewsRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsRowView.swift; sourceTree = "<group>"; };
 		E86B76E82B973C5200064F62 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		E86B994D2B50027F00538090 /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
 		E86B99512B5024B700538090 /* TextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldView.swift; sourceTree = "<group>"; };
@@ -228,6 +238,7 @@
 				E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */,
 				E8E1B4E12B7CFF0800AE6CD0 /* KeyboardResponder.swift */,
 				E84DEC9A2B8E14950014916C /* CheckBoxStyle.swift */,
+				E803A02E2B98338900EC3FD6 /* Secrets.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -331,6 +342,7 @@
 				E879EC692B3B3E2E003534B5 /* Assets.xcassets */,
 				E879EC6B2B3B3E2E003534B5 /* Preview Content */,
 				E84CC1972B92718E0066FF96 /* WordRemSwiftUI.entitlements */,
+				E8610DE22B98A1E200402FF4 /* Config.plist */,
 			);
 			path = WordRemSwiftUI;
 			sourceTree = "<group>";
@@ -365,6 +377,9 @@
 				E8EB12C32B83E73800441F0C /* HomeScreenView.swift */,
 				E8BE72792B93C97200900217 /* TranslationView.swift */,
 				E843E0BA2B98170C006B1A1C /* NewsView.swift */,
+				E8624A692B9A6D9E00425793 /* LineForTranslateView.swift */,
+				E869C04F2B9BA64400C18852 /* NewsDetailView.swift */,
+				E869C0512B9BB6C400C18852 /* NewsRowView.swift */,
 			);
 			path = HomeScreen;
 			sourceTree = "<group>";
@@ -517,6 +532,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				KnownAssetTags = (
+					New,
+				);
 				LastSwiftUpdateCheck = 1510;
 				LastUpgradeCheck = 1510;
 				TargetAttributes = {
@@ -558,6 +576,7 @@
 				E8D6F2B92B8DFF400017A523 /* Poppins-Thin.ttf in Resources */,
 				E8D6F2B42B8DFF400017A523 /* Poppins-Medium.ttf in Resources */,
 				E8D6F2B82B8DFF400017A523 /* Poppins-SemiBoldItalic.ttf in Resources */,
+				E8610DE32B98A1E200402FF4 /* Config.plist in Resources */,
 				E8D6F2AE2B8DFF400017A523 /* Poppins-Light.ttf in Resources */,
 				E8D6F2AD2B8DFF400017A523 /* OFL.txt in Resources */,
 				E8D6F2AC2B8DFF400017A523 /* Poppins-SemiBold.ttf in Resources */,
@@ -615,19 +634,23 @@
 				E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */,
 				E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */,
 				E843E0BF2B981792006B1A1C /* NewsModel.swift in Sources */,
+				E8624A6A2B9A6D9E00425793 /* LineForTranslateView.swift in Sources */,
 				E88AB2622B8EB6C70026823A /* CardTextField.swift in Sources */,
 				E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */,
 				E84AA1B82B7A0B1A00823B97 /* LoginScreenViewModel.swift in Sources */,
 				E84AA1B62B7A081500823B97 /* LoginScreenView.swift in Sources */,
 				E84CC1942B9255F90066FF96 /* AppDelegate.swift in Sources */,
 				E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */,
+				E803A02F2B98338900EC3FD6 /* Secrets.swift in Sources */,
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E843E0BD2B98172E006B1A1C /* NewsViewModel.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
 				E843E0BB2B98170C006B1A1C /* NewsView.swift in Sources */,
 				E8D6F2912B8C98BB0017A523 /* AuthState.swift in Sources */,
 				E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */,
+				E869C0522B9BB6C400C18852 /* NewsRowView.swift in Sources */,
 				E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */,
+				E869C0502B9BA64400C18852 /* NewsDetailView.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,
 				E8B748942B8C0972007DA60A /* ProfileViewModel.swift in Sources */,
 				E84CC1962B9256780066FF96 /* View+Ext.swift in Sources */,

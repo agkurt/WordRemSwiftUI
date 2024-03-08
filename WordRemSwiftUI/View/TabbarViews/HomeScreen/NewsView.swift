@@ -8,56 +8,48 @@
 import SwiftUI
 
 struct NewsView: View {
-    @ObservedObject var viewModel = NewsViewModel()
-    
-    var body: some View {
-        NavigationStack {
-            ZStack {
-                LinearBackgroundView()
-                VStack {
-                    if viewModel.newsModel != nil {
-                        List(viewModel.newsModel?.result ?? [], id: \.self) { resultElement in
-                            if case .resultClass(let result) = resultElement {
-                                VStack(alignment: .leading) {
-                                    if let imageUrl = URL(string: result.image) {
-                                        AsyncImage(url: imageUrl) { phase in
-                                            switch phase {
-                                            case .success(let image):
-                                                image
-                                                    .resizable()
-                                                    .aspectRatio(contentMode: .fit)
-                                                    
-                                            default:
-                                                Color.gray
-                                                    .frame(width: 50, height: 50)
-                                                    .opacity(0.5)
-                                            }
-                                        }
-                                    }
-                                    Text(result.name)
-                                        .font(.headline)
-                                    Text(result.description)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-                                }
-                            } else if case .string(let string) = resultElement {
-                                Text(string)
-                            }
-                        }
-                    } else {
-                        Text("Loading news...")
-                    }
-                }
-                .navigationTitle("News")
-            }
-        }
-        .onAppear {
-            viewModel.getNews()
-        }
-    }
-}
+  @ObservedObject var viewModel = NewsViewModel()
 
+  @State private var selectedNews: ResultClass?
+
+  var body: some View {
+    ZStack {
+      LinearBackgroundView()
+      ScrollView {
+        LazyVGrid(columns: [GridItem(.flexible())]) {
+          if viewModel.isLoading {
+            ProgressView()
+              .frame(maxWidth: .infinity)
+          } else {
+            if let results = viewModel.newsModel?.result {
+                ForEach(results, id:\.self) { result in
+                NewsRowView(result: result, onTap: {
+                  selectedNews = result
+                })
+              }
+            } else {
+              Text("Error fetching news")
+            }
+          }
+        }
+      }
+      .padding(.leading, 15)
+      .padding(.trailing, 15)
+    }
+    .navigationTitle("News")
+    .navigationBarTitleDisplayMode(.inline)
+    .onAppear {
+      viewModel.getNews()
+    }
+    .sheet(isPresented: Binding(get: { selectedNews != nil }, set: { _ in selectedNews = nil })) { // Fix for isNotNil binding
+      NewsDetailView(result: selectedNews!)
+    }
+  }
+}
 
 #Preview {
-    NewsView()
+  NewsView()
 }
+
+
+

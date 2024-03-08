@@ -130,5 +130,14 @@ class URLSessionApiService {
         }
         .resume()
     }
+    
+    func getAPIKey(named keyname: String) -> String? {
+        var nsDictionary: NSDictionary?
+        if let path = Bundle.main.path(forResource: "Config", ofType: "plist") {
+            nsDictionary = NSDictionary(contentsOfFile: path)
+        }
+        return nsDictionary?[keyname] as? String
+    }
+
 }
 

@@ -31,11 +31,11 @@ struct LineView: View {
     private func getColorBasedOnScheme() -> Color {
            switch colorScheme {
            case .light:
-               return .black // Black line in light mode
+               return .black
            case .dark:
-               return .white // White line in dark mode 
+               return .white
            default:
-               return .gray // Fallback
+               return .gray
            }
        }
 }

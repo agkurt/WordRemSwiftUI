@@ -22,12 +22,17 @@ struct RegisterScreenView: View {
                 LinearBackgroundView()
                 GeometryReader { geometry in
                     VStack() {
-                        IconImageView()
+                        Spacer()
                         VStack {
-                            Text("Register in to your account")
-                                .font(.custom("Poppins-Medium", size: 20))
-                                .padding()
-                            .frame(maxWidth: .infinity,alignment:.center)
+                            VStack(alignment:.leading,spacing: 15) {
+                                Text(" Welcome")
+                                    .frame(maxWidth: .infinity,alignment:.leading)
+                                    .font(.custom("Poppins-Medium", size: 25))
+                                Text(" Sign Up")
+                                    .frame(maxWidth: .infinity,alignment:.leading)
+                                    .font(.custom("Poppins-Bold", size: 25))
+                            }
+                            .padding(.bottom,30)
                             
                             Text("Sign up with email")
                                 .font(.custom("Poppins-Light", size: 15))
@@ -42,12 +47,14 @@ struct RegisterScreenView: View {
                                     .focused($focusedField, equals: .username)
                                 SecureFieldView(text: $viewModel.password)
                                     .focused($focusedField, equals: .password)
+                                    .padding(.bottom,10)
                             }
                             
                             VStack {
                                 NavigationLink(destination: LoginScreenView().navigationBarBackButtonHidden(true), isActive: $viewModel.isRegisterSuccess) {
                                     Text("I have already an account")
                                         .font(.custom("Poppins-Light", size: 15))
+                                        .foregroundStyle(.white)
                                 }
                                 Button(action: {
                                     self.isAnimating = true
@@ -55,32 +62,30 @@ struct RegisterScreenView: View {
                                         await self.registerAsync()
                                     }
                                 }) {
-                                    Text("Register")
-                                        .fontWeight(.bold)
+                                    Text("Sign Up")
+                                        .font(.custom("Poppins-Light", size: 15))
+                                        .frame(maxWidth: .infinity,alignment:.center)
                                         .padding()
-                                        .frame(maxWidth: .infinity)
-                                        .background(Color(hex: "393E46"))
+                                        .background(Color(hex: "#313a45"))
                                         .foregroundColor(.white)
-                                        .cornerRadius(10)
+                                        .cornerRadius(30)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .padding()
                             }
                         }
                         .ignoresSafeArea(.keyboard, edges: .bottom)
-                        .background(viewModel.getColorBasedOnScheme(colorScheme: colorScheme))
                         .cornerRadius(20)
                         .padding()
                         .animation(.easeOut(duration: 0.35),value: 0)
+                        Spacer()
                     }
                 }
-                
+               
                 if isAnimating {
                     ActivityIndicatorView(color: Color(.purple), isAnimating: $isAnimating)
                         .frame(width: 100, height: 100)
                         .zIndex(1)
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
                 }
             }
             .onSubmit(focusNextField)
@@ -88,6 +93,7 @@ struct RegisterScreenView: View {
                 UIApplication.shared.hideKeyboard()
             }
         }
+        
     }
     
     private func focusFirstField() {
