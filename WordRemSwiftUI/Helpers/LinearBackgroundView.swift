@@ -11,6 +11,7 @@ struct LinearBackgroundView: View {
     var body: some View {
         Color(getColorBasedOnScheme())
         .edgesIgnoringSafeArea(.all)
+        
     }
 
     @Environment(\.colorScheme) private var colorScheme

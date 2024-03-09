@@ -61,6 +61,7 @@ struct LoginScreenView: View {
                                     EmptyView()
                                 }
                                 .padding()
+                                
                                 Button(action: {
                                     viewModel.loginRequest()
                                 }, label: {

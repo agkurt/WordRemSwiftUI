@@ -15,7 +15,7 @@ struct HomeScreenView: View {
     @State private var currentPage: Int = 0
     @State private var selectedCard: String = ""
     
-    let features = ["Random Sentence used to word", "Translate", "The 100 most used English adjectives in the world", "The 100 most used English word in the world","News of the day"]
+    let features = ["Random Sentence", "Translate", "News of the day", "The 100 most used English word in the world","The 100 most used English adjectives in the world"]
     
     var body: some View {
         NavigationStack {
@@ -49,18 +49,22 @@ struct HomeScreenView: View {
                         
                         LineView(textPlace: "More Features")
                         
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: 2), spacing: 20) {
-                            ForEach(features.indices, id: \.self) { index in
-                                NavigationLink(destination: destinationView(for: index)) {
-                                    Text(features[index])
-                                        .padding()
-                                        .background(Color(hex: "#1c2127"))
-                                        .foregroundColor(.white)
-                                        .cornerRadius(30)
+                        ScrollView {
+                            LazyVGrid(columns: [GridItem(.flexible())]) {
+                                ForEach(features.indices, id: \.self) { index in
+                                    NavigationLink(destination: destinationView(for: index)) {
+                                        Text(features[index])
+                                            .frame(maxWidth: .infinity,minHeight:75,alignment:.center)
+                                            .padding()
+                                            .background(Color(hex: "#1c2127"))
+                                            .foregroundColor(.white)
+                                            .cornerRadius(30)
+                                    }
                                 }
                             }
                         }
                         .padding()
+                        .padding(.bottom,60)
                     }
                 }
             }
@@ -73,35 +77,22 @@ struct HomeScreenView: View {
         }
     }
     
-    //SwiftUI’de ViewBuilder ve View döndüren fonksiyonlar genellikle View’ların içinde bulunur. Bunun nedeni, View’ların durumunu yönetme ve yeniden oluşturma yeteneğidir.
     @ViewBuilder
     func destinationView(for index: Int) -> some View {
         switch index {
         case 0:
-            GetWordsView()
+            SentenceScreenView()
         case 1:
             TranslationView(viewModel: viewModel2)
         case 2:
-            Feature3View()
+            NewsView()
         case 3:
             Feature4View()
         case 4:
-            NewsView()
+            Feature3View()
         default:
             EmptyView()
         }
-    }
-}
-
-struct Feature1View: View {
-    var body: some View {
-        Text("This is Feature 1")
-    }
-}
-
-struct Feature2View: View {
-    var body: some View {
-        Text("This is Feature 2")
     }
 }
 
@@ -117,11 +108,6 @@ struct Feature4View: View {
     }
 }
 
-struct Feature5View: View {
-    var body: some View {
-        Text("This is Feature 5")
-    }
-}
 
 #Preview {
     HomeScreenView()
