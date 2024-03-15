@@ -37,9 +37,12 @@
 		E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C532B6EBD6E0047E4A6 /* FirebaseService.swift */; };
 		E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C552B6EBED20047E4A6 /* RegisterModel.swift */; };
 		E8527C582B6EC1D00047E4A6 /* RegisterScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C572B6EC1D00047E4A6 /* RegisterScreenViewModel.swift */; };
-		E853ACA42BA3EEE8003C988A /* GeminiAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853ACA32BA3EEE8003C988A /* GeminiAI.swift */; };
+		E853ACA42BA3EEE8003C988A /* GeminiAIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853ACA32BA3EEE8003C988A /* GeminiAIView.swift */; };
 		E853ACA62BA3EF7C003C988A /* ApiKey-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E853ACA52BA3EF7C003C988A /* ApiKey-Info.plist */; };
 		E853ACA82BA4EBD4003C988A /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853ACA72BA4EBD4003C988A /* APIKey.swift */; };
+		E853ACAB2BA4F00F003C988A /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = E853ACAA2BA4F00F003C988A /* GoogleGenerativeAI */; };
+		E853ACAE2BA508A0003C988A /* GeminiAIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853ACAD2BA508A0003C988A /* GeminiAIViewModel.swift */; };
+		E853ACB02BA51326003C988A /* AIMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853ACAF2BA51326003C988A /* AIMessage.swift */; };
 		E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B6002B8E698E009BF5E2 /* LineView.swift */; };
 		E8610DE32B98A1E200402FF4 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = E8610DE22B98A1E200402FF4 /* Config.plist */; };
 		E8624A6A2B9A6D9E00425793 /* LineForTranslateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8624A692B9A6D9E00425793 /* LineForTranslateView.swift */; };
@@ -133,9 +136,11 @@
 		E8527C532B6EBD6E0047E4A6 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 		E8527C552B6EBED20047E4A6 /* RegisterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterModel.swift; sourceTree = "<group>"; };
 		E8527C572B6EC1D00047E4A6 /* RegisterScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterScreenViewModel.swift; sourceTree = "<group>"; };
-		E853ACA32BA3EEE8003C988A /* GeminiAI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiAI.swift; sourceTree = "<group>"; };
+		E853ACA32BA3EEE8003C988A /* GeminiAIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiAIView.swift; sourceTree = "<group>"; };
 		E853ACA52BA3EF7C003C988A /* ApiKey-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ApiKey-Info.plist"; sourceTree = "<group>"; };
 		E853ACA72BA4EBD4003C988A /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
+		E853ACAD2BA508A0003C988A /* GeminiAIViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiAIViewModel.swift; sourceTree = "<group>"; };
+		E853ACAF2BA51326003C988A /* AIMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIMessage.swift; sourceTree = "<group>"; };
 		E855B6002B8E698E009BF5E2 /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		E8610DE22B98A1E200402FF4 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		E8624A692B9A6D9E00425793 /* LineForTranslateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineForTranslateView.swift; sourceTree = "<group>"; };
@@ -214,6 +219,7 @@
 				E8527C2F2B6EBC110047E4A6 /* FirebaseDatabase in Frameworks */,
 				E8527C352B6EBC110047E4A6 /* FirebaseFirestore in Frameworks */,
 				E8527C212B6EBC110047E4A6 /* FirebaseAnalyticsSwift in Frameworks */,
+				E853ACAB2BA4F00F003C988A /* GoogleGenerativeAI in Frameworks */,
 				E8527C1D2B6EBC110047E4A6 /* FirebaseAnalytics in Frameworks */,
 				E8527C392B6EBC110047E4A6 /* FirebaseFirestoreSwift in Frameworks */,
 				E8E8572D2B913F6900F2E55F /* GoogleSignIn in Frameworks */,
@@ -279,7 +285,15 @@
 		E853ACA22BA3EEDC003C988A /* GeminiAI */ = {
 			isa = PBXGroup;
 			children = (
-				E853ACA32BA3EEE8003C988A /* GeminiAI.swift */,
+				E853ACA32BA3EEE8003C988A /* GeminiAIView.swift */,
+			);
+			path = GeminiAI;
+			sourceTree = "<group>";
+		};
+		E853ACAC2BA50891003C988A /* GeminiAI */ = {
+			isa = PBXGroup;
+			children = (
+				E853ACAD2BA508A0003C988A /* GeminiAIViewModel.swift */,
 			);
 			path = GeminiAI;
 			sourceTree = "<group>";
@@ -326,6 +340,7 @@
 				E843E0B62B9806F7006B1A1C /* Language.swift */,
 				E843E0BE2B981792006B1A1C /* NewsModel.swift */,
 				E8F1A6192B9BF62F00E4E533 /* Setting.swift */,
+				E853ACAF2BA51326003C988A /* AIMessage.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -333,6 +348,7 @@
 		E86B997F2B51EF5A00538090 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				E853ACAC2BA50891003C988A /* GeminiAI */,
 				E8BA6DD32B9BDF27002315C7 /* New */,
 				E8BA6DD22B9BDF1E002315C7 /* Sentence */,
 				E8BA6DD12B9BDF16002315C7 /* Translate */,
@@ -644,6 +660,7 @@
 				E8527C4E2B6EBC110047E4A6 /* FirebaseStorage */,
 				E8E8572C2B913F6900F2E55F /* GoogleSignIn */,
 				E8E8572E2B913F6900F2E55F /* GoogleSignInSwift */,
+				E853ACAA2BA4F00F003C988A /* GoogleGenerativeAI */,
 			);
 			productName = WordRemSwiftUI;
 			productReference = E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */;
@@ -679,6 +696,7 @@
 			packageReferences = (
 				E8527C1B2B6EBC110047E4A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				E8E8572B2B913F6900F2E55F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				E853ACA92BA4F00F003C988A /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 			);
 			productRefGroup = E879EC632B3B3E2C003534B5 /* Products */;
 			projectDirPath = "";
@@ -737,6 +755,8 @@
 				E8E1B4E22B7CFF0800AE6CD0 /* KeyboardResponder.swift in Sources */,
 				E8EB12C42B83E73800441F0C /* HomeScreenView.swift in Sources */,
 				E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */,
+				E853ACB02BA51326003C988A /* AIMessage.swift in Sources */,
+				E853ACAE2BA508A0003C988A /* GeminiAIViewModel.swift in Sources */,
 				E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */,
 				E8F1A6132B9BF52400E4E533 /* SomeOtherSettingView.swift in Sources */,
 				E86B99522B5024B700538090 /* TextFieldView.swift in Sources */,
@@ -776,7 +796,7 @@
 				E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */,
 				E803A02F2B98338900EC3FD6 /* Secrets.swift in Sources */,
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
-				E853ACA42BA3EEE8003C988A /* GeminiAI.swift in Sources */,
+				E853ACA42BA3EEE8003C988A /* GeminiAIView.swift in Sources */,
 				E843E0BD2B98172E006B1A1C /* NewsViewModel.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
 				E8F1A61C2B9BF65F00E4E533 /* SettingImage.swift in Sources */,
@@ -1013,6 +1033,14 @@
 				minimumVersion = 10.20.0;
 			};
 		};
+		E853ACA92BA4F00F003C988A /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/generative-ai-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.8;
+			};
+		};
 		E8E8572B2B913F6900F2E55F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
@@ -1068,6 +1096,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E8527C1B2B6EBC110047E4A6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		E853ACAA2BA4F00F003C988A /* GoogleGenerativeAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E853ACA92BA4F00F003C988A /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
+			productName = GoogleGenerativeAI;
 		};
 		E8E8572C2B913F6900F2E55F /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;

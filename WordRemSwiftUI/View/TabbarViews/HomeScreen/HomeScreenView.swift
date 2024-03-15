@@ -91,7 +91,7 @@ struct HomeScreenView: View {
         case 4:
             Feature3View()
         case 5:
-            Feature3View() // AI
+            GeminiAIView() // AI
         default:
             EmptyView()
         }

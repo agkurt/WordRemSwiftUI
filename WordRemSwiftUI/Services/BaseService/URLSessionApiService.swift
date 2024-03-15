@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GoogleGenerativeAI
 
 class URLSessionApiService {
     
@@ -130,5 +131,20 @@ class URLSessionApiService {
         }
         .resume()
     }
+    
+    func geminiApi(userPrompt:String) async -> AIMessage? {
+        let model = GenerativeModel(name: "gemini-pro", apiKey: APIKey.geminiApi)
+        let prompt = userPrompt
+        do {
+            let response = try await model.generateContent(prompt)
+            if let modelAnswer = response.text {
+                print(modelAnswer)
+                return AIMessage(sender: .assistant, content: modelAnswer)
+            }
+        }catch {
+            print(error)
+        }
+        return nil
+    }
+    
 }
-
