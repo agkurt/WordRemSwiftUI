@@ -11,8 +11,6 @@ struct CardView: View {
     var title: String
     var image: Image
 
-    // State variable for individual card animation
-
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 10) {

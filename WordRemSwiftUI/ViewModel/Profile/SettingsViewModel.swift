@@ -8,7 +8,7 @@
 import SwiftUI
 import Firebase
 
-class ProfileViewModel: ObservableObject {
+class SettingsViewModel: ObservableObject {
     
     @Published var isSignedIn = false
     @Published var shouldNavigateToLoginScreen = false

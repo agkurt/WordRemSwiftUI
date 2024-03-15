@@ -16,7 +16,7 @@ class URLSessionApiService {
     func getWords(word: String, completion: @escaping (Result<ExampleWord, Error>) -> Void) {
         
         let headers = [
-            "X-RapidAPI-Key": "30c9e7ec39msheded83facd06704p1ef228jsnf8acccb45fa8",
+            "X-RapidAPI-Key": APIKey.wordsApi,
             "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com"
         ]
         
@@ -58,7 +58,7 @@ class URLSessionApiService {
     
     func getTranslate(text: String, targetLang: String,sourceLang:String, completion: @escaping (Result<TranslationResponse, Error>) -> Void) {
         
-        let apiKey = "58305ba3-80b3-43fb-83fe-4358876f4b2e:fx"
+        let apiKey = APIKey.translateApi
         let baseURL = "https://api-free.deepl.com/v2"
         
         
@@ -99,7 +99,7 @@ class URLSessionApiService {
         
         let headers = [
             "content-type": "application/json",
-            "authorization": "apikey 4mjn1AjHx8fkRQplId3w3q:7AtWiwfJnZY5UJ7fR2OrSR"
+            "authorization": "apikey \(APIKey.newsApi)"
         ]
         
         let request = NSMutableURLRequest(url: NSURL(string: "https://api.collectapi.com/news/getNews?country=en&tag=general")! as URL,
@@ -130,14 +130,5 @@ class URLSessionApiService {
         }
         .resume()
     }
-    
-    func getAPIKey(named keyname: String) -> String? {
-        var nsDictionary: NSDictionary?
-        if let path = Bundle.main.path(forResource: "Config", ofType: "plist") {
-            nsDictionary = NSDictionary(contentsOfFile: path)
-        }
-        return nsDictionary?[keyname] as? String
-    }
-
 }
 

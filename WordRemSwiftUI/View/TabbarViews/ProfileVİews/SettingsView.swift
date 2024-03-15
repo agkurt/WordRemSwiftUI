@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @ObservedObject var viewModel : SettingsViewModel
+    
     let settings: Array<Setting> = [
         Setting(title: "", color: .red, imageName: "heart.square.fill"),
         Setting(title: "widget", color: .yellow, imageName: "star.square.fill"),
@@ -30,6 +32,14 @@ struct SettingsView: View {
                         }
                     }
                 }
+                NavigationLink(destination: LoginScreenView()) {
+                    Button(action: {
+                        viewModel.signOut()
+                    }, label: {
+                        Text("Log out")
+                    })
+                }
+                
             }
             .navigationTitle("Settings")
         }

@@ -15,7 +15,7 @@ struct HomeScreenView: View {
     @State private var currentPage: Int = 0
     @State private var selectedCard: String = ""
     
-    let features = ["Random Sentence", "Translate", "News of the day", "The 100 most used English word in the world","The 100 most used English adjectives in the world"]
+    let features = ["Random Sentence", "Translate", "News of the day", "The 100 most used English word in the world","The 100 most used English adjectives in the world","GEMINI AI"]
     
     var body: some View {
         NavigationStack {
@@ -90,6 +90,8 @@ struct HomeScreenView: View {
             Feature4View()
         case 4:
             Feature3View()
+        case 5:
+            Feature3View() // AI
         default:
             EmptyView()
         }
@@ -98,7 +100,7 @@ struct HomeScreenView: View {
 
 struct Feature3View: View {
     var body: some View {
-        Text("This is Feature 3")
+        Text("AI")
     }
 }
 

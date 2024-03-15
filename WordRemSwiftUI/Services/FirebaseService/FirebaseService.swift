@@ -140,4 +140,35 @@ class FirebaseService: ObservableObject {
         ])
     }
     
+    func fetchTheCardNameInfo(cardId: String) async -> ([String], [String],[String]) {
+        
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return ([],[],[])
+        }
+        
+        let db = Firestore.firestore()
+        var wordNames: [String] = []
+        var wordMeans: [String] = []
+        var wordDescriptions: [String] = []
+        
+        do {
+            let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").getDocuments()
+            
+            for document in querySnapshot.documents {
+                if let wordName = document.data()["wordName"] as? String,
+                   let wordMean = document.data()["wordMean"] as? String,
+                   let wordDescription = document.data()["wordDescription"] as? String {
+                  wordNames.append(wordName)
+                  wordMeans.append(wordMean)
+                  wordDescriptions.append(wordDescription)
+                    print(wordName)
+
+                }
+            }
+        } catch {
+            print("Error getting documents: \(error)")
+        }
+        return (wordNames,wordMeans,wordDescriptions)
+    }
+  
 }

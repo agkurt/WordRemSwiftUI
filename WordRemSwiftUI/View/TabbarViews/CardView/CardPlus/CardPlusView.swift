@@ -30,7 +30,6 @@ struct CardPlusView: View {
                             .focused($focusedField, equals: .wordName)
                         CardTextField(text: $viewModel.wordMean, placeholder: "Word mean ")
                             .focused($focusedField, equals: .wordMean)
-                        
                         CardTextField(text: $viewModel.wordDescription, placeholder: "Word description")
                             .focused($focusedField, equals: .wordDescription)
                         
@@ -53,8 +52,12 @@ struct CardPlusView: View {
                             dismiss()
                         }, label: {
                             Text("Done")
+                                
                         })
-                        .buttonStyle(LoginButtonStyle())
+                        .foregroundStyle(.white)
+                        .padding()
+                        .background(Color.init(hex: "#313a45"))
+                        .clipShape(.rect(cornerRadius: 30))
                     }
                 }
                 .ignoresSafeArea(.keyboard)

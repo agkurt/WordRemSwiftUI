@@ -19,7 +19,7 @@ struct TabBarCustom: View {
                 if selectedTab == "house.circle" {
                     HomeScreenView()
                 } else if selectedTab == "person.crop.circle" {
-                    SettingsView().environmentObject(registerViewModel)
+                    SettingsView(viewModel: SettingsViewModel()).environmentObject(registerViewModel)
                 }
                 
                 VStack {
