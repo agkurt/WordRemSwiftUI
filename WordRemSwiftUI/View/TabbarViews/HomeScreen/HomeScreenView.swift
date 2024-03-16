@@ -69,11 +69,11 @@ struct HomeScreenView: View {
                 }
             }
             .navigationTitle("Cards")
-            .onAppear(perform: {
+            .onAppear {
                 Task {
                     await viewModel.fetchCardName()
                 }
-            })
+            }
         }
     }
     

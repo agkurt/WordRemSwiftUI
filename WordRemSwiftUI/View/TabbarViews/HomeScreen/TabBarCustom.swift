@@ -11,7 +11,7 @@ struct TabBarCustom: View {
     @State var selectedTab = "house.circle"
     @State var islog = false
     @StateObject var registerViewModel = RegisterScreenViewModel()
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -48,23 +48,19 @@ struct TabBarCustom: View {
                             .clipShape(.capsule(style: .circular))
                             .background(Color(hex: "#37414f"))
                         }
-                        
-                        
-                        Image(systemName: "plus.circle")
-                            .resizable()
-                            .frame(width: 75, height: 75)
-                            .foregroundStyle(Color(hex: "1c2127"))
-                            .background(Color(hex: "#37414f"))
-                            .shadow(radius: 10)
-                            .clipShape(.capsule(style: .circular))
-                        
-                            .padding(.bottom, 12)
-                            .onTapGesture {
-                                islog = true
-                            }.sheet(isPresented: $islog, content: {
-                                PlusView()
-                            })
-                        
+ 
+                        NavigationLink {
+                            PlusView()
+                        } label: {
+                            Image(systemName: "plus.circle")
+                                .resizable()
+                                .frame(width: 75, height: 75)
+                                .foregroundStyle(Color(hex: "1c2127"))
+                                .background(Color(hex: "#37414f"))
+                                .shadow(radius: 10)
+                                .clipShape(.capsule(style: .circular))
+                                .padding(.bottom, 12)
+                        }
                     }
                 }
             }

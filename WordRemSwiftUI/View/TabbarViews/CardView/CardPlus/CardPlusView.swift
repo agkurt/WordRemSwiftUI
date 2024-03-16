@@ -51,17 +51,32 @@ struct CardPlusView: View {
                             }
                             dismiss()
                         }, label: {
-                            Text("Done")
-                                
+                            if viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty || viewModel.wordDescription.isEmpty {
+                                Text("Done")
+                                    .foregroundStyle(.red)
+                                    .padding()
+                                    .background(Color.init(hex: "#313a45"))
+                                    .clipShape(.rect(cornerRadius: 30))
+                                    .opacity(0.5)
+                            }else {
+                                Text("Done")
+                                    .foregroundStyle(.white)
+                                    .padding()
+                                    .background(Color.init(hex: "#313a45"))
+                                    .clipShape(.rect(cornerRadius: 30))
+                                    .opacity(1)
+                            }
+                            
                         })
-                        .foregroundStyle(.white)
-                        .padding()
-                        .background(Color.init(hex: "#313a45"))
-                        .clipShape(.rect(cornerRadius: 30))
+                        .disabled(viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty || viewModel.wordDescription.isEmpty)
+                       
                     }
                 }
                 .ignoresSafeArea(.keyboard)
                 .onSubmit(focusNextField)
+            }
+            .onTapGesture {
+                UIApplication.shared.hideKeyboard()
             }
         }
     }

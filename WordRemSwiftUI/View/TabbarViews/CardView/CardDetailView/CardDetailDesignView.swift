@@ -34,8 +34,10 @@ struct CardDetailDesignView: View {
                     }
                     .frame(maxWidth: .infinity,minHeight: 150)
                     .padding()
+                } 
+                .onTapGesture {
+                    UIApplication.shared.hideKeyboard()
                 }
-                
         }
         .padding()
     }

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E803A02F2B98338900EC3FD6 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803A02E2B98338900EC3FD6 /* Secrets.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
 		E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */; };
 		E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */; };
@@ -114,7 +113,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E803A02E2B98338900EC3FD6 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
 		E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionApiService.swift; sourceTree = "<group>"; };
@@ -268,7 +266,6 @@
 				E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */,
 				E8E1B4E12B7CFF0800AE6CD0 /* KeyboardResponder.swift */,
 				E84DEC9A2B8E14950014916C /* CheckBoxStyle.swift */,
-				E803A02E2B98338900EC3FD6 /* Secrets.swift */,
 				E853ACA72BA4EBD4003C988A /* APIKey.swift */,
 			);
 			path = Helpers;
@@ -416,6 +413,7 @@
 		E8ACFA372BA1CFBE0075CAA3 /* CardPlus */ = {
 			isa = PBXGroup;
 			children = (
+				E8EB12CC2B84071200441F0C /* PlusView.swift */,
 				E81941A92B8A1FEF0042EBB7 /* CardView.swift */,
 				E88AB25F2B8EB6310026823A /* CardPlusView.swift */,
 			);
@@ -510,7 +508,6 @@
 			isa = PBXGroup;
 			children = (
 				E853ACA22BA3EEDC003C988A /* GeminiAI */,
-				E8EB12CC2B84071200441F0C /* PlusView.swift */,
 				E8EB12C52B83EA9F00441F0C /* TabBarCustom.swift */,
 				E8EB12C32B83E73800441F0C /* HomeScreenView.swift */,
 				E8BA6DCC2B9BDED3002315C7 /* TranslationViews */,
@@ -794,7 +791,6 @@
 				E84AA1B62B7A081500823B97 /* LoginScreenView.swift in Sources */,
 				E84CC1942B9255F90066FF96 /* AppDelegate.swift in Sources */,
 				E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */,
-				E803A02F2B98338900EC3FD6 /* Secrets.swift in Sources */,
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E853ACA42BA3EEE8003C988A /* GeminiAIView.swift in Sources */,
 				E843E0BD2B98172E006B1A1C /* NewsViewModel.swift in Sources */,
