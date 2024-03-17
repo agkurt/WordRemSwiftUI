@@ -8,8 +8,21 @@
 import SwiftUI
 
 struct UserSettings: View {
+    
+    @StateObject private var manager = NotificationManager()
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Button {
+                Task {
+                    await manager.request()
+                }
+            } label: {
+                Text("request notification permission")
+            }
+            .disabled(manager.hasPermission)
+            .buttonStyle(.bordered)
+        }
     }
 }
 
