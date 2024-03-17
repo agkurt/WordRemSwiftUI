@@ -36,6 +36,7 @@ struct TranslationView: View {
               viewModel.clearTranslatedText()
               viewModel.translate(text: newValue, sourceLang: sourceLang.code, targetLang: targetLang.code)
             }
+            
           Spacer()
 
           LineForTranslateView()
@@ -66,10 +67,11 @@ struct TranslationView: View {
               targetLang = tempLang
             }) {
               Image(systemName: "arrow.swap")
+                    .accentColor(.primary)
+                    .padding()
             }
-            .accentColor(.primary)
-            .padding()
-
+            
+              
             Picker("Target Language", selection: $targetLang) {
               ForEach(Language.allCases, id: \.self) { language in
                 Text(language.rawValue)

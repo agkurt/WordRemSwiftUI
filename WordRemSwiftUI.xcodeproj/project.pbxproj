@@ -12,6 +12,7 @@
 		E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */; };
 		E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */; };
 		E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */; };
+		E82CE3242BA6394800B552F9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82CE3232BA6394800B552F9 /* UserSettings.swift */; };
 		E843E0B52B97F5F0006B1A1C /* TranslateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E843E0B42B97F5F0006B1A1C /* TranslateModel.swift */; };
 		E843E0B72B9806F7006B1A1C /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = E843E0B62B9806F7006B1A1C /* Language.swift */; };
 		E843E0BB2B98170C006B1A1C /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E843E0BA2B98170C006B1A1C /* NewsView.swift */; };
@@ -118,6 +119,7 @@
 		E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionApiService.swift; sourceTree = "<group>"; };
 		E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleWords.swift; sourceTree = "<group>"; };
 		E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceScreenView.swift; sourceTree = "<group>"; };
+		E82CE3232BA6394800B552F9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		E843E0B42B97F5F0006B1A1C /* TranslateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateModel.swift; sourceTree = "<group>"; };
 		E843E0B62B9806F7006B1A1C /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		E843E0BA2B98170C006B1A1C /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
@@ -349,7 +351,7 @@
 				E8BA6DD32B9BDF27002315C7 /* New */,
 				E8BA6DD22B9BDF1E002315C7 /* Sentence */,
 				E8BA6DD12B9BDF16002315C7 /* Translate */,
-				E8BA6DD02B9BDF0E002315C7 /* Profile */,
+				E8BA6DD02B9BDF0E002315C7 /* Settings */,
 				E8BA6DCF2B9BDF08002315C7 /* Home */,
 				E8BA6DCE2B9BDF01002315C7 /* Register */,
 				E8BA6DCD2B9BDEF1002315C7 /* Login */,
@@ -464,12 +466,12 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
-		E8BA6DD02B9BDF0E002315C7 /* Profile */ = {
+		E8BA6DD02B9BDF0E002315C7 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				E8B748932B8C0972007DA60A /* SettingsViewModel.swift */,
 			);
-			path = Profile;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		E8BA6DD12B9BDF16002315C7 /* Translate */ = {
@@ -529,7 +531,7 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		E8D6F2942B8CBA050017A523 /* ProfileViews */ = {
+		E8D6F2942B8CBA050017A523 /* SettingsView */ = {
 			isa = PBXGroup;
 			children = (
 				E8F1A60C2B9BF4C000E4E533 /* AnotherSettingView.swift */,
@@ -539,8 +541,9 @@
 				E8F1A6142B9BF53C00E4E533 /* ThemeSettingView.swift */,
 				E8F1A6162B9BF54E00E4E533 /* WidgetSettingView.swift */,
 				E8F1A61B2B9BF65F00E4E533 /* SettingImage.swift */,
+				E82CE3232BA6394800B552F9 /* UserSettings.swift */,
 			);
-			name = ProfileViews;
+			name = SettingsView;
 			path = "ProfileVİews";
 			sourceTree = "<group>";
 		};
@@ -616,7 +619,7 @@
 			children = (
 				E8BE72752B93C8AB00900217 /* HomeScreen */,
 				E81941A82B8A1FDD0042EBB7 /* CardView */,
-				E8D6F2942B8CBA050017A523 /* ProfileViews */,
+				E8D6F2942B8CBA050017A523 /* SettingsView */,
 			);
 			path = TabbarViews;
 			sourceTree = "<group>";
@@ -776,6 +779,7 @@
 				E853ACA82BA4EBD4003C988A /* APIKey.swift in Sources */,
 				E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */,
 				E8BE727A2B93C97200900217 /* TranslationView.swift in Sources */,
+				E82CE3242BA6394800B552F9 /* UserSettings.swift in Sources */,
 				E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */,
 				E8F1A60F2B9BF4E900E4E533 /* RootSettingView.swift in Sources */,
 				E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */,

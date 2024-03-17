@@ -32,6 +32,11 @@ struct HomeScreenView: View {
                                 .shadow(radius: 10)
                                 .padding()
                             
+                            Text("Create Your First Card ")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                                .padding()
+                            
                         }else {
                             TabView(selection: $currentPage) {
                                 ForEach(viewModel.cardNames.indices, id: \.self) { index in

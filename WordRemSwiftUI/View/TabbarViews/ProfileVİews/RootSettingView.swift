@@ -15,8 +15,8 @@ struct RootSettingView: View {
     switch viewToDisplay {
     case "theme":
       ThemeSettingView()
-    case "widget":
-      WidgetSettingView()
+    case "User Settings":
+      UserSettings()
     case "some other setting":
       SomeOtherSettingView()
     case "another setting":

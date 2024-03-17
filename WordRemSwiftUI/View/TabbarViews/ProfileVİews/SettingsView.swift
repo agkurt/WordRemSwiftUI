@@ -10,12 +10,12 @@ import SwiftUI
 struct SettingsView: View {
     
     @ObservedObject var viewModel : SettingsViewModel
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+
     
     let settings: Array<Setting> = [
-        Setting(title: "", color: .red, imageName: "heart.square.fill"),
-        Setting(title: "widget", color: .yellow, imageName: "star.square.fill"),
-        Setting(title: "some other setting", color: .green, imageName: "location.square.fill"),
-        Setting(title: "another setting", color: .gray, imageName: "bookmark.square.fill")
+        Setting(title: "Theme", color: .red, imageName: "heart.square.fill"),
+        Setting(title: "User Settings", color: .red, imageName: "person.crop.circle")
     ]
     
     var body: some View {
@@ -32,13 +32,15 @@ struct SettingsView: View {
                         }
                     }
                 }
-                NavigationLink(destination: LoginScreenView()) {
-                    Button(action: {
+                Button(action: {
                         viewModel.signOut()
+                        if !viewModel.isSignedIn {
+                            self.presentationMode.wrappedValue.dismiss()
+                        }
                     }, label: {
                         Text("Log out")
                     })
-                }
+
                 
             }
             .navigationTitle("Settings")

@@ -20,7 +20,7 @@ struct LoginScreenView: View {
     init() {
         let authManager = AuthManager()
         _authManager = StateObject(wrappedValue: authManager)
-        _viewModel = StateObject(wrappedValue: LoginScreenViewModel(authManager: authManager))
+            _viewModel = StateObject(wrappedValue: LoginScreenViewModel(authManager: authManager))
     }
     
     var body: some View {
