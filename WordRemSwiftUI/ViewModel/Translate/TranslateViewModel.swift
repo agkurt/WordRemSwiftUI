@@ -11,7 +11,7 @@ class TranslateViewModel: ObservableObject {
     @Published var translatedText: String = ""
     @Published var showAlert = false
 
-    func translate(text: String, sourceLang: String, targetLang: String) {
+    func translate(text: String, sourceLang: String, targetLang: String) async {
        URLSessionApiService.shared.getTranslate(text: text, targetLang: targetLang, sourceLang: sourceLang) { result in
          DispatchQueue.main.async {
            switch result {

@@ -11,7 +11,6 @@ struct CardDetailView: View {
     @ObservedObject var viewModel = CardDetailViewModel()
     var cardName: String
     var cardId: String
-    
     @State private var showSheet = false
     @State private var flipped = false
     
@@ -23,11 +22,6 @@ struct CardDetailView: View {
                     VStack {
                         ForEach(viewModel.wordNames.indices, id: \.self) { index in
                             CardDetailDesignView(wordName: viewModel.wordNames[index],wordMean: viewModel.wordMeans[index],wordDescription: viewModel.wordDescriptions[index])
-                        }
-                        .onTapGesture {
-                            withAnimation {
-                                flipped.toggle()
-                            }
                         }
                     }
                 }
@@ -44,7 +38,11 @@ struct CardDetailView: View {
                 }
             }
             .sheet(isPresented: $showSheet) {
-                CardPlusView(cardId: cardId)
+                CardPlusView(completion: {
+                    Task {
+                        await viewModel.fetchCardInfo(cardId:cardId)
+                    }
+                }, cardId: cardId)
             }
         }
         .onAppear {
@@ -54,8 +52,3 @@ struct CardDetailView: View {
         }
     }
 }
-
-#Preview {
-    CardDetailView(cardName: "agk", cardId: "agk")
-}
-

@@ -12,16 +12,27 @@ import FirebaseAuth
 import AuthenticationServices
 import GoogleSignIn
 
-@MainActor
 class AuthManager: ObservableObject {
     
     @Published var user: User?
     @Published var authState = AuthState.signedOut
+    @Published var userIsLoggedIn = false
     
     var authStateHandle: AuthStateDidChangeListenerHandle!
     
-    init () {  
+    init () {
+        userIsLoggedIn = Auth.auth().currentUser != nil
         configureAuthStateChanges()
+    }
+    
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            self.userIsLoggedIn = false
+            
+        } catch {
+            print("Error signing out: \(error)")
+        }
     }
     
     func configureAuthStateChanges() {
@@ -42,6 +53,7 @@ class AuthManager: ObservableObject {
         
         if isAuthenticatedUser {
             self.authState = isAnonymous ? .authenticated : .signedIn
+            self.userIsLoggedIn = true
         } else {
             self.authState = .signedOut
         }
@@ -59,37 +71,37 @@ class AuthManager: ObservableObject {
         }
     }
     
-    func handleGoogleSignIn(with viewController: UIViewController) {
-           guard let clientID = FirebaseApp.app()?.options.clientID else {
-               print("Error: Firebase client ID is not configured.")
-               return
-           }
-
-           let config = GIDConfiguration(clientID: clientID)
-           GIDSignIn.sharedInstance.configuration = config
-
-           GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { signResult, error in
-               if let error = error {
-                   print("Error signing in with Google: \(error.localizedDescription)")
-                   return
-               }
-
-               guard let user = signResult?.user, let idToken = user.idToken else {
-                   print("Error: Unable to retrieve user information from Google sign-in.")
-                   return
-               }
-
-               let credential = GoogleAuthProvider.credential(withIDToken: idToken.tokenString, accessToken: user.accessToken.tokenString)
-
-               Auth.auth().signIn(with: credential) { authResult, error in
-                   if let error = error {
-                       print("Error authenticating with Firebase: \(error.localizedDescription)")
-                       return
-                   }
-                   print("Successful login with Google")
-                   
-               }
-           }
-       }
+    func handleGoogleSignIn(with viewController: UIViewController)  {
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            print("Error: Firebase client ID is not configured.")
+            return
+        }
+        
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { signResult, error in
+            if let error = error {
+                print("Error signing in with Google: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let user = signResult?.user, let idToken = user.idToken else {
+                print("Error: Unable to retrieve user information from Google sign-in.")
+                return
+            }
+            
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken.tokenString, accessToken: user.accessToken.tokenString)
+            
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    print("Error authenticating with Firebase: \(error.localizedDescription)")
+                    return
+                }
+                print("Successful login with Google")
+                
+            }
+        }
+    }
 }
 

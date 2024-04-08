@@ -13,7 +13,7 @@ struct LinearBackgroundView: View {
         .edgesIgnoringSafeArea(.all)
         
     }
-
+    
     @Environment(\.colorScheme) private var colorScheme
 
     private func getColorBasedOnScheme() -> Color {

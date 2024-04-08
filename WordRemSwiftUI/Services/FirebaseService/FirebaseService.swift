@@ -86,7 +86,6 @@ class FirebaseService: ObservableObject {
     }
     
     func addCardName(name:String) async  {
-            
             guard let uid = Auth.auth().currentUser?.uid else {
                 return
             }
@@ -140,35 +139,32 @@ class FirebaseService: ObservableObject {
         ])
     }
     
-    func fetchTheCardNameInfo(cardId: String) async -> ([String], [String],[String]) {
+    func fetchTheCardNameInfo(cardId: String) async -> WordInfo {
         
         guard let uid = Auth.auth().currentUser?.uid else {
-            return ([],[],[])
+            fatalError("")
         }
         
+        var wordInfo = WordInfo(names: [], means: [], descriptions: [])
+
         let db = Firestore.firestore()
-        var wordNames: [String] = []
-        var wordMeans: [String] = []
-        var wordDescriptions: [String] = []
         
         do {
             let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").getDocuments()
             
             for document in querySnapshot.documents {
-                if let wordName = document.data()["wordName"] as? String,
-                   let wordMean = document.data()["wordMean"] as? String,
-                   let wordDescription = document.data()["wordDescription"] as? String {
-                  wordNames.append(wordName)
-                  wordMeans.append(wordMean)
-                  wordDescriptions.append(wordDescription)
-                    print(wordName)
-
-                }
-            }
+                   if let wordName = document.data()["wordName"] as? String,
+                      let wordMean = document.data()["wordMean"] as? String,
+                      let wordDescription = document.data()["wordDescription"] as? String {
+                       wordInfo.names.append(wordName)
+                       wordInfo.means.append(wordMean)
+                       wordInfo.descriptions.append(wordDescription)
+                   }
+               }
         } catch {
             print("Error getting documents: \(error)")
         }
-        return (wordNames,wordMeans,wordDescriptions)
+        return wordInfo
     }
   
 }

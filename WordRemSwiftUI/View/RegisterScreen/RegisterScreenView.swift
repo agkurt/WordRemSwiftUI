@@ -10,11 +10,10 @@ import SwiftUI
 struct RegisterScreenView: View {
     
     @StateObject var viewModel = RegisterScreenViewModel()
-    @State var isRegisterSuccess = false
     @FocusState var focusedField: FocusableField?
-    @State var isAnimating: Bool = false
     @Environment(\.colorScheme) private var colorScheme
-
+    @State var isRegisterSuccess: Bool = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationStack {
@@ -51,15 +50,15 @@ struct RegisterScreenView: View {
                             }
                             
                             VStack {
-                                NavigationLink(destination: LoginScreenView().navigationBarBackButtonHidden(true), isActive: $viewModel.isRegisterSuccess) {
-                                    Text("I have already an account")
-                                        .font(.custom("Poppins-Light", size: 15))
-                                        .foregroundStyle(.white)
-                                }
                                 Button(action: {
-                                    self.isAnimating = true
+                                    presentationMode.wrappedValue.dismiss()
+                                }) {
+                                    Text("I have an already account")
+                                }
+                                
+                                Button(action: {
                                     Task {
-                                        await self.registerAsync()
+                                        await viewModel.registerRequest()
                                     }
                                 }) {
                                     Text("Sign Up")
@@ -81,48 +80,23 @@ struct RegisterScreenView: View {
                         Spacer()
                     }
                 }
-               
-                if isAnimating {
-                    ActivityIndicatorView(color: Color(.purple), isAnimating: $isAnimating)
-                        .frame(width: 100, height: 100)
-                        .zIndex(1)
-                }
             }
-            .onSubmit(focusNextField)
+            .onSubmit {
+                viewModel.focusNextField()
+            }
             .onTapGesture() {
                 UIApplication.shared.hideKeyboard()
+            }
+            .onReceive(viewModel.$isRegisterSuccess) { success in
+                if success {
+                   _ = HomeScreenView()
+                }
             }
         }
         
     }
     
-    private func focusFirstField() {
-        focusedField = FocusableField.allCases.first
-    }
-    
-    private func focusNextField() {
-        switch focusedField {
-        case .email:
-            focusedField = .username
-        case .username:
-            focusedField = .password
-        case .password:
-            focusedField = .email
-        case .none:
-            break
-        }
-    }
-    
-    private func registerAsync() async {
-        self.isAnimating = true
-        let result = await viewModel.registerRequest()
-        self.isAnimating = false
-        self.isRegisterSuccess = result
-    }
 }
 
-#Preview {
-    RegisterScreenView()
-}
 
 

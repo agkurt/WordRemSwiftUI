@@ -13,38 +13,22 @@ class RegisterScreenViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var userName: String = ""
     @Published var password: String = ""
-    @Published var isRegisterSuccess = false
-    @Published var isAnimating: Bool = false
     @FocusState private var focusedField: FocusableField?
     @Published var colorScheme:ColorScheme?
+    @Published var isRegisterSuccess = false
     
-    func registerRequest() async -> Bool {
+    func registerRequest() async {
         let registerModel = RegisterModel(username: userName, email: email, password: password)
-        var isSuccess = false
-        
-        await withCheckedContinuation { continuation in
-            FirebaseService.shared.registerUser(userRequest: registerModel) { [weak self] result, error in
-                guard let self = self else {return}
-                
-                if let error = error {
-                    print(error.localizedDescription)
-                } else {
-                    DispatchQueue.main.async {
-                        self.isRegisterSuccess = true
-                        isSuccess = true
-                    }
+        FirebaseService.shared.registerUser(userRequest: registerModel) { [weak self] result, error in
+            guard let self = self else {return}
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                OperationQueue.main.addOperation {
+                    self.isRegisterSuccess = true
                 }
-                continuation.resume(returning: isSuccess)
             }
         }
-        return isSuccess
-    }
-    
-    func registerAsync() async {
-        self.isAnimating = true
-        let result = await registerRequest()
-        self.isAnimating = false
-        self.isRegisterSuccess = result
     }
     
     func focusNextField() {
@@ -70,7 +54,4 @@ class RegisterScreenViewModel: ObservableObject {
             return Color.gray.opacity(0.7) // Fallback
         }
     }
-    
-    
 }
-

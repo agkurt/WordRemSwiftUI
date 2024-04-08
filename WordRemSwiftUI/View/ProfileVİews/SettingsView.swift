@@ -9,9 +9,9 @@ import SwiftUI
 
 struct SettingsView: View {
     
-    @ObservedObject var viewModel : SettingsViewModel
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-
+    @EnvironmentObject var authManager: AuthManager
+    @StateObject private var loginViewModel = LoginScreenViewModel(authManager: .init())
     
     let settings: Array<Setting> = [
         Setting(title: "Theme", color: .red, imageName: "heart.square.fill"),
@@ -32,16 +32,7 @@ struct SettingsView: View {
                         }
                     }
                 }
-                Button(action: {
-                        viewModel.signOut()
-                        if !viewModel.isSignedIn {
-                            self.presentationMode.wrappedValue.dismiss()
-                        }
-                    }, label: {
-                        Text("Log out")
-                    })
-
-                
+              
             }
             .navigationTitle("Settings")
         }

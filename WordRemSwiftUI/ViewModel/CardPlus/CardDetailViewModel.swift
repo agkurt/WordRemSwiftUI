@@ -14,17 +14,14 @@ class CardDetailViewModel: ObservableObject {
     @Published public var wordDescriptions: [String] = []
     
     func fetchCardInfo(cardId:String) async {
-        let (fetchWordNames,fetchWordMeans,fetchedWordDescription)
-        = await FirebaseService.shared.fetchTheCardNameInfo(cardId: cardId)
-        
+        let fetchedWordInfo = await FirebaseService.shared.fetchTheCardNameInfo(cardId: cardId)
         DispatchQueue.main.async { [weak self] in
             guard let self = self else {
                 return
             }
-            self.wordNames = fetchWordNames
-            self.wordMeans = fetchWordMeans
-            self.wordDescriptions = fetchedWordDescription
+            self.wordNames = fetchedWordInfo.names
+            self.wordMeans = fetchedWordInfo.means
+            self.wordDescriptions = fetchedWordInfo.descriptions
         }
     }
-    
 }
