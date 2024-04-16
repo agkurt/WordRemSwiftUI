@@ -11,13 +11,15 @@ import Firebase
 @main
 struct WordRemSwiftUIApp: App {
     
+    @StateObject private var sentenceViewModel = SentenceViewModel()
+    
     init () {
         FirebaseApp.configure()
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(sentenceViewModel: sentenceViewModel)
         }
     }
 }

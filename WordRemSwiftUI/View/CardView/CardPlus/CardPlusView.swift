@@ -32,9 +32,20 @@ struct CardPlusView: View {
                     VStack(spacing: 20) {
                         CardTextField(text: $viewModel.wordName, placeholder: "Word name")
                         CardTextField(text: $viewModel.wordMean, placeholder: "Word mean ")
-                        CardTextField(text: $viewModel.wordDescription, placeholder: "Word description")
+                        CardTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence")
                     }
-                    .padding()
+                    Button(action: {
+                        Task {
+                            await viewModel.createSentenceUseToWord(name: viewModel.wordName)
+                            viewModel.wordDescription = viewModel.examplesWord?.examples.prefix(1).first ?? ""
+                        }
+                    }, label: {
+                        Text("get example sentence for word name")
+                    })
+                    
+                    Text(viewModel.wordDescription)
+                        .padding()
+                    
                     Toggle(isOn: $isOnToggle, label: {
                         Text("Reminder")
                     })
@@ -89,4 +100,5 @@ struct CardPlusView: View {
         }
     }
 }
+
 

@@ -463,6 +463,7 @@
 		E88585FC2BC10803000531B5 /* FeaturesView */ = {
 			isa = PBXGroup;
 			children = (
+				E8527C132B6E14770047E4A6 /* SentenceScreen */,
 				E8BA6DCB2B9BDEC2002315C7 /* NewsViews */,
 				E8BA6DCC2B9BDED3002315C7 /* TranslationViews */,
 				E853ACA22BA3EEDC003C988A /* GeminiAI */,
@@ -593,7 +594,6 @@
 				E8EB12CE2B84138000441F0C /* PremiumView */,
 				E8E6E4392B8204ED009F5C3E /* HelperScreen */,
 				E8E6E4382B8204D4009F5C3E /* RegisterScreen */,
-				E8527C132B6E14770047E4A6 /* SentenceScreen */,
 				E8527C112B6E14520047E4A6 /* LoginScreen */,
 			);
 			path = View;

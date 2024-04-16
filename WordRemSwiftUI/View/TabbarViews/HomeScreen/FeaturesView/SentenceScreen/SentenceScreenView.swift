@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SentenceScreenView: View {
-    @ObservedObject var sentenceViewModel = SentenceViewModel()
+    @EnvironmentObject var sentenceViewModel: SentenceViewModel
     @State private var showAlert = false
     @Environment(\.colorScheme) private var colorScheme
     
