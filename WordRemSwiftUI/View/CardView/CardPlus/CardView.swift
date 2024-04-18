@@ -10,10 +10,12 @@ import SwiftUI
 struct CardView: View {
     var title: String
     var image: Image
-
+    @Binding var isEditing: Bool
+    
     var body: some View {
-        GeometryReader { geometry in
+        ZStack {
             VStack(spacing: 10) {
+                Spacer()
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -25,16 +27,28 @@ struct CardView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
             }
-            .frame(maxWidth: geometry.size.width)
-            .background(Color(hex: "#1c2127"))
-            .cornerRadius(20)
-            .shadow(radius: 10)
-            .padding()
+            if isEditing {
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            Task {
+                               try await FirebaseService.shared.deleteCards()
+                            }
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.blue)
+                        }
+                        .padding()
+                    }
+                    Spacer()
+                }
+            }
         }
+        .frame(maxWidth: .infinity)
+        .background(Color(hex: "#1c2127"))
+        .cornerRadius(20)
+        .shadow(radius: 10)
+        .padding()
     }
-}
-
-
-#Preview {
-    CardView(title: "Pencil", image: Image(systemName: "pencil"))
 }

@@ -11,9 +11,9 @@ struct ContentView: View {
     
     @ObservedObject private var manager = NotificationManager()
     @StateObject var authManager = AuthManager()
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var loginViewModel = LoginScreenViewModel(authManager: AuthManager())
     @StateObject var sentenceViewModel: SentenceViewModel
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some View {
         VStack {
@@ -43,7 +43,6 @@ struct ContentView: View {
                     print("Error")
                 }
             }
-            
         })
     }
 }

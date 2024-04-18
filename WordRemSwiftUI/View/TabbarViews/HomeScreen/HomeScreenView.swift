@@ -9,29 +9,32 @@ import SwiftUI
 
 struct HomeScreenView: View {
     
-    @StateObject var viewModel = HomeScreenViewModel()
+    @ObservedObject var viewModel = HomeScreenViewModel()
     @State private var currentPage: Int = 0
     @State private var selectedCard: String = ""
     @EnvironmentObject var authManager: AuthManager
     @State private var isSheetPresented = false
+    @State private var isEditing = false
     
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                GeometryReader { geometry in
-                    ScrollView {
-                        VStack {
-                            ForEach(viewModel.cardNames.indices, id: \.self) { index in
-                                NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index], cardId:viewModel.cardIds[index])) {
-                                    CardView(title: viewModel.cardNames[index],
-                                             image: Image(systemName: "pencil"))
-                                    .foregroundStyle(.white)
-                                }
+                
+                ScrollView {
+                    VStack {
+                        ForEach(viewModel.cardNames.indices, id: \.self) { index in
+                            NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
+                                                                       cardId:viewModel.cardIds[index])) {
+                                CardView(title: viewModel.cardNames[index],
+                                         image: Image(systemName: "pencil"),
+                                         isEditing: $isEditing)
+                                
+                                .foregroundStyle(.white)
                             }
-                            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-                            .frame(height: geometry.size.height * 0.3)
                         }
+                        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                        
                     }
                 }
             }
@@ -54,6 +57,15 @@ struct HomeScreenView: View {
                 
                 ToolbarItem(placement:.topBarTrailing) {
                     Button {
+                        isEditing.toggle()
+                        
+                    } label: {
+                        Text(isEditing ? "Done" : "Edit")
+                    }
+                }
+                
+                ToolbarItem(placement:.topBarTrailing) {
+                    Button {
                         isSheetPresented.toggle()
                     } label: {
                         Image(systemName: "plus")
@@ -66,6 +78,7 @@ struct HomeScreenView: View {
                         }
                     }
                 }
+                
             }
         }
     }
