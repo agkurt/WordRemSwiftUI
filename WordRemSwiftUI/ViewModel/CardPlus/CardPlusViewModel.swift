@@ -12,6 +12,8 @@ class CardPlusViewModel: ObservableObject {
     @Published public var wordMean: String = ""
     @Published public var wordDescription: String = ""
     @Published var examplesWord:ExampleWord?
+    @Published var isDelete = false
+    
     func addWordToCard(cardId:String) async {
         do {
             try await FirebaseService.shared.addWordToCard(cardId: cardId, wordName: wordName, wordMean: wordMean, wordDescription: wordDescription)

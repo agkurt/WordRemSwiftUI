@@ -9,40 +9,23 @@ import SwiftUI
 
 struct CardView: View {
     var title: String
-    var image: Image
-    @Binding var isEditing: Bool
+    var onDelete: () -> Void
+    @ObservedObject var viewModel = HomeScreenViewModel()
     
     var body: some View {
-        ZStack {
-            VStack(spacing: 10) {
-                Spacer()
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 100, height: 100)
-                    .clipped()
-                    .padding()
-                Text(title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-            }
-            if isEditing {
-                VStack {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            Task {
-                               try await FirebaseService.shared.deleteCards()
-                            }
-                        }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.blue)
-                        }
-                        .padding()
-                    }
-                    Spacer()
+        VStack(spacing: 10) {
+            Spacer()
+            Text(title)
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+            Spacer()
+            if viewModel.isEditing {
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.blue)
                 }
+                .padding()
             }
         }
         .frame(maxWidth: .infinity)
@@ -52,3 +35,4 @@ struct CardView: View {
         .padding()
     }
 }
+

@@ -9,32 +9,30 @@ import SwiftUI
 
 struct HomeScreenView: View {
     
-    @ObservedObject var viewModel = HomeScreenViewModel()
+    @StateObject var viewModel = HomeScreenViewModel()
     @State private var currentPage: Int = 0
     @State private var selectedCard: String = ""
     @EnvironmentObject var authManager: AuthManager
     @State private var isSheetPresented = false
-    @State private var isEditing = false
     
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                
                 ScrollView {
                     VStack {
                         ForEach(viewModel.cardNames.indices, id: \.self) { index in
                             NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
                                                                        cardId:viewModel.cardIds[index])) {
-                                CardView(title: viewModel.cardNames[index],
-                                         image: Image(systemName: "pencil"),
-                                         isEditing: $isEditing)
-                                
+                                CardView(title: viewModel.cardNames[index]) {
+                                    if viewModel.isEditing {
+                                        viewModel.deleteCard(at: index)
+                                    }
+                                }
                                 .foregroundStyle(.white)
                             }
                         }
                         .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-                        
                     }
                 }
             }
@@ -49,7 +47,6 @@ struct HomeScreenView: View {
                 ToolbarItem(placement:.topBarTrailing) {
                     Button {
                         authManager.signOut()
-                        
                     } label: {
                         Text("Signout")
                     }
@@ -57,10 +54,9 @@ struct HomeScreenView: View {
                 
                 ToolbarItem(placement:.topBarTrailing) {
                     Button {
-                        isEditing.toggle()
-                        
+                        viewModel.isEditing.toggle()
                     } label: {
-                        Text(isEditing ? "Done" : "Edit")
+                        Text(viewModel.isEditing ? "Done" : "Edit")
                     }
                 }
                 
@@ -78,7 +74,6 @@ struct HomeScreenView: View {
                         }
                     }
                 }
-                
             }
         }
     }

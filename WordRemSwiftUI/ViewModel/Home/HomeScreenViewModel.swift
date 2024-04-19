@@ -11,7 +11,8 @@ class HomeScreenViewModel: ObservableObject {
     
     @Published var cardNames: [String] = []
     @Published var cardIds: [String] = []
-
+    @Published var isEditing:Bool = false
+    
     func fetchCardName() async {
         let (fetchedCardNames, fetchedCardIds) = await FirebaseService.shared.fetchCardName()
         DispatchQueue.main.async {
@@ -19,6 +20,21 @@ class HomeScreenViewModel: ObservableObject {
             self.cardIds = fetchedCardIds
         }
     }
+    
+    func deleteCard(at index: Int) {
+        Task {
+            do {
+                try await FirebaseService.shared.deleteCards()
+                DispatchQueue.main.async {
+                    self.cardNames.remove(at: index)
+                    self.cardIds.remove(at: index)
+                }
+            } catch {
+                print("Error deleting cards: \(error.localizedDescription)")
+            }
+        }
+    }
+    
 }
 
 
