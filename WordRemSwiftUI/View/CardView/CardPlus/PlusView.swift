@@ -23,6 +23,7 @@ struct PlusView: View {
             ZStack {
                 LinearBackgroundView()
                 VStack {
+                    
                     TextFieldView(text: $viewModel.cardName, placeholder: "Card name")
                         .shadow(radius: 10)
                         .padding()
