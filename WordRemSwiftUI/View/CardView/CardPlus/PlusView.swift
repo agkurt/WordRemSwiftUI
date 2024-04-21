@@ -11,6 +11,7 @@ struct PlusView: View {
     
     @StateObject var viewModel = PlusViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedFlag: FlagModel = .turkey
     
     var completion: () -> Void
     
@@ -23,11 +24,10 @@ struct PlusView: View {
             ZStack {
                 LinearBackgroundView()
                 VStack {
-                    
+                    FlagSelectionView(selectedFlag: $selectedFlag)
+                    Spacer()
                     TextFieldView(text: $viewModel.cardName, placeholder: "Card name")
                         .shadow(radius: 10)
-                        .padding()
-                    
                     Button(action: {
                         Task {
                             await viewModel.addCardName()
@@ -35,9 +35,9 @@ struct PlusView: View {
                         dismiss()
                     }, label: {
                         Text("Done")
+                            .padding()
                     })
                     .disabled(viewModel.cardName.isEmpty)
-                    
                 }
                 .onDisappear {
                     self.completion()
@@ -47,9 +47,14 @@ struct PlusView: View {
             .navigationTitle("PlusView")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .onTapGesture {
+            UIApplication.shared.hideKeyboard()
+        }
     }
 }
 
-
-
-
+#Preview {
+    PlusView(completion: {
+        
+    })
+}

@@ -15,6 +15,7 @@
 		E82CE3242BA6394800B552F9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82CE3232BA6394800B552F9 /* UserSettings.swift */; };
 		E82CE3282BA6790600B552F9 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82CE3272BA6790600B552F9 /* NotificationManager.swift */; };
 		E8311AB72BD52FB3009C455C /* FlagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8311AB62BD52FB3009C455C /* FlagModel.swift */; };
+		E8311AB92BD53A7E009C455C /* FlagSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8311AB82BD53A7E009C455C /* FlagSelectionView.swift */; };
 		E843E0B52B97F5F0006B1A1C /* TranslateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E843E0B42B97F5F0006B1A1C /* TranslateModel.swift */; };
 		E843E0B72B9806F7006B1A1C /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = E843E0B62B9806F7006B1A1C /* Language.swift */; };
 		E843E0BB2B98170C006B1A1C /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E843E0BA2B98170C006B1A1C /* NewsView.swift */; };
@@ -147,6 +148,7 @@
 		E82CE3232BA6394800B552F9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		E82CE3272BA6790600B552F9 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		E8311AB62BD52FB3009C455C /* FlagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagModel.swift; sourceTree = "<group>"; };
+		E8311AB82BD53A7E009C455C /* FlagSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagSelectionView.swift; sourceTree = "<group>"; };
 		E843E0B42B97F5F0006B1A1C /* TranslateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateModel.swift; sourceTree = "<group>"; };
 		E843E0B62B9806F7006B1A1C /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		E843E0BA2B98170C006B1A1C /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
@@ -494,6 +496,7 @@
 				E88AB25F2B8EB6310026823A /* CardPlusView.swift */,
 				E8E254692BC3A01900AACD0D /* CardReminderView.swift */,
 				E8C555752BC4A9BD0086FF54 /* ReminderCalculator.swift */,
+				E8311AB82BD53A7E009C455C /* FlagSelectionView.swift */,
 			);
 			path = CardPlus;
 			sourceTree = "<group>";
@@ -907,6 +910,7 @@
 				E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */,
 				E869C0502B9BA64400C18852 /* NewsDetailView.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,
+				E8311AB92BD53A7E009C455C /* FlagSelectionView.swift in Sources */,
 				E8B748942B8C0972007DA60A /* SettingsViewModel.swift in Sources */,
 				E84CC1962B9256780066FF96 /* View+Ext.swift in Sources */,
 				E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */,

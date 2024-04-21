@@ -9,7 +9,7 @@ import Foundation
 
 enum FlagModel:String,CaseIterable {
     
-    case turkey = "Türkiye"
+    case turkey = "turkey"
     case china = "china"
     case germany = "germany"
     case italy = "italy"
