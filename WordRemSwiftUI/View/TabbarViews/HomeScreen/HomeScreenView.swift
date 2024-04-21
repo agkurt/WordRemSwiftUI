@@ -14,6 +14,7 @@ struct HomeScreenView: View {
     @State private var selectedCard: String = ""
     @EnvironmentObject var authManager: AuthManager
     @State private var isSheetPresented = false
+    @State var isEditing:Bool = false
     
     var body: some View {
         NavigationStack {
@@ -24,11 +25,13 @@ struct HomeScreenView: View {
                         ForEach(viewModel.cardNames.indices, id: \.self) { index in
                             NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
                                                                        cardId:viewModel.cardIds[index])) {
-                                CardView(title: viewModel.cardNames[index]) {
-                                    if viewModel.isEditing {
+                                
+                                CardView(title:viewModel.cardNames[index],onDelete: {
+                                    if isEditing {
                                         viewModel.deleteCard(at: index)
                                     }
-                                }
+                                }, isEditing: $isEditing)
+                                
                                 .foregroundStyle(.white)
                             }
                         }
@@ -54,9 +57,9 @@ struct HomeScreenView: View {
                 
                 ToolbarItem(placement:.topBarTrailing) {
                     Button {
-                        viewModel.isEditing.toggle()
+                        isEditing.toggle()
                     } label: {
-                        Text(viewModel.isEditing ? "Done" : "Edit")
+                        Text(isEditing ? "Done" : "Edit")
                     }
                 }
                 

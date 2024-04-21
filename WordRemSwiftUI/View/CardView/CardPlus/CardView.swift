@@ -8,24 +8,37 @@
 import SwiftUI
 
 struct CardView: View {
+    
     var title: String
     var onDelete: () -> Void
-    @ObservedObject var viewModel = HomeScreenViewModel()
+    @Binding var isEditing: Bool
     
     var body: some View {
-        VStack(spacing: 10) {
-            Spacer()
-            Text(title)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            Spacer()
-            if viewModel.isEditing {
-                Button(action: onDelete) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.blue)
+        ZStack {
+            VStack(spacing: 10) {
+                Spacer()
+                Image(systemName: "pencil")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: 100,maxHeight: 100)
+                Spacer()
+                Text(title)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+            }
+            if isEditing {
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button(action: onDelete) {
+                            Image(systemName: "xmark.circle")
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                    }
+                    Spacer()
                 }
-                .padding()
             }
         }
         .frame(maxWidth: .infinity)
