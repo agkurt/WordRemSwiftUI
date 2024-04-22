@@ -14,23 +14,33 @@ class HomeScreenViewModel: ObservableObject {
     @Published var selectedFlag:[String] = []
     @Published var isEditing: Bool = false
     @Published var cards: [Card] = []
+    @Published var isLoading:Bool = false
     
     func fetchCardName() async {
         do {
+            isLoading = true
             let fetchedCards = try await FirebaseService.shared.fetchCardName()
-            DispatchQueue.main.async {
+            OperationQueue.main.addOperation {
+                self.isLoading = false
                 self.cards = fetchedCards
-                self.selectedFlag = fetchedCards.map {$0.selectedFlag.rawValue}
+                self.selectedFlag = fetchedCards.map { $0.selectedFlag.rawValue }
                 self.cardNames = fetchedCards.map { $0.name }
                 self.cardIds = fetchedCards.map { $0.id }
             }
         } catch {
             print("Error fetching cards: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                self.isLoading = false
+            }
         }
     }
     
     func deleteCard(at index: Int) {
         Task {
+            guard index >= 0 && index < self.cards.count else {
+                print("Index out of range")
+                return
+            }
             do {
                 let cardId = self.cardIds[index]
                 try await FirebaseService.shared.deleteCard(withId: cardId)
@@ -38,6 +48,7 @@ class HomeScreenViewModel: ObservableObject {
                     self.cards.remove(at: index)
                     self.cardNames.remove(at: index)
                     self.cardIds.remove(at: index)
+                    self.selectedFlag.remove(at: index) // Bayrakları da güncelle
                 }
             } catch {
                 print("Error deleting card: \(error.localizedDescription)")

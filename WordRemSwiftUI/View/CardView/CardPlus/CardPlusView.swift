@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct CardPlusView: View {
-    @ObservedObject private var viewModel = CardPlusViewModel()
+    
+    @StateObject private var viewModel = CardPlusViewModel()
     @ObservedObject private var reminderViewModel = ReminderViewModel()
     @Environment(\.dismiss) private var dismiss
     var cardId: String

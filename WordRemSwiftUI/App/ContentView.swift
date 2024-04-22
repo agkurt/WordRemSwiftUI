@@ -13,12 +13,13 @@ struct ContentView: View {
     @StateObject var authManager = AuthManager()
     @StateObject private var loginViewModel = LoginScreenViewModel(authManager: AuthManager())
     @StateObject var sentenceViewModel = SentenceViewModel()
+    @StateObject var homeScreenViewModel = HomeScreenViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some View {
         VStack {
             if authManager.userIsLoggedIn {
-                HomeScreenView()
+                HomeScreenView(viewModel: homeScreenViewModel)
             } else {
                 LoginScreenView()
             }

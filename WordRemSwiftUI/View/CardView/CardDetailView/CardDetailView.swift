@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CardDetailView: View {
+    
     @ObservedObject var viewModel = CardDetailViewModel()
     var cardName: String
     var cardId: String

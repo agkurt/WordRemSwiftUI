@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeScreenView: View {
     
-    @StateObject var viewModel = HomeScreenViewModel()
+    @ObservedObject var viewModel: HomeScreenViewModel
     @State private var currentPage: Int = 0
     @State private var selectedCard: String = ""
     @EnvironmentObject var authManager: AuthManager
@@ -21,24 +21,27 @@ struct HomeScreenView: View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                ScrollView {
-                    VStack {
-                        ForEach(viewModel.cardNames.indices, id: \.self) { index in
-                            NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
-                                                                       cardId:viewModel.cardIds[index])) {
-                                
-                                CardView(isEditing: $isEditing, title:viewModel.cardNames[index],image: viewModel.selectedFlag[index], onDelete: {
-                                    if isEditing {
-                                        viewModel.deleteCard(at: index)
-                                    }
-                                })
-                                .foregroundStyle(.white)
+                if viewModel.isLoading {
+                    AnimationView()
+                }else {
+                    ScrollView {
+                        VStack {
+                            ForEach(viewModel.cardNames.indices, id: \.self) { index in
+                                NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
+                                                                           cardId:viewModel.cardIds[index])) {
+                                    
+                                    CardView(isEditing: $isEditing, title:viewModel.cardNames[index],image: viewModel.selectedFlag[index], onDelete: {
+                                        if isEditing {
+                                            viewModel.deleteCard(at: index)
+                                        }
+                                    })
+                                    .foregroundStyle(.white)
+                                }
                             }
+                            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                         }
-                        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                     }
                 }
-                
                 VStack {
                     Spacer()
                     HStack {
@@ -47,7 +50,7 @@ struct HomeScreenView: View {
                             ArcMenuButton(buttons: ["circle", "star", "bell", "bookmark"])
                                 .padding(16)
                         }
-                       
+                        
                     }
                 }
             }
@@ -81,12 +84,13 @@ struct HomeScreenView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                    
                     .sheet(isPresented: $isSheetPresented) {
-                        PlusView {
+                        PlusView(completion: {
                             Task {
                                 await viewModel.fetchCardName()
                             }
-                        }
+                        })
                     }
                 }
             }

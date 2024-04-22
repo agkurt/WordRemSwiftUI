@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct PlusView: View {
+    
     @StateObject var viewModel = PlusViewModel()
     @Environment(\.dismiss) private var dismiss
     var completion: () -> Void
+    
     init(completion: @escaping () -> Void) {
         self.completion = completion
     }
@@ -19,14 +21,15 @@ struct PlusView: View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                VStack {
+                VStack(alignment:.center) {
                     FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
-                    Spacer()
                     TextFieldView(text: $viewModel.cardName, placeholder: "Card name")
                         .shadow(radius: 10)
+                        .padding()
                     Button(action: {
                         Task {
                             await viewModel.addCardName()
+                            completion()
                         }
                         dismiss()
                     }, label: {
@@ -34,6 +37,7 @@ struct PlusView: View {
                             .padding()
                     })
                     .disabled(viewModel.cardName.isEmpty)
+                    Spacer()
                 }
             }
         }

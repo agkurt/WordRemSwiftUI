@@ -12,24 +12,36 @@ struct FlagSelectionView: View {
     @Binding var selectedFlag:FlagModel
     
     var body: some View {
-        TabView(selection: $selectedFlag) {
-            ForEach(FlagModel.allCases, id: \.self) { flag in
-                VStack {
-                    Image(flag.rawValue)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .frame(width: 180, height: 180)
-                    Text(flag.rawValue.capitalized)
-                        .foregroundColor(selectedFlag == flag ? .blue : .black)
-                        .font(selectedFlag == flag ? .headline : .subheadline)
-                    Spacer()
+        NavigationStack {
+            VStack {
+                TabView(selection: $selectedFlag) {
+                    ForEach(FlagModel.allCases, id: \.self) { flag in
+                        VStack {
+                            Image(flag.rawValue)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .frame(width: 180, height: 180)
+                            Text(flag.rawValue.capitalized)
+                                .foregroundColor(selectedFlag == flag ? .blue : .black)
+                                .font(selectedFlag == flag ? .headline : .subheadline)
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .tag(flag)
+                    }
                 }
-                .frame(maxWidth: .infinity)
-                .tag(flag)
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .padding()
             }
         }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-        .padding()
     }
 }
+
+
+struct FlagSelectionView_Previews: PreviewProvider {
+    static var previews: some View {
+        FlagSelectionView(selectedFlag: .constant(.china))
+    }
+}
+

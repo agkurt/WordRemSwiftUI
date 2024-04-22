@@ -10,6 +10,7 @@ import SwiftUI
 struct RegisterScreenView: View {
     
     @StateObject var viewModel = RegisterScreenViewModel()
+    @StateObject var homeScreenViewModel = HomeScreenViewModel()
     @FocusState var focusedField: FocusableField?
     @Environment(\.colorScheme) private var colorScheme
     @State var isRegisterSuccess: Bool = false
@@ -89,7 +90,7 @@ struct RegisterScreenView: View {
             }
             .onReceive(viewModel.$isRegisterSuccess) { success in
                 if success {
-                   _ = HomeScreenView()
+                    _ = HomeScreenView(viewModel: homeScreenViewModel)
                 }
             }
         }

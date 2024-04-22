@@ -30,7 +30,7 @@ struct ArcMenuButton: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(25)
             }
-        }.buttonStyle(PlainButtonStyle()) // Bu satırı ekleyin
+        }.buttonStyle(PlainButtonStyle())
 
     }
     

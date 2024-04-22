@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803743E2BD7007200BF9047 /* AnimationView.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
 		E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */; };
 		E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */; };
@@ -142,6 +143,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E803743E2BD7007200BF9047 /* AnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationView.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
 		E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionApiService.swift; sourceTree = "<group>"; };
@@ -703,6 +705,7 @@
 				E855B6002B8E698E009BF5E2 /* LineView.swift */,
 				E88AB2612B8EB6C70026823A /* CardTextField.swift */,
 				E87F28F82BD6B21A0019D520 /* ArcMenuButton.swift */,
+				E803743E2BD7007200BF9047 /* AnimationView.swift */,
 			);
 			path = HelperScreen;
 			sourceTree = "<group>";
@@ -907,6 +910,7 @@
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E853ACA42BA3EEE8003C988A /* GeminiAIView.swift in Sources */,
 				E8C555762BC4A9BD0086FF54 /* ReminderCalculator.swift in Sources */,
+				E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */,
 				E843E0BD2B98172E006B1A1C /* NewsViewModel.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
 				E8F1A61C2B9BF65F00E4E533 /* SettingImage.swift in Sources */,

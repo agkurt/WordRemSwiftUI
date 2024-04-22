@@ -26,11 +26,9 @@ struct CardTextField: View {
     private func getColorBasedOnScheme() -> Color  {
         switch colorScheme {
         case .light:
-            return Color.init(hex: "#a2a7ac")
-
+            return Color.init(hex: "#f5f5f6")
         case .dark:
             return Color.init(hex: "#1c2127")
-            
         default:
             return Color.init(hex:"#313a45")
         }
