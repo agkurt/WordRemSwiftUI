@@ -47,6 +47,7 @@
 		E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879EC672B3B3E2C003534B5 /* RegisterScreenView.swift */; };
 		E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC692B3B3E2E003534B5 /* Assets.xcassets */; };
 		E879EC6D2B3B3E2E003534B5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */; };
+		E87F28F92BD6B21A0019D520 /* ArcMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87F28F82BD6B21A0019D520 /* ArcMenuButton.swift */; };
 		E88585FB2BC0B215000531B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88585FA2BC0B215000531B5 /* ContentView.swift */; };
 		E88A501D2B9C9B0300027462 /* CardDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88A501C2B9C9B0300027462 /* CardDetailViewModel.swift */; };
 		E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */; };
@@ -137,6 +138,7 @@
 		E8F1A6172B9BF54E00E4E533 /* WidgetSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A6162B9BF54E00E4E533 /* WidgetSettingView.swift */; };
 		E8F1A61A2B9BF62F00E4E533 /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A6192B9BF62F00E4E533 /* Setting.swift */; };
 		E8F1A61C2B9BF65F00E4E533 /* SettingImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A61B2B9BF65F00E4E533 /* SettingImage.swift */; };
+		E8F7B6842BD5ECE700C74B4F /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F7B6832BD5ECE700C74B4F /* CardViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -182,6 +184,7 @@
 		E879EC672B3B3E2C003534B5 /* RegisterScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterScreenView.swift; sourceTree = "<group>"; };
 		E879EC692B3B3E2E003534B5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E87F28F82BD6B21A0019D520 /* ArcMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcMenuButton.swift; sourceTree = "<group>"; };
 		E88585FA2BC0B215000531B5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E88A501C2B9C9B0300027462 /* CardDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailViewModel.swift; sourceTree = "<group>"; };
 		E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
@@ -243,6 +246,7 @@
 		E8F1A6162B9BF54E00E4E533 /* WidgetSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSettingView.swift; sourceTree = "<group>"; };
 		E8F1A6192B9BF62F00E4E533 /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
 		E8F1A61B2B9BF65F00E4E533 /* SettingImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingImage.swift; sourceTree = "<group>"; };
+		E8F7B6832BD5ECE700C74B4F /* CardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -657,6 +661,7 @@
 				E88AB2652B8EB7CB0026823A /* CardPlusViewModel.swift */,
 				E88A501C2B9C9B0300027462 /* CardDetailViewModel.swift */,
 				E8E2546B2BC3A0DC00AACD0D /* ReminderViewModel.swift */,
+				E8F7B6832BD5ECE700C74B4F /* CardViewModel.swift */,
 			);
 			path = CardPlus;
 			sourceTree = "<group>";
@@ -697,6 +702,7 @@
 				E8C02A512B3C91E600B1D5AF /* IconImageView.swift */,
 				E855B6002B8E698E009BF5E2 /* LineView.swift */,
 				E88AB2612B8EB6C70026823A /* CardTextField.swift */,
+				E87F28F82BD6B21A0019D520 /* ArcMenuButton.swift */,
 			);
 			path = HelperScreen;
 			sourceTree = "<group>";
@@ -890,12 +896,14 @@
 				E8624A6A2B9A6D9E00425793 /* LineForTranslateView.swift in Sources */,
 				E88AB2622B8EB6C70026823A /* CardTextField.swift in Sources */,
 				E8311AB72BD52FB3009C455C /* FlagModel.swift in Sources */,
+				E87F28F92BD6B21A0019D520 /* ArcMenuButton.swift in Sources */,
 				E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */,
 				E82CE3282BA6790600B552F9 /* NotificationManager.swift in Sources */,
 				E84AA1B82B7A0B1A00823B97 /* LoginScreenViewModel.swift in Sources */,
 				E84AA1B62B7A081500823B97 /* LoginScreenView.swift in Sources */,
 				E84CC1942B9255F90066FF96 /* AppDelegate.swift in Sources */,
 				E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */,
+				E8F7B6842BD5ECE700C74B4F /* CardViewModel.swift in Sources */,
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E853ACA42BA3EEE8003C988A /* GeminiAIView.swift in Sources */,
 				E8C555762BC4A9BD0086FF54 /* ReminderCalculator.swift in Sources */,

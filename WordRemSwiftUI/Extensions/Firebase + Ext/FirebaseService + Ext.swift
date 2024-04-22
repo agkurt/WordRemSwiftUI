@@ -10,20 +10,19 @@ import Firebase
 
 extension FirebaseService {
     
-    func deleteCards() async throws {
+    func deleteCard(withId cardId: String) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
         
-        let collectionRef = Firestore.firestore().collection("users").document(uid).collection("cards")
-        let documents = try await collectionRef.getDocuments()
+        let documentRef = Firestore.firestore().collection("users").document(uid).collection("cards").document(cardId)
         
-        for document in documents.documents {
-            do {
-                try await collectionRef.document(document.documentID).delete()
-            } catch {
-                print("Error deleting document: \(error.localizedDescription)")
-            }
+        do {
+            try await documentRef.delete()
+        } catch {
+            print("Error deleting document: \(error.localizedDescription)")
+            throw error
         }
     }
 }
+

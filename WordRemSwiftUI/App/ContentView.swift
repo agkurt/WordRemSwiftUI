@@ -12,18 +12,18 @@ struct ContentView: View {
     @ObservedObject private var manager = NotificationManager()
     @StateObject var authManager = AuthManager()
     @StateObject private var loginViewModel = LoginScreenViewModel(authManager: AuthManager())
-    @StateObject var sentenceViewModel: SentenceViewModel
+    @StateObject var sentenceViewModel = SentenceViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some View {
         VStack {
             if authManager.userIsLoggedIn {
                 HomeScreenView()
-                    .environmentObject(sentenceViewModel)
             } else {
                 LoginScreenView()
             }
         }
+        .environmentObject(sentenceViewModel)
         .environmentObject(authManager)
         .onAppear(perform: {
             Task {

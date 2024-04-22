@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct FlagSelectionView: View {
-    @Binding var selectedFlag: FlagModel
+    
+    @Binding var selectedFlag:FlagModel
     
     var body: some View {
         TabView(selection: $selectedFlag) {

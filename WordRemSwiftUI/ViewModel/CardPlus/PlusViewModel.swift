@@ -11,9 +11,10 @@ class PlusViewModel:ObservableObject {
     
     @Published public var cardName = ""
     @Published var isLoading = false
+    @Published var selectedFlag:FlagModel = .turkey
     
     func addCardName() async {
-        await FirebaseService.shared.addCardName(name: cardName)
+        await FirebaseService.shared.addCardNameAndFlag(name: cardName, selectedFlag: selectedFlag)
         OperationQueue.main.addOperation {
             self.isLoading = true
         }

@@ -14,7 +14,8 @@ struct HomeScreenView: View {
     @State private var selectedCard: String = ""
     @EnvironmentObject var authManager: AuthManager
     @State private var isSheetPresented = false
-    @State var isEditing:Bool = false
+    @State var isEditing: Bool = false
+    @State var isArcMenuExpanded: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -26,16 +27,27 @@ struct HomeScreenView: View {
                             NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
                                                                        cardId:viewModel.cardIds[index])) {
                                 
-                                CardView(title:viewModel.cardNames[index],onDelete: {
+                                CardView(isEditing: $isEditing, title:viewModel.cardNames[index],image: viewModel.selectedFlag[index], onDelete: {
                                     if isEditing {
                                         viewModel.deleteCard(at: index)
                                     }
-                                }, isEditing: $isEditing)
-                                
+                                })
                                 .foregroundStyle(.white)
                             }
                         }
                         .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                    }
+                }
+                
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            ArcMenuButton(buttons: ["circle", "star", "bell", "bookmark"])
+                                .padding(16)
+                        }
+                       
                     }
                 }
             }
@@ -81,3 +93,6 @@ struct HomeScreenView: View {
         }
     }
 }
+
+
+

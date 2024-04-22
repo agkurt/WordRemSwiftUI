@@ -85,44 +85,45 @@ class FirebaseService: ObservableObject {
         }
     }
     
-    func addCardName(name:String) async  {
-            guard let uid = Auth.auth().currentUser?.uid else {
-                return
-            }
-            
-            do {
-                _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name])
-                
-            }catch {
-                print("Error fetching data: \(error.localizedDescription)")
-            }
-        }
-    
-    func fetchCardName() async -> ([String], [String]) {
+    func addCardNameAndFlag(name:String,selectedFlag:FlagModel) async  {
         guard let uid = Auth.auth().currentUser?.uid else {
-            return ([], [])
+            return
+        }
+        let flagString = selectedFlag.rawValue
+        
+        do {
+            _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name,"selectedFlag":flagString])
+        }catch {
+            print("Error fetching data: \(error.localizedDescription)")
+        }
+    }
+    
+    func fetchCardName() async throws -> [Card] {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return []
         }
         
         let db = Firestore.firestore()
-        var cardNames: [String] = []
-        var cardIds: [String] = []
+        var cards: [Card] = []
         
         do {
             let querySnapshot = try await db.collection("users").document(uid).collection("cards").getDocuments()
             for document in querySnapshot.documents {
-                if let cardName = document.data()["cardName"] as? String {
-                    cardNames.append(cardName)
-                    cardIds.append(document.documentID)
+                if let cardName = document.data()["cardName"] as? String,
+                   let flagString = document.data()["selectedFlag"] as? String,
+                   let flag = FlagModel(rawValue: flagString) {
+                    let card = Card(id: document.documentID, name: cardName, selectedFlag: flag)
+                    cards.append(card)
                 }
-                
             }
         } catch {
             print("Error getting documents: \(error)")
         }
         
-        return (cardNames, cardIds)
+        return cards
     }
-
+    
+    
     
     func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async throws {
         
@@ -146,25 +147,24 @@ class FirebaseService: ObservableObject {
         }
         
         var wordInfo = WordInfo(names: [], means: [], descriptions: [])
-
+        
         let db = Firestore.firestore()
         
         do {
             let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").getDocuments()
             
             for document in querySnapshot.documents {
-                   if let wordName = document.data()["wordName"] as? String,
-                      let wordMean = document.data()["wordMean"] as? String,
-                      let wordDescription = document.data()["wordDescription"] as? String {
-                       wordInfo.names.append(wordName)
-                       wordInfo.means.append(wordMean)
-                       wordInfo.descriptions.append(wordDescription)
-                   }
-               }
+                if let wordName = document.data()["wordName"] as? String,
+                   let wordMean = document.data()["wordMean"] as? String,
+                   let wordDescription = document.data()["wordDescription"] as? String {
+                    wordInfo.names.append(wordName)
+                    wordInfo.means.append(wordMean)
+                    wordInfo.descriptions.append(wordDescription)
+                }
+            }
         } catch {
             print("Error getting documents: \(error)")
         }
         return wordInfo
     }
-  
 }

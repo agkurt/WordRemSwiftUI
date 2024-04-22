@@ -9,15 +9,17 @@ import SwiftUI
 
 struct CardView: View {
     
-    var title: String
-    var onDelete: () -> Void
     @Binding var isEditing: Bool
+    @StateObject var viewModel = PlusViewModel()
+    var title: String
+    var image:String
+    var onDelete: () -> Void
     
     var body: some View {
         ZStack {
             VStack(spacing: 10) {
                 Spacer()
-                Image(systemName: "pencil")
+                Image(image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: 100,maxHeight: 100)

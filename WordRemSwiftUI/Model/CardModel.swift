@@ -10,4 +10,6 @@ import Foundation
 struct Card: Identifiable {
     var id: String
     var name: String
+    var selectedFlag: FlagModel
 }
+    

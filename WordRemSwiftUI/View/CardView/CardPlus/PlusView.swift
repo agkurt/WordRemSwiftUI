@@ -8,13 +8,9 @@
 import SwiftUI
 
 struct PlusView: View {
-    
     @StateObject var viewModel = PlusViewModel()
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedFlag: FlagModel = .turkey
-    
     var completion: () -> Void
-    
     init(completion: @escaping () -> Void) {
         self.completion = completion
     }
@@ -24,7 +20,7 @@ struct PlusView: View {
             ZStack {
                 LinearBackgroundView()
                 VStack {
-                    FlagSelectionView(selectedFlag: $selectedFlag)
+                    FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
                     Spacer()
                     TextFieldView(text: $viewModel.cardName, placeholder: "Card name")
                         .shadow(radius: 10)
@@ -39,16 +35,7 @@ struct PlusView: View {
                     })
                     .disabled(viewModel.cardName.isEmpty)
                 }
-                .onDisappear {
-                    self.completion()
-                }
-                .padding()
             }
-            .navigationTitle("PlusView")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-        .onTapGesture {
-            UIApplication.shared.hideKeyboard()
         }
     }
 }
