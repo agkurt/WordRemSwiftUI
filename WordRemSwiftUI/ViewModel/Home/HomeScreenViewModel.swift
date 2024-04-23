@@ -48,7 +48,7 @@ class HomeScreenViewModel: ObservableObject {
                     self.cards.remove(at: index)
                     self.cardNames.remove(at: index)
                     self.cardIds.remove(at: index)
-                    self.selectedFlag.remove(at: index) // Bayrakları da güncelle
+                    self.selectedFlag.remove(at: index)
                 }
             } catch {
                 print("Error deleting card: \(error.localizedDescription)")

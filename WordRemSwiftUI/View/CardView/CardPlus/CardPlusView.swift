@@ -11,6 +11,7 @@ struct CardPlusView: View {
     
     @StateObject private var viewModel = CardPlusViewModel()
     @ObservedObject private var reminderViewModel = ReminderViewModel()
+    @EnvironmentObject var plusViewModel:PlusViewModel
     @Environment(\.dismiss) private var dismiss
     var cardId: String
     var completion: () -> Void
@@ -32,10 +33,11 @@ struct CardPlusView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack(spacing: 20) {
                         CardTextField(text: $viewModel.wordName, placeholder: "Word")
-                        CardTextField(text: $viewModel.wordMean, placeholder: "Word Mean ")
+                        CardTextField(text: $viewModel.translatedText, placeholder: "Word Mean ")
                         CardTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence")
                     }
                     .padding()
+                    
                     Button(action: {
                         Task {
                             await viewModel.createSentenceUseToWord(name: viewModel.wordName)

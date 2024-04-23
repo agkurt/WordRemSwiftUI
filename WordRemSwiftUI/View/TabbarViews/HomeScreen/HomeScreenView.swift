@@ -11,7 +11,6 @@ struct HomeScreenView: View {
     
     @ObservedObject var viewModel: HomeScreenViewModel
     @State private var currentPage: Int = 0
-    @State private var selectedCard: String = ""
     @EnvironmentObject var authManager: AuthManager
     @State private var isSheetPresented = false
     @State var isEditing: Bool = false

@@ -85,14 +85,14 @@ class FirebaseService: ObservableObject {
         }
     }
     
-    func addCardNameAndFlag(name:String,selectedFlag:FlagModel) async  {
+    func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async  {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
         let flagString = selectedFlag.rawValue
         
         do {
-            _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name,"selectedFlag":flagString])
+            _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name,"selectedFlag":flagString,"targetLang":targetLang,"sourceLang":sourceLang])
         }catch {
             print("Error fetching data: \(error.localizedDescription)")
         }

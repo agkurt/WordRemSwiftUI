@@ -28,7 +28,7 @@ struct PlusView: View {
                         .padding()
                     Button(action: {
                         Task {
-                            await viewModel.addCardName()
+                            await viewModel.addCardNameInfo()
                             completion()
                         }
                         dismiss()
