@@ -17,17 +17,17 @@ struct CardView: View {
     
     var body: some View {
         ZStack {
-            VStack(spacing: 10) {
-                Spacer()
-                Image(image)
+            VStack(spacing: 15) {
+                    Spacer()
+                    Image(image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: 100,maxHeight: 100)
-                Spacer()
                 Text(title)
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
+                Spacer()
             }
             if isEditing {
                 VStack {
@@ -46,8 +46,14 @@ struct CardView: View {
         .frame(maxWidth: .infinity)
         .background(Color(hex: "#1c2127"))
         .cornerRadius(20)
-        .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5) 
+        .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
         .padding()
+    }
+}
+
+struct CardView_Previews: PreviewProvider {
+    static var previews: some View {
+        CardView(isEditing: .constant(false), title: "Title", image: "imageName", onDelete: {})
     }
 }
 

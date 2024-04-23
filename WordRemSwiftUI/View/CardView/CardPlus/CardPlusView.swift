@@ -31,17 +31,18 @@ struct CardPlusView: View {
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack(spacing: 20) {
-                        CardTextField(text: $viewModel.wordName, placeholder: "Word name")
-                        CardTextField(text: $viewModel.wordMean, placeholder: "Word mean ")
+                        CardTextField(text: $viewModel.wordName, placeholder: "Word")
+                        CardTextField(text: $viewModel.wordMean, placeholder: "Word Mean ")
                         CardTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence")
                     }
+                    .padding()
                     Button(action: {
                         Task {
                             await viewModel.createSentenceUseToWord(name: viewModel.wordName)
                             viewModel.wordDescription = viewModel.examplesWord?.examples.prefix(1).first ?? ""
                         }
                     }, label: {
-                        Text("get example sentence for word name")
+                        Text("Create example sentence")
                     })
                     
                     Text(viewModel.wordDescription)

@@ -19,7 +19,7 @@ struct CardTextField: View {
             .frame(maxWidth: .infinity,alignment:.center)
             .padding()
             .background(getColorBasedOnScheme())
-            .foregroundColor(.white)
+            .foregroundColor(.primary)
             .cornerRadius(30)
     }
     
