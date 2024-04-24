@@ -18,10 +18,8 @@ class HomeScreenViewModel: ObservableObject {
     
     func fetchCardName() async {
         do {
-            isLoading = true
             let fetchedCards = try await FirebaseService.shared.fetchCardName()
             OperationQueue.main.addOperation {
-                self.isLoading = false
                 self.cards = fetchedCards
                 self.selectedFlag = fetchedCards.map { $0.selectedFlag.rawValue }
                 self.cardNames = fetchedCards.map { $0.name }
@@ -30,7 +28,6 @@ class HomeScreenViewModel: ObservableObject {
         } catch {
             print("Error fetching cards: \(error.localizedDescription)")
             DispatchQueue.main.async {
-                self.isLoading = false
             }
         }
     }

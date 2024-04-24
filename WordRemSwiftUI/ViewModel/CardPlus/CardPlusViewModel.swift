@@ -8,14 +8,13 @@
 import SwiftUI
 
 class CardPlusViewModel: ObservableObject {
-    @Published public var wordName: String = ""
-    @Published public var wordMean: String = ""
-    @Published public var wordDescription: String = ""
-    @Published var examplesWord:ExampleWord?
     
+    @Published var wordName: String = ""
+    @Published var wordMean: String = ""
+    @Published var wordDescription: String = ""
+    @Published var examplesWord:ExampleWord?
     @Published var isDelete = false
-    @Published var translatedText = ""
-
+    
     func addWordToCard(cardId:String) async {
         do {
             try await FirebaseService.shared.addWordToCard(cardId: cardId, wordName: wordName, wordMean: wordMean, wordDescription: wordDescription)
@@ -26,17 +25,17 @@ class CardPlusViewModel: ObservableObject {
     }
     
     func createSentenceUseToWord(name:String) async {
+        
         URLSessionApiService.shared.getWords(word: name) { result in
             switch result {
             case .success(let data):
-                OperationQueue.main.addOperation {
+                DispatchQueue.main.async {
                     self.examplesWord = data
                 }
-                
             case .failure(let error):
-                print("error fetch the words")
                 print(error)
             }
         }
     }
 }
+

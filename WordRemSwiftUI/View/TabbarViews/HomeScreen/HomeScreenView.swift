@@ -20,27 +20,24 @@ struct HomeScreenView: View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                if viewModel.isLoading {
-                    AnimationView()
-                }else {
-                    ScrollView {
-                        VStack {
-                            ForEach(viewModel.cardNames.indices, id: \.self) { index in
-                                NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
-                                                                           cardId:viewModel.cardIds[index])) {
-                                    
-                                    CardView(isEditing: $isEditing, title:viewModel.cardNames[index],image: viewModel.selectedFlag[index], onDelete: {
-                                        if isEditing {
-                                            viewModel.deleteCard(at: index)
-                                        }
-                                    })
-                                    .foregroundStyle(.white)
-                                }
+                ScrollView {
+                    VStack {
+                        ForEach(viewModel.cardNames.indices, id: \.self) { index in
+                            NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
+                                                                       cardId:viewModel.cardIds[index])) {
+                                
+                                CardView(isEditing: $isEditing, title:viewModel.cardNames[index],image: viewModel.selectedFlag[index], onDelete: {
+                                    if isEditing {
+                                        viewModel.deleteCard(at: index)
+                                    }
+                                })
+                                .foregroundStyle(.white)
                             }
-                            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                         }
+                        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                     }
                 }
+                
                 VStack {
                     Spacer()
                     HStack {
