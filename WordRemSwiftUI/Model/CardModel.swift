@@ -8,8 +8,10 @@
 import Foundation
 
 struct Card: Identifiable {
-    var id: String
-    var name: String
-    var selectedFlag: FlagModel
+    var id: String?
+    var name: String?
+    var selectedFlag: FlagModel?
+    var targetLang:String?
+    var sourceLang:String?
 }
     

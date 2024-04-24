@@ -12,9 +12,11 @@ struct CardPlusView: View {
     @StateObject private var viewModel = CardPlusViewModel()
     @StateObject private var reminderViewModel = ReminderViewModel()
     @Environment(\.dismiss) private var dismiss
+    
     var cardId: String
     var completion: () -> Void
     @State private var isOnToggle = false
+    
     init(completion: @escaping () -> Void, cardId: String) {
         self.completion = completion
         self.cardId = cardId
@@ -31,8 +33,15 @@ struct CardPlusView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack(spacing: 20) {
                         CardTextField(text: $viewModel.wordName, placeholder: "Word")
-                        CardTextField(text: $viewModel.wordMean, placeholder: "Word Mean ")
-                        
+                        Button {
+                            Task {
+                                await viewModel.translateForWordName(targetLang: viewModel.targetLang.first ?? "", sourceLang: viewModel.sourceLang.first ?? "", text: viewModel.wordName)
+                            }
+                        } label: {
+                            Text("Translate to word")
+                        }
+
+                        CardTextField(text: $viewModel.translatedText, placeholder: "Word Mean ")
                         Button(action: {
                             Task {
                                 await viewModel.createSentenceUseToWord(name: viewModel.wordName)
@@ -42,7 +51,6 @@ struct CardPlusView: View {
                             Text("Create example sentence")
                             
                         })
-                        
                         CardTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence")
                     }
                     .padding()
@@ -77,6 +85,11 @@ struct CardPlusView: View {
                         .datePickerStyle(.compact)
                     }
                     Spacer()
+                }
+                .onAppear {
+                    Task {
+                        await viewModel.fetchLanguageInfo(cardId: cardId)
+                    }
                 }
                 .onDisappear {
                     self.completion()

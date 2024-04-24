@@ -15,6 +15,6 @@ class PlusViewModel:ObservableObject {
     @Published var targetLanguage: Language = .turkish
     
     func addCardNameInfo() async {
-        await FirebaseService.shared.addCardNameInfo(name: cardName, selectedFlag: selectedFlag,sourceLang: sourceLanguage.rawValue,targetLang: targetLanguage.rawValue)
+        await FirebaseService.shared.addCardNameInfo(name: cardName, selectedFlag: selectedFlag,sourceLang: sourceLanguage.code,targetLang: targetLanguage.code)
     }
 }

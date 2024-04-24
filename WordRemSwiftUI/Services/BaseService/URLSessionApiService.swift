@@ -69,7 +69,8 @@ class URLSessionApiService {
         
         let parameters: [String: Any] = [
             "text": [text],
-            "target_lang": targetLang
+            "target_lang": targetLang,
+            "source_lang": sourceLang
         ]
         
         let jsonData = try? JSONSerialization.data(withJSONObject: parameters)

@@ -14,6 +14,9 @@ class CardPlusViewModel: ObservableObject {
     @Published var wordDescription: String = ""
     @Published var examplesWord:ExampleWord?
     @Published var isDelete = false
+    @Published var sourceLang:[String] = []
+    @Published var targetLang:[String] = []
+    @Published var translatedText = ""
     
     func addWordToCard(cardId:String) async {
         do {
@@ -34,6 +37,38 @@ class CardPlusViewModel: ObservableObject {
                 }
             case .failure(let error):
                 print(error)
+            }
+        }
+    }
+    
+    func fetchLanguageInfo(cardId:String) async {
+        do {
+            let fetch = try await FirebaseService.shared.fetchSourceAndTargetLang(cardId: cardId)
+            OperationQueue.main.addOperation {
+                self.sourceLang = fetch.map { $0.sourceLang ?? ""}
+                self.targetLang = fetch.map { $0.targetLang ?? ""}
+            }
+        }catch {
+            print(error)
+            print(error.localizedDescription)
+        }
+    }
+    
+    func translateForWordName(targetLang:String, sourceLang:String,text:String) async {
+        URLSessionApiService.shared.getTranslate(text: text, targetLang: targetLang, sourceLang: sourceLang) { result in
+            switch result {
+            case .success(let translationResponse):
+                print(translationResponse)
+                OperationQueue.main.addOperation {
+                    if let translation = translationResponse.translations.first {
+                        self.translatedText = translation.text
+                    } else {
+                        print("No translation found.")
+                    }
+                }
+            case .failure(let error):
+                print(error)
+                print(error.localizedDescription)
             }
         }
     }

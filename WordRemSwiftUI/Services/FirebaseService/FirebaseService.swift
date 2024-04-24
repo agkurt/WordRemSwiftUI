@@ -84,6 +84,7 @@ class FirebaseService: ObservableObject {
             }
         }
     }
+ 
     
     func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async  {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -124,6 +125,28 @@ class FirebaseService: ObservableObject {
     }
     
     
+    func fetchSourceAndTargetLang(cardId:String) async throws -> [Card] {
+      guard let uid = Auth.auth().currentUser?.uid else {
+        return []
+      }
+      
+      let db = Firestore.firestore()
+      var cards: [Card] = []
+      
+      do {
+        let documentSnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).getDocument()
+          if let sourceLang = documentSnapshot.data()?["sourceLang"] as? Language.RawValue,
+             let targetLang = documentSnapshot.data()?["targetLang"] as? Language.RawValue {
+              let card = Card(id: documentSnapshot.documentID, targetLang: targetLang, sourceLang: sourceLang)
+          cards.append(card)
+        }
+      } catch {
+        print("Error getting documents: \(error)")
+      }
+      
+      return cards
+    }
+
     
     func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async throws {
         

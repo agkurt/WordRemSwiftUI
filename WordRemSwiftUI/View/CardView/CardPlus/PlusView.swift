@@ -23,6 +23,33 @@ struct PlusView: View {
                 LinearBackgroundView()
                 VStack(alignment:.center) {
                     FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
+                    Text("Translate işlemi için dil seçimi ")
+                    HStack {
+                        Text("Source Language")
+                        Spacer()
+                        Picker("Source Language", selection: $viewModel.sourceLanguage) {
+                            ForEach(Language.allCases, id: \.self) { language in
+                                Text(language.rawValue)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .padding()
+                    }
+                    .padding()
+                    
+                    HStack {
+                        Text("Target Language")
+                        Spacer()
+                        Picker("Target Language", selection: $viewModel.targetLanguage) {
+                            ForEach(Language.allCases, id: \.self) { language in
+                                Text(language.rawValue)
+                            }
+                        }
+                        
+                        .pickerStyle(MenuPickerStyle())
+                        .padding()
+                    }
+                    .padding()
                     TextFieldView(text: $viewModel.cardName, placeholder: "Card name")
                         .shadow(radius: 10)
                         .padding()

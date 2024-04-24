@@ -21,9 +21,9 @@ class HomeScreenViewModel: ObservableObject {
             let fetchedCards = try await FirebaseService.shared.fetchCardName()
             OperationQueue.main.addOperation {
                 self.cards = fetchedCards
-                self.selectedFlag = fetchedCards.map { $0.selectedFlag.rawValue }
-                self.cardNames = fetchedCards.map { $0.name }
-                self.cardIds = fetchedCards.map { $0.id }
+                self.selectedFlag = fetchedCards.map { $0.selectedFlag?.rawValue ?? "" }
+                self.cardNames = fetchedCards.map { $0.name ?? "" }
+                self.cardIds = fetchedCards.map { $0.id ?? "" }
             }
         } catch {
             print("Error fetching cards: \(error.localizedDescription)")
