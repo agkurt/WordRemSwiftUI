@@ -15,7 +15,7 @@ struct TextFieldView: View {
     var body: some View {
         TextField(placeholder, text: $text)
             .padding()
-            .autocapitalization(.none)
+            .autocapitalization(.allCharacters)
             .background(getColorBasedOnScheme())
             .disableAutocorrection(true)
             .font(Font.system(size: 18, weight: .regular))

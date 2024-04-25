@@ -108,7 +108,7 @@ struct CardPlusView: View {
                     }, label: {
                         Text("Done")
                     })
-                    .disabled(viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty || viewModel.wordDescription.isEmpty)
+                    .disabled(viewModel.wordName.isEmpty || viewModel.translatedText.isEmpty || viewModel.wordDescription.isEmpty)
                 }
             }
         }
