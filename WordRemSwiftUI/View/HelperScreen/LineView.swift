@@ -10,17 +10,12 @@ import SwiftUI
 struct LineView: View {
     
     @Environment(\.colorScheme) private var colorScheme
-    @State var textPlace:String
     
     var body: some View {
         HStack {
             Spacer()
                 .frame(height: 1)
                 .background(getColorBasedOnScheme())
-            
-            Text(textPlace)
-                .padding(.horizontal)
-                .frame(width: 170)
             
             Spacer()
                 .frame(height: 1)

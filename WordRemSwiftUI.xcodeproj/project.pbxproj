@@ -49,6 +49,7 @@
 		E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC692B3B3E2E003534B5 /* Assets.xcassets */; };
 		E879EC6D2B3B3E2E003534B5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */; };
 		E87F28F92BD6B21A0019D520 /* ArcMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87F28F82BD6B21A0019D520 /* ArcMenuButton.swift */; };
+		E8848DE72BDB5BC700803E6B /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8848DE62BDB5BC700803E6B /* ProfileViewModel.swift */; };
 		E88585FB2BC0B215000531B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88585FA2BC0B215000531B5 /* ContentView.swift */; };
 		E88A501D2B9C9B0300027462 /* CardDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88A501C2B9C9B0300027462 /* CardDetailViewModel.swift */; };
 		E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */; };
@@ -58,10 +59,15 @@
 		E88AB2682B8EBE660026823A /* CardFocusableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB2672B8EBE650026823A /* CardFocusableField.swift */; };
 		E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88CF0082B817DE900B06433 /* FocusableField.swift */; };
 		E8ACFA392BA1D0140075CAA3 /* CardDetailDesignView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ACFA382BA1D0140075CAA3 /* CardDetailDesignView.swift */; };
+		E8AEB01A2BDACEF5004E8664 /* MotherTongueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB0192BDACEF5004E8664 /* MotherTongueView.swift */; };
+		E8AEB01C2BDACF03004E8664 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB01B2BDACF03004E8664 /* OnboardingView.swift */; };
+		E8AEB0252BDB1C22004E8664 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = E8AEB0242BDB1C22004E8664 /* Lottie */; };
+		E8AEB0282BDB1CD7004E8664 /* StartAnimation.json in Resources */ = {isa = PBXBuildFile; fileRef = E8AEB0272BDB1CD7004E8664 /* StartAnimation.json */; };
+		E8AEB02A2BDB1D13004E8664 /* LottieViewAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB0292BDB1D13004E8664 /* LottieViewAnimation.swift */; };
+		E8AEB02D2BDB20A9004E8664 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB02C2BDB20A9004E8664 /* ProfileView.swift */; };
 		E8AF4CA92BD1C8230057262A /* FirebaseService + Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AF4CA82BD1C8230057262A /* FirebaseService + Ext.swift */; };
 		E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488B2B8BDF7B007DA60A /* PlusViewModel.swift */; };
 		E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */; };
-		E8B748942B8C0972007DA60A /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B748932B8C0972007DA60A /* SettingsViewModel.swift */; };
 		E8BE72742B93C89C00900217 /* TranslateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BE72732B93C89C00900217 /* TranslateViewModel.swift */; };
 		E8BE727A2B93C97200900217 /* TranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BE72792B93C97200900217 /* TranslationView.swift */; };
 		E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C02A512B3C91E600B1D5AF /* IconImageView.swift */; };
@@ -187,6 +193,7 @@
 		E879EC692B3B3E2E003534B5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E879EC6C2B3B3E2E003534B5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E87F28F82BD6B21A0019D520 /* ArcMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcMenuButton.swift; sourceTree = "<group>"; };
+		E8848DE62BDB5BC700803E6B /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		E88585FA2BC0B215000531B5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E88A501C2B9C9B0300027462 /* CardDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailViewModel.swift; sourceTree = "<group>"; };
 		E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
@@ -196,10 +203,14 @@
 		E88AB2672B8EBE650026823A /* CardFocusableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFocusableField.swift; sourceTree = "<group>"; };
 		E88CF0082B817DE900B06433 /* FocusableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableField.swift; sourceTree = "<group>"; };
 		E8ACFA382BA1D0140075CAA3 /* CardDetailDesignView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailDesignView.swift; sourceTree = "<group>"; };
+		E8AEB0192BDACEF5004E8664 /* MotherTongueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherTongueView.swift; sourceTree = "<group>"; };
+		E8AEB01B2BDACF03004E8664 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		E8AEB0272BDB1CD7004E8664 /* StartAnimation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = StartAnimation.json; sourceTree = "<group>"; };
+		E8AEB0292BDB1D13004E8664 /* LottieViewAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieViewAnimation.swift; sourceTree = "<group>"; };
+		E8AEB02C2BDB20A9004E8664 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		E8AF4CA82BD1C8230057262A /* FirebaseService + Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseService + Ext.swift"; sourceTree = "<group>"; };
 		E8B7488B2B8BDF7B007DA60A /* PlusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusViewModel.swift; sourceTree = "<group>"; };
 		E8B7488F2B8BFD14007DA60A /* HomeScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenViewModel.swift; sourceTree = "<group>"; };
-		E8B748932B8C0972007DA60A /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		E8BE72732B93C89C00900217 /* TranslateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateViewModel.swift; sourceTree = "<group>"; };
 		E8BE72792B93C97200900217 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationView.swift; sourceTree = "<group>"; };
 		E8C02A512B3C91E600B1D5AF /* IconImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImageView.swift; sourceTree = "<group>"; };
@@ -267,6 +278,7 @@
 				E8E6316A2BD19D4A0043AA48 /* FirebaseDynamicLinks in Frameworks */,
 				E8E631642BD19D4A0043AA48 /* FirebaseCrashlytics in Frameworks */,
 				E8E6317C2BD19D4A0043AA48 /* FirebaseMLModelDownloader in Frameworks */,
+				E8AEB0252BDB1C22004E8664 /* Lottie in Frameworks */,
 				E8E631682BD19D4A0043AA48 /* FirebaseDatabaseSwift in Frameworks */,
 				E8E6316C2BD19D4A0043AA48 /* FirebaseFirestore in Frameworks */,
 				E8E6317A2BD19D4A0043AA48 /* FirebaseInstallations in Frameworks */,
@@ -450,6 +462,7 @@
 		E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				E8AEB0262BDB1CCD004E8664 /* Animations */,
 				E8C02A502B3C91D700B1D5AF /* View */,
 				E86B997F2B51EF5A00538090 /* ViewModel */,
 				E86B997C2B5198B400538090 /* Model */,
@@ -507,6 +520,47 @@
 			path = CardPlus;
 			sourceTree = "<group>";
 		};
+		E8AEB0142BDACE99004E8664 /* OnboardingViews */ = {
+			isa = PBXGroup;
+			children = (
+				E8AEB01B2BDACF03004E8664 /* OnboardingView.swift */,
+				E8AEB0182BDACEBF004E8664 /* MotherTongueView */,
+			);
+			path = OnboardingViews;
+			sourceTree = "<group>";
+		};
+		E8AEB0182BDACEBF004E8664 /* MotherTongueView */ = {
+			isa = PBXGroup;
+			children = (
+				E8AEB0192BDACEF5004E8664 /* MotherTongueView.swift */,
+			);
+			path = MotherTongueView;
+			sourceTree = "<group>";
+		};
+		E8AEB0202BDAEAA7004E8664 /* LottieView */ = {
+			isa = PBXGroup;
+			children = (
+				E8AEB0292BDB1D13004E8664 /* LottieViewAnimation.swift */,
+			);
+			path = LottieView;
+			sourceTree = "<group>";
+		};
+		E8AEB0262BDB1CCD004E8664 /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				E8AEB0272BDB1CD7004E8664 /* StartAnimation.json */,
+			);
+			path = Animations;
+			sourceTree = "<group>";
+		};
+		E8AEB02B2BDB209D004E8664 /* ProfileView */ = {
+			isa = PBXGroup;
+			children = (
+				E8AEB02C2BDB20A9004E8664 /* ProfileView.swift */,
+			);
+			path = ProfileView;
+			sourceTree = "<group>";
+		};
 		E8BA6DCB2B9BDEC2002315C7 /* NewsViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -553,7 +607,7 @@
 		E8BA6DD02B9BDF0E002315C7 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				E8B748932B8C0972007DA60A /* SettingsViewModel.swift */,
+				E8848DE62BDB5BC700803E6B /* ProfileViewModel.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -603,6 +657,9 @@
 		E8C02A502B3C91D700B1D5AF /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E8AEB02B2BDB209D004E8664 /* ProfileView */,
+				E8AEB0202BDAEAA7004E8664 /* LottieView */,
+				E8AEB0142BDACE99004E8664 /* OnboardingViews */,
 				E8BE72752B93C8AB00900217 /* HomeScreen */,
 				E81941A82B8A1FDD0042EBB7 /* CardView */,
 				E8D6F2942B8CBA050017A523 /* SettingsView */,
@@ -765,6 +822,7 @@
 				E8E631852BD19D4A0043AA48 /* FirebaseStorage */,
 				E8E631872BD19D4A0043AA48 /* FirebaseStorageCombine-Community */,
 				E8E6318A2BD19D6A0043AA48 /* GoogleGenerativeAI */,
+				E8AEB0242BDB1C22004E8664 /* Lottie */,
 			);
 			productName = WordRemSwiftUI;
 			productReference = E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */;
@@ -801,6 +859,7 @@
 				E8E6314D2BD19CD00043AA48 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				E8E631522BD19D4A0043AA48 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				E8E631892BD19D6A0043AA48 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
+				E8AEB0232BDB1C22004E8664 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = E879EC632B3B3E2C003534B5 /* Products */;
 			projectDirPath = "";
@@ -819,6 +878,7 @@
 				E8D6F2B12B8DFF400017A523 /* Poppins-ExtraLight.ttf in Resources */,
 				E8D6F2B22B8DFF400017A523 /* Poppins-MediumItalic.ttf in Resources */,
 				E8D6F2AF2B8DFF400017A523 /* Poppins-ExtraBoldItalic.ttf in Resources */,
+				E8AEB0282BDB1CD7004E8664 /* StartAnimation.json in Resources */,
 				E8D6F2B92B8DFF400017A523 /* Poppins-Thin.ttf in Resources */,
 				E8D6F2B42B8DFF400017A523 /* Poppins-Medium.ttf in Resources */,
 				E8D6F2B82B8DFF400017A523 /* Poppins-SemiBoldItalic.ttf in Resources */,
@@ -856,6 +916,7 @@
 				E88AB2682B8EBE660026823A /* CardFocusableField.swift in Sources */,
 				E8F1A6152B9BF53C00E4E533 /* ThemeSettingView.swift in Sources */,
 				E8E1B4E22B7CFF0800AE6CD0 /* KeyboardResponder.swift in Sources */,
+				E8848DE72BDB5BC700803E6B /* ProfileViewModel.swift in Sources */,
 				E8EB12C42B83E73800441F0C /* HomeScreenView.swift in Sources */,
 				E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */,
 				E853ACB02BA51326003C988A /* AIMessage.swift in Sources */,
@@ -877,6 +938,7 @@
 				E8E2546A2BC3A01900AACD0D /* CardReminderView.swift in Sources */,
 				E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */,
 				E8E254682BC39D8F00AACD0D /* wordInfo.swift in Sources */,
+				E8AEB02A2BDB1D13004E8664 /* LottieViewAnimation.swift in Sources */,
 				E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */,
 				E84DEC9B2B8E14950014916C /* CheckBoxStyle.swift in Sources */,
 				E8D774772B8FE9C900E9AB1B /* CardModel.swift in Sources */,
@@ -889,15 +951,18 @@
 				E8AF4CA92BD1C8230057262A /* FirebaseService + Ext.swift in Sources */,
 				E82CE3242BA6394800B552F9 /* UserSettings.swift in Sources */,
 				E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */,
+				E8AEB01C2BDACF03004E8664 /* OnboardingView.swift in Sources */,
 				E8F1A60F2B9BF4E900E4E533 /* RootSettingView.swift in Sources */,
 				E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */,
 				E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */,
 				E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */,
+				E8AEB02D2BDB20A9004E8664 /* ProfileView.swift in Sources */,
 				E843E0BF2B981792006B1A1C /* NewsModel.swift in Sources */,
 				E8ACFA392BA1D0140075CAA3 /* CardDetailDesignView.swift in Sources */,
 				E8F1A61A2B9BF62F00E4E533 /* Setting.swift in Sources */,
 				E8624A6A2B9A6D9E00425793 /* LineForTranslateView.swift in Sources */,
 				E88AB2622B8EB6C70026823A /* CardTextField.swift in Sources */,
+				E8AEB01A2BDACEF5004E8664 /* MotherTongueView.swift in Sources */,
 				E8311AB72BD52FB3009C455C /* FlagModel.swift in Sources */,
 				E87F28F92BD6B21A0019D520 /* ArcMenuButton.swift in Sources */,
 				E879EC682B3B3E2C003534B5 /* RegisterScreenView.swift in Sources */,
@@ -923,7 +988,6 @@
 				E869C0502B9BA64400C18852 /* NewsDetailView.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,
 				E8311AB92BD53A7E009C455C /* FlagSelectionView.swift in Sources */,
-				E8B748942B8C0972007DA60A /* SettingsViewModel.swift in Sources */,
 				E84CC1962B9256780066FF96 /* View+Ext.swift in Sources */,
 				E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */,
 				E843E0B72B9806F7006B1A1C /* Language.swift in Sources */,
@@ -1148,6 +1212,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E8AEB0232BDB1C22004E8664 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.4.3;
+			};
+		};
 		E8E6314D2BD19CD00043AA48 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
@@ -1175,6 +1247,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E8AEB0242BDB1C22004E8664 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E8AEB0232BDB1C22004E8664 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
 		E8E6314E2BD19CD00043AA48 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E8E6314D2BD19CD00043AA48 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;

@@ -32,7 +32,7 @@ struct HomeScreenView: View {
                                     }
                                 })
                                 .foregroundStyle(.white)
-                            }
+                            } 
                         }
                         .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                     }
