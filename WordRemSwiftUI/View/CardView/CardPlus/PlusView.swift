@@ -33,7 +33,7 @@ struct PlusView: View {
                             ForEach(Language.allCases, id: \.self) { language in
                                 Text(language.rawValue)
                             }
-                        }x
+                        }
                         .pickerStyle(MenuPickerStyle())
                         .padding()
                     }

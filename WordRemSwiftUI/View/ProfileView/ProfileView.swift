@@ -17,7 +17,6 @@ struct ProfileView: View {
                 LinearBackgroundView()
                 VStack {
                     LineView()
-                    SelectedLanguage(selectedLanguage: $profileViewModel.motherTongue)
                     Picker("Language", selection: $profileViewModel.motherTongue) {
                         ForEach(Language.allCases, id: \.self) { language in
                             Text(language.rawValue)
