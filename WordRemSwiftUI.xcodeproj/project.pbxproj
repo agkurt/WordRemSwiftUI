@@ -10,6 +10,7 @@
 		E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803743E2BD7007200BF9047 /* AnimationView.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
 		E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */; };
+		E822945E2BDC38B300A46C70 /* SelectedLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */; };
 		E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */; };
 		E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */; };
 		E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */; };
@@ -152,6 +153,7 @@
 		E803743E2BD7007200BF9047 /* AnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationView.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
+		E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedLanguage.swift; sourceTree = "<group>"; };
 		E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionApiService.swift; sourceTree = "<group>"; };
 		E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleWords.swift; sourceTree = "<group>"; };
 		E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceScreenView.swift; sourceTree = "<group>"; };
@@ -557,6 +559,7 @@
 			isa = PBXGroup;
 			children = (
 				E8AEB02C2BDB20A9004E8664 /* ProfileView.swift */,
+				E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */,
 			);
 			path = ProfileView;
 			sourceTree = "<group>";
@@ -956,6 +959,7 @@
 				E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */,
 				E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */,
 				E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */,
+				E822945E2BDC38B300A46C70 /* SelectedLanguage.swift in Sources */,
 				E8AEB02D2BDB20A9004E8664 /* ProfileView.swift in Sources */,
 				E843E0BF2B981792006B1A1C /* NewsModel.swift in Sources */,
 				E8ACFA392BA1D0140075CAA3 /* CardDetailDesignView.swift in Sources */,

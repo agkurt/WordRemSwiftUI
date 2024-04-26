@@ -25,13 +25,15 @@ struct PlusView: View {
                     FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
                     Text("Translate işlemi için dil seçimi ")
                     HStack {
+                        
                         Text("Source Language")
                         Spacer()
+                        
                         Picker("Source Language", selection: $viewModel.sourceLanguage) {
                             ForEach(Language.allCases, id: \.self) { language in
                                 Text(language.rawValue)
                             }
-                        }
+                        }x
                         .pickerStyle(MenuPickerStyle())
                         .padding()
                     }
