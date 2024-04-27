@@ -25,7 +25,6 @@ struct ProfileView: View {
                     .pickerStyle(MenuPickerStyle())
                     .padding()
                     
-                    
                     Button(action: {
                       
                     }, label: {

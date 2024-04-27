@@ -10,27 +10,78 @@ import SwiftUI
 struct SecureFieldView: View {
     @Binding var text: String
     @Environment(\.colorScheme) private var colorScheme
-
+    @FocusState var focused: Bool
+    @State private var isSecureTextEntry: Bool = true
+    var placeholder: String = ""
+    
     var body: some View {
-        VStack {
-            SecureField("Password", text:$text)
-                .padding()
-                .autocapitalization(.none)
-                .background(getColorBasedOnScheme())
-                .disableAutocorrection(true)
-                .font(Font.system(size: 18, weight: .regular))
-                .opacity(0.85)
-                .foregroundStyle(.primary)
-                .clipShape(.rect(cornerRadius: 10))
-                .cornerRadius(30)
+        let isActive = focused || text.count > 0
+        ZStack {
+            if isSecureTextEntry {
+                SecureField("", text:$text)
+                    .font(.custom("Poppins-Light", size: 15))
+                    .padding()
+                    .autocorrectionDisabled(true)
+                    .foregroundColor(.primary)
+                    .cornerRadius(30)
+                    .focused($focused)
+                    .offset(y:10)
+                    .opacity(isActive ? 1 : 0)
+                    .textInputAutocapitalization(.never)
+            } else {
+                TextField("", text: $text)
+                    .font(.custom("Poppins-Light", size: 15))
+                    .padding()
+                    .autocorrectionDisabled(true)
+                    .foregroundColor(.primary)
+                    .cornerRadius(30)
+                    .focused($focused)
+                    .offset(y:10)
+                    .opacity(isActive ? 1 : 0)
+                    .textInputAutocapitalization(.never)
+            }
+            
+            HStack {
+                Spacer()
+                
+                Button(action: {
+                    isSecureTextEntry.toggle()
+                }) {
+                    if isSecureTextEntry {
+                        Image(systemName: "eye")
+                            .foregroundColor(.gray)
+                    } else {
+                        Image(systemName: "eye.slash")
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+            
+            HStack {
+                Text(placeholder)
+                    .foregroundColor(.gray.opacity(5.0))
+                    .frame(height: 14)
+                    .font(.system(size: isActive ? 10 : 14, weight: .regular))
+                    .offset(y: isActive ? -7 : 0)
+                
+                Spacer()
+            }
         }
+        .onTapGesture {
+            focused = true
+        }
+        .animation(.linear(duration: 0.2), value: focused)
+        .frame(maxWidth: .infinity,alignment:.center)
+        .padding(.horizontal, 16)
+        .background(getColorBasedOnScheme())
+        .cornerRadius(30)
     }
     
     private func getColorBasedOnScheme() -> Color  {
         switch colorScheme {
         case .light:
             return Color.init(hex: "#a2a7ac")
-
+            
         case .dark:
             return Color.init(hex: "#1c2127")
             
@@ -40,7 +91,10 @@ struct SecureFieldView: View {
     }
 }
 
-#Preview {
-    let text: Binding<String> = .constant("random")
-    return SecureFieldView(text:text )
+struct SecureFieldView_Previews: PreviewProvider {
+    static var previews: some View {
+        let text: Binding<String> = .constant("random")
+        return SecureFieldView(text:text)
+    }
 }
+

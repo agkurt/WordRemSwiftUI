@@ -42,6 +42,7 @@
 		E822949A2BDC3D1800A46C70 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E82294992BDC3D1800A46C70 /* GoogleSignInSwift */; };
 		E822949D2BDC3D2000A46C70 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = E822949C2BDC3D2000A46C70 /* GoogleGenerativeAI */; };
 		E82294A02BDC3D2600A46C70 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = E822949F2BDC3D2600A46C70 /* Lottie */; };
+		E82294A42BDC427800A46C70 /* MotherTongueViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82294A32BDC427800A46C70 /* MotherTongueViewModel.swift */; };
 		E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */; };
 		E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */; };
 		E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */; };
@@ -154,6 +155,7 @@
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
 		E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedLanguage.swift; sourceTree = "<group>"; };
+		E82294A32BDC427800A46C70 /* MotherTongueViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherTongueViewModel.swift; sourceTree = "<group>"; };
 		E82B4C9D2B6DFE6500C7AA81 /* URLSessionApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionApiService.swift; sourceTree = "<group>"; };
 		E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleWords.swift; sourceTree = "<group>"; };
 		E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceScreenView.swift; sourceTree = "<group>"; };
@@ -315,6 +317,14 @@
 			path = CardView;
 			sourceTree = "<group>";
 		};
+		E82294A22BDC426800A46C70 /* MotherTongue */ = {
+			isa = PBXGroup;
+			children = (
+				E82294A32BDC427800A46C70 /* MotherTongueViewModel.swift */,
+			);
+			path = MotherTongue;
+			sourceTree = "<group>";
+		};
 		E82CE3262BA678F600B552F9 /* NotificationManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -432,6 +442,7 @@
 		E86B997F2B51EF5A00538090 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				E82294A22BDC426800A46C70 /* MotherTongue */,
 				E853ACAC2BA50891003C988A /* GeminiAI */,
 				E8BA6DD32B9BDF27002315C7 /* New */,
 				E8BA6DD22B9BDF1E002315C7 /* Sentence */,
@@ -526,7 +537,6 @@
 			isa = PBXGroup;
 			children = (
 				E8AEB01B2BDACF03004E8664 /* OnboardingView.swift */,
-				E8AEB0182BDACEBF004E8664 /* MotherTongueView */,
 			);
 			path = OnboardingViews;
 			sourceTree = "<group>";
@@ -660,6 +670,7 @@
 		E8C02A502B3C91D700B1D5AF /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E8AEB0182BDACEBF004E8664 /* MotherTongueView */,
 				E8AEB02B2BDB209D004E8664 /* ProfileView */,
 				E8AEB0202BDAEAA7004E8664 /* LottieView */,
 				E8AEB0142BDACE99004E8664 /* OnboardingViews */,
@@ -914,6 +925,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8D6F2932B8C9EAA0017A523 /* AuthManager.swift in Sources */,
+				E82294A42BDC427800A46C70 /* MotherTongueViewModel.swift in Sources */,
 				E8D566C82B6E0C7400B1E4B0 /* SentenceViewModel.swift in Sources */,
 				E88A501D2B9C9B0300027462 /* CardDetailViewModel.swift in Sources */,
 				E88AB2682B8EBE660026823A /* CardFocusableField.swift in Sources */,

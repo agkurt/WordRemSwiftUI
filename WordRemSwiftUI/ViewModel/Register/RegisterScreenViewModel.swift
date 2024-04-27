@@ -47,11 +47,11 @@ class RegisterScreenViewModel: ObservableObject {
     func getColorBasedOnScheme(colorScheme:ColorScheme) -> Color {
         switch colorScheme {
         case .light:
-            return Color.white.opacity(0.7) // Light mode background
+            return Color.white.opacity(0.7)
         case .dark:
-            return Color(hex: "#222831").opacity(0.7) // Dark mode background (adjust as needed)
+            return Color(hex: "#222831").opacity(0.7)
         default:
-            return Color.gray.opacity(0.7) // Fallback
+            return Color.gray.opacity(0.7)
         }
     }
 }

@@ -45,7 +45,7 @@ struct RegisterScreenView: View {
                                     .keyboardType(.emailAddress)
                                 TextFieldView(text: $viewModel.userName, placeholder: "Username")
                                     .focused($focusedField, equals: .username)
-                                SecureFieldView(text: $viewModel.password)
+                                SecureFieldView(text: $viewModel.password,placeholder: "Password")
                                     .focused($focusedField, equals: .password)
                                     .padding(.bottom,10)
                             }
@@ -73,6 +73,7 @@ struct RegisterScreenView: View {
                                 .buttonStyle(PlainButtonStyle())
                                 .padding()
                             }
+                            
                         }
                         .ignoresSafeArea(.keyboard, edges: .bottom)
                         .cornerRadius(20)

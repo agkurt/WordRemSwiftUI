@@ -43,9 +43,10 @@ struct LoginScreenView: View {
                             TextFieldView(text: $viewModel.email, placeholder: "Email")
                                 .focused($focusedField, equals: .email)
                                 .keyboardType(.emailAddress)
-                            SecureFieldView(text: $viewModel.password)
+                            SecureFieldView(text: $viewModel.password,placeholder: "Password")
                                 .focused($focusedField, equals: .password)
                         }
+                        
                         Button {
                             Task {
                                 await viewModel.loginRequest()

@@ -11,19 +11,38 @@ struct TextFieldView: View {
     @Binding var text: String
     var placeholder: String = ""
     @Environment(\.colorScheme) private var colorScheme
+    @FocusState var focused: Bool
     
     var body: some View {
-        TextField(placeholder, text: $text)
-            .padding()
-            .autocapitalization(.allCharacters)
-            .background(getColorBasedOnScheme())
-            .disableAutocorrection(true)
-            .font(Font.system(size: 18, weight: .regular))
-            .opacity(0.85)
-            .submitLabel(.next)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .foregroundStyle(.primary)
-            .cornerRadius(30)
+        let isActive = focused || text.count > 0
+        ZStack {
+            TextField("", text: $text)
+                .font(.custom("Poppins-Light", size: 15))
+                .padding()
+                .autocorrectionDisabled(true)
+                .foregroundColor(.primary)
+                .cornerRadius(30)
+                .focused($focused)
+                .offset(y:10)
+                .opacity(isActive ? 1 : 0)
+                .textInputAutocapitalization(.never)
+            HStack {
+                Text(placeholder)
+                    .foregroundColor(.gray.opacity(5.0))
+                    .frame(height: 14)
+                    .font(.system(size: isActive ? 10 : 14, weight: .regular))
+                    .offset(y: isActive ? -7 : 0)
+                Spacer()
+            }
+        }
+        .onTapGesture {
+            focused = true
+        }
+        .animation(.linear(duration: 0.2), value: focused)
+        .frame(maxWidth: .infinity,alignment:.center)
+        .padding(.horizontal, 16)
+        .background(getColorBasedOnScheme())
+        .cornerRadius(30)
     }
     
     private func getColorBasedOnScheme() -> Color  {

@@ -146,6 +146,16 @@ class FirebaseService: ObservableObject {
       
       return cards
     }
+    
+    func addMotherTongueLanguage(motherTongue:String) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw NSError(domain: "", code: -1)
+        }
+        
+        let db = Firestore.firestore()
+        
+        _ = try await db.collection("users").document(uid).collection("motherTongue").addDocument(data: ["motherTongue":motherTongue])
+    }
 
     
     func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async throws {

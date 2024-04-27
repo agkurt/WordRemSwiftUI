@@ -15,12 +15,15 @@ struct ContentView: View {
     @StateObject var sentenceViewModel = SentenceViewModel()
     @StateObject var homeScreenViewModel = HomeScreenViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @AppStorage("isSelectMotherTongue") var isSelectMotherTongue: Bool = true
+    @StateObject var motherTongueViewModel = MotherTongueViewModel()
     
     var body: some View {
+        
         VStack {
             if authManager.userIsLoggedIn {
                 HomeScreenView(viewModel: homeScreenViewModel)
-            } else {
+            } else  {
                 LoginScreenView()
             }
         }

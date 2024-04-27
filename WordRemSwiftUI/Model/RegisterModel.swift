@@ -8,7 +8,11 @@
 import Foundation
 
 struct RegisterModel {
+    
     var username:String
     var email:String
     var password:String
+    var nationality:String?
+    var motherTongue:Language?
+    
 }
