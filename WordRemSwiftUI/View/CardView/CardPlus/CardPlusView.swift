@@ -86,6 +86,9 @@ struct CardPlusView: View {
                     }
                     Spacer()
                 }
+                .onTapGesture {
+                    UIApplication.shared.hideKeyboard()
+                }
                 .onAppear {
                     Task {
                         await viewModel.fetchLanguageInfo(cardId: cardId)

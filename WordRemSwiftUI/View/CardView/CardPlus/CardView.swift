@@ -18,8 +18,8 @@ struct CardView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 15) {
-                    Spacer()
-                    Image(image)
+                Spacer()
+                Image(image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: 100,maxHeight: 100)
@@ -56,4 +56,3 @@ struct CardView_Previews: PreviewProvider {
         CardView(isEditing: .constant(false), title: "Title", image: "imageName", onDelete: {})
     }
 }
-

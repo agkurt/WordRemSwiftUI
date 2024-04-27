@@ -18,5 +18,6 @@ enum FlagModel:String,CaseIterable {
     case netherlands = "netherlands"
     case russia = "russia"
     case spain = "spain"
-    case unitedStates = "UnitedStates"
+    case unitedStates = "english"
+    
 }

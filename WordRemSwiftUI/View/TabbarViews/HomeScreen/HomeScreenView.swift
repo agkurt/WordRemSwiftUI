@@ -15,27 +15,31 @@ struct HomeScreenView: View {
     @State private var isSheetPresented = false
     @State var isEditing: Bool = false
     @State var isArcMenuExpanded: Bool = false
+    @State private var searchText = ""
     
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                ScrollView {
                     VStack {
-                        ForEach(viewModel.cardNames.indices, id: \.self) { index in
+                        ScrollView {
+                        ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
                             NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
                                                                        cardId:viewModel.cardIds[index])) {
-                                
-                                CardView(isEditing: $isEditing, title:viewModel.cardNames[index],image: viewModel.selectedFlag[index], onDelete: {
+                                CardView(isEditing: $isEditing,
+                                         title:viewModel.cardNames[index],
+                                         image: viewModel.selectedFlag[index],
+                                         onDelete: {
                                     if isEditing {
                                         viewModel.deleteCard(at: index)
                                     }
                                 })
                                 .foregroundStyle(.white)
-                            } 
+                            }
                         }
                         .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                     }
+                    .searchable(text: $searchText)
                 }
                 
                 VStack {
