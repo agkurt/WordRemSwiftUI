@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct CardDetailDesignView: View {
+    
     @State var wordName: String?
     @State var wordMean:String?
     @State var wordDescription:String?
+    
     var body: some View {
         NavigationStack {
                 ZStack {

@@ -6,51 +6,66 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseFirestore
+import FirebaseAuth
+import AuthenticationServices
+import GoogleSignIn
+import FirebaseStorage
 
 struct ProfileView: View {
     
     @StateObject var profileViewModel = ProfileViewModel()
+    @EnvironmentObject var authManager: AuthManager
     
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
                 VStack {
-                    LineView()
-                    Picker("Language", selection: $profileViewModel.motherTongue) {
-                        ForEach(Language.allCases, id: \.self) { language in
-                            Text(language.rawValue)
-                        }
+                    ProfileImageCam()
+                    Text("\(profileViewModel.username)")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.top, 20)
+                  
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("\(profileViewModel.email)")
                     }
-                    .pickerStyle(MenuPickerStyle())
-                    .padding()
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.top, 50)
+                    
+                    Spacer()
                     
                     Button(action: {
-                      
-                    }, label: {
-                        Text("Change")
-                    })
-                    .buttonStyle(BorderedButtonStyle())
+                        authManager.signOut()
+                    }) {
+                        Text("Çıkış Yap")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(width: 220, height: 60)
+                            .background(Color.red)
+                            .cornerRadius(15.0)
+                    }
                 }
             }
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement:.topBarTrailing) {
-                    Button(action: {
-                        
-                    }, label: {
-                        Text("x")
-                    })
+            .navigationBarTitle("Profile", displayMode: .inline)
+            .onAppear {
+                Task {
+                    await profileViewModel.fetchUsernameInfo()
+                    
                 }
-            }
-            .onTapGesture {
-                UIApplication.shared.hideKeyboard()
             }
         }
     }
+    
 }
 
-#Preview {
-    ProfileView(profileViewModel: ProfileViewModel())
+struct ProfileView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProfileView(profileViewModel: ProfileViewModel())
+    }
 }

@@ -69,6 +69,9 @@ struct PlusView: View {
                     Spacer()
                 }
             }
+            .onDisappear {
+                self.completion()
+            }
         }
     }
 }

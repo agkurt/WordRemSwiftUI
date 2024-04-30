@@ -40,14 +40,18 @@ struct RegisterScreenView: View {
                                 .padding(.leading)
                             
                             VStack(spacing:20) {
+                                
                                 TextFieldView(text: $viewModel.email, placeholder: "Email")
                                     .focused($focusedField, equals: .email)
                                     .keyboardType(.emailAddress)
+                                
                                 TextFieldView(text: $viewModel.userName, placeholder: "Username")
                                     .focused($focusedField, equals: .username)
+                                
                                 SecureFieldView(text: $viewModel.password,placeholder: "Password")
                                     .focused($focusedField, equals: .password)
                                     .padding(.bottom,10)
+                                
                             }
                             
                             VStack {
@@ -75,6 +79,7 @@ struct RegisterScreenView: View {
                             }
                             
                         }
+                        
                         .ignoresSafeArea(.keyboard, edges: .bottom)
                         .cornerRadius(20)
                         .padding()

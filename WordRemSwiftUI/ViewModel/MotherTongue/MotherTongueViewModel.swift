@@ -9,7 +9,7 @@ import Foundation
 
 class MotherTongueViewModel: ObservableObject {
     
-    @Published var motherTongue:Language = .turkish
+    @Published var motherTongue:Language = .french
     @Published var isSuccess = false
     
     func addMotherTongue(motherTongue:String) async {

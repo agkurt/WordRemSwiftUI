@@ -31,24 +31,45 @@ struct CardPlusView: View {
                         .font(.custom("Poppins-Medium", size: 25))
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    VStack(spacing: 20) {
+                    VStack(alignment:.leading,spacing: 20) {
+                        
                         CardTextField(text: $viewModel.wordName, placeholder: "Word")
-                        Button {
-                            Task {
-                                await viewModel.translateForWordName(targetLang: viewModel.targetLang.first ?? "", sourceLang: viewModel.sourceLang.first ?? "", text: viewModel.wordName)
+                        VStack(alignment:.leading) {
+                            Button {
+                                Task {
+                                    await viewModel.translateForWordName(targetLang: viewModel.targetLang.first ?? "", sourceLang: viewModel.sourceLang.first ?? "", text: viewModel.wordName)
+                                }
+                            } label: {
+                                HStack {
+                                    Image("translate")
+                                        .resizable()
+                                        .frame(width: 20,height: 20)
+                                        .aspectRatio(contentMode: .fill)
+                                    Text("Translate")
+                                        .font(.headline)
+                                    
+                                }
+                              
+                                
                             }
-                        } label: {
-                            Text("Translate to word")
                         }
-
                         CardTextField(text: $viewModel.translatedText, placeholder: "Word Mean ")
+                        
                         Button(action: {
                             Task {
                                 await viewModel.createSentenceUseToWord(name: viewModel.wordName)
                                 viewModel.wordDescription = viewModel.examplesWord?.examples.prefix(1).first ?? ""
                             }
                         }, label: {
-                            Text("Create example sentence")
+                            HStack {
+                                Image("word")
+                                    .resizable()
+                                    .frame(width: 25,height: 25)
+                                    .aspectRatio(contentMode: .fill)
+                                Text("Example Sentence")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+                            }
                             
                         })
                         CardTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence")
@@ -86,9 +107,7 @@ struct CardPlusView: View {
                     }
                     Spacer()
                 }
-                .onTapGesture {
-                    UIApplication.shared.hideKeyboard()
-                }
+                
                 .onAppear {
                     Task {
                         await viewModel.fetchLanguageInfo(cardId: cardId)
@@ -115,6 +134,12 @@ struct CardPlusView: View {
                 }
             }
         }
+    }
+}
+
+struct CardPlusView_Previews: PreviewProvider {
+    static var previews: some View {
+        CardPlusView(completion: {}, cardId: "your_card_id_here")
     }
 }
 

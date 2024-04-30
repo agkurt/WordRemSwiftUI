@@ -9,8 +9,8 @@ import Foundation
 
 struct WordInfo {
     
-    var names: [String]
-    var means: [String]
-    var descriptions: [String]
+    var names: String
+    var means: String
+    var descriptions: String
 }
 

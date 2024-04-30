@@ -9,19 +9,18 @@ import Foundation
 
 class CardDetailViewModel: ObservableObject {
     
-    @Published public var wordNames: [String] = []
-    @Published public var wordMeans: [String] = []
-    @Published public var wordDescriptions: [String] = []
+    @Published var wordNames: [String] = []
+    @Published var wordMeans: [String] = []
+    @Published var wordDescriptions: [String] = []
+    @Published var translatedText: [String] = []
     
-    func fetchCardInfo(cardId:String) async {
+    func fetchCardInfo(cardId:String) async throws {
         let fetchedWordInfo = await FirebaseService.shared.fetchTheCardNameInfo(cardId: cardId)
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.wordNames = fetchedWordInfo.names
-            self.wordMeans = fetchedWordInfo.means
-            self.wordDescriptions = fetchedWordInfo.descriptions
+        OperationQueue.main.addOperation {
+            self.wordNames = fetchedWordInfo.map {$0.names}
+            self.wordMeans = fetchedWordInfo.map {$0.means}
+            self.wordDescriptions = fetchedWordInfo.map { $0.descriptions}
+            self.objectWillChange.send()
         }
     }
 }

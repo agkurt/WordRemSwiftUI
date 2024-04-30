@@ -11,6 +11,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import AuthenticationServices
 import GoogleSignIn
+import FirebaseStorage
 
 class FirebaseService: ObservableObject {
     
@@ -26,7 +27,7 @@ class FirebaseService: ObservableObject {
         let email = userRequest.email
         let password = userRequest.password
         
-        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+        Auth.auth().createUser(withEmail: email, password: password ?? "") { authResult, error in
             
             if let error = error {
                 completion(false, error)
@@ -84,7 +85,6 @@ class FirebaseService: ObservableObject {
             }
         }
     }
- 
     
     func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async  {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -124,27 +124,78 @@ class FirebaseService: ObservableObject {
         return cards
     }
     
-    
-    func fetchSourceAndTargetLang(cardId:String) async throws -> [Card] {
-      guard let uid = Auth.auth().currentUser?.uid else {
-        return []
-      }
-      
-      let db = Firestore.firestore()
-      var cards: [Card] = []
-      
-      do {
-        let documentSnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).getDocument()
-          if let sourceLang = documentSnapshot.data()?["sourceLang"] as? Language.RawValue,
-             let targetLang = documentSnapshot.data()?["targetLang"] as? Language.RawValue {
-              let card = Card(id: documentSnapshot.documentID, targetLang: targetLang, sourceLang: sourceLang)
-          cards.append(card)
+    func fetchTheCardNameInfo(cardId: String) async -> [WordInfo] {
+        
+        guard let uid = Auth.auth().currentUser?.uid else {
+            fatalError("")
         }
-      } catch {
-        print("Error getting documents: \(error)")
-      }
-      
-      return cards
+        
+        var wordInfos: [WordInfo] = []
+        
+        let db = Firestore.firestore()
+        
+        do {
+            let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").getDocuments()
+            
+            for document in querySnapshot.documents {
+                if let wordName = document.data()["wordName"] as? String,
+                   let wordMean = document.data()["wordMean"] as? String,
+                   let wordDescription = document.data()["wordDescription"] as? String {
+                   let wordInfo = WordInfo(names: wordName, means: wordMean, descriptions: wordDescription)
+                    wordInfos.append(wordInfo)
+                }
+            }
+        } catch {
+            print("Error getting documents: \(error)")
+        }
+        return wordInfos
+    }
+    
+    func fetchUsernameAndEmailInfo() async throws -> [RegisterModel] {
+        
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return []
+        }
+        
+        let db = Firestore.firestore()
+        var registerModels: [RegisterModel] = []
+        
+        do {
+            let document = try await db.collection("users").document(uid).getDocument()
+            if let username = document.data()?["username"] as? String,
+               let email = document.data()?["email"] as? String
+            {
+                let registerModel = RegisterModel(username: username, email: email)
+                registerModels.append(registerModel)
+            }
+            
+        } catch {
+            print("Error getting documents: \(error)")
+        }
+        return registerModels
+    }
+    
+
+    func fetchSourceAndTargetLang(cardId:String) async throws -> [Card] {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return []
+        }
+        
+        let db = Firestore.firestore()
+        var cards: [Card] = []
+        
+        do {
+            let documentSnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).getDocument()
+            if let sourceLang = documentSnapshot.data()?["sourceLang"] as? Language.RawValue,
+               let targetLang = documentSnapshot.data()?["targetLang"] as? Language.RawValue {
+                let card = Card(id: documentSnapshot.documentID, targetLang: targetLang, sourceLang: sourceLang)
+                cards.append(card)
+            }
+        } catch {
+            print("Error getting documents: \(error)")
+        }
+        
+        return cards
     }
     
     func addMotherTongueLanguage(motherTongue:String) async throws {
@@ -156,7 +207,7 @@ class FirebaseService: ObservableObject {
         
         _ = try await db.collection("users").document(uid).collection("motherTongue").addDocument(data: ["motherTongue":motherTongue])
     }
-
+    
     
     func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async throws {
         
@@ -173,31 +224,5 @@ class FirebaseService: ObservableObject {
         ])
     }
     
-    func fetchTheCardNameInfo(cardId: String) async -> WordInfo {
-        
-        guard let uid = Auth.auth().currentUser?.uid else {
-            fatalError("")
-        }
-        
-        var wordInfo = WordInfo(names: [], means: [], descriptions: [])
-        
-        let db = Firestore.firestore()
-        
-        do {
-            let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").getDocuments()
-            
-            for document in querySnapshot.documents {
-                if let wordName = document.data()["wordName"] as? String,
-                   let wordMean = document.data()["wordMean"] as? String,
-                   let wordDescription = document.data()["wordDescription"] as? String {
-                    wordInfo.names.append(wordName)
-                    wordInfo.means.append(wordMean)
-                    wordInfo.descriptions.append(wordDescription)
-                }
-            }
-        } catch {
-            print("Error getting documents: \(error)")
-        }
-        return wordInfo
-    }
+  
 }

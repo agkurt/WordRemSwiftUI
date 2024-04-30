@@ -36,14 +36,14 @@ struct ArcMenuButton: View {
     
     func destinationView(forIndex index: Int) -> some View {
         switch buttons[index] {
-        case "circle":
+        case "text.word.spacing":
             return AnyView(SentenceScreenView())
-        case "star":
+        case "newspaper":
             return AnyView(NewsView())
-        case "bell":
+        case "translate":
             return AnyView(TranslationView())
-        case "bookmark":
-            return AnyView(GeminiAIView())
+        case "person.crop.circle":
+            return AnyView(ProfileView())
         default:
             return AnyView(EmptyView())
         }

@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803743E2BD7007200BF9047 /* AnimationView.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
+		E81D85382BE107A3000BC6DD /* ProfileImageCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D85372BE107A3000BC6DD /* ProfileImageCam.swift */; };
+		E81D853A2BE10F4C000BC6DD /* SourceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D85392BE10F4C000BC6DD /* SourceType.swift */; };
+		E81D853C2BE10FD3000BC6DD /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D853B2BE10FD3000BC6DD /* PhotoPicker.swift */; };
+		E81D853E2BE11010000BC6DD /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D853D2BE11010000BC6DD /* ImagePicker.swift */; };
 		E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */; };
 		E822945E2BDC38B300A46C70 /* SelectedLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */; };
 		E82294A42BDC427800A46C70 /* MotherTongueViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82294A32BDC427800A46C70 /* MotherTongueViewModel.swift */; };
@@ -153,6 +157,10 @@
 /* Begin PBXFileReference section */
 		E803743E2BD7007200BF9047 /* AnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationView.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		E81D85372BE107A3000BC6DD /* ProfileImageCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageCam.swift; sourceTree = "<group>"; };
+		E81D85392BE10F4C000BC6DD /* SourceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceType.swift; sourceTree = "<group>"; };
+		E81D853B2BE10FD3000BC6DD /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
+		E81D853D2BE11010000BC6DD /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
 		E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedLanguage.swift; sourceTree = "<group>"; };
 		E82294A32BDC427800A46C70 /* MotherTongueViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherTongueViewModel.swift; sourceTree = "<group>"; };
@@ -317,6 +325,33 @@
 			path = CardView;
 			sourceTree = "<group>";
 		};
+		E81D853F2BE1101B000BC6DD /* ProfilePhoto */ = {
+			isa = PBXGroup;
+			children = (
+				E81D85372BE107A3000BC6DD /* ProfileImageCam.swift */,
+				E81D853B2BE10FD3000BC6DD /* PhotoPicker.swift */,
+				E81D853D2BE11010000BC6DD /* ImagePicker.swift */,
+			);
+			path = ProfilePhoto;
+			sourceTree = "<group>";
+		};
+		E81D85402BE11028000BC6DD /* TextFields */ = {
+			isa = PBXGroup;
+			children = (
+				E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */,
+				E86B99512B5024B700538090 /* TextFieldView.swift */,
+				E88AB2612B8EB6C70026823A /* CardTextField.swift */,
+			);
+			path = TextFields;
+			sourceTree = "<group>";
+		};
+		E81D85412BE16038000BC6DD /* Image */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
 		E82294A22BDC426800A46C70 /* MotherTongue */ = {
 			isa = PBXGroup;
 			children = (
@@ -435,6 +470,7 @@
 				E853ACAF2BA51326003C988A /* AIMessage.swift */,
 				E8E254672BC39D8F00AACD0D /* wordInfo.swift */,
 				E8311AB62BD52FB3009C455C /* FlagModel.swift */,
+				E81D85392BE10F4C000BC6DD /* SourceType.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -768,13 +804,13 @@
 		E8E6E4392B8204ED009F5C3E /* HelperScreen */ = {
 			isa = PBXGroup;
 			children = (
-				E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */,
+				E81D85412BE16038000BC6DD /* Image */,
+				E81D85402BE11028000BC6DD /* TextFields */,
+				E81D853F2BE1101B000BC6DD /* ProfilePhoto */,
 				E8527C172B6EAFAD0047E4A6 /* LoginButtonStyle.swift */,
 				E820DE302B81EDC100F8231C /* ActivityIndicatorView.swift */,
-				E86B99512B5024B700538090 /* TextFieldView.swift */,
 				E8C02A512B3C91E600B1D5AF /* IconImageView.swift */,
 				E855B6002B8E698E009BF5E2 /* LineView.swift */,
-				E88AB2612B8EB6C70026823A /* CardTextField.swift */,
 				E87F28F82BD6B21A0019D520 /* ArcMenuButton.swift */,
 				E803743E2BD7007200BF9047 /* AnimationView.swift */,
 			);
@@ -936,6 +972,7 @@
 				E8C02A522B3C91E600B1D5AF /* IconImageView.swift in Sources */,
 				E853ACB02BA51326003C988A /* AIMessage.swift in Sources */,
 				E853ACAE2BA508A0003C988A /* GeminiAIViewModel.swift in Sources */,
+				E81D853C2BE10FD3000BC6DD /* PhotoPicker.swift in Sources */,
 				E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */,
 				E8F1A6132B9BF52400E4E533 /* SomeOtherSettingView.swift in Sources */,
 				E86B99522B5024B700538090 /* TextFieldView.swift in Sources */,
@@ -944,11 +981,13 @@
 				E8E2546E2BC3A22200AACD0D /* Reminder.swift in Sources */,
 				E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */,
 				E88585FB2BC0B215000531B5 /* ContentView.swift in Sources */,
+				E81D853A2BE10F4C000BC6DD /* SourceType.swift in Sources */,
 				E8B748902B8BFD14007DA60A /* HomeScreenViewModel.swift in Sources */,
 				E8BE72742B93C89C00900217 /* TranslateViewModel.swift in Sources */,
 				E88AB2662B8EB7CB0026823A /* CardPlusViewModel.swift in Sources */,
 				E8E1B4DC2B7CA1A700AE6CD0 /* HideKeyboard.swift in Sources */,
 				E8527C582B6EC1D00047E4A6 /* RegisterScreenViewModel.swift in Sources */,
+				E81D853E2BE11010000BC6DD /* ImagePicker.swift in Sources */,
 				E8F1A6172B9BF54E00E4E533 /* WidgetSettingView.swift in Sources */,
 				E8E2546A2BC3A01900AACD0D /* CardReminderView.swift in Sources */,
 				E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */,
@@ -961,6 +1000,7 @@
 				E84AA1BA2B7A0B3200823B97 /* LoginModel.swift in Sources */,
 				E88AB2602B8EB6310026823A /* CardPlusView.swift in Sources */,
 				E853ACA82BA4EBD4003C988A /* APIKey.swift in Sources */,
+				E81D85382BE107A3000BC6DD /* ProfileImageCam.swift in Sources */,
 				E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */,
 				E8BE727A2B93C97200900217 /* TranslationView.swift in Sources */,
 				E8AF4CA92BD1C8230057262A /* FirebaseService + Ext.swift in Sources */,

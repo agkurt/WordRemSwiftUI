@@ -47,7 +47,7 @@ struct HomeScreenView: View {
                     HStack {
                         Spacer()
                         ZStack {
-                            ArcMenuButton(buttons: ["circle", "star", "bell", "bookmark"])
+                            ArcMenuButton(buttons: ["text.word.spacing", "newspaper", "translate", "person.crop.circle"])
                                 .padding(16)
                         }
                         

@@ -112,7 +112,7 @@ struct LoginScreenView: View {
                         }) {
                             Text("Continue as Guest")
                                 .font(.custom("Poppins-Light", size: 18))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.primary)
                             
                         }
                         .navigationBarBackButtonHidden(true)
