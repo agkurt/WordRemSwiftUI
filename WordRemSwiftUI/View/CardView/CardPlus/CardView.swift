@@ -19,10 +19,13 @@ struct CardView: View {
         ZStack {
             VStack(spacing: 15) {
                 Spacer()
-                Image(image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: 100,maxHeight: 100)
+                HStack {
+                    Image(image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxWidth: 100,maxHeight: 100)
+                }
+                
                 Text(title)
                     .font(.title)
                     .fontWeight(.bold)

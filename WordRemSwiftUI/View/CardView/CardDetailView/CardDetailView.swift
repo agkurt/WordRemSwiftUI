@@ -26,6 +26,16 @@ struct CardDetailView: View {
                         }
                     }
                 }
+                .onAppear {
+                    Task {
+                        do {
+                            try await viewModel.fetchCardInfo(cardId: cardId)
+                        }catch {
+                            print(error)
+                            print(error.localizedDescription)
+                        }
+                    }
+                }
             }
             .navigationTitle("WORDS")
             .navigationBarTitleDisplayMode(.inline)
@@ -44,16 +54,6 @@ struct CardDetailView: View {
                         try await viewModel.fetchCardInfo(cardId:cardId)
                     }
                 }, cardId: cardId)
-            }
-        }
-        .onAppear {
-            Task {
-                do {
-                    try await viewModel.fetchCardInfo(cardId: cardId)
-                }catch {
-                    print(error)
-                    print(error.localizedDescription)
-                }
             }
         }
     }

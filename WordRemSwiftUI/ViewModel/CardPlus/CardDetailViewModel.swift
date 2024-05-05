@@ -12,7 +12,6 @@ class CardDetailViewModel: ObservableObject {
     @Published var wordNames: [String] = []
     @Published var wordMeans: [String] = []
     @Published var wordDescriptions: [String] = []
-    @Published var translatedText: [String] = []
     
     func fetchCardInfo(cardId:String) async throws {
         let fetchedWordInfo = await FirebaseService.shared.fetchTheCardNameInfo(cardId: cardId)

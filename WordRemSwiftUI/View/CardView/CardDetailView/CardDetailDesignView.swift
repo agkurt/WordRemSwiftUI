@@ -19,7 +19,7 @@ struct CardDetailDesignView: View {
                     RoundedRectangle(cornerRadius: 30, style: .circular)
                         .fill(LinearGradient(gradient: Gradient(colors: [Color.init(hex:"#313a45")]), startPoint: .topLeading, endPoint: .bottomTrailing))
                         .shadow(radius: 20)
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .center) {
                         Text(wordName ?? "")
                             .font(.headline)
                             .foregroundColor(.white)
@@ -32,6 +32,7 @@ struct CardDetailDesignView: View {
                             .font(.subheadline)
                             .foregroundColor(.white)
                             .padding([.leading, .bottom, .trailing])
+                      
                     }
                     .frame(maxWidth: .infinity,minHeight: 150)
                     .padding()

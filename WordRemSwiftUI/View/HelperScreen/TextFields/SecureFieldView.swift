@@ -25,7 +25,7 @@ struct SecureFieldView: View {
                     .foregroundColor(.primary)
                     .cornerRadius(30)
                     .focused($focused)
-                    .offset(y:10)
+                    .offset(y:15)
                     .opacity(isActive ? 1 : 0)
                     .textInputAutocapitalization(.never)
             } else {

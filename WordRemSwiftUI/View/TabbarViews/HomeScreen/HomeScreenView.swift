@@ -29,7 +29,7 @@ struct HomeScreenView: View {
                                 CardView(isEditing: $isEditing,
                                          title:viewModel.cardNames[index],
                                          image: viewModel.selectedFlag[index],
-                                         onDelete: {
+                                          onDelete: {
                                     if isEditing {
                                         viewModel.deleteCard(at: index)
                                     }
