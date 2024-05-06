@@ -44,6 +44,7 @@
 		E853ACAE2BA508A0003C988A /* GeminiAIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853ACAD2BA508A0003C988A /* GeminiAIViewModel.swift */; };
 		E853ACB02BA51326003C988A /* AIMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853ACAF2BA51326003C988A /* AIMessage.swift */; };
 		E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B6002B8E698E009BF5E2 /* LineView.swift */; };
+		E857B6FE2BE7FA6400993224 /* WordDataBase.db in Resources */ = {isa = PBXBuildFile; fileRef = E857B6FD2BE7FA6400993224 /* WordDataBase.db */; };
 		E8610DE32B98A1E200402FF4 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = E8610DE22B98A1E200402FF4 /* Config.plist */; };
 		E8617CAE2BDD4D82009BD5FA /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = E8617CAD2BDD4D82009BD5FA /* Lottie */; };
 		E8617CB12BDD4D87009BD5FA /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = E8617CB02BDD4D87009BD5FA /* GoogleGenerativeAI */; };
@@ -95,6 +96,11 @@
 		E88AB2662B8EB7CB0026823A /* CardPlusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB2652B8EB7CB0026823A /* CardPlusViewModel.swift */; };
 		E88AB2682B8EBE660026823A /* CardFocusableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88AB2672B8EBE650026823A /* CardFocusableField.swift */; };
 		E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E88CF0082B817DE900B06433 /* FocusableField.swift */; };
+		E8A943A72BE7D9D500DA28DC /* WordCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A943A62BE7D9D500DA28DC /* WordCardView.swift */; };
+		E8A943A92BE7D9E600DA28DC /* WordGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A943A82BE7D9E600DA28DC /* WordGameViewModel.swift */; };
+		E8A943AC2BE7DA7000DA28DC /* WordGameCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A943AB2BE7DA7000DA28DC /* WordGameCardModel.swift */; };
+		E8A943B02BE7DF9200DA28DC /* WordGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A943AF2BE7DF9200DA28DC /* WordGameView.swift */; };
+		E8A943B32BE7F27200DA28DC /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = E8A943B22BE7F27200DA28DC /* SQLite */; };
 		E8ACFA392BA1D0140075CAA3 /* CardDetailDesignView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ACFA382BA1D0140075CAA3 /* CardDetailDesignView.swift */; };
 		E8AEB01A2BDACEF5004E8664 /* MotherTongueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB0192BDACEF5004E8664 /* MotherTongueView.swift */; };
 		E8AEB01C2BDACF03004E8664 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB01B2BDACF03004E8664 /* OnboardingView.swift */; };
@@ -193,6 +199,7 @@
 		E853ACAD2BA508A0003C988A /* GeminiAIViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiAIViewModel.swift; sourceTree = "<group>"; };
 		E853ACAF2BA51326003C988A /* AIMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIMessage.swift; sourceTree = "<group>"; };
 		E855B6002B8E698E009BF5E2 /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
+		E857B6FD2BE7FA6400993224 /* WordDataBase.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordDataBase.db; sourceTree = "<group>"; };
 		E8610DE22B98A1E200402FF4 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		E8624A692B9A6D9E00425793 /* LineForTranslateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineForTranslateView.swift; sourceTree = "<group>"; };
 		E869C04F2B9BA64400C18852 /* NewsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsDetailView.swift; sourceTree = "<group>"; };
@@ -214,6 +221,10 @@
 		E88AB2652B8EB7CB0026823A /* CardPlusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlusViewModel.swift; sourceTree = "<group>"; };
 		E88AB2672B8EBE650026823A /* CardFocusableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFocusableField.swift; sourceTree = "<group>"; };
 		E88CF0082B817DE900B06433 /* FocusableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableField.swift; sourceTree = "<group>"; };
+		E8A943A62BE7D9D500DA28DC /* WordCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCardView.swift; sourceTree = "<group>"; };
+		E8A943A82BE7D9E600DA28DC /* WordGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordGameViewModel.swift; sourceTree = "<group>"; };
+		E8A943AB2BE7DA7000DA28DC /* WordGameCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordGameCardModel.swift; sourceTree = "<group>"; };
+		E8A943AF2BE7DF9200DA28DC /* WordGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordGameView.swift; sourceTree = "<group>"; };
 		E8ACFA382BA1D0140075CAA3 /* CardDetailDesignView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailDesignView.swift; sourceTree = "<group>"; };
 		E8AEB0192BDACEF5004E8664 /* MotherTongueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherTongueView.swift; sourceTree = "<group>"; };
 		E8AEB01B2BDACF03004E8664 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
@@ -303,6 +314,7 @@
 				E8617CC92BDD4DC9009BD5FA /* FirebaseCrashlytics in Frameworks */,
 				E8617CCF2BDD4DC9009BD5FA /* FirebaseDynamicLinks in Frameworks */,
 				E8617CEB2BDD4DC9009BD5FA /* FirebaseStorage in Frameworks */,
+				E8A943B32BE7F27200DA28DC /* SQLite in Frameworks */,
 				E8617CDB2BDD4DC9009BD5FA /* FirebaseInAppMessaging-Beta in Frameworks */,
 				E8617CE92BDD4DC9009BD5FA /* FirebaseRemoteConfigSwift in Frameworks */,
 				E8617CC32BDD4DC9009BD5FA /* FirebaseAppDistribution-Beta in Frameworks */,
@@ -387,6 +399,7 @@
 		E8527C142B6EA4BA0047E4A6 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				E857B6FD2BE7FA6400993224 /* WordDataBase.db */,
 				E853ACA52BA3EF7C003C988A /* ApiKey-Info.plist */,
 				E8E857302B913FD500F2E55F /* GoogleService-Info.plist */,
 				E8D6F2972B8DFF310017A523 /* PoppinsFont */,
@@ -456,13 +469,13 @@
 		E86B997C2B5198B400538090 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				E8A943AA2BE7DA6300DA28DC /* WordGameCardModel */,
+				E8A943A52BE7B68600DA28DC /* CardModels */,
+				E8A943A42BE7B66C00DA28DC /* SignModel */,
 				E88CF0082B817DE900B06433 /* FocusableField.swift */,
 				E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */,
-				E8527C552B6EBED20047E4A6 /* RegisterModel.swift */,
-				E84AA1B92B7A0B3200823B97 /* LoginModel.swift */,
 				E8D6F2902B8C98BB0017A523 /* AuthState.swift */,
 				E88AB2672B8EBE650026823A /* CardFocusableField.swift */,
-				E8D774762B8FE9C900E9AB1B /* CardModel.swift */,
 				E843E0B42B97F5F0006B1A1C /* TranslateModel.swift */,
 				E843E0B62B9806F7006B1A1C /* Language.swift */,
 				E843E0BE2B981792006B1A1C /* NewsModel.swift */,
@@ -478,6 +491,7 @@
 		E86B997F2B51EF5A00538090 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				E8A943A32BE7B66300DA28DC /* WordGame */,
 				E82294A22BDC426800A46C70 /* MotherTongue */,
 				E853ACAC2BA50891003C988A /* GeminiAI */,
 				E8BA6DD32B9BDF27002315C7 /* New */,
@@ -545,6 +559,48 @@
 				E853ACA22BA3EEDC003C988A /* GeminiAI */,
 			);
 			path = FeaturesView;
+			sourceTree = "<group>";
+		};
+		E8A943A22BE7B65000DA28DC /* WordGame */ = {
+			isa = PBXGroup;
+			children = (
+				E8A943A62BE7D9D500DA28DC /* WordCardView.swift */,
+				E8A943AF2BE7DF9200DA28DC /* WordGameView.swift */,
+			);
+			path = WordGame;
+			sourceTree = "<group>";
+		};
+		E8A943A32BE7B66300DA28DC /* WordGame */ = {
+			isa = PBXGroup;
+			children = (
+				E8A943A82BE7D9E600DA28DC /* WordGameViewModel.swift */,
+			);
+			path = WordGame;
+			sourceTree = "<group>";
+		};
+		E8A943A42BE7B66C00DA28DC /* SignModel */ = {
+			isa = PBXGroup;
+			children = (
+				E8527C552B6EBED20047E4A6 /* RegisterModel.swift */,
+				E84AA1B92B7A0B3200823B97 /* LoginModel.swift */,
+			);
+			path = SignModel;
+			sourceTree = "<group>";
+		};
+		E8A943A52BE7B68600DA28DC /* CardModels */ = {
+			isa = PBXGroup;
+			children = (
+				E8D774762B8FE9C900E9AB1B /* CardModel.swift */,
+			);
+			path = CardModels;
+			sourceTree = "<group>";
+		};
+		E8A943AA2BE7DA6300DA28DC /* WordGameCardModel */ = {
+			isa = PBXGroup;
+			children = (
+				E8A943AB2BE7DA7000DA28DC /* WordGameCardModel.swift */,
+			);
+			path = WordGameCardModel;
 			sourceTree = "<group>";
 		};
 		E8ACFA362BA1CF670075CAA3 /* CardDetailView */ = {
@@ -706,6 +762,7 @@
 		E8C02A502B3C91D700B1D5AF /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E8A943A22BE7B65000DA28DC /* WordGame */,
 				E8AEB0182BDACEBF004E8664 /* MotherTongueView */,
 				E8AEB02B2BDB209D004E8664 /* ProfileView */,
 				E8AEB0202BDAEAA7004E8664 /* LottieView */,
@@ -873,6 +930,7 @@
 				E8617CE82BDD4DC9009BD5FA /* FirebaseRemoteConfigSwift */,
 				E8617CEA2BDD4DC9009BD5FA /* FirebaseStorage */,
 				E8617CEC2BDD4DC9009BD5FA /* FirebaseStorageCombine-Community */,
+				E8A943B22BE7F27200DA28DC /* SQLite */,
 			);
 			productName = WordRemSwiftUI;
 			productReference = E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */;
@@ -910,6 +968,7 @@
 				E8617CAF2BDD4D87009BD5FA /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 				E8617CB22BDD4D8C009BD5FA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				E8617CB72BDD4DC8009BD5FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E8A943B12BE7F27100DA28DC /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 			);
 			productRefGroup = E879EC632B3B3E2C003534B5 /* Products */;
 			projectDirPath = "";
@@ -945,6 +1004,7 @@
 				E8D6F2B72B8DFF400017A523 /* Poppins-Italic.ttf in Resources */,
 				E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */,
 				E8D6F2B02B8DFF400017A523 /* Poppins-Black.ttf in Resources */,
+				E857B6FE2BE7FA6400993224 /* WordDataBase.db in Resources */,
 				E8D6F2B62B8DFF400017A523 /* Poppins-ExtraLightItalic.ttf in Resources */,
 				E8D6F2BD2B8DFF400017A523 /* Poppins-ExtraBold.ttf in Resources */,
 				E8E857312B913FD500F2E55F /* GoogleService-Info.plist in Resources */,
@@ -991,6 +1051,7 @@
 				E8F1A6172B9BF54E00E4E533 /* WidgetSettingView.swift in Sources */,
 				E8E2546A2BC3A01900AACD0D /* CardReminderView.swift in Sources */,
 				E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */,
+				E8A943B02BE7DF9200DA28DC /* WordGameView.swift in Sources */,
 				E8E254682BC39D8F00AACD0D /* wordInfo.swift in Sources */,
 				E8AEB02A2BDB1D13004E8664 /* LottieViewAnimation.swift in Sources */,
 				E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */,
@@ -1003,6 +1064,7 @@
 				E81D85382BE107A3000BC6DD /* ProfileImageCam.swift in Sources */,
 				E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */,
 				E8BE727A2B93C97200900217 /* TranslationView.swift in Sources */,
+				E8A943A92BE7D9E600DA28DC /* WordGameViewModel.swift in Sources */,
 				E8AF4CA92BD1C8230057262A /* FirebaseService + Ext.swift in Sources */,
 				E82CE3242BA6394800B552F9 /* UserSettings.swift in Sources */,
 				E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */,
@@ -1040,10 +1102,12 @@
 				E879EC662B3B3E2C003534B5 /* WordRemSwiftUIApp.swift in Sources */,
 				E8F1A6112B9BF50400E4E533 /* SettingsView.swift in Sources */,
 				E869C0522B9BB6C400C18852 /* NewsRowView.swift in Sources */,
+				E8A943AC2BE7DA7000DA28DC /* WordGameCardModel.swift in Sources */,
 				E82B4C9E2B6DFE6500C7AA81 /* URLSessionApiService.swift in Sources */,
 				E869C0502B9BA64400C18852 /* NewsDetailView.swift in Sources */,
 				E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */,
 				E8311AB92BD53A7E009C455C /* FlagSelectionView.swift in Sources */,
+				E8A943A72BE7D9D500DA28DC /* WordCardView.swift in Sources */,
 				E84CC1962B9256780066FF96 /* View+Ext.swift in Sources */,
 				E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */,
 				E843E0B72B9806F7006B1A1C /* Language.swift in Sources */,
@@ -1300,6 +1364,14 @@
 				minimumVersion = 10.24.0;
 			};
 		};
+		E8A943B12BE7F27100DA28DC /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1457,6 +1529,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E8617CB72BDD4DC8009BD5FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		E8A943B22BE7F27200DA28DC /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E8A943B12BE7F27100DA28DC /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
