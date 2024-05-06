@@ -31,6 +31,24 @@ extension FirebaseService {
             throw error
         }
     }
+    
+    func deleteCardInfoAndTransactions(deckId: String,cardId:String) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        let cardRef = Firestore.firestore().collection("users").document(uid).collection("cards").document(deckId)
+        let wordRef = cardRef.collection("words").document(cardId)
+        
+        do {
+            try await wordRef.delete()
+        } catch {
+            print("Error deleting document: \(error.localizedDescription)")
+            throw error
+        }
+    }
+
+
 }
 
 

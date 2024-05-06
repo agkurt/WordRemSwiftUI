@@ -141,7 +141,7 @@ class FirebaseService: ObservableObject {
                 if let wordName = document.data()["wordName"] as? String,
                    let wordMean = document.data()["wordMean"] as? String,
                    let wordDescription = document.data()["wordDescription"] as? String {
-                   let wordInfo = WordInfo(names: wordName, means: wordMean, descriptions: wordDescription)
+                    let wordInfo = WordInfo(id: document.documentID, names: wordName, means: wordMean, descriptions: wordDescription)
                     wordInfos.append(wordInfo)
                 }
             }

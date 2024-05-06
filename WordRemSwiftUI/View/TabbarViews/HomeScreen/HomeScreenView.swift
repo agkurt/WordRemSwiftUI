@@ -74,7 +74,7 @@ struct HomeScreenView: View {
                     Button {
                         isEditing.toggle()
                     } label: {
-                        Text(isEditing ? "Done" : "Edit")
+                        Image(systemName: isEditing ? "checkmark":"trash")
                     }
                 }
                 

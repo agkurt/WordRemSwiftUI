@@ -43,7 +43,7 @@ struct ArcMenuButton: View {
         case "translate":
             return AnyView(TranslationView())
         case "person.crop.circle":
-            return AnyView(GeminiAIView())
+            return AnyView(ProfileView())
         default:
             return AnyView(EmptyView())
         }

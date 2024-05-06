@@ -13,6 +13,7 @@ struct CardDetailView: View {
     var cardName: String
     @State var cardId: String
     @State private var showSheet = false
+    @State var isEditing: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -21,7 +22,11 @@ struct CardDetailView: View {
                 ScrollView {
                     VStack {
                         ForEach(viewModel.wordInfo.indices, id: \.self) { index in
-                            CardDetailDesignView(wordName: $viewModel.wordNames[index],wordMean: $viewModel.wordMeans[index],wordDescription: $viewModel.wordDescriptions[index])
+                            CardDetailDesignView(wordName: $viewModel.wordNames[index],wordMean: $viewModel.wordMeans[index],wordDescription: $viewModel.wordDescriptions[index],isEditing: $isEditing,onDelete: {
+                                if isEditing {
+                                    viewModel.deleteCard(at: index, deckId: cardId)
+                                }
+                            })
                         }
                     }
                 }
@@ -31,10 +36,15 @@ struct CardDetailView: View {
                     await viewModel.fetchCardInfo(cardId: cardId)
                 }
             }
-            .navigationTitle("WORDS")
-            .navigationBarTitleDisplayMode(.inline)
             
             .toolbar {
+                ToolbarItem(placement:.topBarTrailing) {
+                    Button {
+                        isEditing.toggle()
+                    } label: {
+                        Image(systemName: isEditing ? "checkmark":"trash")
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         showSheet.toggle()
