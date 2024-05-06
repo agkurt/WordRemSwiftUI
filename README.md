@@ -7,15 +7,16 @@ Word Reminder Application is a mobile application designed entirely using SwiftU
 User-friendly interface for learning and remembering word meanings.
 Developed using the MVVM (Model-View-ViewModel) architecture for a modular codebase.
 APIs used in the application:
-RapidApi
-WordsApi
-GeminiApi
-NewsApi
+- RapidApi
+- WordsApi
+- GeminiApi
+- NewsApi
 Firebase is used for data storage and user management.
+
 🔧 Tools and Frameworks Used 🔧
 
-Xcode: Integrated development environment used for developing the application.
-Swift: Primary programming language for the application.
-SwiftUI: Modern and declarative framework for building user interfaces.
-MVVM Architecture: Separation of application logic and user interface for a cleaner and more maintainable codebase.
-Firebase: Used for user data and session management.
+- Xcode: Integrated development environment used for developing the application.
+- Swift: Primary programming language for the application.
+- SwiftUI: Modern and declarative framework for building user interfaces.
+- MVVM Architecture: Separation of application logic and user interface for a cleaner and more maintainable codebase.
+- Firebase: Used for user data and session management.
