@@ -6,6 +6,7 @@ Word Reminder Application is a mobile application designed entirely using SwiftU
 
 User-friendly interface for learning and remembering word meanings.
 Developed using the MVVM (Model-View-ViewModel) architecture for a modular codebase.
+Asynchronous functions are used throughout the application for improved performance and responsiveness.
 APIs used in the application:
 - RapidApi
 - WordsApi
