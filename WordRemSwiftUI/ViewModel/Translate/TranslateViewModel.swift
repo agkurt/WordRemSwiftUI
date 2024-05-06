@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class TranslateViewModel: ObservableObject {
     @Published var translatedText: String = ""
     @Published var showAlert = false

@@ -91,9 +91,9 @@ class FirebaseService: ObservableObject {
             return
         }
         let flagString = selectedFlag.rawValue
-        
+        let creationDate = Timestamp(date: Date())
         do {
-            _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name,"selectedFlag":flagString,"targetLang":targetLang,"sourceLang":sourceLang])
+            _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name,"selectedFlag":flagString,"targetLang":targetLang,"sourceLang":sourceLang,"creationData":creationDate])
         }catch {
             print("Error fetching data: \(error.localizedDescription)")
         }
@@ -108,7 +108,7 @@ class FirebaseService: ObservableObject {
         var cards: [Card] = []
         
         do {
-            let querySnapshot = try await db.collection("users").document(uid).collection("cards").getDocuments()
+            let querySnapshot = try await db.collection("users").document(uid).collection("cards").order(by: "creationData",descending: true).getDocuments()
             for document in querySnapshot.documents {
                 if let cardName = document.data()["cardName"] as? String,
                    let flagString = document.data()["selectedFlag"] as? String,
@@ -123,11 +123,12 @@ class FirebaseService: ObservableObject {
         
         return cards
     }
+
     
-    func fetchTheCardNameInfo(cardId: String) async -> [WordInfo] {
+    func fetchTheCardNameInfo(cardId: String) async throws -> [WordInfo] {
         
         guard let uid = Auth.auth().currentUser?.uid else {
-            fatalError("")
+            return []
         }
         
         var wordInfos: [WordInfo] = []
@@ -135,8 +136,7 @@ class FirebaseService: ObservableObject {
         let db = Firestore.firestore()
         
         do {
-            let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").getDocuments()
-            
+            let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").order(by: "creationDate",descending: true).getDocuments()
             for document in querySnapshot.documents {
                 if let wordName = document.data()["wordName"] as? String,
                    let wordMean = document.data()["wordMean"] as? String,
@@ -209,19 +209,26 @@ class FirebaseService: ObservableObject {
     }
     
     
-    func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async throws {
+    func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async  {
         
         guard let uid = Auth.auth().currentUser?.uid else {
-            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
+            return
         }
         
         let db = Firestore.firestore()
+        let creationDate = Timestamp(date: Date())
         
-        _ = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").addDocument(data: [
-            "wordName": wordName,
-            "wordMean": wordMean,
-            "wordDescription": wordDescription
-        ])
+        do {
+            _ = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").addDocument(data: [
+                "wordName": wordName,
+                "wordMean": wordMean,
+                "wordDescription": wordDescription,
+                "creationDate":creationDate
+            ])
+        }catch {
+            print(error)
+        }
+       
     }
     
   

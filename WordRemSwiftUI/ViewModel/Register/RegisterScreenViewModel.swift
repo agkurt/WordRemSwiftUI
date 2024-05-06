@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class RegisterScreenViewModel: ObservableObject {
     
     @Published var email: String = ""
@@ -24,7 +25,7 @@ class RegisterScreenViewModel: ObservableObject {
             if let error = error {
                 print(error.localizedDescription)
             } else {
-                OperationQueue.main.addOperation {
+                DispatchQueue.main.async {
                     self.isRegisterSuccess = true
                 }
             }

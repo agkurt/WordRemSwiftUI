@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class NewsViewModel: ObservableObject {
     @Published var newsModel:NewsModel?
     @Published var isLoading = false

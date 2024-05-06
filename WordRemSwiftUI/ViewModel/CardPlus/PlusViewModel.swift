@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 class PlusViewModel:ObservableObject {
     
     @Published public var cardName = ""

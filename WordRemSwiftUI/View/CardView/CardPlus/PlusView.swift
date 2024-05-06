@@ -12,7 +12,6 @@ struct PlusView: View {
     @StateObject var viewModel = PlusViewModel()
     @Environment(\.dismiss) private var dismiss
     var completion: () -> Void
-    
     init(completion: @escaping () -> Void) {
         self.completion = completion
     }
@@ -58,7 +57,6 @@ struct PlusView: View {
                     Button(action: {
                         Task {
                             await viewModel.addCardNameInfo()
-                            completion()
                         }
                         dismiss()
                     }, label: {

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class SentenceViewModel:ObservableObject {
     
     @Published var exampleWords: ExampleWord?

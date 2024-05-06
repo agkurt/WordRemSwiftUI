@@ -9,52 +9,48 @@ import SwiftUI
 
 struct CardDetailView: View {
     
-    @StateObject var viewModel = CardDetailViewModel()
+    @ObservedObject var viewModel: CardDetailViewModel
     var cardName: String
-    var cardId: String
+    @State var cardId: String
     @State private var showSheet = false
-    @State private var flipped = false
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
                 ScrollView {
                     VStack {
-                        ForEach(viewModel.wordNames.indices, id: \.self) { index in
-                            CardDetailDesignView(wordName: viewModel.wordNames[index],wordMean: viewModel.wordMeans[index],wordDescription: viewModel.wordDescriptions[index])
+                        ForEach(viewModel.wordInfo.indices, id: \.self) { index in
+                            CardDetailDesignView(wordName: $viewModel.wordNames[index],wordMean: $viewModel.wordMeans[index],wordDescription: $viewModel.wordDescriptions[index])
                         }
                     }
                 }
-                .onAppear {
-                    Task {
-                        do {
-                            try await viewModel.fetchCardInfo(cardId: cardId)
-                        }catch {
-                            print(error)
-                            print(error.localizedDescription)
-                        }
-                    }
+            }
+            .onAppear {
+                Task {
+                    await viewModel.fetchCardInfo(cardId: cardId)
                 }
             }
             .navigationTitle("WORDS")
             .navigationBarTitleDisplayMode(.inline)
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        showSheet = true
+                        showSheet.toggle()
                     }) {
                         Image(systemName: "plus")
                     }
+                    .sheet(isPresented: $showSheet) {
+                        CardPlusView(cardId: cardId, completion: {
+                            Task {
+                                await viewModel.fetchCardInfo(cardId:cardId)
+                            }
+                        })
+                    }
                 }
             }
-            .sheet(isPresented: $showSheet) {
-                CardPlusView(completion: {
-                    Task {
-                        try await viewModel.fetchCardInfo(cardId:cardId)
-                    }
-                }, cardId: cardId)
-            }
+           
         }
     }
 }

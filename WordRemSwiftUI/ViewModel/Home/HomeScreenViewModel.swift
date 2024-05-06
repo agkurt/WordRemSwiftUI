@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 class HomeScreenViewModel: ObservableObject {
     
     @Published var cardNames: [String] = []
@@ -19,7 +20,7 @@ class HomeScreenViewModel: ObservableObject {
     func fetchCardName() async {
         do {
             let fetchedCards = try await FirebaseService.shared.fetchCardName()
-            OperationQueue.main.addOperation {
+            DispatchQueue.main.async {
                 self.cards = fetchedCards
                 self.selectedFlag = fetchedCards.map { $0.selectedFlag?.rawValue ?? "" }
                 self.cardNames = fetchedCards.map { $0.name ?? "" }
@@ -27,8 +28,6 @@ class HomeScreenViewModel: ObservableObject {
             }
         } catch {
             print("Error fetching cards: \(error.localizedDescription)")
-            DispatchQueue.main.async {
-            }
         }
     }
     
@@ -40,7 +39,7 @@ class HomeScreenViewModel: ObservableObject {
             }
             do {
                 let cardId = self.cardIds[index]
-                try await FirebaseService.shared.deleteCard(withId: cardId)
+                try await FirebaseService.shared.deleteCardAndTransactions(withId: cardId)
                 DispatchQueue.main.async {
                     self.cards.remove(at: index)
                     self.cardNames.remove(at: index)

@@ -24,7 +24,7 @@ struct HomeScreenView: View {
                     VStack {
                         ScrollView {
                         ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
-                            NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
+                            NavigationLink(destination: CardDetailView(viewModel: CardDetailViewModel(), cardName: viewModel.cardNames[index],
                                                                        cardId:viewModel.cardIds[index])) {
                                 CardView(isEditing: $isEditing,
                                          title:viewModel.cardNames[index],
@@ -50,7 +50,6 @@ struct HomeScreenView: View {
                             ArcMenuButton(buttons: ["text.word.spacing", "newspaper", "translate", "person.crop.circle"])
                                 .padding(16)
                         }
-                        
                     }
                 }
             }

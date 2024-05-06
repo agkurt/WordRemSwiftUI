@@ -12,14 +12,14 @@ struct CardPlusView: View {
     @StateObject private var viewModel = CardPlusViewModel()
     @StateObject private var reminderViewModel = ReminderViewModel()
     @Environment(\.dismiss) private var dismiss
-    
-    var cardId: String
+    @State var isLoading = false
+    @State var cardId: String
     var completion: () -> Void
     @State private var isOnToggle = false
     
-    init(completion: @escaping () -> Void, cardId: String) {
-        self.completion = completion
+    init(cardId: String, completion: @escaping () -> Void) {
         self.cardId = cardId
+        self.completion = completion
     }
     
     var body: some View {
@@ -31,47 +31,62 @@ struct CardPlusView: View {
                         .font(.custom("Poppins-Medium", size: 25))
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    
                     VStack(alignment:.leading,spacing: 20) {
                         
                         CardTextField(text: $viewModel.wordName, placeholder: "Word")
                         VStack(alignment:.leading) {
-                            Button {
-                                Task {
-                                    await viewModel.translateForWordName(targetLang: viewModel.targetLang.first ?? "", sourceLang: viewModel.sourceLang.first ?? "", text: viewModel.wordName)
-                                }
-                            } label: {
-                                HStack {
-                                    Image("translate")
-                                        .resizable()
-                                        .frame(width: 20,height: 20)
-                                        .aspectRatio(contentMode: .fill)
-                                    Text("Translate")
-                                        .font(.headline)
-                                    
-                                }
-                              
-                                
-                            }
-                        }
-                        CardTextField(text: $viewModel.translatedText, placeholder: "Word Mean ")
-                        
-                        Button(action: {
-                            Task {
-                                await viewModel.createSentenceUseToWord(name: viewModel.wordName)
-                                viewModel.wordDescription = viewModel.examplesWord?.examples.prefix(1).first ?? ""
-                            }
-                        }, label: {
-                            HStack {
-                                Image("word")
-                                    .resizable()
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .padding()
                                     .frame(width: 25,height: 25)
-                                    .aspectRatio(contentMode: .fill)
-                                Text("Example Sentence")
-                                    .font(.headline)
-                                    .foregroundStyle(.primary)
+                            }else {
+                                Button {
+                                    Task {
+                                        await viewModel.translateForWordName(targetLang: viewModel.targetLang.first ?? "", sourceLang: viewModel.sourceLang.first ?? "", text: viewModel.wordName)
+                                    }
+                                    
+                                } label: {
+                                    HStack {
+                                        Image("translate")
+                                            .resizable()
+                                            .frame(width: 20,height: 20)
+                                            .aspectRatio(contentMode: .fill)
+                                        Text("Translate")
+                                            .font(.headline)
+                                        
+                                    }
+                                }
                             }
                             
-                        })
+                        }
+                        CardTextField(text: $viewModel.wordMean, placeholder: "Word Mean ")
+                        
+                        if viewModel.isLoadingSentence {
+                            ProgressView()
+                                .padding()
+                                .frame(width: 20,height: 20)
+                        }else {
+                            Button(action: {
+                                Task {
+                                    await viewModel.createSentenceUseToWord(name: viewModel.wordName)
+                                    
+                                }
+                                
+                            }, label: {
+                                HStack {
+                                    Image("word")
+                                        .resizable()
+                                        .frame(width: 25,height: 25)
+                                        .aspectRatio(contentMode: .fill)
+                                    Text("Example Sentence")
+                                        .font(.headline)
+                                        .foregroundStyle(.primary)
+                                }
+                                
+                            })
+                        }
+                        
                         CardTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence")
                     }
                     .padding()
@@ -107,7 +122,6 @@ struct CardPlusView: View {
                     }
                     Spacer()
                 }
-                
                 .onAppear {
                     Task {
                         await viewModel.fetchLanguageInfo(cardId: cardId)
@@ -121,25 +135,29 @@ struct CardPlusView: View {
                 ToolbarItem(placement:.topBarTrailing) {
                     Button(action: {
                         Task {
+                            await viewModel.addWordToCard(cardId: cardId)
+                            completion()
                             if isOnToggle {
                                 reminderViewModel.sendNotifications(title: viewModel.wordName, body: viewModel.wordDescription)
                             }
-                            await viewModel.addWordToCard(cardId: cardId)
                         }
                         dismiss()
                     }, label: {
                         Text("Done")
                     })
-                    .disabled(viewModel.wordName.isEmpty || viewModel.translatedText.isEmpty || viewModel.wordDescription.isEmpty)
+                    .disabled(viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty || viewModel.wordDescription.isEmpty)
                 }
             }
+            
+            
         }
     }
 }
 
+
 struct CardPlusView_Previews: PreviewProvider {
     static var previews: some View {
-        CardPlusView(completion: {}, cardId: "your_card_id_here")
+        CardPlusView(cardId: "your_card_id_here", completion: {})
     }
 }
 

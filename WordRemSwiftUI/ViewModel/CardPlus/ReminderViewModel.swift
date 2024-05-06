@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 class ReminderViewModel: ObservableObject {
     
     @ObservedObject private var notificationManager = NotificationManager()

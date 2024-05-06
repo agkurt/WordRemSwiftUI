@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class GeminiAIViewModel: ObservableObject {
     @Published var userPrompt: String = ""
     @Published var messages: [AIMessage] = []

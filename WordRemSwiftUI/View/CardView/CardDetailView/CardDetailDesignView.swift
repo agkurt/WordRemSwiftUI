@@ -9,9 +9,9 @@ import SwiftUI
 
 struct CardDetailDesignView: View {
     
-    @State var wordName: String?
-    @State var wordMean:String?
-    @State var wordDescription:String?
+    @Binding var wordName: String
+    @Binding var wordMean:String
+    @Binding var wordDescription:String
     
     var body: some View {
         NavigationStack {
@@ -45,6 +45,3 @@ struct CardDetailDesignView: View {
     }
 }
 
-#Preview {
-    CardDetailDesignView()
-}

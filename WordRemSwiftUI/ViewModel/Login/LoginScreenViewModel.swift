@@ -9,6 +9,7 @@ import SwiftUI
 import GoogleSignIn
 import FirebaseCore
 
+@MainActor
 class LoginScreenViewModel : ObservableObject {
     
     @Published var email:String = ""
