@@ -10,9 +10,9 @@ import SwiftUI
 @MainActor
 class CardDetailViewModel: ObservableObject {
     
-    @Published var wordNames: [String] = []
-    @Published var wordMeans: [String] = []
-    @Published var wordDescriptions: [String] = []
+    @Published var wordNames: [String?] = []
+    @Published var wordMeans: [String?] = []
+    @Published var wordDescriptions: [String?] = []
     @Published var wordInfo: [WordInfo] = []
     @Published var cardIds: [String] = []
     

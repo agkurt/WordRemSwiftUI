@@ -9,34 +9,32 @@ import SwiftUI
 
 struct CardDetailDesignView: View {
     
-    @Binding var wordName: String
-    @Binding var wordMean:String
-    @Binding var wordDescription:String
+    @Binding var wordName: String?
+    @Binding var wordMean:String?
+    @Binding var wordDescription:String?
     @Binding var isEditing: Bool
     var onDelete: () -> Void
-
+   
     var body: some View {
         NavigationStack {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 30, style: .circular)
+                    RoundedRectangle(cornerRadius: 30)
                         .fill(LinearGradient(gradient: Gradient(colors: [Color.init(hex:"#313a45")]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .frame(width: 200,height: 300)
                         .shadow(radius: 20)
                     VStack(alignment: .center) {
-                        Text(wordName)
+                        Text(wordName ?? "")
                             .font(.headline)
                             .foregroundColor(.white)
-                            .padding()
-                        Text(wordMean)
+                        Text(wordMean ?? "")
                             .font(.headline)
                             .foregroundColor(.white)
-                            .padding()
-                        Text(wordDescription)
+                        Text(wordDescription ?? "")
                             .font(.subheadline)
                             .foregroundColor(.white)
-                            .padding([.leading, .bottom, .trailing])
                       
                     }
-                    .frame(maxWidth: .infinity,minHeight: 150)
+                   
                     .padding()
                     if isEditing {
                         VStack {
@@ -52,11 +50,7 @@ struct CardDetailDesignView: View {
                         }
                     }
                 }
-                .onTapGesture {
-                    UIApplication.shared.hideKeyboard()
-                }
         }
-        .padding()
     }
 }
 

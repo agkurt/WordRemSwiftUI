@@ -151,6 +151,7 @@
 		E8F1A6172B9BF54E00E4E533 /* WidgetSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A6162B9BF54E00E4E533 /* WidgetSettingView.swift */; };
 		E8F1A61A2B9BF62F00E4E533 /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A6192B9BF62F00E4E533 /* Setting.swift */; };
 		E8F1A61C2B9BF65F00E4E533 /* SettingImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A61B2B9BF65F00E4E533 /* SettingImage.swift */; };
+		E8F478D82BEAC7FD00879C96 /* CardFlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F478D72BEAC7FD00879C96 /* CardFlipView.swift */; };
 		E8F7B6842BD5ECE700C74B4F /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F7B6832BD5ECE700C74B4F /* CardViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -271,6 +272,7 @@
 		E8F1A6162B9BF54E00E4E533 /* WidgetSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSettingView.swift; sourceTree = "<group>"; };
 		E8F1A6192B9BF62F00E4E533 /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
 		E8F1A61B2B9BF65F00E4E533 /* SettingImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingImage.swift; sourceTree = "<group>"; };
+		E8F478D72BEAC7FD00879C96 /* CardFlipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFlipView.swift; sourceTree = "<group>"; };
 		E8F7B6832BD5ECE700C74B4F /* CardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -552,6 +554,7 @@
 			children = (
 				E88AB25A2B8EA3CD0026823A /* CardDetailView.swift */,
 				E8ACFA382BA1D0140075CAA3 /* CardDetailDesignView.swift */,
+				E8F478D72BEAC7FD00879C96 /* CardFlipView.swift */,
 			);
 			path = CardDetailView;
 			sourceTree = "<group>";
@@ -997,6 +1000,7 @@
 				E84DEC9B2B8E14950014916C /* CheckBoxStyle.swift in Sources */,
 				E8D774772B8FE9C900E9AB1B /* CardModel.swift in Sources */,
 				E8F1A60D2B9BF4C000E4E533 /* AnotherSettingView.swift in Sources */,
+				E8F478D82BEAC7FD00879C96 /* CardFlipView.swift in Sources */,
 				E84AA1BA2B7A0B3200823B97 /* LoginModel.swift in Sources */,
 				E88AB2602B8EB6310026823A /* CardPlusView.swift in Sources */,
 				E853ACA82BA4EBD4003C988A /* APIKey.swift in Sources */,

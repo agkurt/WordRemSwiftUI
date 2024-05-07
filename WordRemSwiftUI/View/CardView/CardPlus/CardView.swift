@@ -12,8 +12,7 @@ struct CardView: View {
     @Binding var isEditing: Bool
     var title: String
     var image:String
-    var onDelete: () -> Void
-    
+    var onDelete: () -> Void    
     var body: some View {
         ZStack {
             VStack(spacing: 15) {
@@ -31,6 +30,7 @@ struct CardView: View {
                     .foregroundColor(.white)
                 Spacer()
             }
+            
             if isEditing {
                 VStack {
                     HStack {

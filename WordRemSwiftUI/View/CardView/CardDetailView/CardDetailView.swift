@@ -14,6 +14,7 @@ struct CardDetailView: View {
     @State var cardId: String
     @State private var showSheet = false
     @State var isEditing: Bool = false
+    @State var isFlipped: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -22,11 +23,12 @@ struct CardDetailView: View {
                 ScrollView {
                     VStack {
                         ForEach(viewModel.wordInfo.indices, id: \.self) { index in
-                            CardDetailDesignView(wordName: $viewModel.wordNames[index],wordMean: $viewModel.wordMeans[index],wordDescription: $viewModel.wordDescriptions[index],isEditing: $isEditing,onDelete: {
-                                if isEditing {
-                                    viewModel.deleteCard(at: index, deckId: cardId)
+                            CardFlipView(viewModel: viewModel, isEditing: $isEditing, isFlipped: $isFlipped, cardId: cardId, index: index)
+                            .onTapGesture {
+                                withAnimation(.easeIn) {
+                                    isFlipped.toggle()
                                 }
-                            })
+                            }
                         }
                     }
                 }
