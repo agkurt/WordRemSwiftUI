@@ -36,14 +36,14 @@ struct CardTextField: View {
                 Spacer()
             }
         }
-        .onTapGesture {
-            focused = true
-        }
         .animation(.linear(duration: 0.2), value: focused)
         .frame(maxWidth: .infinity,alignment:.center)
         .padding(.horizontal, 16)
         .background(getColorBasedOnScheme())
         .cornerRadius(30)
+        .onTapGesture {
+            focused = true
+        }
     }
     
     private func getColorBasedOnScheme() -> Color  {
@@ -56,6 +56,10 @@ struct CardTextField: View {
             return Color.init(hex:"#313a45")
         }
     }
+}
+
+#Preview {
+    CardTextField(text: .constant(""),placeholder: "Word Name")
 }
 
 

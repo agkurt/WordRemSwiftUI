@@ -25,30 +25,33 @@ struct TextFieldView: View {
                 .focused($focused)
                 .offset(y:10)
                 .opacity(isActive ? 1 : 0)
-            HStack {
+            HStack() {
                 Text(placeholder)
                     .foregroundColor(.gray.opacity(5.0))
-                    .frame(height: 14)
+                    .frame(maxWidth: .infinity,alignment:.leading)
+                    .frame(minHeight: 40)
                     .font(.system(size: isActive ? 10 : 14, weight: .regular))
                     .offset(y: isActive ? -7 : 0)
+                
                 Spacer()
             }
-        }
-        .onTapGesture {
-            focused = true
         }
         .animation(.linear(duration: 0.2), value: focused)
         .frame(maxWidth: .infinity,alignment:.center)
         .padding(.horizontal, 16)
         .background(getColorBasedOnScheme())
         .cornerRadius(30)
+        .onTapGesture {
+            focused = true
+            
+        }
     }
     
     private func getColorBasedOnScheme() -> Color  {
         switch colorScheme {
         case .light:
             return Color.init(hex: "#a2a7ac")
-
+            
         case .dark:
             return Color.init(hex: "#1c2127")
             
@@ -57,6 +60,12 @@ struct TextFieldView: View {
         }
     }
 }
+
+#Preview {
+    TextFieldView(registerScreenViewModel: RegisterScreenViewModel(), text: .constant(""),placeholder: "Word name")
+}
+
+
 
 
 

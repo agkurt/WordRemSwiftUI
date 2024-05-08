@@ -56,7 +56,6 @@ struct SecureFieldView: View {
                     }
                 }
             }
-            
             HStack {
                 Text(placeholder)
                     .foregroundColor(.gray.opacity(5.0))
@@ -67,21 +66,20 @@ struct SecureFieldView: View {
                 Spacer()
             }
         }
-        .onTapGesture {
-            focused = true
-        }
         .animation(.linear(duration: 0.2), value: focused)
         .frame(maxWidth: .infinity,alignment:.center)
         .padding(.horizontal, 16)
         .background(getColorBasedOnScheme())
         .cornerRadius(30)
+        .onTapGesture {
+            focused = true
+        }
     }
     
     private func getColorBasedOnScheme() -> Color  {
         switch colorScheme {
         case .light:
             return Color.init(hex: "#a2a7ac")
-            
         case .dark:
             return Color.init(hex: "#1c2127")
             
@@ -91,10 +89,7 @@ struct SecureFieldView: View {
     }
 }
 
-struct SecureFieldView_Previews: PreviewProvider {
-    static var previews: some View {
-        let text: Binding<String> = .constant("random")
-        return SecureFieldView(text:text)
-    }
+#Preview {
+    SecureFieldView(text: .constant(""),placeholder: "Password")
 }
 
