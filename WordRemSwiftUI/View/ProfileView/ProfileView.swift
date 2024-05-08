@@ -23,22 +23,7 @@ struct ProfileView: View {
             ZStack {
                 LinearBackgroundView()
                 VStack {
-                    ProfileImageCam()
-                    Text("\(profileViewModel.username)")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.top, 20)
-                  
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text("\(profileViewModel.email)")
-                    }
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.top, 50)
-                    
-                    Spacer()
-                    
+                                        
                     Button(action: {
                         authManager.signOut()
                     }) {
@@ -53,6 +38,7 @@ struct ProfileView: View {
                 }
             }
             .navigationBarTitle("Profile", displayMode: .inline)
+            
             .onAppear {
                 Task {
                     await profileViewModel.fetchUsernameInfo()

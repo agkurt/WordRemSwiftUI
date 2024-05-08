@@ -67,10 +67,14 @@ struct CardPlusView: View {
                                 .padding()
                                 .frame(width: 20,height: 20)
                         }else {
+                            if viewModel.sourceLang.first != "EN" {
+                                
+                            }
                             Button(action: {
                                 Task {
-                                    await viewModel.createSentenceUseToWord(name: viewModel.wordName)
-                                    
+                                    if viewModel.sourceLang.first == "EN" {
+                                        await viewModel.createSentenceUseToWord(name: viewModel.wordName)
+                                    }
                                 }
                                 
                             }, label: {
@@ -83,8 +87,9 @@ struct CardPlusView: View {
                                         .font(.headline)
                                         .foregroundStyle(.primary)
                                 }
-                                
                             })
+                            .opacity(viewModel.sourceLang.first == "EN" ? 1.0 : 0.5)
+                            .disabled(viewModel.sourceLang.first != "EN")
                         }
                         
                         CardTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence")

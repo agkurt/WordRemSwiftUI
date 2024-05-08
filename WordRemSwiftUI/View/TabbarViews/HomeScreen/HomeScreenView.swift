@@ -21,25 +21,34 @@ struct HomeScreenView: View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .padding()
+                        .scaleEffect(.greatestFiniteMagnitude)
+                }else {
                     VStack {
                         ScrollView {
                             ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
-                            NavigationLink(destination: CardDetailView(viewModel: CardDetailViewModel(), cardName: viewModel.cardNames[index],
-                                                                       cardId:viewModel.cardIds[index])) {
-                                CardView(isEditing: $isEditing,
-                                         title:viewModel.cardNames[index],
-                                         image: viewModel.selectedFlag[index],
-                                          onDelete: {
-                                    if isEditing {
-                                        viewModel.deleteCard(at: index)
-                                    }
-                                })
-                                .foregroundStyle(.white)
+                                NavigationLink(destination: CardDetailView(viewModel: CardDetailViewModel(), cardName: viewModel.cardNames[index],
+                                                                           cardId:viewModel.cardIds[index])) {
+                                    CardView(isEditing: $isEditing,
+                                             title:viewModel.cardNames[index],
+                                             image: viewModel.selectedFlag[index],
+                                             onDelete: {
+                                        if isEditing {
+                                            viewModel.deleteCard(at: index)
+                                        }
+                                    })
+                                    .foregroundStyle(.white)
+                                }
                             }
+                            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                         }
-                        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                        .searchable(text: $searchText)
                     }
-                    .searchable(text: $searchText)
+                    
                 }
                 
                 VStack {
@@ -62,13 +71,6 @@ struct HomeScreenView: View {
             }
             
             .toolbar {
-                ToolbarItem(placement:.topBarTrailing) {
-                    Button {
-                        authManager.signOut()
-                    } label: {
-                        Text("Signout")
-                    }
-                }
                 
                 ToolbarItem(placement:.topBarTrailing) {
                     Button {
