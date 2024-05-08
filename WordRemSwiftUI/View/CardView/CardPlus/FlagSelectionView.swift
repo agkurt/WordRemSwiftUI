@@ -13,7 +13,7 @@ struct FlagSelectionView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing:20) {
                 TabView(selection: $selectedFlag) {
                     ForEach(FlagModel.allCases, id: \.self) { flag in
                         VStack {
@@ -23,8 +23,8 @@ struct FlagSelectionView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .frame(width: 180, height: 180)
                             Text(flag.rawValue.capitalized)
-                                .foregroundColor(selectedFlag == flag ? .blue : .black)
-                                .font(selectedFlag == flag ? .headline : .subheadline)
+                                .foregroundColor(selectedFlag == flag ? .white : .white)
+                                .font(selectedFlag == flag ? .largeTitle : .largeTitle)
                             Spacer()
                         }
                         .frame(maxWidth: .infinity)
@@ -41,7 +41,7 @@ struct FlagSelectionView: View {
 
 struct FlagSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        FlagSelectionView(selectedFlag: .constant(.china))
+        FlagSelectionView(selectedFlag: .constant(.chinese))
     }
 }
 

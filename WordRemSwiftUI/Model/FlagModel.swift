@@ -7,17 +7,29 @@
 
 import Foundation
 
-enum FlagModel:String,CaseIterable {
+enum FlagModel: String, CaseIterable {
     
+    case arabic = "arabic"
+    case bulgarian = "bulgarian"
+    case chinese = "china"
+    case czech = "czech"
+    case english = "english"
+    case estonian = "estonia"
+    case french = "france"
+    case german = "germany"
+    case greek = "greece"
+    case hungarian = "hungary"
+    case indonesian = "indonesia"
+    case italian = "italy"
+    case japanese = "japan"
+    case korean = "korea"
+    case latvian = "latvia"
+    case lithuanian = "lithunia"
+    case romanian = "romania"
+    case russian = "russia"
+    case swedish = "sweden"
     case turkey = "turkey"
-    case china = "china"
-    case germany = "germany"
-    case italy = "italy"
-    case japan = "japan"
-    case korea = "korea"
-    case netherlands = "netherlands"
-    case russia = "russia"
-    case spain = "spain"
-    case unitedStates = "english"
-    
+    case ukrainian = "ukraine"
 }
+
+

@@ -73,7 +73,7 @@ struct SentenceScreenView: View {
             .onTapGesture {
                 UIApplication.shared.hideKeyboard()
             }
-            .navigationTitle("Sentence")
+            .navigationTitle("English Sentence")
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Error"), message: Text("Use only the English word to bring sentences together"), dismissButton: .default(Text("OK")))
             }

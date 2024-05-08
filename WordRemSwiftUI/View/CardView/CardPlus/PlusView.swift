@@ -22,7 +22,8 @@ struct PlusView: View {
                 LinearBackgroundView()
                 VStack(alignment:.center) {
                     FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
-                    Text("Translate işlemi için dil seçimi ")
+                    
+                    Text("Language selection for translation")
                     HStack {
                         
                         Text("Source Language")
