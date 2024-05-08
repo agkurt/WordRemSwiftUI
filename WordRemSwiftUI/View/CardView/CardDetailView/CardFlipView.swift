@@ -11,14 +11,14 @@ struct CardFlipView: View {
     
     @ObservedObject var viewModel: CardDetailViewModel
     @Binding var isEditing: Bool
-    @Binding var isFlipped: Bool
-    var cardId: String
-    var index: Int
+    @State var isFlipped: Bool
+    @State var cardId: String
+    @State var index: Int
     
     var body: some View {
         ZStack {
-            
-            CardDetailDesignView(wordName: $viewModel.wordNames[index], wordMean: .constant(nil), wordDescription: $viewModel.wordDescriptions[index], isEditing: $isEditing, onDelete: {
+            // front card view
+            CardDetailDesignView(wordName: $viewModel.wordNames.indices.contains(index) ? $viewModel.wordNames[index] : .constant(nil), wordMean: .constant(nil), wordDescription: .constant(nil), isEditing: $isEditing, onDelete: {
                 if isEditing {
                     viewModel.deleteCard(at: index, deckId: cardId)
                 }
@@ -31,7 +31,7 @@ struct CardFlipView: View {
             .animation(isFlipped ? .linear.delay(0.35): .linear,value: isFlipped )
             
             // Back card view
-            CardDetailDesignView(wordName:.constant(nil) ,wordMean: $viewModel.wordMeans[index],wordDescription:.constant(nil) ,isEditing: $isEditing,onDelete: {
+            CardDetailDesignView(wordName:.constant(nil) ,wordMean: viewModel.wordMeans.indices.contains(index) ? $viewModel.wordMeans[index] : .constant(nil),wordDescription:viewModel.wordDescriptions.indices.contains(index) ? $viewModel.wordDescriptions[index] : .constant(nil) ,isEditing: $isEditing,onDelete: {
                 if isEditing {
                     viewModel.deleteCard(at: index, deckId: cardId)
                 }
@@ -41,6 +41,11 @@ struct CardFlipView: View {
                 axis: (x:0.0,y:1.0,z:0.0)
             )
             .animation(isFlipped ? .linear: .linear.delay(0.35),value: isFlipped)
+        }
+        .onTapGesture {
+            withAnimation(.easeIn) {
+                isFlipped.toggle()
+            }
         }
         
     }

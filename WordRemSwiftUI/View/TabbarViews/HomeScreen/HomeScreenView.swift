@@ -23,7 +23,7 @@ struct HomeScreenView: View {
                 LinearBackgroundView()
                     VStack {
                         ScrollView {
-                        ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
+                            ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
                             NavigationLink(destination: CardDetailView(viewModel: CardDetailViewModel(), cardName: viewModel.cardNames[index],
                                                                        cardId:viewModel.cardIds[index])) {
                                 CardView(isEditing: $isEditing,

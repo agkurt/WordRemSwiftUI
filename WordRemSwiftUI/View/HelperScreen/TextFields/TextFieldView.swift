@@ -25,7 +25,6 @@ struct TextFieldView: View {
                 .focused($focused)
                 .offset(y:10)
                 .opacity(isActive ? 1 : 0)
-                .textInputAutocapitalization(.never)
             HStack {
                 Text(placeholder)
                     .foregroundColor(.gray.opacity(5.0))

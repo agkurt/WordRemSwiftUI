@@ -14,43 +14,66 @@ struct CardDetailDesignView: View {
     @Binding var wordDescription:String?
     @Binding var isEditing: Bool
     var onDelete: () -> Void
-   
+    
     var body: some View {
         NavigationStack {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 30)
-                        .fill(LinearGradient(gradient: Gradient(colors: [Color.init(hex:"#313a45")]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                        .frame(width: 200,height: 300)
-                        .shadow(radius: 20)
-                    VStack(alignment: .center) {
-                        Text(wordName ?? "")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        Text(wordMean ?? "")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        Text(wordDescription ?? "")
-                            .font(.subheadline)
-                            .foregroundColor(.white)
-                      
+            ZStack {
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color.init(hex:"#313a45")]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .shadow(radius: 20)
+                    .overlay(alignment: .topTrailing) {
+                        RoundedRectangle(cornerRadius: 20)
+                            .trim(from:0.80,to: 1)
+                            .frame(width: 220,height: 200)
+                            .foregroundStyle(.orange)
                     }
-                   
-                    .padding()
-                    if isEditing {
-                        VStack {
-                            HStack {
-                                Spacer()
-                                Button(action: onDelete) {
-                                    Image(systemName: "xmark.circle")
-                                        .foregroundColor(.white)
-                                }
-                                .padding()
-                            }
-                            Spacer()
+                
+                VStack(alignment:.center) {
+                    VStack {
+                        ZStack {
+                            Text(wordName ?? "")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
+                            Text(wordMean ?? "")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
                         }
+                        .padding()
+                        
+                        Text(wordDescription ?? "")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
+                }
+                
+                if isEditing {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button(action: onDelete) {
+                                Image(systemName: "xmark.circle")
+                                    .foregroundColor(.white)
+                            }
+                            .padding()
+                        }
+                        Spacer()
                     }
                 }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 125)
+            .padding()
         }
     }
 }
+
+struct CardDetailDesignView_Previews: PreviewProvider {
+    static var previews: some View {
+        CardDetailDesignView(wordName: .constant("Word"), wordMean: .constant("Meaning"), wordDescription: .constant("Description"), isEditing: .constant(false), onDelete: {})
+    }
+}
+
 

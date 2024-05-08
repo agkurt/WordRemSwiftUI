@@ -14,7 +14,17 @@ struct CardView: View {
     var image:String
     var onDelete: () -> Void    
     var body: some View {
+        
         ZStack {
+            RoundedRectangle(cornerRadius: 30)
+                .fill(LinearGradient(gradient: Gradient(colors: [Color.init(hex:"#313a45")]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                .shadow(radius: 20)
+                .overlay(alignment: .bottomTrailing) {
+                    RoundedRectangle(cornerRadius: 20)
+                        .trim(from:0,to: 0.20)
+                        .frame(width: 220,height: 200)
+                        .foregroundStyle(.orange)
+                }
             VStack(spacing: 15) {
                 Spacer()
                 HStack {
