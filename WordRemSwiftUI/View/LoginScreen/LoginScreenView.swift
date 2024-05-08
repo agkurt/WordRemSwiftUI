@@ -46,26 +46,10 @@ struct LoginScreenView: View {
                             .padding()
                             
                             ForgotAndSignUpButtonView()
+                            
                             Spacer()
-                            HStack(spacing:70) {
-                                Button {
-                                    authManager.handleGoogleSignIn(with: getRootViewController())
-                                } label: {
-                                    Image("google")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 60,height: 60)
-                                }
-                                Button {
-                                    
-                                } label: {
-                                    Image("apple")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 50,height: 50)
-                                }
-                            }
-                            .padding()
+                            
+                            GoogleAndAppleSignView()
                             
                             Spacer()
                             
@@ -80,7 +64,6 @@ struct LoginScreenView: View {
                                 }
                             }) {
                                 Text("Continue as Guest")
-                                    .font(.custom("Poppins-Light", size: 18))
                                     .foregroundStyle(.primary)
                                 
                             }
@@ -90,7 +73,6 @@ struct LoginScreenView: View {
                         .padding()
                         
                     }
-                    
                     .padding(.top,25)
                     .ignoresSafeArea(.keyboard, edges: .bottom)
                 }
@@ -111,5 +93,3 @@ struct LoginScreenView: View {
 #Preview {
     LoginScreenView()
 }
-
-
