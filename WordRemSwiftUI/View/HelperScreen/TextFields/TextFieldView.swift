@@ -19,6 +19,7 @@ struct TextFieldView: View {
             TextField("", text: $text)
                 .font(.custom("Poppins-Light", size: 15))
                 .padding()
+                .textInputAutocapitalization(.never)
                 .autocorrectionDisabled(true)
                 .foregroundColor(.primary)
                 .cornerRadius(30)

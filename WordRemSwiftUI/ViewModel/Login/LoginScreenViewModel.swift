@@ -12,26 +12,28 @@ import FirebaseCore
 @MainActor
 class LoginScreenViewModel : ObservableObject {
     
+    @EnvironmentObject var authManager: AuthManager
     @Published var email:String = ""
     @Published var password:String = ""
     @Published var isLoginSuccess = false
     @Published var focusedField: FocusableField?
     @Published var colorScheme:ColorScheme?
-    @ObservedObject var authManager: AuthManager
-    
-    init(authManager: AuthManager) {
-        self.authManager = authManager
-    }
+    @Published var isLoading = false
     
     func loginRequest() async {
+        isLoading = true
         let loginModel = LoginModel(email: email, password: password)
         FirebaseService.shared.loginUser(loginModel: loginModel) { [weak self] success, error in
             guard let self = self else { return }
             if let error = error {
                 print("Login error: \(error.localizedDescription)")
+                self.isLoading = false
+                self.email = ""
+                self.password = ""
             } else if success {
                 DispatchQueue.main.async {
                     self.authManager.userIsLoggedIn = true
+                    self.isLoading = false
                     self.isLoginSuccess = true
                     print("Successful login")
                 }

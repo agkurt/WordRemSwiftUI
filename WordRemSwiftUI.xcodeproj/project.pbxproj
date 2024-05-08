@@ -131,6 +131,8 @@
 		E8D6F2BC2B8DFF400017A523 /* Poppins-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8D6F2A92B8DFF400017A523 /* Poppins-BoldItalic.ttf */; };
 		E8D6F2BD2B8DFF400017A523 /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8D6F2AA2B8DFF400017A523 /* Poppins-ExtraBold.ttf */; };
 		E8D774772B8FE9C900E9AB1B /* CardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D774762B8FE9C900E9AB1B /* CardModel.swift */; };
+		E8DF72FA2BEBDA85004EF25E /* LoginTextFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DF72F92BEBDA85004EF25E /* LoginTextFields.swift */; };
+		E8DF72FC2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DF72FB2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift */; };
 		E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */; };
 		E8E1B4DC2B7CA1A700AE6CD0 /* HideKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E1B4DB2B7CA1A700AE6CD0 /* HideKeyboard.swift */; };
 		E8E1B4E02B7CA2F800AE6CD0 /* SecureFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */; };
@@ -252,6 +254,8 @@
 		E8D6F2AA2B8DFF400017A523 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
 		E8D6F2BE2B8DFFB80017A523 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E8D774762B8FE9C900E9AB1B /* CardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardModel.swift; sourceTree = "<group>"; };
+		E8DF72F92BEBDA85004EF25E /* LoginTextFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginTextFields.swift; sourceTree = "<group>"; };
+		E8DF72FB2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotAndSignUpButtonView.swift; sourceTree = "<group>"; };
 		E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearBackgroundView.swift; sourceTree = "<group>"; };
 		E8E1B4DB2B7CA1A700AE6CD0 /* HideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyboard.swift; sourceTree = "<group>"; };
 		E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureFieldView.swift; sourceTree = "<group>"; };
@@ -374,6 +378,8 @@
 			isa = PBXGroup;
 			children = (
 				E84AA1B52B7A081500823B97 /* LoginScreenView.swift */,
+				E8DF72F92BEBDA85004EF25E /* LoginTextFields.swift */,
+				E8DF72FB2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift */,
 			);
 			path = LoginScreen;
 			sourceTree = "<group>";
@@ -1032,11 +1038,13 @@
 				E84CC1942B9255F90066FF96 /* AppDelegate.swift in Sources */,
 				E8E1B4DA2B7C98E900AE6CD0 /* LinearBackgroundView.swift in Sources */,
 				E8F7B6842BD5ECE700C74B4F /* CardViewModel.swift in Sources */,
+				E8DF72FA2BEBDA85004EF25E /* LoginTextFields.swift in Sources */,
 				E820DE312B81EDC100F8231C /* ActivityIndicatorView.swift in Sources */,
 				E853ACA42BA3EEE8003C988A /* GeminiAIView.swift in Sources */,
 				E8C555762BC4A9BD0086FF54 /* ReminderCalculator.swift in Sources */,
 				E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */,
 				E843E0BD2B98172E006B1A1C /* NewsViewModel.swift in Sources */,
+				E8DF72FC2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
 				E8F1A61C2B9BF65F00E4E533 /* SettingImage.swift in Sources */,
 				E843E0BB2B98170C006B1A1C /* NewsView.swift in Sources */,

@@ -11,7 +11,7 @@ struct ContentView: View {
     
     @ObservedObject private var manager = NotificationManager()
     @StateObject var authManager = AuthManager()
-    @StateObject private var loginViewModel = LoginScreenViewModel(authManager: AuthManager())
+    @StateObject private var loginViewModel = LoginScreenViewModel()
     @StateObject var sentenceViewModel = SentenceViewModel()
     @StateObject var homeScreenViewModel = HomeScreenViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
