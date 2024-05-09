@@ -11,7 +11,7 @@ import SwiftUI
 class PlusViewModel:ObservableObject {
     
     @Published public var cardName = ""
-    @Published var selectedFlag:FlagModel = .turkey
+    @Published var selectedFlag:FlagModel = .english
     @Published var sourceLanguage: Language = .english
     @Published var targetLanguage: Language = .turkish
     

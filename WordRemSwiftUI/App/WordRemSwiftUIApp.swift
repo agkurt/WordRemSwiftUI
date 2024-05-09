@@ -12,6 +12,7 @@ import Firebase
 struct WordRemSwiftUIApp: App {
     
     @StateObject private var sentenceViewModel = SentenceViewModel()
+    @StateObject private var authManager = AuthManager()
     
     init () {
         FirebaseApp.configure()
@@ -20,6 +21,8 @@ struct WordRemSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(sentenceViewModel: sentenceViewModel)
+                .environmentObject(authManager)
+                .environmentObject(sentenceViewModel)
         }
     }
 }

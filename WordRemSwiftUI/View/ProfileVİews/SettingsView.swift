@@ -11,7 +11,6 @@ struct SettingsView: View {
     
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject var authManager: AuthManager
-    @StateObject private var loginViewModel = LoginScreenViewModel()
     
     let settings: Array<Setting> = [
         Setting(title: "Theme", color: .red, imageName: "heart.square.fill"),

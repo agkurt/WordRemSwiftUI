@@ -11,7 +11,7 @@ import AuthenticationServices
 struct LoginScreenView: View {
     
     @EnvironmentObject var authManager: AuthManager
-    @StateObject var viewModel = LoginScreenViewModel()
+    @StateObject var viewModel = LoginScreenViewModel(authManager: AuthManager())
     @State private var isLoggedIn = false
     @State var isAnimating: Bool = false
     @FocusState var focusedField:FocusableField?

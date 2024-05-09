@@ -12,13 +12,19 @@ import FirebaseCore
 @MainActor
 class LoginScreenViewModel : ObservableObject {
     
-    @EnvironmentObject var authManager: AuthManager
+    var authManager: AuthManager
+    
+    init(authManager: AuthManager) {
+        self.authManager = authManager
+    }
+    
     @Published var email:String = ""
     @Published var password:String = ""
     @Published var isLoginSuccess = false
     @Published var focusedField: FocusableField?
     @Published var colorScheme:ColorScheme?
     @Published var isLoading = false
+    
     
     func loginRequest() async {
         isLoading = true
