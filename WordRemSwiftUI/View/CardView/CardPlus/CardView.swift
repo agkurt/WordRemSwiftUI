@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CardView: View {
-    
     @Binding var isEditing: Bool
+    @StateObject var viewModel = PlusViewModel()
     var title: String
     var image:String
-    var onDelete: () -> Void    
+    var onDelete: () -> Void  
     var body: some View {
         
         ZStack {

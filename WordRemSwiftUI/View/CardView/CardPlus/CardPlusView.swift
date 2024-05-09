@@ -116,6 +116,7 @@ struct CardPlusView: View {
                             .padding()
                         }
                         
+                        
                         DatePicker(
                             "Date",
                             selection: $reminderViewModel.date,
@@ -143,7 +144,9 @@ struct CardPlusView: View {
                             await viewModel.addWordToCard(cardId: cardId)
                             completion()
                             if isOnToggle {
-                                reminderViewModel.sendNotifications(title: viewModel.wordName, body: viewModel.wordDescription)
+                                Task {
+                                    await reminderViewModel.sendNotifications(title: viewModel.wordName, body: viewModel.wordDescription)
+                                }
                             }
                         }
                         dismiss()

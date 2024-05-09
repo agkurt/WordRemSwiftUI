@@ -21,13 +21,6 @@ struct HomeScreenView: View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
-                
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .padding()
-                        .scaleEffect(.greatestFiniteMagnitude)
-                }else {
                     VStack {
                         ScrollView {
                             ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
@@ -49,7 +42,7 @@ struct HomeScreenView: View {
                         .searchable(text: $searchText)
                     }
                     
-                }
+                
                 
                 VStack {
                     Spacer()
@@ -71,7 +64,6 @@ struct HomeScreenView: View {
             }
             
             .toolbar {
-                
                 ToolbarItem(placement:.topBarTrailing) {
                     Button {
                         isEditing.toggle()

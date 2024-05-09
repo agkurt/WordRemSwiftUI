@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @ObservedObject private var manager = NotificationManager()
     @StateObject var authManager = AuthManager()
     @StateObject private var loginViewModel = LoginScreenViewModel()
     @StateObject var sentenceViewModel = SentenceViewModel()
@@ -29,6 +28,7 @@ struct ContentView: View {
         }
         .environmentObject(sentenceViewModel)
         .environmentObject(authManager)
+        
         .onAppear(perform: {
             Task {
                 let center = UNUserNotificationCenter.current()

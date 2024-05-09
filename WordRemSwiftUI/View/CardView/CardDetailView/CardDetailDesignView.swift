@@ -9,11 +9,31 @@ import SwiftUI
 
 struct CardDetailDesignView: View {
     
+    @ObservedObject var notificationManager = NotificationManager()
     @Binding var wordName: String?
     @Binding var wordMean:String?
     @Binding var wordDescription:String?
     @Binding var isEditing: Bool
     var onDelete: () -> Void
+    
+    func highlightMatches(word: String?, in text: String?) -> Text {
+        guard let word = word, let text = text else {
+            return Text(text ?? "")
+        }
+        
+        let words = text.split(separator: " ")
+        var highlightedText = Text("")
+        
+        for currentWord in words {
+            if currentWord.contains(word) {
+                highlightedText = highlightedText + Text(currentWord).foregroundColor(.orange) + Text(" ")
+            } else {
+                highlightedText = highlightedText + Text(currentWord) + Text(" ")
+            }
+        }
+        
+        return highlightedText
+    }
     
     var body: some View {
         NavigationStack {
@@ -40,13 +60,13 @@ struct CardDetailDesignView: View {
                         }
                         .padding()
                         
-                        Text(wordDescription ?? "")
+                        highlightMatches(word: wordName, in: wordDescription)
                             .font(.headline)
-                            .foregroundColor(.white)
                             .fixedSize(horizontal: false, vertical: true)
                             .multilineTextAlignment(.center)
                     }
                     .padding()
+                    
                 }
                 
                 if isEditing {
@@ -75,5 +95,5 @@ struct CardDetailDesignView_Previews: PreviewProvider {
         CardDetailDesignView(wordName: .constant("Word"), wordMean: .constant("Meaning"), wordDescription: .constant("Description"), isEditing: .constant(false), onDelete: {})
     }
 }
-
+    
 

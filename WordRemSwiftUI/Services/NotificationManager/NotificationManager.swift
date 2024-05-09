@@ -7,6 +7,7 @@
 
 import Foundation
 import UserNotifications
+import SwiftUI
 
 @MainActor
 class NotificationManager: ObservableObject {
@@ -14,6 +15,7 @@ class NotificationManager: ObservableObject {
     @Published private(set) var hasPermission = false
     @Published var numberOfReminders = 1
     @Published var date = Date()
+    @Published var notificationIDs : [String] = []
     
     init() {
         Task {
@@ -29,6 +31,7 @@ class NotificationManager: ObservableObject {
         }
     }
     
+   
     func getAuthStatus() async {
         let status = await UNUserNotificationCenter.current().notificationSettings()
         switch status.authorizationStatus {
@@ -39,49 +42,58 @@ class NotificationManager: ObservableObject {
         }
     }
     
+    func calculateRepeatInterval(type: String, repeatCount: Int) -> Int {
+        var totalHours: Int
+        switch type {
+        case "Daily":
+            totalHours = 24
+        case "Weekly":
+            totalHours = 24 * 7
+        case "Monthly":
+            totalHours = 24 * 30
+        default:
+            totalHours = 24
+        }
+        
+        return totalHours / repeatCount
+    }
+
     func sendNotifications(title: String, body: String, repeatOption: String, repeatValue: Int) {
+        
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = .default
         
         let calendar = Calendar.current
+        let repeatInterval = calculateRepeatInterval(type: repeatOption, repeatCount: repeatValue)
         
-        // Initialize trigger components with the provided date and time
-        var components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-        
-        // Create the trigger date from the modified components
-        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: repeatOption != "None")
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error adding initial notification request: \(error.localizedDescription)")
-            } else {
-                print("Initial notification request added successfully")
-                
-                // If repeat is requested, schedule additional notifications
-                if repeatOption != "None" {
-                    for i in 1..<repeatValue {
-                        // Calculate the next reminder date within 2 hours from the initial date
-                        let nextDate = calendar.date(byAdding: .hour, value: 2 * i, to: self.date)!
-                        let nextComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: nextDate)
-                        
-                        // Create the trigger for the next reminder
-                        let nextTrigger = UNCalendarNotificationTrigger(dateMatching: nextComponents, repeats: true)
-                        let nextRequest = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nextTrigger)
-                        UNUserNotificationCenter.current().add(nextRequest) { error in
-                            if let error = error {
-                                print("Error adding notification request \(i): \(error.localizedDescription)")
-                            } else {
-                                print("Notification request \(i) added successfully")
-                            }
-                        }
-                    }
+        for i in 0..<repeatValue {
+            let id = UUID().uuidString
+            let nextDate = calendar.date(byAdding: .hour, value: repeatInterval * i, to: self.date)!
+            let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: nextDate)
+            
+            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+           
+            let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+            
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error = error {
+                    print("Error adding notification request \(i): \(error.localizedDescription)")
+                } else {
+                    print("Notification request \(i) added successfully")
                 }
             }
+            
         }
     }
-
-
+    
+    func removeNotification(_ id: String) async {
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [id])
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
+//        if let index = notificationIDs.firstIndex(of: id) {
+//            notificationIDs.remove(at: index)
+//        }
+    }
 }
 
