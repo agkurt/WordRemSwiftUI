@@ -124,7 +124,7 @@ class FirebaseService: ObservableObject {
         return cards
     }
     
-    func fetchTheCardNameInfo(cardId: String) async -> [WordInfo] {
+    func fetchTheCardNameInfo(deckId: String) async -> [WordInfo] {
         
         guard let uid = Auth.auth().currentUser?.uid else {
             fatalError("")
@@ -135,13 +135,13 @@ class FirebaseService: ObservableObject {
         let db = Firestore.firestore()
         
         do {
-            let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").getDocuments()
+            let querySnapshot = try await db.collection("users").document(uid).collection("cards").document(deckId).collection("words").getDocuments()
             
             for document in querySnapshot.documents {
                 if let wordName = document.data()["wordName"] as? String,
                    let wordMean = document.data()["wordMean"] as? String,
                    let wordDescription = document.data()["wordDescription"] as? String {
-                   let wordInfo = WordInfo(names: wordName, means: wordMean, descriptions: wordDescription)
+                    let wordInfo = WordInfo(id: document.documentID, names: wordName, means: wordMean, descriptions: wordDescription)
                     wordInfos.append(wordInfo)
                 }
             }

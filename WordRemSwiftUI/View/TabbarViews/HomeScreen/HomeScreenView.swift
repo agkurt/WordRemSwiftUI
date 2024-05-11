@@ -17,31 +17,21 @@ struct HomeScreenView: View {
     @State var isArcMenuExpanded: Bool = false
     @State private var searchText = ""
     
+    
+    
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearBackgroundView()
                     VStack {
                         ScrollView {
-                        ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
-                            NavigationLink(destination: CardDetailView(cardName: viewModel.cardNames[index],
-                                                                       cardId:viewModel.cardIds[index])) {
-                                CardView(isEditing: $isEditing,
-                                         title:viewModel.cardNames[index],
-                                         image: viewModel.selectedFlag[index],
-                                          onDelete: {
-                                    if isEditing {
-                                        viewModel.deleteCard(at: index)
-                                    }
-                                })
-                                .foregroundStyle(.white)
+                            ForEach(viewModel.cardNames.indices.filter { searchText.isEmpty ? true : viewModel.cardNames[$0].contains(searchText) }, id: \.self) { index in
+                                CardRowView(isEditing: $isEditing, index: index, viewModel: viewModel)
                             }
+                            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                         }
-                        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+                        .searchable(text: $searchText)
                     }
-                    .searchable(text: $searchText)
-                }
-                
                 VStack {
                     Spacer()
                     HStack {
@@ -93,6 +83,14 @@ struct HomeScreenView: View {
                             }
                         })
                     }
+                }
+                ToolbarItem(placement:.topBarTrailing) {
+                    NavigationLink {
+//                        WordGameView(deckId: viewModel.deckIds)
+                    } label: {
+                        Text("aa")
+                    }
+
                 }
             }
         }

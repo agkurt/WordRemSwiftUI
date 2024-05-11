@@ -6,17 +6,11 @@
 //
 
 import Foundation
-import UIKit
 
 struct WordGameCardModel:Hashable,Identifiable {
-    var word:String
-    var mean:String
-    var id:Int64?
-    var imageData:Data?
-    
-    var image: UIImage? {
-        guard let imageData = self.imageData else { return nil }
-        return UIImage(data: imageData)!
-      }
-    
+    var id:String
+    var words:String
+    var means:String
+    var sentences:String
+
 }

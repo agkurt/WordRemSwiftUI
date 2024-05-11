@@ -24,5 +24,28 @@ extension FirebaseService {
             throw error
         }
     }
+    
+    func fetchAllCardInfoForGame(deckId:String) async throws -> [WordGameCardModel] {
+        
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return []
+        }
+        var wordGameModel: [WordGameCardModel] = []
+        
+        do {
+            let querySnapshot = try await Firestore.firestore().collection("users").document(uid).collection("cards").document(deckId).collection("words").getDocuments()
+            for document in querySnapshot.documents {
+                if let words = document.data()["wordName"] as? String,
+                   let means = document.data()["wordMean"] as? String,
+                   let sentences = document.data()["wordDescription"] as? String {
+                    let gameModel = WordGameCardModel(id: document.documentID, words: words, means: means, sentences: sentences)
+                    wordGameModel.append(gameModel)
+                }
+            }
+        }catch {
+            throw error
+        }
+        return wordGameModel
+    }
 }
 

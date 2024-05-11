@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct WordInfo {
-    
+struct WordInfo:Identifiable {
+    var id:String
     var names: String
     var means: String
     var descriptions: String

@@ -39,7 +39,7 @@ struct ArcMenuButton: View {
         case "text.word.spacing":
             return AnyView(SentenceScreenView())
         case "newspaper":
-            return AnyView(WordGameView())
+            return AnyView(GeminiAIView())
         case "translate":
             return AnyView(TranslationView())
         case "person.crop.circle":

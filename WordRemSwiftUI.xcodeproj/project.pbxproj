@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803743E2BD7007200BF9047 /* AnimationView.swift */; };
+		E805E4D72BED72F80000A1D5 /* CardRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805E4D62BED72F80000A1D5 /* CardRowView.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
 		E81D85382BE107A3000BC6DD /* ProfileImageCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D85372BE107A3000BC6DD /* ProfileImageCam.swift */; };
 		E81D853A2BE10F4C000BC6DD /* SourceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D85392BE10F4C000BC6DD /* SourceType.swift */; };
@@ -100,7 +101,6 @@
 		E8A943A92BE7D9E600DA28DC /* WordGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A943A82BE7D9E600DA28DC /* WordGameViewModel.swift */; };
 		E8A943AC2BE7DA7000DA28DC /* WordGameCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A943AB2BE7DA7000DA28DC /* WordGameCardModel.swift */; };
 		E8A943B02BE7DF9200DA28DC /* WordGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A943AF2BE7DF9200DA28DC /* WordGameView.swift */; };
-		E8A943B32BE7F27200DA28DC /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = E8A943B22BE7F27200DA28DC /* SQLite */; };
 		E8ACFA392BA1D0140075CAA3 /* CardDetailDesignView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ACFA382BA1D0140075CAA3 /* CardDetailDesignView.swift */; };
 		E8AEB01A2BDACEF5004E8664 /* MotherTongueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB0192BDACEF5004E8664 /* MotherTongueView.swift */; };
 		E8AEB01C2BDACF03004E8664 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AEB01B2BDACF03004E8664 /* OnboardingView.swift */; };
@@ -162,6 +162,7 @@
 
 /* Begin PBXFileReference section */
 		E803743E2BD7007200BF9047 /* AnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationView.swift; sourceTree = "<group>"; };
+		E805E4D62BED72F80000A1D5 /* CardRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardRowView.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E81D85372BE107A3000BC6DD /* ProfileImageCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageCam.swift; sourceTree = "<group>"; };
 		E81D85392BE10F4C000BC6DD /* SourceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceType.swift; sourceTree = "<group>"; };
@@ -314,7 +315,6 @@
 				E8617CC92BDD4DC9009BD5FA /* FirebaseCrashlytics in Frameworks */,
 				E8617CCF2BDD4DC9009BD5FA /* FirebaseDynamicLinks in Frameworks */,
 				E8617CEB2BDD4DC9009BD5FA /* FirebaseStorage in Frameworks */,
-				E8A943B32BE7F27200DA28DC /* SQLite in Frameworks */,
 				E8617CDB2BDD4DC9009BD5FA /* FirebaseInAppMessaging-Beta in Frameworks */,
 				E8617CE92BDD4DC9009BD5FA /* FirebaseRemoteConfigSwift in Frameworks */,
 				E8617CC32BDD4DC9009BD5FA /* FirebaseAppDistribution-Beta in Frameworks */,
@@ -754,6 +754,7 @@
 			children = (
 				E8EB12C32B83E73800441F0C /* HomeScreenView.swift */,
 				E88585FC2BC10803000531B5 /* FeaturesView */,
+				E805E4D62BED72F80000A1D5 /* CardRowView.swift */,
 			);
 			name = HomeScreen;
 			path = TabbarViews/HomeScreen;
@@ -930,7 +931,6 @@
 				E8617CE82BDD4DC9009BD5FA /* FirebaseRemoteConfigSwift */,
 				E8617CEA2BDD4DC9009BD5FA /* FirebaseStorage */,
 				E8617CEC2BDD4DC9009BD5FA /* FirebaseStorageCombine-Community */,
-				E8A943B22BE7F27200DA28DC /* SQLite */,
 			);
 			productName = WordRemSwiftUI;
 			productReference = E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */;
@@ -968,7 +968,6 @@
 				E8617CAF2BDD4D87009BD5FA /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 				E8617CB22BDD4D8C009BD5FA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				E8617CB72BDD4DC8009BD5FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				E8A943B12BE7F27100DA28DC /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 			);
 			productRefGroup = E879EC632B3B3E2C003534B5 /* Products */;
 			projectDirPath = "";
@@ -1069,6 +1068,7 @@
 				E82CE3242BA6394800B552F9 /* UserSettings.swift in Sources */,
 				E88AB25B2B8EA3CD0026823A /* CardDetailView.swift in Sources */,
 				E8AEB01C2BDACF03004E8664 /* OnboardingView.swift in Sources */,
+				E805E4D72BED72F80000A1D5 /* CardRowView.swift in Sources */,
 				E8F1A60F2B9BF4E900E4E533 /* RootSettingView.swift in Sources */,
 				E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */,
 				E8B7488C2B8BDF7B007DA60A /* PlusViewModel.swift in Sources */,
@@ -1364,14 +1364,6 @@
 				minimumVersion = 10.24.0;
 			};
 		};
-		E8A943B12BE7F27100DA28DC /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.15.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1529,11 +1521,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E8617CB72BDD4DC8009BD5FA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
-		};
-		E8A943B22BE7F27200DA28DC /* SQLite */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E8A943B12BE7F27100DA28DC /* XCRemoteSwiftPackageReference "SQLite.swift" */;
-			productName = SQLite;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

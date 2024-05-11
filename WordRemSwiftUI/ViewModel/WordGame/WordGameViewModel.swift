@@ -6,45 +6,25 @@
 //
 
 import Foundation
-import SQLite
 import SwiftUI
 
 class WordGameViewModel: ObservableObject {
     
     @Published var words: [String] = []
     @Published var means: [String] = []
-    @Published var id: Int64 = 0
+    @Published var sentences: [String] = []
     @Published var cardModels: [WordGameCardModel] = []
     
-    func sqlLite() {
+    func fetchCardInfo(deckId:String) async {
         do {
-            let db = try Connection(Bundle.main.path(forResource: "WordDataBase", ofType: "db") ?? "")
-            let wordsTable = Table("Words")
-            let id = Expression<Int64>("id")
-            let word = Expression<String>("word")
-            let mean = Expression<String>("mean")
-            let image = Expression<Data?>("image")
-
-            
-            for wordRow in try db.prepare(wordsTable) {
-                let currentWord = try wordRow.get(word)
-                let currentMean = try wordRow.get(mean)
-                let currentImageData = try wordRow.get(image)
-                let cardModel = WordGameCardModel(word: currentWord, mean: currentMean, id: try wordRow.get(id), imageData: currentImageData)
-                
-                self.cardModels.append(cardModel)
-                self.words.append(currentWord)
-                self.means.append(currentMean)
-                print("id: \(try wordRow.get(id)), word: \(currentWord), mean: \(try wordRow.get(mean))")
+            let fetch = try await FirebaseService.shared.fetchAllCardInfoForGame(deckId: deckId)
+            DispatchQueue.main.async {
+                self.words = fetch.map {$0.words}
+                self.means = fetch.map {$0.means}
+                self.sentences = fetch.map {$0.sentences}
             }
-        } catch {
+        }catch {
             print(error)
-        }
-    }
-    
-    func fetchImage() async throws {
-        do {
-            
         }
     }
 }

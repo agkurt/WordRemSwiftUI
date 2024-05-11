@@ -10,8 +10,8 @@ import SwiftUI
 struct CardDetailView: View {
     
     @StateObject var viewModel = CardDetailViewModel()
-    var cardName: String
     var cardId: String
+    var cardName:String
     @State private var showSheet = false
     @State private var flipped = false
     
@@ -29,7 +29,7 @@ struct CardDetailView: View {
                 .onAppear {
                     Task {
                         do {
-                            try await viewModel.fetchCardInfo(cardId: cardId)
+                            try await viewModel.fetchCardInfo(deckId: cardId)
                         }catch {
                             print(error)
                             print(error.localizedDescription)
@@ -51,7 +51,7 @@ struct CardDetailView: View {
             .sheet(isPresented: $showSheet) {
                 CardPlusView(completion: {
                     Task {
-                        try await viewModel.fetchCardInfo(cardId:cardId)
+                        try await viewModel.fetchCardInfo(deckId:cardId)
                     }
                 }, cardId: cardId)
             }
