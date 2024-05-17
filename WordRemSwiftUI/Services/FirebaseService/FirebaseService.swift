@@ -40,7 +40,6 @@ class FirebaseService: ObservableObject {
             }
             
             let db = Firestore.firestore()
-            
             db.collection("users")
                 .document(user.uid)
                 .setData([
@@ -86,12 +85,13 @@ class FirebaseService: ObservableObject {
         }
     }
     
-    func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async  {
+    func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
         let flagString = selectedFlag.rawValue
         let creationDate = Timestamp(date: Date())
+        
         do {
             _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name,"selectedFlag":flagString,"targetLang":targetLang,"sourceLang":sourceLang,"creationData":creationDate])
         }catch {
@@ -100,6 +100,7 @@ class FirebaseService: ObservableObject {
     }
     
     func fetchCardName() async throws -> [Card] {
+        
         guard let uid = Auth.auth().currentUser?.uid else {
             return []
         }
@@ -118,7 +119,7 @@ class FirebaseService: ObservableObject {
                 }
             }
         } catch {
-            print("Error getting documents: \(error)")
+            throw error
         }
         
         return cards
@@ -228,8 +229,5 @@ class FirebaseService: ObservableObject {
         }catch {
             print(error)
         }
-       
     }
-    
-  
 }

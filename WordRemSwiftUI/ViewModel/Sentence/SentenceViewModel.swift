@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @MainActor
-class SentenceViewModel:ObservableObject {
+final class SentenceViewModel:ObservableObject {
     
     @Published var exampleWords: ExampleWord?
     @Published var word: String = ""
@@ -19,11 +19,12 @@ class SentenceViewModel:ObservableObject {
     
     func fetchAllWords() {
         URLSessionApiService.shared.getWords(word: word) { result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 switch result {
                 case .success(let exampleWord):
                     self.exampleWords = exampleWord
-                case .failure(let error):
+                case .failure(let error): 
                     self.errorMessage = error.localizedDescription
                     print("Error: \(error)")
                 }

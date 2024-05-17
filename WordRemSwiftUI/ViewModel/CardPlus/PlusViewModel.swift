@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-@MainActor
-class PlusViewModel:ObservableObject {
+@MainActor // main thread
+final class PlusViewModel:ObservableObject {
     
-    @Published public var cardName = ""
+    @Published var cardName = ""
     @Published var selectedFlag:FlagModel = .english
     @Published var sourceLanguage: Language = .english
     @Published var targetLanguage: Language = .turkish

@@ -10,7 +10,7 @@ import GoogleSignIn
 import FirebaseCore
 
 @MainActor
-class LoginScreenViewModel : ObservableObject {
+final class LoginScreenViewModel : ObservableObject {
     
     var authManager: AuthManager
     
@@ -37,7 +37,8 @@ class LoginScreenViewModel : ObservableObject {
                 self.email = ""
                 self.password = ""
             } else if success {
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
                     self.authManager.userIsLoggedIn = true
                     self.isLoading = false
                     self.isLoginSuccess = true

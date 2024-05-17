@@ -8,7 +8,7 @@
 import SwiftUI
 
 @MainActor
-class CardDetailViewModel: ObservableObject {
+final class CardDetailViewModel: ObservableObject {
     
     @Published var wordNames: [String?] = []
     @Published var wordMeans: [String?] = []
@@ -19,7 +19,8 @@ class CardDetailViewModel: ObservableObject {
     func fetchCardInfo(cardId:String) async {
         do {
             let fetchedWordInfo = try await FirebaseService.shared.fetchTheCardNameInfo(cardId: cardId)
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.wordInfo = fetchedWordInfo
                 self.cardIds = fetchedWordInfo.map {$0.id}
                 self.wordNames = fetchedWordInfo.map {$0.names}
@@ -40,7 +41,8 @@ class CardDetailViewModel: ObservableObject {
             do {
                 let cardId = self.cardIds[index]
                 try await FirebaseService.shared.deleteCardInfoAndTransactions(deckId: deckId, cardId: cardId)
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
                     self.wordInfo.remove(at: index)
                     self.wordNames.remove(at: index)
                     self.wordMeans.remove(at: index)

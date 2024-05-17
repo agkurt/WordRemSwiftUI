@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-class GeminiAIViewModel: ObservableObject {
+final class GeminiAIViewModel: ObservableObject {
     @Published var userPrompt: String = ""
     @Published var messages: [AIMessage] = []
     @Published var newMessage: String = ""
@@ -21,7 +21,8 @@ class GeminiAIViewModel: ObservableObject {
         userPrompt = newMessage
         Task {
             if let answer = await URLSessionApiService.shared.geminiApi(userPrompt: userPrompt) {
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
                     self.receiveMessage(answer)
                 }
             }

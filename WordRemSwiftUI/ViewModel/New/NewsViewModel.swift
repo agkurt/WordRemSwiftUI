@@ -7,14 +7,15 @@
 
 import Foundation
 
-@MainActor
-class NewsViewModel: ObservableObject {
+
+final class NewsViewModel: ObservableObject {
     @Published var newsModel:NewsModel?
     @Published var isLoading = false
     
     func getNews() {
         URLSessionApiService.shared.getNews { result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else {return}
                 switch result {
                 case .success(let news):
                     self.newsModel = news

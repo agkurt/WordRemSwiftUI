@@ -8,8 +8,7 @@
 import Foundation
 
 enum APIKey {
-    /// Fetch the API key from `GenerativeAI-Info.plist`
-    /// This is just *one* way how you can retrieve the API key for your app.
+
     static var geminiApi: String {
         guard let filePath = Bundle.main.path(forResource: "ApiKey-Info", ofType: "plist")
         else {

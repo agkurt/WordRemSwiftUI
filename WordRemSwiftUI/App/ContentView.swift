@@ -17,7 +17,6 @@ struct ContentView: View {
     @StateObject var motherTongueViewModel = MotherTongueViewModel()
     
     var body: some View {
-        
         VStack {
             if authManager.userIsLoggedIn {
                 HomeScreenView(viewModel: homeScreenViewModel)

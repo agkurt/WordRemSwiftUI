@@ -14,6 +14,7 @@ class URLSessionApiService {
     
     private init() { }
     
+    
     func getWords(word: String, completion: @escaping (Result<ExampleWord, Error>) -> Void) {
         
         let headers = [

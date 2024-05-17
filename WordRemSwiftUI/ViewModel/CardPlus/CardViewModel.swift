@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-class CardViewModel: ObservableObject {
+final class CardViewModel: ObservableObject {
     
     @Published var selectedFlag:FlagModel = .turkey
     

@@ -14,9 +14,9 @@ struct CardPlusView: View {
     @Environment(\.dismiss) private var dismiss
     @State var isLoading = false
     @State var cardId: String
-    var completion: () -> Void
     @State private var isOnToggle = false
-    
+    var completion: () -> Void
+
     init(cardId: String, completion: @escaping () -> Void) {
         self.cardId = cardId
         self.completion = completion

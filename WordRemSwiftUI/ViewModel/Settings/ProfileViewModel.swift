@@ -13,7 +13,7 @@ import AuthenticationServices
 import GoogleSignIn
 import FirebaseStorage
 
-class ProfileViewModel: ObservableObject {
+final class ProfileViewModel: ObservableObject {
     
     @Published var username: [String] = []
     @Published var email: [String] = []
@@ -22,7 +22,8 @@ class ProfileViewModel: ObservableObject {
     func fetchUsernameInfo() async {
         do {
             let fetch = try await FirebaseService.shared.fetchUsernameAndEmailInfo()
-            OperationQueue.main.addOperation {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.username = fetch.map { $0.username}
                 self.email = fetch.map {$0.email}
             }

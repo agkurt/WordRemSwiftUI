@@ -40,7 +40,7 @@ struct RegisterScreenView: View {
                                 .padding(.leading)
                             
                             VStack(spacing:20) {
-                                
+
                                 TextFieldView(text: $viewModel.email, placeholder: "Email")
                                     .focused($focusedField, equals: .email)
                                     .keyboardType(.emailAddress)

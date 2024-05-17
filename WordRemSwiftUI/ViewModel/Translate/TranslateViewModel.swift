@@ -8,13 +8,14 @@
 import Foundation
 
 @MainActor
-class TranslateViewModel: ObservableObject {
+final class TranslateViewModel: ObservableObject {
     @Published var translatedText: String = ""
     @Published var showAlert = false
     
     func translate(text: String, sourceLang: String, targetLang: String) async {
         URLSessionApiService.shared.getTranslate(text: text, targetLang: targetLang, sourceLang: sourceLang) { result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 switch result {
                 case .success(let translationResponse):
                     print(translationResponse)

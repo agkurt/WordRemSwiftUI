@@ -7,7 +7,7 @@
 
 import Foundation
 
-class MotherTongueViewModel: ObservableObject {
+final class MotherTongueViewModel: ObservableObject {
     
     @Published var motherTongue:Language = .french
     @Published var isSuccess = false
@@ -15,7 +15,8 @@ class MotherTongueViewModel: ObservableObject {
     func addMotherTongue(motherTongue:String) async {
         do {
             try await FirebaseService.shared.addMotherTongueLanguage(motherTongue: motherTongue)
-            OperationQueue.main.addOperation {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.isSuccess = true
             }
         }catch {

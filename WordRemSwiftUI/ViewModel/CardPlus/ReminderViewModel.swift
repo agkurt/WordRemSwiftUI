@@ -8,7 +8,7 @@
 import SwiftUI
 
 @MainActor
-class ReminderViewModel: ObservableObject {
+final class ReminderViewModel: ObservableObject {
     
     @ObservedObject var notificationManager = NotificationManager()
     @Published var date = Date()

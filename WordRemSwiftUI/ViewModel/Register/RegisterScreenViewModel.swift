@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @MainActor
-class RegisterScreenViewModel: ObservableObject {
+final class RegisterScreenViewModel: ObservableObject {
     
     @Published var email: String = ""
     @Published var userName: String = ""
