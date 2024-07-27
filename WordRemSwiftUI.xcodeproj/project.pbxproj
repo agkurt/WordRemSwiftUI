@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		D5826F4B2BF01EBE00C2C86A /* ApiKey-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5826F4A2BF01EBE00C2C86A /* ApiKey-Info.plist */; };
+		D5AA4D132C5510DE003A4104 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AA4D122C5510DE003A4104 /* AppRouter.swift */; };
+		D5AA4D152C55115E003A4104 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AA4D142C55115E003A4104 /* SplashView.swift */; };
 		E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803743E2BD7007200BF9047 /* AnimationView.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
 		E81D85382BE107A3000BC6DD /* ProfileImageCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D85372BE107A3000BC6DD /* ProfileImageCam.swift */; };
@@ -152,6 +154,8 @@
 
 /* Begin PBXFileReference section */
 		D5826F4A2BF01EBE00C2C86A /* ApiKey-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ApiKey-Info.plist"; sourceTree = "<group>"; };
+		D5AA4D122C5510DE003A4104 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		D5AA4D142C55115E003A4104 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		E803743E2BD7007200BF9047 /* AnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationView.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E81D85372BE107A3000BC6DD /* ProfileImageCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageCam.swift; sourceTree = "<group>"; };
@@ -335,13 +339,6 @@
 				E88AB2612B8EB6C70026823A /* CardTextField.swift */,
 			);
 			path = TextFields;
-			sourceTree = "<group>";
-		};
-		E81D85412BE16038000BC6DD /* Image */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Image;
 			sourceTree = "<group>";
 		};
 		E82294A22BDC426800A46C70 /* MotherTongue */ = {
@@ -714,6 +711,7 @@
 				E8E6E4392B8204ED009F5C3E /* HelperScreen */,
 				E8E6E4382B8204D4009F5C3E /* RegisterScreen */,
 				E8527C112B6E14520047E4A6 /* LoginScreen */,
+				D5AA4D142C55115E003A4104 /* SplashView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -778,6 +776,7 @@
 				E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */,
 				E88585FA2BC0B215000531B5 /* ContentView.swift */,
 				E84CC1932B9255F90066FF96 /* AppDelegate.swift */,
+				D5AA4D122C5510DE003A4104 /* AppRouter.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -801,7 +800,6 @@
 		E8E6E4392B8204ED009F5C3E /* HelperScreen */ = {
 			isa = PBXGroup;
 			children = (
-				E81D85412BE16038000BC6DD /* Image */,
 				E81D85402BE11028000BC6DD /* TextFields */,
 				E81D853F2BE1101B000BC6DD /* ProfilePhoto */,
 				E8527C172B6EAFAD0047E4A6 /* LoginButtonStyle.swift */,
@@ -965,6 +963,7 @@
 				E8F1A6132B9BF52400E4E533 /* SomeOtherSettingView.swift in Sources */,
 				E86B99522B5024B700538090 /* TextFieldView.swift in Sources */,
 				E8E2546C2BC3A0DC00AACD0D /* ReminderViewModel.swift in Sources */,
+				D5AA4D152C55115E003A4104 /* SplashView.swift in Sources */,
 				E843E0B52B97F5F0006B1A1C /* TranslateModel.swift in Sources */,
 				E8E2546E2BC3A22200AACD0D /* Reminder.swift in Sources */,
 				E855B6012B8E698E009BF5E2 /* LineView.swift in Sources */,
@@ -1026,6 +1025,7 @@
 				E843E0BD2B98172E006B1A1C /* NewsViewModel.swift in Sources */,
 				E8DF72FC2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift in Sources */,
 				E8DF72FE2BEBDBF3004EF25E /* GoogleAndAppleSignView.swift in Sources */,
+				D5AA4D132C5510DE003A4104 /* AppRouter.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
 				E8F1A61C2B9BF65F00E4E533 /* SettingImage.swift in Sources */,
 				E843E0BB2B98170C006B1A1C /* NewsView.swift in Sources */,
@@ -1191,7 +1191,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.WordRemSwiftUI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.reminderToWords;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1227,7 +1227,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.WordRemSwiftUI;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.reminderToWords;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
