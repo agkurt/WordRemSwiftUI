@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D550A3EF2C55286E00B498D1 /* WordRem.storekit in Resources */ = {isa = PBXBuildFile; fileRef = D550A3EE2C55286E00B498D1 /* WordRem.storekit */; };
+		D550A3F12C552A1B00B498D1 /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = D550A3F02C552A1B00B498D1 /* StoreKitTestCertificate.cer */; };
+		D550A3F42C552E7E00B498D1 /* InAppPurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D550A3F32C552E7E00B498D1 /* InAppPurchaseManager.swift */; };
+		D550A3F72C552FB000B498D1 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D550A3F62C552FB000B498D1 /* KeychainSwift */; };
 		D5826F4B2BF01EBE00C2C86A /* ApiKey-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5826F4A2BF01EBE00C2C86A /* ApiKey-Info.plist */; };
-		D5AA4D132C5510DE003A4104 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AA4D122C5510DE003A4104 /* AppRouter.swift */; };
 		D5AA4D152C55115E003A4104 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AA4D142C55115E003A4104 /* SplashView.swift */; };
 		E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803743E2BD7007200BF9047 /* AnimationView.swift */; };
 		E81941AA2B8A1FEF0042EBB7 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81941A92B8A1FEF0042EBB7 /* CardView.swift */; };
@@ -153,8 +156,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D550A3EE2C55286E00B498D1 /* WordRem.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = WordRem.storekit; sourceTree = "<group>"; };
+		D550A3F02C552A1B00B498D1 /* StoreKitTestCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = StoreKitTestCertificate.cer; sourceTree = "<group>"; };
+		D550A3F32C552E7E00B498D1 /* InAppPurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPurchaseManager.swift; sourceTree = "<group>"; };
 		D5826F4A2BF01EBE00C2C86A /* ApiKey-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ApiKey-Info.plist"; sourceTree = "<group>"; };
-		D5AA4D122C5510DE003A4104 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		D5AA4D142C55115E003A4104 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		E803743E2BD7007200BF9047 /* AnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationView.swift; sourceTree = "<group>"; };
 		E81941A92B8A1FEF0042EBB7 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
@@ -302,6 +307,7 @@
 				E8B1F2002BECFFCC005F3E10 /* FirebaseAppDistribution-Beta in Frameworks */,
 				E8B1F2042BECFFCC005F3E10 /* FirebaseAuthCombine-Community in Frameworks */,
 				E8B1F2222BECFFCC005F3E10 /* FirebasePerformance in Frameworks */,
+				D550A3F72C552FB000B498D1 /* KeychainSwift in Frameworks */,
 				E8B1F2282BECFFCC005F3E10 /* FirebaseStorage in Frameworks */,
 				E8B1F20C2BECFFCC005F3E10 /* FirebaseDynamicLinks in Frameworks */,
 				E8B1F2102BECFFCC005F3E10 /* FirebaseFirestoreCombine-Community in Frameworks */,
@@ -312,6 +318,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D550A3F22C552E6E00B498D1 /* RevenueCat */ = {
+			isa = PBXGroup;
+			children = (
+				D550A3F32C552E7E00B498D1 /* InAppPurchaseManager.swift */,
+			);
+			path = RevenueCat;
+			sourceTree = "<group>";
+		};
 		E81941A82B8A1FDD0042EBB7 /* CardView */ = {
 			isa = PBXGroup;
 			children = (
@@ -504,6 +518,9 @@
 		E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				D550A3F22C552E6E00B498D1 /* RevenueCat */,
+				D550A3EE2C55286E00B498D1 /* WordRem.storekit */,
+				D550A3F02C552A1B00B498D1 /* StoreKitTestCertificate.cer */,
 				E8AEB0262BDB1CCD004E8664 /* Animations */,
 				E8C02A502B3C91D700B1D5AF /* View */,
 				E86B997F2B51EF5A00538090 /* ViewModel */,
@@ -776,7 +793,6 @@
 				E879EC652B3B3E2C003534B5 /* WordRemSwiftUIApp.swift */,
 				E88585FA2BC0B215000531B5 /* ContentView.swift */,
 				E84CC1932B9255F90066FF96 /* AppDelegate.swift */,
-				D5AA4D122C5510DE003A4104 /* AppRouter.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -859,6 +875,7 @@
 				E8B1F22E2BECFFEC005F3E10 /* GoogleSignInSwift */,
 				E8B1F2312BECFFF8005F3E10 /* GoogleGenerativeAI */,
 				E8B1F2342BED01AE005F3E10 /* Lottie */,
+				D550A3F62C552FB000B498D1 /* KeychainSwift */,
 			);
 			productName = WordRemSwiftUI;
 			productReference = E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */;
@@ -896,6 +913,7 @@
 				E8B1F22B2BECFFEC005F3E10 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				E8B1F2302BECFFF8005F3E10 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 				E8B1F2332BED01AE005F3E10 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				D550A3F52C552FB000B498D1 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			productRefGroup = E879EC632B3B3E2C003534B5 /* Products */;
 			projectDirPath = "";
@@ -916,6 +934,7 @@
 				E8D6F2AF2B8DFF400017A523 /* Poppins-ExtraBoldItalic.ttf in Resources */,
 				E8AEB0282BDB1CD7004E8664 /* StartAnimation.json in Resources */,
 				E8D6F2B92B8DFF400017A523 /* Poppins-Thin.ttf in Resources */,
+				D550A3F12C552A1B00B498D1 /* StoreKitTestCertificate.cer in Resources */,
 				E8D6F2B42B8DFF400017A523 /* Poppins-Medium.ttf in Resources */,
 				E8D6F2B82B8DFF400017A523 /* Poppins-SemiBoldItalic.ttf in Resources */,
 				E8610DE32B98A1E200402FF4 /* Config.plist in Resources */,
@@ -930,6 +949,7 @@
 				E8D6F2B72B8DFF400017A523 /* Poppins-Italic.ttf in Resources */,
 				E879EC6A2B3B3E2E003534B5 /* Assets.xcassets in Resources */,
 				E8D6F2B02B8DFF400017A523 /* Poppins-Black.ttf in Resources */,
+				D550A3EF2C55286E00B498D1 /* WordRem.storekit in Resources */,
 				E8D6F2B62B8DFF400017A523 /* Poppins-ExtraLightItalic.ttf in Resources */,
 				D5826F4B2BF01EBE00C2C86A /* ApiKey-Info.plist in Resources */,
 				E8D6F2BD2B8DFF400017A523 /* Poppins-ExtraBold.ttf in Resources */,
@@ -981,6 +1001,7 @@
 				E86B994E2B50027F00538090 /* UIColor+Ext.swift in Sources */,
 				E8E254682BC39D8F00AACD0D /* wordInfo.swift in Sources */,
 				E8AEB02A2BDB1D13004E8664 /* LottieViewAnimation.swift in Sources */,
+				D550A3F42C552E7E00B498D1 /* InAppPurchaseManager.swift in Sources */,
 				E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */,
 				E84DEC9B2B8E14950014916C /* CheckBoxStyle.swift in Sources */,
 				E8D774772B8FE9C900E9AB1B /* CardModel.swift in Sources */,
@@ -1025,7 +1046,6 @@
 				E843E0BD2B98172E006B1A1C /* NewsViewModel.swift in Sources */,
 				E8DF72FC2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift in Sources */,
 				E8DF72FE2BEBDBF3004EF25E /* GoogleAndAppleSignView.swift in Sources */,
-				D5AA4D132C5510DE003A4104 /* AppRouter.swift in Sources */,
 				E88CF0092B817DEA00B06433 /* FocusableField.swift in Sources */,
 				E8F1A61C2B9BF65F00E4E533 /* SettingImage.swift in Sources */,
 				E843E0BB2B98170C006B1A1C /* NewsView.swift in Sources */,
@@ -1174,12 +1194,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.1;
+				CURRENT_PROJECT_VERSION = 1.7;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemSwiftUI/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRem;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1190,7 +1212,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.reminderToWords;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1210,12 +1232,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.1;
+				CURRENT_PROJECT_VERSION = 1.7;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemSwiftUI/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRem;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1226,7 +1250,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.reminderToWords;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1263,6 +1287,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		D550A3F52C552FB000B498D1 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
 		E8B1F1F42BECFFCC005F3E10 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -1298,6 +1330,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D550A3F62C552FB000B498D1 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D550A3F52C552FB000B498D1 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
 		E8B1F1FD2BECFFCC005F3E10 /* FirebaseAppCheck */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E8B1F1F42BECFFCC005F3E10 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

@@ -8,15 +8,22 @@
 import SwiftUI
 
 struct IconImageView: View {
-    
     var body: some View {
-        VStack{
-            Image("logo")
-                .resizable()
-                .allowedDynamicRange(.constrainedHigh)
-                .aspectRatio(1, contentMode: .fit)
-                .frame(maxWidth: 150, maxHeight: 150)
-                .shadow(radius: 20)
+        VStack {
+            if #available(iOS 17.0, *) {
+                Image("logo")
+                    .resizable()
+                    .allowedDynamicRange(.constrainedHigh)
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxWidth: 150, maxHeight: 150)
+                    .shadow(radius: 20)
+            } else {
+                Image("logo")
+                    .resizable()
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxWidth: 150, maxHeight: 150)
+                    .shadow(radius: 20)
+            }
         }
         .padding()
     }
@@ -25,4 +32,3 @@ struct IconImageView: View {
 #Preview {
     IconImageView()
 }
-

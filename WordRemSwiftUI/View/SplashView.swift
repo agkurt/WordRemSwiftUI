@@ -22,12 +22,4 @@ struct SplashView: View {
             }
         }
     }
-
-    func startRoute() {
-        if authManager.userIsLoggedIn {
-            HomeScreenView(viewModel: homeScreenViewModel)
-        } else {
-            LoginScreenView()
-        }
-    }
 }

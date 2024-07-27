@@ -5,22 +5,21 @@
 //  Created by Ahmet Göktürk Kurt on 30.04.2024.
 //
 
-import SwiftUI
-import Firebase
-import FirebaseFirestore
-import FirebaseAuth
 import AuthenticationServices
-import GoogleSignIn
+import Firebase
+import FirebaseAuth
+import FirebaseFirestore
 import FirebaseStorage
+import GoogleSignIn
+import SwiftUI
 
 struct ProfileImageCam: View {
-    
     @State private var image: UIImage?
     @State private var isConfirmationDialogPresented: Bool = false
     @State private var isImagePickerPresented: Bool = false
     @State private var sourceType: SourceType = .camera
     @State private var viewModel = ProfileViewModel()
-    
+
     var body: some View {
         ZStack {
             if let image = image {
@@ -49,20 +48,19 @@ struct ProfileImageCam: View {
                 PhotoPicker(selectedImage: $image)
             }
         }
-        .onChange(of: image) { newImage, _ in
+        .onChange(of: image) { newImage in
             if let selectedImage = newImage {
                 Task {
-                  await viewModel.uploadPhoto(image: selectedImage)
+                    await viewModel.uploadPhoto(image: selectedImage)
                 }
             }
         }
     }
-
 }
 
 struct CircularImageView: View {
     var image: UIImage
-    
+
     var body: some View {
         Image(uiImage: image)
             .resizable().scaledToFill()
@@ -84,5 +82,3 @@ struct PlaceholderView: View {
         }
     }
 }
-
-
