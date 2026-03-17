@@ -8,41 +8,25 @@
 import SwiftUI
 
 struct NewsView: View {
-  @ObservedObject var viewModel = NewsViewModel()
-
-  @State private var selectedNews: ResultClass?
-
   var body: some View {
     ZStack {
-      LinearBackgroundView()
-      ScrollView {
-        LazyVGrid(columns: [GridItem(.flexible())]) {
-          if viewModel.isLoading {
-            ProgressView()
-              .frame(maxWidth: .infinity)
-          } else {
-            if let results = viewModel.newsModel?.result {
-                ForEach(results, id:\.self) { result in
-                NewsRowView(result: result, onTap: {
-                  selectedNews = result
-                })
-              }
-            } else {
-              Text("Error fetching news")
-            }
-          }
-        }
+      Color(hex: "#0b1017").ignoresSafeArea()
+      
+      VStack(spacing: 16) {
+        Image(systemName: "newspaper.fill")
+          .font(.system(size: 60))
+          .foregroundColor(Color(hex: "#f97316"))
+        
+        Text("News Coming Soon")
+          .font(.custom("Poppins-SemiBold", size: 22))
+          .foregroundColor(.white)
+        
+        Text("We are working hard to bring you the best news articles for language learning.")
+          .font(.custom("Poppins-Regular", size: 14))
+          .foregroundColor(.gray)
+          .multilineTextAlignment(.center)
+          .padding(.horizontal, 32)
       }
-      .padding(.leading, 15)
-      .padding(.trailing, 15)
-    }
-    .navigationTitle("News")
-    .navigationBarTitleDisplayMode(.inline)
-    .onAppear {
-      viewModel.getNews()
-    }
-    .sheet(isPresented: Binding(get: { selectedNews != nil }, set: { _ in selectedNews = nil })) { // Fix for isNotNil binding
-      NewsDetailView(result: selectedNews!)
     }
   }
 }

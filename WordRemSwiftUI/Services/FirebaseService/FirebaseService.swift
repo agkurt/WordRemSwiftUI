@@ -8,9 +8,6 @@
 import SwiftUI
 import Firebase
 import FirebaseFirestore
-import FirebaseAuth
-import AuthenticationServices
-import GoogleSignIn
 import FirebaseStorage
 
 class FirebaseService: ObservableObject {
@@ -21,72 +18,13 @@ class FirebaseService: ObservableObject {
         
     }
     
-    func registerUser(userRequest: RegisterModel, completion: @escaping (Bool, Error?) -> Void) {
-        
-        let username = userRequest.username
-        let email = userRequest.email
-        let password = userRequest.password
-        
-        Auth.auth().createUser(withEmail: email, password: password ?? "") { authResult, error in
-            
-            if let error = error {
-                completion(false, error)
-                return
-            }
-            
-            guard let user = authResult?.user else {
-                completion(false, nil)
-                return
-            }
-            
-            let db = Firestore.firestore()
-            db.collection("users")
-                .document(user.uid)
-                .setData([
-                    "username": username,
-                    "email": email
-                ]) { error in
-                    if let error = error {
-                        completion(false, error)
-                        return
-                    }
-                    completion(true, nil)
-                }
-        }
-    }
-    
-    func loginUser(loginModel:LoginModel,completion: @escaping (Bool,Error?)->Void) {
-        
-        let email = loginModel.email
-        let password = loginModel.password
-        
-        Auth.auth().signIn(withEmail:email, password: password) { result, error in
-            
-            if let error = error {
-                completion(false,error)
-                return
-            }
-            
-            guard let user = result?.user else {
-                completion(false, nil)
-                return
-            }
-            
-            let db = Firestore.firestore()
-            let userRef = db.collection("users").document(user.uid)
-            
-            userRef.updateData(["lastLogin": FieldValue.serverTimestamp()]) { error in
-                if let error = error {
-                    completion(false, error)
-                } else {
-                    completion(true, nil)
-                }
-            }
-        }
+    /// Returns the current authenticated user's UID (Supabase), or nil if not logged in.
+    func currentUserUID() -> String? {
+        return SupabaseAuthService.shared.currentUserId?.uuidString
     }
     
     func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async {
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return
         }
         let flagString = selectedFlag.rawValue
@@ -101,7 +39,7 @@ class FirebaseService: ObservableObject {
     
     func fetchCardName() async throws -> [Card] {
         
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return []
         }
         
@@ -128,7 +66,7 @@ class FirebaseService: ObservableObject {
     
     func fetchTheCardNameInfo(cardId: String) async throws -> [WordInfo] {
         
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return []
         }
         
@@ -154,7 +92,7 @@ class FirebaseService: ObservableObject {
     
     func fetchUsernameAndEmailInfo() async throws -> [RegisterModel] {
         
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return []
         }
         
@@ -178,7 +116,7 @@ class FirebaseService: ObservableObject {
     
 
     func fetchSourceAndTargetLang(cardId:String) async throws -> [Card] {
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return []
         }
         
@@ -200,7 +138,7 @@ class FirebaseService: ObservableObject {
     }
     
     func addMotherTongueLanguage(motherTongue:String) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             throw NSError(domain: "", code: -1)
         }
         
@@ -212,7 +150,7 @@ class FirebaseService: ObservableObject {
     
     func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async  {
         
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return
         }
         
@@ -230,4 +168,26 @@ class FirebaseService: ObservableObject {
             print(error)
         }
     }
+    
+    func updateWordInCard(cardId: String, wordId: String, wordName: String, wordMean: String, wordDescription: String) async {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
+            return
+        }
+        
+        let db = Firestore.firestore()
+        
+        do {
+            try await db.collection("users").document(uid)
+                .collection("cards").document(cardId)
+                .collection("words").document(wordId)
+                .updateData([
+                    "wordName": wordName,
+                    "wordMean": wordMean,
+                    "wordDescription": wordDescription
+                ])
+        } catch {
+            print("❌ Update error: \(error.localizedDescription)")
+        }
+    }
 }
+

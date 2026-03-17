@@ -8,5 +8,9 @@
 	<string>TranslateApiKey</string>
 	<key>30c9e7ec39msheded83facd06704p1ef228jsnf8acccb45fa8</key>
 	<string>GetWordsApiKey</string>
+	<key>SUPABASE_URL</key>
+	<string>https://biulrmazkjjcirkgxbio.supabase.co</string>
+	<key>SUPABASE_ANON_KEY</key>
+	<string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpdWxybWF6a2pqY2lya2d4YmlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NDc1OTAsImV4cCI6MjA4OTAyMzU5MH0.QE9YsO0ZKd1W9BmUWn02FEgbL-D1b1nkEBcwP5ZztX8</string>
 </dict>
 </plist>

@@ -11,18 +11,30 @@ import Firebase
 @main
 struct WordRemSwiftUIApp: App {
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     @StateObject private var sentenceViewModel = SentenceViewModel()
     @StateObject private var authManager = AuthManager()
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     
     init () {
-        FirebaseApp.configure()
+        // Firebase is now configured in AppDelegate
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(sentenceViewModel: sentenceViewModel)
-                .environmentObject(authManager)
-                .environmentObject(sentenceViewModel)
+            Group {
+                if hasCompletedOnboarding {
+                    ContentView(sentenceViewModel: sentenceViewModel)
+                        .environmentObject(authManager)
+                        .environmentObject(sentenceViewModel)
+                } else {
+                    WelcomeView()
+                        .environmentObject(authManager)
+                        .environmentObject(sentenceViewModel)
+                }
+            }
+            .preferredColorScheme(.light)
         }
     }
 }

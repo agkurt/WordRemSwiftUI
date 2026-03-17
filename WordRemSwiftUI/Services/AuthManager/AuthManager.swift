@@ -2,206 +2,207 @@
 //  AuthManager.swift
 //  WordRemSwiftUI
 //
-//  Created by Ahmet Göktürk Kurt on 26.02.2024.
+//  Migrated to Supabase Auth. Still publishes the same userIsLoggedIn /
+//  authState surface so all existing SwiftUI views continue to work
+//  without changes.
 //
 
 import SwiftUI
-import Firebase
-import FirebaseFirestore
-import FirebaseAuth
 import AuthenticationServices
-import GoogleSignIn
 import CryptoKit
+import GoogleSignIn
 
-class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate{
-    
-    @Published var user: User?
+class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
+
     @Published var authState = AuthState.signedOut
     @Published var userIsLoggedIn = false
+
+    // Nonce for Apple Sign-In
     var currentNonce: String?
-    
-    var authStateHandle: AuthStateDidChangeListenerHandle!
-    
-    override init () {
+
+    override init() {
         super.init()
-        userIsLoggedIn = Auth.auth().currentUser != nil
-        configureAuthStateChanges()
+        // Reflect current session immediately
+        userIsLoggedIn = SupabaseAuthService.shared.isSignedIn
+        if userIsLoggedIn { authState = .signedIn }
+
+        // Start listening for auth state changes
+        Task { await listenToAuthChanges() }
     }
-    
-    func signOut() {
-        do {
-            try Auth.auth().signOut()
-            self.userIsLoggedIn = false
-            
-        } catch {
-            print("Error signing out: \(error)")
-        }
-    }
-    
-    func configureAuthStateChanges() {
-        authStateHandle = Auth.auth().addStateDidChangeListener { auth, user in
-            print("Auth changed: \(user != nil)")
-            self.updateState(user: user)
-        }
-    }
-    
-    func removeAuthStateListener() {
-        Auth.auth().removeStateDidChangeListener(authStateHandle)
-    }
-    
-    private func updateState(user: User?) {
-        self.user = user
-        let isAuthenticatedUser = user != nil
-        let isAnonymous = user?.isAnonymous ?? false
-        
-        if isAuthenticatedUser {
-            self.authState = isAnonymous ? .authenticated : .signedIn
-            self.userIsLoggedIn = true
-        } else {
-            self.authState = .signedOut
-        }
-    }
-    
-    func signInAnonymously() async throws -> AuthDataResult? {
-        do {
-            let result = try await Auth.auth().signInAnonymously()
-            print("FirebaseAuthSuccess: Sign in anonymously, UID:(\(String(describing: result.user.uid)))")
-            return result
-        }
-        catch {
-            print("FirebaseAuthError: failed to sign in anonymously: \(error.localizedDescription)")
-            throw error
-        }
-    }
-    
-    func handleGoogleSignIn(with viewController: UIViewController)  {
-        guard let clientID = FirebaseApp.app()?.options.clientID else {
-            print("Error: Firebase client ID is not configured.")
-            return
-        }
-        
-        let config = GIDConfiguration(clientID: clientID)
-        GIDSignIn.sharedInstance.configuration = config
-        
-        GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { signResult, error in
-            if let error = error {
-                print("Error signing in with Google: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let user = signResult?.user, let idToken = user.idToken else {
-                print("Error: Unable to retrieve user information from Google sign-in.")
-                return
-            }
-            
-            let credential = GoogleAuthProvider.credential(withIDToken: idToken.tokenString, accessToken: user.accessToken.tokenString)
-            
-            Auth.auth().signIn(with: credential) { authResult, error in
-                if let error = error {
-                    print("Error authenticating with Firebase: \(error.localizedDescription)")
-                    return
+
+    // MARK: - Auth State Listener
+    private func listenToAuthChanges() async {
+        for await (event, session) in SupabaseAuthService.shared.authStateStream() {
+            await MainActor.run {
+                switch event {
+                case .signedIn:
+                    self.userIsLoggedIn = true
+                    self.authState = .signedIn
+                    // Flush pending FCM token
+                    if let token = UserDefaults.standard.string(forKey: "pendingFCMToken") {
+                        Task {
+                            try? await SupabaseAuthService.shared.updateFCMToken(token)
+                            UserDefaults.standard.removeObject(forKey: "pendingFCMToken")
+                        }
+                    }
+                case .signedOut:
+                    self.userIsLoggedIn = false
+                    self.authState = .signedOut
+                default:
+                    break
                 }
-                print("Successful login with Google")
-                
             }
         }
     }
-    
+
+    // MARK: - Sign Out
+    func signOut() {
+        let uid = SupabaseAuthService.shared.currentUserId?.uuidString
+        Task {
+            do {
+                try await SupabaseAuthService.shared.signOut()
+                await MainActor.run {
+                    self.userIsLoggedIn = false
+                    self.authState = .signedOut
+                }
+                EventManager.shared.logLogoutEvent()
+                if let uid = uid {
+                    await NotificationService.shared.scheduleLogoutNotification(uid: uid)
+                }
+            } catch {
+                print("❌ Sign-out error: \(error)")
+            }
+        }
+    }
+
+    // MARK: - Anonymous Sign-In (forwarded to LoginScreenViewModel)
+    func signInAnonymously() async throws {
+        let tempEmail = "anon_\(UUID().uuidString)@wordrem.local"
+        let tempPassword = UUID().uuidString
+        try await SupabaseAuthService.shared.registerUser(
+            username: "Guest", email: tempEmail, password: tempPassword
+        )
+    }
+
+    // MARK: - Apple Sign-In (ASAuthorizationControllerDelegate)
     func handleAppleLogin() {
         let nonce = randomNonceString()
         currentNonce = nonce
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
         request.requestedScopes = [.fullName, .email]
         request.nonce = sha256(nonce)
-        
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.performRequests()
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.performRequests()
     }
-    
-    private func randomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        let charset: [Character] =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        var result = ""
-        var remainingLength = length
-        
-        while remainingLength > 0 {
-            let randoms: [UInt8] = (0 ..< 16).map { _ in
-                var random: UInt8 = 0
-                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
-                if errorCode != errSecSuccess {
-                    fatalError(
-                        "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
-                    )
-                }
-                return random
+
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        guard
+            let appleCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+            let nonce = currentNonce,
+            let tokenData = appleCredential.identityToken,
+            let idToken = String(data: tokenData, encoding: .utf8)
+        else { return }
+
+        Task {
+            do {
+                try await SupabaseAuthService.shared.signInWithApple(
+                    idToken: idToken, nonce: nonce
+                )
+                let name = [
+                    appleCredential.fullName?.givenName,
+                    appleCredential.fullName?.familyName
+                ].compactMap { $0 }.joined(separator: " ")
+                try await SupabaseAuthService.shared.ensureUserRow(
+                    username: name.isEmpty ? "Apple User" : name
+                )
+                EventManager.shared.logLoginEvent(method: "apple")
+            } catch {
+                print("❌ Apple sign-in error: \(error)")
             }
-            
-            randoms.forEach { random in
-                if remainingLength == 0 {
-                    return
-                }
-                
-                if random < charset.count {
-                    result.append(charset[Int(random)])
-                    remainingLength -= 1
+        }
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print("❌ Apple sign-in error: \(error)")
+    }
+
+    // MARK: - Google Sign-In (call from UIViewController)
+    func handleGoogleSignIn(with viewController: UIViewController) {
+        guard let clientID = Bundle.main.object(forInfoDictionaryKey: "CLIENT_ID") as? String
+                ?? (Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist")
+                    .flatMap { NSDictionary(contentsOfFile: $0)?["CLIENT_ID"] as? String})
+        else {
+            print("❌ Google client ID not found")
+            return
+        }
+
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { signResult, error in
+            if let error {
+                print("❌ Google sign-in error: \(error)")
+                return
+            }
+            guard let user = signResult?.user, let idToken = user.idToken else { return }
+
+            Task {
+                do {
+                    try await SupabaseAuthService.shared.signInWithGoogle(
+                        idToken: idToken.tokenString,
+                        accessToken: user.accessToken.tokenString
+                    )
+                    let name = user.profile?.name ?? "Google User"
+                    try await SupabaseAuthService.shared.ensureUserRow(username: name)
+                    EventManager.shared.logLoginEvent(method: "google")
+                } catch {
+                    print("❌ Supabase Google sign-in error: \(error)")
                 }
             }
         }
-        
+    }
+
+    func handleGoogleSignIn(idToken: String, accessToken: String) {
+        Task {
+            do {
+                try await SupabaseAuthService.shared.signInWithGoogle(
+                    idToken: idToken, accessToken: accessToken
+                )
+                try await SupabaseAuthService.shared.ensureUserRow(username: "Google User")
+                EventManager.shared.logLoginEvent(method: "google")
+            } catch {
+                print("❌ Google sign-in error: \(error)")
+            }
+        }
+    }
+
+    // MARK: - Crypto helpers
+    private func randomNonceString(length: Int = 32) -> String {
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remaining = length
+        while remaining > 0 {
+            let randoms: [UInt8] = (0..<16).map { _ in
+                var r: UInt8 = 0
+                SecRandomCopyBytes(kSecRandomDefault, 1, &r)
+                return r
+            }
+            randoms.forEach { r in
+                guard remaining > 0 else { return }
+                if r < charset.count { result.append(charset[Int(r)]); remaining -= 1 }
+            }
+        }
         return result
     }
-    
+
     private func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            String(format: "%02x", $0)
-        }.joined()
-        
-        return hashString
-    }
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-            guard let nonce = currentNonce else {
-                fatalError("Invalid state: A login callback was received, but no login request was sent.")
-            }
-            guard let appleIDToken = appleIDCredential.identityToken else {
-                print("Unable to fetch identity token")
-                return
-            }
-            guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-                print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
-                return
-            }
-            // Initialize a Firebase credential.
-            let credential = OAuthProvider.credential(withProviderID: "apple.com",
-                                                      idToken: idTokenString,
-                                                      rawNonce: nonce)
-            
-            // Sign in with Firebase.
-            Auth.auth().signIn(with: credential) { (authResult, error) in
-                if (error != nil) {
-                    // Error. If error.code == .MissingOrInvalidNonce, make sure
-                    // you're sending the SHA256-hashed nonce as a hex string with
-                    // your request to Apple.
-                    print(error?.localizedDescription)
-                    return
-                }
-                // User is signed in to Firebase with Apple.
-                // ...
-                print("Apple sign in!")
-                
-                // Allow proceed to next screen
-            }
-        }
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        // Handle error.
-        print("Sign in with Apple errored: \(error)")
+        let data = Data(input.utf8)
+        let hash = SHA256.hash(data: data)
+        return hash.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
-

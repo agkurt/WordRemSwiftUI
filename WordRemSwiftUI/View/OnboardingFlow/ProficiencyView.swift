@@ -1,0 +1,140 @@
+//
+//  ProficiencyView.swift
+//  WordRemSwiftUI
+//
+//  Step 2 of Duolingo-style Onboarding.
+//
+
+import SwiftUI
+
+struct ProficiencyView: View {
+    let selectedLanguageName: String
+    @State private var selectedLevel: Int?
+    @State private var navigateToBenefits = false
+    
+    let proficiencyLevels = [
+        "Yeni başlıyorum",
+        "Bazı yaygın kelimeleri biliyorum",
+        "Basit konuşmalar yapabilirim",
+        "Çeşitli konular hakkında konuşabilirim",
+        "Çoğu konuyu ayrıntılı tartışabilirim"
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Top Progress Bar
+            HStack(spacing: 8) {
+                Capsule()
+                    .fill(AppTheme.Colors.primaryOrange)
+                    .frame(height: 12)
+                Capsule()
+                    .fill(AppTheme.Colors.primaryOrange)
+                    .frame(height: 12)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+            
+            // Character & Speech Bubble
+            HStack(alignment: .top, spacing: 16) {
+                // Mascot
+                MascotAnimationView(width: 70, height: 70)
+                
+                // Speech Bubble
+                Text("Ne kadar \(selectedLanguageName) biliyorsun?")
+                    .font(.custom("Poppins-Bold", size: 16))
+                    .foregroundStyle(Color(hex: "#1e293b"))
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white)
+                            .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
+                    )
+                    .overlay(
+                        // Tail
+                        Path { path in
+                            path.move(to: CGPoint(x: 0, y: 20))
+                            path.addLine(to: CGPoint(x: -10, y: 25))
+                            path.addLine(to: CGPoint(x: 0, y: 30))
+                        }
+                        .fill(Color.white)
+                    )
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 24)
+            .padding(.bottom, 32)
+            
+            // Proficiency List
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 12) {
+                    ForEach(0..<proficiencyLevels.count, id: \.self) { index in
+                        Button(action: {
+                            selectedLevel = index
+                        }) {
+                            HStack(spacing: 16) {
+                                // Dynamic signal bars
+                                HStack(alignment: .bottom, spacing: 3) {
+                                    ForEach(0..<5) { barIndex in
+                                        Capsule()
+                                            .fill(barIndex <= index ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"))
+                                            .frame(width: 4, height: CGFloat(8 + (barIndex * 4)))
+                                    }
+                                }
+                                .frame(width: 30, height: 24, alignment: .bottom)
+                                
+                                Text(proficiencyLevels[index])
+                                    .font(.custom("Poppins-SemiBold", size: 15))
+                                    .foregroundStyle(Color(hex: "#1e293b"))
+                                    .multilineTextAlignment(.leading)
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 16)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(selectedLevel == index ? AppTheme.Colors.primaryOrange.opacity(0.1) : Color.white)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(selectedLevel == index ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"), lineWidth: 2)
+                            )
+                        }
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 20)
+            }
+            
+            // Bottom Continue Button
+            VStack {
+                Divider()
+                Button(action: {
+                    navigateToBenefits = true
+                }) {
+                    Text("DEVAM ET")
+                        .font(.custom("Poppins-Bold", size: 17))
+                        .foregroundStyle(selectedLevel == nil ? Color(hex: "#94a3b8") : .white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(selectedLevel == nil ? Color(hex: "#e2e8f0") : AppTheme.Colors.primaryOrange)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: selectedLevel == nil ? .clear : AppTheme.Colors.primaryOrange.opacity(0.4), radius: 8, y: 4)
+                }
+                .disabled(selectedLevel == nil)
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
+                .padding(.bottom, 20)
+            }
+            .background(Color.white)
+        }
+        .background(Color(hex: "#f8fafc").ignoresSafeArea())
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(isPresented: $navigateToBenefits) {
+            BenefitsView(selectedLanguageName: selectedLanguageName)
+        }
+    }
+}
+
+#Preview {
+    ProficiencyView(selectedLanguageName: "İngilizce")
+}

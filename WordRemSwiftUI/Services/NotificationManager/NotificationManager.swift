@@ -42,22 +42,6 @@ class NotificationManager: ObservableObject {
         }
     }
     
-    func calculateRepeatInterval(type: String, repeatCount: Int) -> Int {
-        var totalHours: Int
-        switch type {
-        case "Daily":
-            totalHours = 24
-        case "Weekly":
-            totalHours = 24 * 7
-        case "Monthly":
-            totalHours = 24 * 30
-        default:
-            totalHours = 24
-        }
-        
-        return totalHours / repeatCount
-    }
-
     func sendNotifications(title: String, body: String, repeatOption: String, repeatValue: Int) {
         
         let content = UNMutableNotificationContent()
@@ -66,34 +50,88 @@ class NotificationManager: ObservableObject {
         content.sound = .default
         
         let calendar = Calendar.current
-        let repeatInterval = calculateRepeatInterval(type: repeatOption, repeatCount: repeatValue)
         
-        for i in 0..<repeatValue {
+        // Clear previous notification IDs for this word
+        notificationIDs.removeAll()
+        
+        switch repeatOption {
+        case "None":
+            // Single notification
             let id = UUID().uuidString
-            let nextDate = calendar.date(byAdding: .hour, value: repeatInterval * i, to: self.date)!
-            let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: nextDate)
-            
+            let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: self.date)
             let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-           
             let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
             
-            UNUserNotificationCenter.current().add(request) { error in
+            UNUserNotificationCenter.current().add(request) { [weak self] error in
                 if let error = error {
-                    print("Error adding notification request \(i): \(error.localizedDescription)")
+                    print("Error adding notification: \(error.localizedDescription)")
                 } else {
-                    print("Notification request \(i) added successfully")
+                    print("Notification added successfully")
+                    Task { @MainActor in
+                        self?.notificationIDs.append(id)
+                    }
                 }
             }
             
+        case "Weekly":
+            // Repeat every N weeks
+            for i in 0..<5 { // Create up to 5 future notifications
+                let id = UUID().uuidString
+                let nextDate = calendar.date(byAdding: .weekOfYear, value: repeatValue * i, to: self.date)!
+                let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: nextDate)
+                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+                let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+                
+                UNUserNotificationCenter.current().add(request) { [weak self] error in
+                    if let error = error {
+                        print("Error adding notification \(i): \(error.localizedDescription)")
+                    } else {
+                        print("Notification \(i) added successfully for date: \(nextDate)")
+                        Task { @MainActor in
+                            self?.notificationIDs.append(id)
+                        }
+                    }
+                }
+            }
+            
+        case "Monthly":
+            // Repeat every N months
+            for i in 0..<5 { // Create up to 5 future notifications
+                let id = UUID().uuidString
+                let nextDate = calendar.date(byAdding: .month, value: repeatValue * i, to: self.date)!
+                let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: nextDate)
+                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+                let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+                
+                UNUserNotificationCenter.current().add(request) { [weak self] error in
+                    if let error = error {
+                        print("Error adding notification \(i): \(error.localizedDescription)")
+                    } else {
+                        print("Notification \(i) added successfully for date: \(nextDate)")
+                        Task { @MainActor in
+                            self?.notificationIDs.append(id)
+                        }
+                    }
+                }
+            }
+            
+        default:
+            break
         }
     }
     
     func removeNotification(_ id: String) async {
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [id])
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
-//        if let index = notificationIDs.firstIndex(of: id) {
-//            notificationIDs.remove(at: index)
-//        }
+        if let index = notificationIDs.firstIndex(of: id) {
+            notificationIDs.remove(at: index)
+        }
+    }
+    
+    func removeAllNotifications() async {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        notificationIDs.removeAll()
     }
 }
 
