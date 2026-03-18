@@ -12,6 +12,7 @@ struct ProfileView: View {
 
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var vm = ProfileScreenViewModel()
+    @State private var showPaywall = false
 
     var body: some View {
         ZStack {
@@ -36,6 +37,9 @@ struct ProfileView: View {
 
                     // Achievements Section
                     achievementsSection
+
+                    // Upgrade Pro
+                    upgradeButton
 
                     // Sign Out
                     signOutButton
@@ -210,6 +214,36 @@ struct ProfileView: View {
                     )
                 }
             }
+        }
+    }
+
+    // MARK: - Upgrade Pro
+    private var upgradeButton: some View {
+        Button {
+            EventManager.shared.logPaywallEvent("upgrade_tapped_profile")
+            showPaywall = true
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "crown.fill")
+                    .font(.system(size: 15, weight: .semibold))
+                Text("Upgrade Pro")
+                    .font(.custom("Poppins-Bold", size: 15))
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(
+                LinearGradient(
+                    colors: [Color(hex: "#8b5cf6"), Color(hex: "#7c3aed")],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .shadow(color: Color(hex: "#8b5cf6").opacity(0.4), radius: 10, y: 5)
+        }
+        .fullScreenCover(isPresented: $showPaywall) {
+            OnboardingPaywallView(onContinue: { showPaywall = false })
         }
     }
 

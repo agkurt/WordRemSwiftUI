@@ -27,10 +27,12 @@
 		A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EB6F1DCEE89012C58E24A2 /* MistakesManager.swift */; };
 		A5AF4B799004474588DC9FD5 /* WordRemSwiftUI/Model/QuizMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006233436A024E18986A5183 /* WordRemSwiftUI/Model/QuizMode.swift */; };
 		C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 839E197A68C245D3B5C74A33 /* ProfileView.swift */; };
+		CEEF64237D914E339D7FD03A /* InAppPurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643BBD08DC60454CAA07AF5E /* InAppPurchaseManager.swift */; };
 		D21386D5D47FFC498F1465B7 /* LanguageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC355BD6D692ED1A1E4E912E /* LanguageSelectionView.swift */; };
 		D5826F4B2BF01EBE00C2C86A /* ApiKey-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5826F4A2BF01EBE00C2C86A /* ApiKey-Info.plist */; };
 		D5AA4D132C5510DE003A4104 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AA4D122C5510DE003A4104 /* AppRouter.swift */; };
 		D5AA4D152C55115E003A4104 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AA4D142C55115E003A4104 /* SplashView.swift */; };
+		D919452329FA4FA39C67882A /* OnboardingPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3FC3126208843D0976FC25F /* OnboardingPaywallView.swift */; };
 		DCD474247D4B41FB9F731C50 /* SupabaseModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0ED0EEBCE249DE807CC173 /* SupabaseModels.swift */; };
 		E803743F2BD7007200BF9047 /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E803743E2BD7007200BF9047 /* AnimationView.swift */; };
 		E80447AF2F68A7C200E18C1A /* reeny_waving.lottie in Resources */ = {isa = PBXBuildFile; fileRef = E80447AE2F68A7C200E18C1A /* reeny_waving.lottie */; };
@@ -54,6 +56,9 @@
 		E822945E2BDC38B300A46C70 /* SelectedLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */; };
 		E82294A42BDC427800A46C70 /* MotherTongueViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82294A32BDC427800A46C70 /* MotherTongueViewModel.swift */; };
 		E82A492C2F6B176D0051A1AC /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82A492B2F6B176D0051A1AC /* SplashScreenView.swift */; };
+		E82A49312F6B249A0051A1AC /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = E82A49302F6B249A0051A1AC /* RevenueCat */; };
+		E82A49402F6B3F2E0051A1AC /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E82A493F2F6B3F2E0051A1AC /* StoreKit.framework */; };
+		E82A49422F6B41070051A1AC /* wordremAI.storekit in Resources */ = {isa = PBXBuildFile; fileRef = E82A49412F6B41070051A1AC /* wordremAI.storekit */; };
 		E82B4CA02B6E003A00C7AA81 /* ExampleWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */; };
 		E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */; };
 		E82CE3242BA6394800B552F9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82CE3232BA6394800B552F9 /* UserSettings.swift */; };
@@ -204,6 +209,7 @@
 		5F9E28D573D86F10A2DE8B2F /* PlanSelectionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlanSelectionView.swift; sourceTree = "<group>"; };
 		617C639239EBC34C9002B10E /* OnboardingQuizView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingQuizView.swift; sourceTree = "<group>"; };
 		61BC56F027F39D0F4C7A5336 /* OnboardingLoadingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingLoadingView.swift; sourceTree = "<group>"; };
+		643BBD08DC60454CAA07AF5E /* InAppPurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPurchaseManager.swift; sourceTree = "<group>"; };
 		6F7E75475C4EA3F89C0A11C6 /* ProficiencyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProficiencyView.swift; sourceTree = "<group>"; };
 		7FE1BB78A2A347789A0EA0CF /* SupabaseAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SupabaseAuthService.swift; path = WordRemSwiftUI/Services/SupabaseService/SupabaseAuthService.swift; sourceTree = SOURCE_ROOT; };
 		839E197A68C245D3B5C74A33 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ProfileView.swift; path = WordRemSwiftUI/View/ProfileView/ProfileView.swift; sourceTree = SOURCE_ROOT; };
@@ -213,6 +219,7 @@
 		AC0ED0EEBCE249DE807CC173 /* SupabaseModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SupabaseModels.swift; path = WordRemSwiftUI/Services/SupabaseService/SupabaseModels.swift; sourceTree = SOURCE_ROOT; };
 		B5E048FBBDC848E09A36A35A /* GameQuizViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GameQuizViewModel.swift; path = WordRemSwiftUI/ViewModel/Quiz/GameQuizViewModel.swift; sourceTree = SOURCE_ROOT; };
 		C1567791EBB9471AB19BF1D0 /* PathMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PathMapView.swift; path = WordRemSwiftUI/View/Path/PathMapView.swift; sourceTree = SOURCE_ROOT; };
+		C3FC3126208843D0976FC25F /* OnboardingPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPaywallView.swift; sourceTree = "<group>"; };
 		D1A91F10AFF24B3EA659AE2A /* GameQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GameQuizView.swift; path = WordRemSwiftUI/View/Quiz/GameQuizView.swift; sourceTree = SOURCE_ROOT; };
 		D5826F4A2BF01EBE00C2C86A /* ApiKey-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ApiKey-Info.plist"; sourceTree = "<group>"; };
 		D5AA4D122C5510DE003A4104 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
@@ -234,6 +241,8 @@
 		E822945D2BDC38B300A46C70 /* SelectedLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedLanguage.swift; sourceTree = "<group>"; };
 		E82294A32BDC427800A46C70 /* MotherTongueViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotherTongueViewModel.swift; sourceTree = "<group>"; };
 		E82A492B2F6B176D0051A1AC /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		E82A493F2F6B3F2E0051A1AC /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		E82A49412F6B41070051A1AC /* wordremAI.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = wordremAI.storekit; sourceTree = "<group>"; };
 		E82B4C9F2B6E003A00C7AA81 /* ExampleWords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleWords.swift; sourceTree = "<group>"; };
 		E82B4CA12B6E028300C7AA81 /* SentenceScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceScreenView.swift; sourceTree = "<group>"; };
 		E82CE3232BA6394800B552F9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
@@ -358,6 +367,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E82A49402F6B3F2E0051A1AC /* StoreKit.framework in Frameworks */,
 				E81C0B012F6613BB00ACF8BB /* Functions in Frameworks */,
 				E898DCF82F5E2448002629F5 /* FirebaseMessaging in Frameworks */,
 				E898DCF72F5E2448002629F5 /* FirebaseAnalytics in Frameworks */,
@@ -385,6 +395,7 @@
 				E8B1F2042BECFFCC005F3E10 /* FirebaseAuthCombine-Community in Frameworks */,
 				E8B1F2222BECFFCC005F3E10 /* FirebasePerformance in Frameworks */,
 				E8B1F2282BECFFCC005F3E10 /* FirebaseStorage in Frameworks */,
+				E82A49312F6B249A0051A1AC /* RevenueCat in Frameworks */,
 				E8B1F20C2BECFFCC005F3E10 /* FirebaseDynamicLinks in Frameworks */,
 				E8B1F2102BECFFCC005F3E10 /* FirebaseFirestoreCombine-Community in Frameworks */,
 				E8B1F21C2BECFFCC005F3E10 /* FirebaseInstallations in Frameworks */,
@@ -437,6 +448,7 @@
 		E81C0B082F6614F900ACF8BB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E82A493F2F6B3F2E0051A1AC /* StoreKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -558,6 +570,7 @@
 				E8BE726E2B93BA3E00900217 /* AuthManager */,
 				E8527C522B6EBD590047E4A6 /* FirebaseService */,
 				F0EB6F1DCEE89012C58E24A2 /* MistakesManager.swift */,
+				643BBD08DC60454CAA07AF5E /* InAppPurchaseManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -607,6 +620,7 @@
 		E879EC592B3B3E2C003534B5 = {
 			isa = PBXGroup;
 			children = (
+				E82A49412F6B41070051A1AC /* wordremAI.storekit */,
 				E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */,
 				E879EC632B3B3E2C003534B5 /* Products */,
 				E88176932F65FAFC00D0AB91 /* Recovered References */,
@@ -964,6 +978,7 @@
 			isa = PBXGroup;
 			children = (
 				E8EB12CF2B84138900441F0C /* PremiumView.swift */,
+				C3FC3126208843D0976FC25F /* OnboardingPaywallView.swift */,
 			);
 			path = PremiumView;
 			sourceTree = "<group>";
@@ -1015,6 +1030,7 @@
 				E81C0B042F6613BB00ACF8BB /* Realtime */,
 				E81C0B062F6613BB00ACF8BB /* Storage */,
 				E81C0B092F6614F900ACF8BB /* Supabase */,
+				E82A49302F6B249A0051A1AC /* RevenueCat */,
 			);
 			productName = WordRemSwiftUI;
 			productReference = E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */;
@@ -1053,6 +1069,7 @@
 				E8B1F2302BECFFF8005F3E10 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 				E8B1F2332BED01AE005F3E10 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				E81C0AFD2F6613BB00ACF8BB /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				E82A492D2F6B249A0051A1AC /* XCRemoteSwiftPackageReference "purchases-ios" */,
 			);
 			productRefGroup = E879EC632B3B3E2C003534B5 /* Products */;
 			projectDirPath = "";
@@ -1079,6 +1096,7 @@
 				E8610DE32B98A1E200402FF4 /* Config.plist in Resources */,
 				E8D6F2AE2B8DFF400017A523 /* Poppins-Light.ttf in Resources */,
 				E8D6F2AD2B8DFF400017A523 /* OFL.txt in Resources */,
+				E82A49422F6B41070051A1AC /* wordremAI.storekit in Resources */,
 				E8D6F2AC2B8DFF400017A523 /* Poppins-SemiBold.ttf in Resources */,
 				E8D6F2BC2B8DFF400017A523 /* Poppins-BoldItalic.ttf in Resources */,
 				E879EC6D2B3B3E2E003534B5 /* Preview Assets.xcassets in Resources */,
@@ -1203,6 +1221,8 @@
 				E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */,
 				E843E0B72B9806F7006B1A1C /* Language.swift in Sources */,
 				E8EB12D02B84138900441F0C /* PremiumView.swift in Sources */,
+				CEEF64237D914E339D7FD03A /* InAppPurchaseManager.swift in Sources */,
+				D919452329FA4FA39C67882A /* OnboardingPaywallView.swift in Sources */,
 				E8EB12CD2B84071200441F0C /* PlusView.swift in Sources */,
 				A5AF4B799004474588DC9FD5 /* WordRemSwiftUI/Model/QuizMode.swift in Sources */,
 				1E136AADF31B4615B532D710 /* WordRemSwiftUI/Model/QuizQuestion.swift in Sources */,
@@ -1369,7 +1389,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemSwiftUI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Flash AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "WordRem AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1407,7 +1427,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemSwiftUI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Flash AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "WordRem AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1462,6 +1482,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.5.1;
+			};
+		};
+		E82A492D2F6B249A0051A1AC /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.65.0;
 			};
 		};
 		E8B1F1F42BECFFCC005F3E10 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -1528,6 +1556,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E81C0AFD2F6613BB00ACF8BB /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		E82A49302F6B249A0051A1AC /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E82A492D2F6B249A0051A1AC /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
 		};
 		E8B1F1FD2BECFFCC005F3E10 /* FirebaseAppCheck */ = {
 			isa = XCSwiftPackageProductDependency;

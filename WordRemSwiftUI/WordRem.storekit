@@ -1,0 +1,68 @@
+{
+  "identifier" : "7DFB4F39",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "com.twinflare.WordRemSwiftUI",
+    "_developerTeamID" : "",
+    "_prefix" : ""
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "wordrem_pro_group",
+      "localizations" : [
+        {
+          "customAppName" : "WordRem",
+          "displayName" : "WordRem Pro",
+          "locale" : "tr_TR"
+        },
+        {
+          "customAppName" : "WordRem",
+          "displayName" : "WordRem Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "WordRem Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familySharable" : false,
+          "groupNumber" : 1,
+          "internalID" : "A1B2C3D4",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Reklamsız, kesintisiz haftalık WordRem Pro aboneliği",
+              "displayName" : "WordRem Pro",
+              "locale" : "tr_TR"
+            },
+            {
+              "description" : "Weekly WordRem Pro subscription without ads",
+              "displayName" : "WordRem Pro",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "wordrem_weekly_subscription",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "WordRem Pro Weekly",
+          "subscriptionGroupID" : "wordrem_pro_group",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 2,
+    "minor" : 0
+  }
+}

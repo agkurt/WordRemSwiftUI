@@ -10,13 +10,15 @@ import SwiftUI
 
 struct PlanSelectionView: View {
     let languageName: String
+
     @State private var navigateToLoading = false
-    
+    @State private var showPaywall = false
+
     var body: some View {
         VStack(spacing: 0) {
             // Top Progress Bar
             HStack(spacing: 8) {
-                ForEach(0..<4, id: \.self) { index in
+                ForEach(0..<4, id: \.self) { _ in
                     Capsule()
                         .fill(AppTheme.Colors.primaryOrange)
                         .frame(height: 12)
@@ -24,13 +26,11 @@ struct PlanSelectionView: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, 16)
-            
+
             // Mascot & Speech Bubble
             HStack(alignment: .top, spacing: 16) {
-                // Mascot
                 MascotAnimationView(width: 70, height: 70)
-                
-                // Speech Bubble
+
                 Text("Harika! İstediğin zaman\nplanını yükseltebilirsin.")
                     .font(.custom("Poppins-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
@@ -41,7 +41,6 @@ struct PlanSelectionView: View {
                             .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
                     )
                     .overlay(
-                        // Tail
                         Path { path in
                             path.move(to: CGPoint(x: 0, y: 20))
                             path.addLine(to: CGPoint(x: -10, y: 25))
@@ -49,20 +48,19 @@ struct PlanSelectionView: View {
                         }
                         .fill(Color.white)
                     )
-                    // Push up
                     .offset(y: 4)
             }
             .padding(.horizontal, 24)
             .padding(.top, 24)
             .padding(.bottom, 40)
-            
+
             // Plans List
             VStack(spacing: 24) {
-                // Pro Plan
-                Button(action: {
-                    // Logic to subscribe
-                    navigateToLoading = true
-                }) {
+                // Pro Plan → paywall açar
+                Button {
+                    EventManager.shared.logPaywallEvent("pro_selected_onboarding")
+                    showPaywall = true
+                } label: {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("WordRem Pro")
                             .font(.custom("Poppins-Bold", size: 18))
@@ -87,7 +85,7 @@ struct PlanSelectionView: View {
                             .stroke(Color.white, lineWidth: 2)
                     )
                     .shadow(color: Color(hex: "#8b5cf6").opacity(0.4), radius: 10, y: 5)
-                    .overlay(
+                    .overlay(alignment: .topTrailing) {
                         Text("TAVSİYE EDİLEN")
                             .font(.custom("Poppins-Bold", size: 12))
                             .foregroundStyle(.white)
@@ -95,15 +93,15 @@ struct PlanSelectionView: View {
                             .padding(.vertical, 4)
                             .background(Color(hex: "#f97316"))
                             .clipShape(Capsule())
-                            .offset(y: -12),
-                        alignment: .topTrailing
-                    )
+                            .offset(y: -12)
+                    }
                 }
-                
-                // Free Plan
-                Button(action: {
+
+                // Free Plan → direkt loading
+                Button {
+                    EventManager.shared.logPaywallEvent("free_selected_onboarding")
                     navigateToLoading = true
-                }) {
+                } label: {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Ücretsiz Öğrenim")
                             .font(.custom("Poppins-Bold", size: 18))
@@ -125,15 +123,14 @@ struct PlanSelectionView: View {
                 }
             }
             .padding(.horizontal, 24)
-            
+
             Spacer()
-            
-            // Bottom Continue Button (Hidden/Optional if we use direct cards, but let's keep consistent)
-            VStack {
+
+            VStack(spacing: 0) {
                 Divider()
-                Button(action: {
+                Button {
                     navigateToLoading = true
-                }) {
+                } label: {
                     Text("DEVAM ET")
                         .font(.custom("Poppins-Bold", size: 17))
                         .foregroundStyle(.white)
@@ -153,6 +150,13 @@ struct PlanSelectionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToLoading) {
             OnboardingLoadingView(languageName: languageName)
+        }
+        // Pro seçilince paywall fullscreen açılır
+        .fullScreenCover(isPresented: $showPaywall) {
+            OnboardingPaywallView {
+                showPaywall = false
+                navigateToLoading = true
+            }
         }
     }
 }

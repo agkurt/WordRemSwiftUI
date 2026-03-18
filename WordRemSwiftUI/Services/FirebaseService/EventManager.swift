@@ -31,4 +31,10 @@ final class EventManager {
         Analytics.logEvent("logout", parameters: nil)
         print("📊 [Analytics] logout event fired ✅")
     }
+
+    // MARK: - Paywall Events
+    func logPaywallEvent(_ name: String) {
+        Analytics.logEvent("paywall_\(name)", parameters: nil)
+        print("📊 [Analytics] paywall_\(name) ✅")
+    }
 }

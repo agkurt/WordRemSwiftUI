@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         }
         application.registerForRemoteNotifications()
         Messaging.messaging().delegate = self
-
+        InAppPurchaseManager.configure(apiKey: "appl_AIYIRTwVqPvcdVpfrGdzmqAYbox")
         return true
     }
 
