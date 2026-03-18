@@ -29,7 +29,7 @@ struct WordRemSwiftUIApp: App {
                         .environmentObject(authManager)
                         .environmentObject(sentenceViewModel)
                 } else {
-                    WelcomeView()
+                    SplashScreenView()
                         .environmentObject(authManager)
                         .environmentObject(sentenceViewModel)
                 }

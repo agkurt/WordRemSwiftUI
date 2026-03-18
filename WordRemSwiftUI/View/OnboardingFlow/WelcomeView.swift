@@ -28,11 +28,12 @@ struct WelcomeView: View {
                     
                     // Logo Space
                     VStack(spacing: 16) {
-                        // Uygulama Logosu
+                        // Uygulama Logosu - Corner Radius ile
                         Image("appLogo")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 140, height: 140)
+                            .clipShape(RoundedRectangle(cornerRadius: 35))
                             .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.3), radius: 20, y: 10)
                         
                         Text("Flash AI")

@@ -8,13 +8,8 @@
 import SwiftUI
 
 struct LanguageSelectionView: View {
-    @State private var selectedLanguage: Language?
+    @State private var selectedLanguage: String?
     @State private var navigateToProficiency = false
-    
-    // Using existing Language enum from OnboardingView
-    // If not accessible globally, we will redefine or use the existing one.
-    // For now we assume the global Language enum is available.
-    // If it's private, we'll redefine a simple list.
     
     let availableLanguages: [(flag: String, name: String, code: String)] = [
         ("🇬🇧", "İngilizce", "en"),
@@ -86,30 +81,32 @@ struct LanguageSelectionView: View {
                 VStack(spacing: 12) {
                     ForEach(availableLanguages, id: \.code) { lang in
                         Button(action: {
-                            selectedLanguage = Language(rawValue: lang.name) ?? .english
-                            // For simplicity, we just set a state variable
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selectedLanguage = lang.name
+                            }
                         }) {
                             HStack(spacing: 16) {
+                                // Flag
                                 Text(lang.flag)
                                     .font(.system(size: 28))
-                                    .padding(8)
-                                    .background(Color(hex: "#f1f5f9"), in: RoundedRectangle(cornerRadius: 12))
+                                    .frame(width: 40)
                                 
                                 Text(lang.name)
-                                    .font(.custom("Poppins-Bold", size: 17))
+                                    .font(.custom("Poppins-SemiBold", size: 15))
                                     .foregroundStyle(Color(hex: "#1e293b"))
+                                    .multilineTextAlignment(.leading)
                                 
                                 Spacer()
                             }
                             .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
+                            .padding(.vertical, 16)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .fill(selectedLanguage?.rawValue == lang.name ? AppTheme.Colors.primaryOrange.opacity(0.1) : Color.white)
+                                    .fill(selectedLanguage == lang.name ? AppTheme.Colors.primaryOrange.opacity(0.1) : Color.white)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(selectedLanguage?.rawValue == lang.name ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"), lineWidth: 2)
+                                    .stroke(selectedLanguage == lang.name ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"), lineWidth: 2)
                             )
                         }
                     }
@@ -143,8 +140,7 @@ struct LanguageSelectionView: View {
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToProficiency) {
-            // Force passing selectedLanguage down if needed
-            ProficiencyView(selectedLanguageName: selectedLanguage?.rawValue ?? "İngilizce")
+            ProficiencyView(selectedLanguageName: selectedLanguage ?? "İngilizce")
         }
     }
 }
