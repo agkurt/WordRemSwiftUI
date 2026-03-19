@@ -25,6 +25,8 @@
 		9DCB0C268C6C4915A7842496 /* WordRemSwiftUI/ViewModel/Quiz/QuizViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33CCEDFC4094E78B80778DE /* WordRemSwiftUI/ViewModel/Quiz/QuizViewModel.swift */; };
 		A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD5121A34FC498D869A707B /* QuizResultView.swift */; };
 		A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EB6F1DCEE89012C58E24A2 /* MistakesManager.swift */; };
+		BB11CC22DD33EE4400BB0011 /* PathMistakesDeckService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */; };
+		DD11EE22FF33AA4400DD0011 /* DailyLimitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33AA4400DD0022 /* DailyLimitManager.swift */; };
 		A5AF4B799004474588DC9FD5 /* WordRemSwiftUI/Model/QuizMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006233436A024E18986A5183 /* WordRemSwiftUI/Model/QuizMode.swift */; };
 		C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 839E197A68C245D3B5C74A33 /* ProfileView.swift */; };
 		CEEF64237D914E339D7FD03A /* InAppPurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643BBD08DC60454CAA07AF5E /* InAppPurchaseManager.swift */; };
@@ -76,6 +78,8 @@
 		E84CC1942B9255F90066FF96 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84CC1932B9255F90066FF96 /* AppDelegate.swift */; };
 		E84CC1962B9256780066FF96 /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84CC1952B9256780066FF96 /* View+Ext.swift */; };
 		E84DEC9B2B8E14950014916C /* CheckBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84DEC9A2B8E14950014916C /* CheckBoxStyle.swift */; };
+		BB11CC22DD33EE44FF550011 /* OnboardingLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB11CC22DD33EE44FF550022 /* OnboardingLocalization.swift */; };
+		CC22DD33EE44FF5500110011 /* AppLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC22DD33EE44FF5500110022 /* AppLocalization.swift */; };
 		E8527C182B6EAFAD0047E4A6 /* LoginButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C172B6EAFAD0047E4A6 /* LoginButtonStyle.swift */; };
 		E8527C542B6EBD6E0047E4A6 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C532B6EBD6E0047E4A6 /* FirebaseService.swift */; };
 		E8527C562B6EBED20047E4A6 /* RegisterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8527C552B6EBED20047E4A6 /* RegisterModel.swift */; };
@@ -332,6 +336,8 @@
 		E8DF72F92BEBDA85004EF25E /* LoginTextFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginTextFields.swift; sourceTree = "<group>"; };
 		E8DF72FB2BEBDABE004EF25E /* ForgotAndSignUpButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotAndSignUpButtonView.swift; sourceTree = "<group>"; };
 		E8DF72FD2BEBDBF3004EF25E /* GoogleAndAppleSignView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAndAppleSignView.swift; sourceTree = "<group>"; };
+		BB11CC22DD33EE44FF550022 /* OnboardingLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingLocalization.swift; sourceTree = "<group>"; };
+		CC22DD33EE44FF5500110022 /* AppLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLocalization.swift; sourceTree = "<group>"; };
 		E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearBackgroundView.swift; sourceTree = "<group>"; };
 		E8E1B4DB2B7CA1A700AE6CD0 /* HideKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideKeyboard.swift; sourceTree = "<group>"; };
 		E8E1B4DF2B7CA2F800AE6CD0 /* SecureFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureFieldView.swift; sourceTree = "<group>"; };
@@ -354,6 +360,8 @@
 		E8F478D72BEAC7FD00879C96 /* CardFlipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFlipView.swift; sourceTree = "<group>"; };
 		E8F7B6832BD5ECE700C74B4F /* CardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
 		F0EB6F1DCEE89012C58E24A2 /* MistakesManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MistakesManager.swift; sourceTree = "<group>"; };
+		BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PathMistakesDeckService.swift; sourceTree = "<group>"; };
+		DD11EE22FF33AA4400DD0022 /* DailyLimitManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DailyLimitManager.swift; sourceTree = "<group>"; };
 		F33CCEDFC4094E78B80778DE /* WordRemSwiftUI/ViewModel/Quiz/QuizViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordRemSwiftUI/ViewModel/Quiz/QuizViewModel.swift; sourceTree = SOURCE_ROOT; };
 		FBA307D5D25715AAA6A5345B /* MascotAnimationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MascotAnimationView.swift; sourceTree = "<group>"; };
 		FBA999999999999999999991 /* EventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventManager.swift; sourceTree = "<group>"; };
@@ -517,6 +525,8 @@
 				E8BEB93F2F5E65EB0053DBB3 /* GoogleService-Info.plist */,
 				E8D6F2972B8DFF310017A523 /* PoppinsFont */,
 				E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */,
+				BB11CC22DD33EE44FF550022 /* OnboardingLocalization.swift */,
+				CC22DD33EE44FF5500110022 /* AppLocalization.swift */,
 				E8E1B4E12B7CFF0800AE6CD0 /* KeyboardResponder.swift */,
 				E84DEC9A2B8E14950014916C /* CheckBoxStyle.swift */,
 				E853ACA72BA4EBD4003C988A /* APIKey.swift */,
@@ -570,6 +580,8 @@
 				E8BE726E2B93BA3E00900217 /* AuthManager */,
 				E8527C522B6EBD590047E4A6 /* FirebaseService */,
 				F0EB6F1DCEE89012C58E24A2 /* MistakesManager.swift */,
+				BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */,
+				DD11EE22FF33AA4400DD0022 /* DailyLimitManager.swift */,
 				643BBD08DC60454CAA07AF5E /* InAppPurchaseManager.swift */,
 			);
 			path = Services;
@@ -1164,6 +1176,8 @@
 				E8AEB02A2BDB1D13004E8664 /* LottieViewAnimation.swift in Sources */,
 				E82B4CA22B6E028300C7AA81 /* SentenceScreenView.swift in Sources */,
 				E84DEC9B2B8E14950014916C /* CheckBoxStyle.swift in Sources */,
+				BB11CC22DD33EE44FF550011 /* OnboardingLocalization.swift in Sources */,
+				CC22DD33EE44FF5500110011 /* AppLocalization.swift in Sources */,
 				E8D774772B8FE9C900E9AB1B /* CardModel.swift in Sources */,
 				E8F1A60D2B9BF4C000E4E533 /* AnotherSettingView.swift in Sources */,
 				E8F478D82BEAC7FD00879C96 /* CardFlipView.swift in Sources */,
@@ -1242,6 +1256,8 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				BB11CC22DD33EE4400BB0011 /* PathMistakesDeckService.swift in Sources */,
+				DD11EE22FF33AA4400DD0011 /* DailyLimitManager.swift in Sources */,
 				5580F38406EAA6B2F8D2F1A3 /* WelcomeView.swift in Sources */,
 				D21386D5D47FFC498F1465B7 /* LanguageSelectionView.swift in Sources */,
 				E82A492C2F6B176D0051A1AC /* SplashScreenView.swift in Sources */,

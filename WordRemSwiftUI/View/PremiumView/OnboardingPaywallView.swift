@@ -27,20 +27,14 @@ struct OnboardingPaywallView: View {
     private let proColor     = Color(hex: "#8b5cf6")
     private let proColorDark = Color(hex: "#7c3aed")
 
-    private let features: [(String, String)] = [
-        ("bolt.fill",       "Reklamsız, kesintisiz öğrenme"),
-        ("star.fill",       "Öncelikli yeni içeriklere erişim"),
-        ("chart.bar.fill",  "Detaylı ilerleme & istatistikler"),
-        ("bell.badge.fill", "Akıllı hatırlatıcılar"),
-    ]
+    private var features: [(String, String)] {[
+        ("bolt.fill",       AL.s(.paywallFeature1)),
+        ("star.fill",       AL.s(.paywallFeature2)),
+        ("chart.bar.fill",  AL.s(.paywallFeature3)),
+        ("bell.badge.fill", AL.s(.paywallFeature4)),
+    ]}
 
-    private let reviews: [(String, String)] = [
-        ("3 ayda geçtiğimi düşündüğüm kelimeleri 3 haftada öğrendim!", "Mehmet K."),
-        ("Reklamsız deneyim inanılmaz fark yaratıyor.", "Ayşe T."),
-        ("İstatistikler motivasyonumu artırıyor, tavsiye ederim.", "Can Ö."),
-        ("Her gün birkaç dakika ile B2'ye ulaştım.", "Selin A."),
-        ("Pro olmadan düşünemiyorum artık.", "Burak Y."),
-    ]
+    private var reviews: [(String, String)] { AL.paywallReviews }
 
     var body: some View {
         NavigationStack {
@@ -71,10 +65,10 @@ struct OnboardingPaywallView: View {
             }
         }
         .onDisappear { reviewTimer?.invalidate() }
-        .alert("Satın alma başarısız", isPresented: $showPurchaseErrorAlert) {
-            Button("Tamam", role: .cancel) {}
+        .alert(AL.s(.paywallPurchaseFailed), isPresented: $showPurchaseErrorAlert) {
+            Button(AL.s(.paywallOk), role: .cancel) {}
         } message: {
-            Text("Bir hata oluştu. Lütfen tekrar dene veya restore kullan.")
+            Text(AL.s(.paywallPurchaseError))
         }
         .sheet(isPresented: $showPrivacy) {
             SafariWebView(url: URL(string: "https://wordrem.app/privacy")!)
@@ -136,7 +130,7 @@ struct OnboardingPaywallView: View {
                         LinearGradient(colors: [proColor, proColorDark],
                                        startPoint: .leading, endPoint: .trailing)
                     )
-                Text("Öğrenmeyi bir üst seviyeye taşı")
+                Text(AL.s(.paywallSubtitle))
                     .font(.custom("Poppins-Regular", size: 16))
                     .foregroundStyle(Color(hex: "#64748b"))
                     .multilineTextAlignment(.center)
@@ -171,7 +165,7 @@ struct OnboardingPaywallView: View {
 
     private var reviewsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Kullanıcılar ne diyor?")
+            Text(AL.s(.paywallReviewsTitle))
                 .font(.custom("Poppins-Bold", size: 15))
                 .foregroundStyle(Color(hex: "#1e293b"))
                 .padding(.horizontal, 28)
@@ -224,10 +218,10 @@ struct OnboardingPaywallView: View {
             if let pkg = weeklyPackage {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Haftalık Pro")
+                        Text(AL.s(.paywallWeeklyPro))
                             .font(.custom("Poppins-Bold", size: 17))
                             .foregroundStyle(.white)
-                        Text("\(pkg.storeProduct.localizedPriceString) / hafta")
+                        Text(AL.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
                             .font(.custom("Poppins-Regular", size: 14))
                             .foregroundStyle(.white.opacity(0.88))
                     }
@@ -245,7 +239,7 @@ struct OnboardingPaywallView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(color: proColor.opacity(0.35), radius: 10, y: 5)
                 .overlay(alignment: .topTrailing) {
-                    Text("TAVSİYE EDİLEN")
+                    Text(AL.s(.paywallRecommended))
                         .font(.custom("Poppins-Bold", size: 10))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 10)
@@ -257,13 +251,13 @@ struct OnboardingPaywallView: View {
             } else if fetchFailed {
                 // Ağ hatası — tekrar dene
                 VStack(spacing: 10) {
-                    Text("Fiyat yüklenemedi")
+                    Text(AL.s(.paywallPriceFailed))
                         .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(Color(hex: "#64748b"))
                     Button {
                         fetchPackage()
                     } label: {
-                        Text("Tekrar Dene")
+                        Text(AL.s(.paywallRetry))
                             .font(.custom("Poppins-Bold", size: 13))
                             .foregroundStyle(proColor)
                     }
@@ -288,7 +282,7 @@ struct OnboardingPaywallView: View {
 
     private var purchaseButton: some View {
         Button(action: purchaseWeekly) {
-            Text("Devam Et")
+            Text(AL.s(.paywallContinue))
                 .font(.custom("Poppins-Bold", size: 17))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
@@ -310,9 +304,9 @@ struct OnboardingPaywallView: View {
 
     private var legalSection: some View {
         HStack(spacing: 20) {
-            legalButton("Gizlilik") { showPrivacy = true }
-            legalButton("Kullanım Şartları") { showTerms = true }
-            legalButton("Geri Yükle") { restorePurchases() }
+            legalButton(AL.s(.paywallPrivacy)) { showPrivacy = true }
+            legalButton(AL.s(.paywallTerms)) { showTerms = true }
+            legalButton(AL.s(.paywallRestore)) { restorePurchases() }
         }
         .padding(.bottom, 32)
     }

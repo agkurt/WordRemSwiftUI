@@ -34,14 +34,12 @@ struct LanguageSelectionView: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, 16)
-            
+
             // Character & Speech Bubble
             HStack(alignment: .top, spacing: 16) {
-                // Mascot
                 MascotAnimationView(width: 70, height: 70)
-                
-                // Speech Bubble
-                Text("Ne öğrenmek istersin?")
+
+                Text(OL.s(.whatToLearn))
                     .font(.custom("Poppins-Bold", size: 18))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -51,7 +49,6 @@ struct LanguageSelectionView: View {
                             .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
                     )
                     .overlay(
-                        // Add a small tail pointing to the bird
                         Path { path in
                             path.move(to: CGPoint(x: 0, y: 20))
                             path.addLine(to: CGPoint(x: -10, y: 25))
@@ -63,10 +60,10 @@ struct LanguageSelectionView: View {
             .padding(.horizontal, 24)
             .padding(.top, 24)
             .padding(.bottom, 20)
-            
-            // Subtitle
+
+            // Subtitle — telefon diline göre dinamik
             HStack {
-                Text("Türkçe bilenler için")
+                Text(OL.forSpeakersSubtitle)
                     .font(.custom("Poppins-Bold", size: 16))
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -75,8 +72,8 @@ struct LanguageSelectionView: View {
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 8)
-            
-            // Language List
+
+            // Language List — isimler telefon diline göre
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 12) {
                     ForEach(availableLanguages, id: \.code) { lang in
@@ -86,16 +83,15 @@ struct LanguageSelectionView: View {
                             }
                         }) {
                             HStack(spacing: 16) {
-                                // Flag
                                 Text(lang.flag)
                                     .font(.system(size: 28))
                                     .frame(width: 40)
-                                
-                                Text(lang.name)
+
+                                Text(OL.languageName(for: lang.code))
                                     .font(.custom("Poppins-SemiBold", size: 15))
                                     .foregroundStyle(Color(hex: "#1e293b"))
                                     .multilineTextAlignment(.leading)
-                                
+
                                 Spacer()
                             }
                             .padding(.horizontal, 16)
@@ -114,14 +110,14 @@ struct LanguageSelectionView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 20)
             }
-            
+
             // Bottom Continue Button
             VStack {
                 Divider()
                 Button(action: {
                     navigateToProficiency = true
                 }) {
-                    Text("DEVAM ET")
+                    Text(OL.s(.continueButton))
                         .font(.custom("Poppins-Bold", size: 17))
                         .foregroundStyle(selectedLanguage == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
@@ -140,7 +136,11 @@ struct LanguageSelectionView: View {
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToProficiency) {
-            ProficiencyView(selectedLanguageName: selectedLanguage ?? "İngilizce")
+            let code = availableLanguages.first(where: { $0.name == selectedLanguage })?.code ?? "en"
+            ProficiencyView(
+                selectedLanguageName: selectedLanguage ?? "İngilizce",
+                selectedLanguageCode: code
+            )
         }
     }
 }

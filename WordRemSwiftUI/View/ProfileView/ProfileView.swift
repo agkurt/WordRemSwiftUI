@@ -104,7 +104,7 @@ struct ProfileView: View {
                 Image(systemName: "star.fill")
                     .font(.system(size: 12))
                     .foregroundStyle(Color(hex: "#f59e0b"))
-                Text("Level \(vm.userLevel)")
+                Text(AL.f(.profileLevelFormat, vm.userLevel))
                     .font(.custom("Poppins-SemiBold", size: 13))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
             }
@@ -121,7 +121,7 @@ struct ProfileView: View {
             ProfileStatCard(
                 icon: "bolt.fill",
                 iconColor: Color(hex: "#f59e0b"),
-                title: "Total XP",
+                title: AL.s(.profileTotalXP),
                 value: "\(vm.user?.totalXp ?? 0)",
                 bgGradient: [Color(hex: "#fef3c7"), Color(hex: "#fde68a")]
             )
@@ -130,8 +130,8 @@ struct ProfileView: View {
             ProfileStatCard(
                 icon: "flame.fill",
                 iconColor: .orange,
-                title: "Streak",
-                value: "\(vm.user?.streakDays ?? 0) days",
+                title: AL.s(.profileStreak),
+                value: AL.f(.profileDaysFormat, vm.user?.streakDays ?? 0),
                 bgGradient: [Color(hex: "#fed7aa"), Color(hex: "#fdba74")]
             )
         }
@@ -140,32 +140,32 @@ struct ProfileView: View {
     // MARK: - Stats Grid
     private var statsGrid: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Statistics")
+            Text(AL.s(.profileStatistics))
                 .font(.custom("Poppins-SemiBold", size: 17))
                 .foregroundStyle(Color(hex: "#1a1a2e"))
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 MiniStatCard(
                     icon: "checkmark.circle.fill",
-                    label: "Completed",
+                    label: AL.s(.profileCompleted),
                     value: "\(vm.stats.completedLevels)",
                     color: .green
                 )
                 MiniStatCard(
                     icon: "questionmark.circle.fill",
-                    label: "Quizzes",
+                    label: AL.s(.profileQuizzes),
                     value: "\(vm.stats.totalAttempts)",
                     color: .blue
                 )
                 MiniStatCard(
                     icon: "target",
-                    label: "Accuracy",
+                    label: AL.s(.profileAccuracy),
                     value: String(format: "%.0f%%", vm.stats.accuracy),
                     color: .purple
                 )
                 MiniStatCard(
                     icon: "star.fill",
-                    label: "Level",
+                    label: AL.s(.profileLevel),
                     value: "\(vm.userLevel)",
                     color: .orange
                 )
@@ -176,7 +176,7 @@ struct ProfileView: View {
     // MARK: - Achievements
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Achievements")
+            Text(AL.s(.profileAchievements))
                 .font(.custom("Poppins-SemiBold", size: 17))
                 .foregroundStyle(Color(hex: "#1a1a2e"))
 
@@ -184,31 +184,31 @@ struct ProfileView: View {
                 HStack(spacing: 12) {
                     AchievementBadge(
                         icon: "flame.fill",
-                        title: "First Streak",
+                        title: AL.s(.profileFirstStreak),
                         isUnlocked: (vm.user?.streakDays ?? 0) >= 1,
                         color: .orange
                     )
                     AchievementBadge(
                         icon: "star.fill",
-                        title: "5 Levels",
+                        title: AL.s(.profile5Levels),
                         isUnlocked: vm.stats.completedLevels >= 5,
                         color: .yellow
                     )
                     AchievementBadge(
                         icon: "bolt.fill",
-                        title: "100 XP",
+                        title: AL.s(.profile100XP),
                         isUnlocked: (vm.user?.totalXp ?? 0) >= 100,
                         color: Color(hex: "#f59e0b")
                     )
                     AchievementBadge(
                         icon: "target",
-                        title: "Sharp Eye",
+                        title: AL.s(.profileSharpEye),
                         isUnlocked: vm.stats.accuracy >= 90,
                         color: .green
                     )
                     AchievementBadge(
                         icon: "crown.fill",
-                        title: "500 XP",
+                        title: AL.s(.profile500XP),
                         isUnlocked: (vm.user?.totalXp ?? 0) >= 500,
                         color: .purple
                     )
@@ -226,7 +226,7 @@ struct ProfileView: View {
             HStack(spacing: 10) {
                 Image(systemName: "crown.fill")
                     .font(.system(size: 15, weight: .semibold))
-                Text("Upgrade Pro")
+                Text(AL.s(.profileUpgradePro))
                     .font(.custom("Poppins-Bold", size: 15))
             }
             .foregroundStyle(.white)
@@ -255,7 +255,7 @@ struct ProfileView: View {
             HStack(spacing: 8) {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 15, weight: .semibold))
-                Text("Sign Out")
+                Text(AL.s(.profileSignOut))
                     .font(.custom("Poppins-SemiBold", size: 15))
             }
             .foregroundStyle(.red)
@@ -284,7 +284,7 @@ final class ProfileScreenViewModel: ObservableObject {
     @Published var stats = UserStats(completedLevels: 0, totalAttempts: 0, correctAnswers: 0)
     @Published var isLoading = false
 
-    var username: String { user?.username ?? "Guest" }
+    var username: String { user?.username ?? AL.s(.profileGuest) }
 
     var initials: String {
         let name = user?.username ?? "?"

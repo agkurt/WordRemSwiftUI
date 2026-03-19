@@ -26,26 +26,61 @@ final class SupabaseDataService {
     }
 
     // MARK: - Courses
-    /// Returns courses that match the user's native language (or all active courses).
-    func fetchCourses(nativeLangCode: String? = nil) async throws -> [SBCourse] {
-        var query = db
+    /// Kullanıcının öğreneceği dile göre kursları filtreler.
+    /// - Parameter targetLangCode: "en", "de", "fr" gibi ISO kodu. nil ise tüm aktif kurslar döner.
+    func fetchCourses(targetLangCode: String? = nil) async throws -> [SBCourse] {
+        guard let code = targetLangCode?.uppercased() else {
+            // No language preference → return all active courses
+            return try await db
+                .from("courses")
+                .select()
+                .eq("is_active", value: true)
+                .execute()
+                .value
+        }
+
+        // Find the language ID for the requested code
+        let languages = try await fetchLanguages()
+        guard let lang = languages.first(where: { $0.code.uppercased() == code }) else {
+            // Unknown language code → return empty so caller can show "no courses" state
+            return []
+        }
+
+        // Return only courses whose target_lang_id matches — empty means no course for this language
+        let filtered: [SBCourse] = try await db
             .from("courses")
             .select()
             .eq("is_active", value: true)
+            .eq("target_lang_id", value: lang.id)
+            .execute()
+            .value
 
-        if let code = nativeLangCode {
-            // Join through languages table to filter by code
-            query = db
-                .from("courses")
-                .select("""
-                    *,
-                    native_language:languages!courses_native_lang_id_fkey(code),
-                    target_language:languages!courses_target_lang_id_fkey(code)
-                """)
-                .eq("is_active", value: true)
+        return filtered
+    }
+
+    // MARK: - Kullanıcı Tercihlerini Kaydet (dil + seviye)
+    /// Onboarding'de seçilen hedef dil ve seviyeyi Supabase'e yazar.
+    /// Supabase migration gerekli:
+    ///   ALTER TABLE users ADD COLUMN IF NOT EXISTS target_lang_id INTEGER REFERENCES languages(id);
+    ///   ALTER TABLE users ADD COLUMN IF NOT EXISTS proficiency_level INTEGER DEFAULT 0;
+    func saveUserPreferences(targetLangCode: String, proficiencyLevel: Int) async throws {
+        guard let uid = SupabaseService.shared.currentUserId else { return }
+
+        let languages = try await fetchLanguages()
+        let targetLangId = languages.first(where: {
+            $0.code.uppercased() == targetLangCode.uppercased()
+        })?.id
+
+        struct UserPrefsUpdate: Encodable {
+            let target_lang_id: Int?
+            let proficiency_level: Int
         }
 
-        return try await query.execute().value
+        try await db
+            .from("users")
+            .update(UserPrefsUpdate(target_lang_id: targetLangId, proficiency_level: proficiencyLevel))
+            .eq("id", value: uid.uuidString)
+            .execute()
     }
 
     // MARK: - Levels for a course
@@ -90,19 +125,25 @@ final class SupabaseDataService {
 
     // MARK: - Unlock first level for new enrollment
     func enrollInCourse(courseId: UUID) async throws {
+        try await enrollWithProficiency(courseId: courseId, proficiencyLevel: 0)
+    }
+
+    /// Kursa ilk kayıtta her zaman 1 level açar. Sonraki levellar quiz tamamlandıkça açılır.
+    func enrollWithProficiency(courseId: UUID, proficiencyLevel: Int) async throws {
         guard let uid = SupabaseService.shared.currentUserId else { return }
 
-        // Find the first level
-        let firstLevels: [SBLevel] = try await db
+        let levelsToUnlock = 1
+
+        let levels: [SBLevel] = try await db
             .from("levels")
             .select()
             .eq("course_id", value: courseId.uuidString)
             .order("order_index")
-            .limit(1)
+            .limit(levelsToUnlock)
             .execute()
             .value
 
-        guard let firstLevel = firstLevels.first else { return }
+        guard !levels.isEmpty else { return }
 
         struct ProgressInsert: Encodable {
             let user_id: String
@@ -110,17 +151,19 @@ final class SupabaseDataService {
             let status: String
         }
 
-        try await db
-            .from("user_progress")
-            .upsert(
-                ProgressInsert(
-                    user_id: uid.uuidString,
-                    level_id: firstLevel.id.uuidString,
-                    status: "unlocked"
-                ),
-                onConflict: "user_id,level_id"
-            )
-            .execute()
+        for level in levels {
+            try await db
+                .from("user_progress")
+                .upsert(
+                    ProgressInsert(
+                        user_id: uid.uuidString,
+                        level_id: level.id.uuidString,
+                        status: "unlocked"
+                    ),
+                    onConflict: "user_id,level_id"
+                )
+                .execute()
+        }
     }
 
     // MARK: - Words for a level

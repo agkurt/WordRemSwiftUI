@@ -10,11 +10,11 @@ import SwiftUI
 
 struct OnboardingLoadingView: View {
     let languageName: String
-    
+    let languageCode: String
+    let proficiencyLevel: Int
+
     @EnvironmentObject var authManager: AuthManager
-    // Local ViewModel to trigger anonymous sign in
     @StateObject private var loginVM = LoginScreenViewModel(authManager: AuthManager())
-    
     @State private var appearAnimation = false
     
     var body: some View {
@@ -28,11 +28,11 @@ struct OnboardingLoadingView: View {
                 MascotAnimationView(width: 120, height: 120)
                 
                 VStack(spacing: 16) {
-                    Text("YÜKLENİYOR...")
+                    Text(OL.s(.loadingText))
                         .font(.custom("Poppins-Bold", size: 18))
                         .foregroundStyle(Color(hex: "#94a3b8"))
-                    
-                    Text("İnsanlar WordRem'de, aynı süre boyunca bir sınıfta ders alan öğrencilerden daha fazla şey öğreniyor. Hem de evden çıkmalarına gerek kalmadan!")
+
+                    Text(OL.s(.loadingMessage))
                         .font(.custom("Poppins-Regular", size: 16))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
@@ -53,20 +53,35 @@ struct OnboardingLoadingView: View {
     
     private func startGame() {
         Task {
-            // Fake loading delay for effect
             try? await Task.sleep(nanoseconds: 2_500_000_000)
-            
+
             do {
                 try await loginVM.signAnonymously()
-                
-                // Switch root views
+
+                // Onboarding tercihlerini UserDefaults'a kaydet
+                UserDefaults.standard.set(languageCode, forKey: "selectedTargetLanguageCode")
+                UserDefaults.standard.set(languageName, forKey: "selectedTargetLanguageName")
+                UserDefaults.standard.set(proficiencyLevel, forKey: "selectedProficiencyLevel")
+
+                // Supabase'e kaydet (arka planda, başarısız olsa da devam et)
+                Task {
+                    try? await SupabaseDataService.shared.saveUserPreferences(
+                        targetLangCode: languageCode,
+                        proficiencyLevel: proficiencyLevel
+                    )
+                }
+
                 await MainActor.run {
                     authManager.userIsLoggedIn = true
                     UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
                 }
             } catch {
                 print("❌ Guest login error during onboarding: \(error)")
-                // Fallback: just open ContentView which will show LoginScreen
+                // Dil tercihlerini yine de kaydet
+                UserDefaults.standard.set(languageCode, forKey: "selectedTargetLanguageCode")
+                UserDefaults.standard.set(languageName, forKey: "selectedTargetLanguageName")
+                UserDefaults.standard.set(proficiencyLevel, forKey: "selectedProficiencyLevel")
+
                 await MainActor.run {
                     UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
                 }

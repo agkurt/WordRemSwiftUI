@@ -33,7 +33,7 @@ struct HomeScreenView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(AppTheme.Colors.textSecondary)
-                        TextField("Search decks...", text: $searchText)
+                        TextField(AL.s(.homeSearchPlaceholder), text: $searchText)
                             .font(.custom("Poppins-Regular", size: 15))
                             .autocorrectionDisabled()
                             .foregroundStyle(AppTheme.Colors.textPrimary)
@@ -66,7 +66,7 @@ struct HomeScreenView: View {
                             Image(systemName: "magnifyingglass")
                                 .font(.system(size: 36))
                                 .foregroundStyle(.secondary)
-                            Text("No results for \"\(searchText)\"")
+                            Text(AL.f(.homeNoResultsFormat, searchText))
                                 .font(.custom("Poppins-Regular", size: 15))
                                 .foregroundStyle(.secondary)
                         }
@@ -106,6 +106,9 @@ struct HomeScreenView: View {
             .onAppear {
                 Task { await viewModel.fetchCardName() }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .pathMistakesDeckCreated)) { _ in
+                Task { await viewModel.fetchCardName() }
+            }
         }
     }
 }
@@ -118,10 +121,10 @@ private struct HomeHeaderView: View {
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("My Decks")
+                Text(AL.s(.homeMyDecks))
                     .font(.custom("Poppins-Bold", size: 28))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
-                Text("Tap a deck to study")
+                Text(AL.s(.homeTapToStudy))
                     .font(.custom("Poppins-Regular", size: 14))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
@@ -177,9 +180,9 @@ private struct EmptyDecksView: View {
                     .foregroundStyle(Color(hex: "#f97316"))
             }
             VStack(spacing: 6) {
-                Text("No decks yet")
+                Text(AL.s(.homeNoDecks))
                     .font(.custom("Poppins-SemiBold", size: 20))
-                Text("Use the + button below\nto create your first deck!")
+                Text(AL.s(.homeNoDecksHint))
                     .font(.custom("Poppins-Regular", size: 14))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

@@ -43,7 +43,7 @@ struct LeaderboardView: View {
                                 .font(.custom("Poppins-Regular", size: 13))
                                 .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
-                            Button("Try Again") {
+                            Button(AL.s(.leaderboardTryAgain)) {
                                 Task { await vm.loadLeaderboard() }
                             }
                             .font(.custom("Poppins-SemiBold", size: 14))
@@ -58,9 +58,9 @@ struct LeaderboardView: View {
                         VStack(spacing: 12) {
                             Text("🏆")
                                 .font(.system(size: 60))
-                            Text("No players yet")
+                            Text(AL.s(.leaderboardNoPlayers))
                                 .font(.custom("Poppins-SemiBold", size: 17))
-                            Text("Complete levels to join the leaderboard!")
+                            Text(AL.s(.leaderboardNoPlayersHint))
                                 .font(.custom("Poppins-Regular", size: 13))
                                 .foregroundStyle(.secondary)
                         }
@@ -133,10 +133,10 @@ struct LeaderboardView: View {
         VStack(spacing: 6) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Leaderboard")
+                    Text(AL.s(.leaderboardTitle))
                         .font(.custom("Poppins-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
-                    Text("Compete with other learners! 🏆")
+                    Text(AL.s(.leaderboardSubtitle))
                         .font(.custom("Poppins-Regular", size: 12))
                         .foregroundStyle(.secondary)
                 }
@@ -335,7 +335,7 @@ private struct RankRow: View {
                     Image(systemName: "flame.fill")
                         .font(.system(size: 10))
                         .foregroundStyle(.orange)
-                    Text("\(user.streakDays) day streak")
+                    Text(AL.f(.leaderboardDayStreak, user.streakDays))
                         .font(.custom("Poppins-Regular", size: 11))
                         .foregroundStyle(.secondary)
                 }

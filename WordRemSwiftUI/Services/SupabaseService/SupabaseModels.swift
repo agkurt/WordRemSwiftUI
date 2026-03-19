@@ -146,12 +146,23 @@ struct SBWord: Codable, Identifiable {
     let description: String?
     let exampleSentence: String?
     let difficulty: Int
+    /// Multi-language translations keyed by uppercase ISO code e.g. ["EN": "hello", "TR": "merhaba"]
+    let translations: [String: String]?
 
     enum CodingKeys: String, CodingKey {
-        case id, term, translation, phonetic, description, difficulty
+        case id, term, translation, phonetic, description, difficulty, translations
         case sourceLangId    = "source_lang_id"
         case targetLangId    = "target_lang_id"
         case exampleSentence = "example_sentence"
+    }
+
+    /// Returns the translation for the given phone language code.
+    /// Falls back to English, then to the default `translation` field (Turkish).
+    func displayTranslation(phoneCode: String) -> String {
+        let code = phoneCode.uppercased()
+        return translations?[code]
+            ?? translations?["EN"]
+            ?? translation
     }
 }
 
@@ -162,6 +173,10 @@ struct SBUser: Codable, Identifiable {
     let displayName: String?
     let avatarUrl: String?
     let nativeLangId: Int?
+    /// Hedef dil (öğrenilen dil) — Supabase: target_lang_id
+    let targetLangId: Int?
+    /// Onboarding'de seçilen seviye 0-4 — Supabase: proficiency_level
+    let proficiencyLevel: Int?
     let totalXp: Int
     let streakDays: Int
     let lastActivityAt: Date?
@@ -169,13 +184,15 @@ struct SBUser: Codable, Identifiable {
 
     enum CodingKeys: String, CodingKey {
         case id, username
-        case displayName   = "display_name"
-        case avatarUrl     = "avatar_url"
-        case nativeLangId  = "native_lang_id"
-        case totalXp       = "total_xp"
-        case streakDays    = "streak_days"
+        case displayName    = "display_name"
+        case avatarUrl      = "avatar_url"
+        case nativeLangId   = "native_lang_id"
+        case targetLangId   = "target_lang_id"
+        case proficiencyLevel = "proficiency_level"
+        case totalXp        = "total_xp"
+        case streakDays     = "streak_days"
         case lastActivityAt = "last_activity_at"
-        case fcmToken      = "fcm_token"
+        case fcmToken       = "fcm_token"
     }
 }
 

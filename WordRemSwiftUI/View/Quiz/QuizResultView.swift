@@ -40,7 +40,7 @@ struct QuizResultView: View {
                     .font(.system(size: 80))
 
                 // Title
-                Text(passed ? "Level Complete!" : "Keep Practicing!")
+                Text(passed ? AL.s(.resultLevelComplete) : AL.s(.resultKeepPracticing))
                     .font(.custom("Poppins-Bold", size: 28))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
 
@@ -77,13 +77,13 @@ struct QuizResultView: View {
                     HStack(spacing: 16) {
                         ResultChip(
                             icon: "percent",
-                            label: "Score",
+                            label: AL.s(.resultScore),
                             value: "\(score)%",
                             color: scoreColor
                         )
                         ResultChip(
                             icon: "bolt.fill",
-                            label: "XP Earned",
+                            label: AL.s(.resultXPEarned),
                             value: "+\(xpEarned)",
                             color: .orange
                         )
@@ -95,7 +95,7 @@ struct QuizResultView: View {
 
                 // Action button
                 Button(action: onDone) {
-                    Text(passed ? "Continue" : "Try Again")
+                    Text(passed ? AL.s(.resultContinue) : AL.s(.resultTryAgain))
                         .font(.custom("Poppins-SemiBold", size: 18))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

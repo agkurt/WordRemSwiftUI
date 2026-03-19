@@ -40,7 +40,7 @@ struct WelcomeView: View {
                             .font(.custom("Poppins-Bold", size: 42))
                             .foregroundStyle(AppTheme.Colors.primaryOrange)
                         
-                        Text("Ücretsiz öğren. Daima.")
+                        Text(AL.s(.welcomeTagline))
                             .font(.custom("Poppins-SemiBold", size: 18))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .multilineTextAlignment(.center)
@@ -54,7 +54,7 @@ struct WelcomeView: View {
                         Button(action: {
                             navigateToLanguage = true
                         }) {
-                            Text("BAŞLA")
+                            Text(AL.s(.welcomeStart))
                                 .font(.custom("Poppins-Bold", size: 17))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
@@ -68,7 +68,7 @@ struct WelcomeView: View {
                         Button(action: {
                             navigateToLogin = true
                         }) {
-                            Text("ZATEN HESABIM VAR")
+                            Text(AL.s(.welcomeHaveAccount))
                                 .font(.custom("Poppins-Bold", size: 17))
                                 .foregroundStyle(AppTheme.Colors.primaryOrange)
                                 .frame(maxWidth: .infinity)

@@ -17,13 +17,29 @@ final class PathMapViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var userProfile: SBUser?
+    /// Kullanıcının seçtiği dil için henüz kurs yok
+    @Published var noCoursesForLanguage = false
 
-    // MARK: - Load Courses
+    // MARK: - Load Courses (kullanıcının seçtiği dile göre filtreli)
     func loadCourses() async {
         isLoading = true
+        noCoursesForLanguage = false
+        errorMessage = nil
         do {
-            courses = try await SupabaseDataService.shared.fetchCourses()
+            // Onboarding'de kaydedilen hedef dil kodunu oku
+            let targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode")
+            courses = try await SupabaseDataService.shared.fetchCourses(targetLangCode: targetLangCode)
+
+            if courses.isEmpty && targetLangCode != nil {
+                // Seçili dil için kurs yok — kullanıcıya bilgi ver
+                noCoursesForLanguage = true
+                isLoading = false
+                return
+            }
+
+            // Seçili kurs yoksa ilkini seç
             if selectedCourse == nil { selectedCourse = courses.first }
+
             if let course = selectedCourse {
                 try await loadPath(courseId: course.id)
             }
@@ -31,6 +47,14 @@ final class PathMapViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+
+    /// Dil değişince çağır — PathMapView'den kurs yeniden yüklensin
+    func refreshForLanguage(_ langCode: String) async {
+        selectedCourse = nil
+        levelsWithProgress = []
+        noCoursesForLanguage = false
+        await loadCourses()
     }
 
     // MARK: - Load Path for a course
@@ -41,9 +65,14 @@ final class PathMapViewModel: ObservableObject {
         // Check if user is enrolled (has any unlocked level)
         let loaded = try await SupabaseDataService.shared.fetchLevelsWithProgress(courseId: courseId)
 
-        // If no progress at all → auto-enroll (unlock level 1)
-        if loaded.allSatisfy({ $0.status == .locked }) {
-            try await SupabaseDataService.shared.enrollInCourse(courseId: courseId)
+        // Hiç user_progress satırı yoksa → yeni kayıt, ilk leveli aç
+        let hasAnyProgress = loaded.contains { $0.progress != nil }
+        if !hasAnyProgress {
+            let proficiency = UserDefaults.standard.integer(forKey: "selectedProficiencyLevel")
+            try await SupabaseDataService.shared.enrollWithProficiency(
+                courseId: courseId,
+                proficiencyLevel: proficiency
+            )
             levelsWithProgress = try await SupabaseDataService.shared.fetchLevelsWithProgress(courseId: courseId)
         } else {
             levelsWithProgress = loaded

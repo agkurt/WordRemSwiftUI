@@ -10,6 +10,8 @@ import SwiftUI
 
 struct PlanSelectionView: View {
     let languageName: String
+    let languageCode: String
+    let proficiencyLevel: Int
 
     @State private var navigateToLoading = false
     @State private var showPaywall = false
@@ -31,7 +33,7 @@ struct PlanSelectionView: View {
             HStack(alignment: .top, spacing: 16) {
                 MascotAnimationView(width: 70, height: 70)
 
-                Text("Harika! İstediğin zaman\nplanını yükseltebilirsin.")
+                Text(OL.s(.planSpeechBubble))
                     .font(.custom("Poppins-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -65,7 +67,7 @@ struct PlanSelectionView: View {
                         Text("WordRem Pro")
                             .font(.custom("Poppins-Bold", size: 18))
                             .foregroundStyle(Color.white)
-                        Text("Daha hızlı ilerleme, reklamsız deneyim")
+                        Text(OL.s(.planProSubtitle))
                             .font(.custom("Poppins-Regular", size: 15))
                             .foregroundStyle(Color.white.opacity(0.9))
                     }
@@ -86,7 +88,7 @@ struct PlanSelectionView: View {
                     )
                     .shadow(color: Color(hex: "#8b5cf6").opacity(0.4), radius: 10, y: 5)
                     .overlay(alignment: .topTrailing) {
-                        Text("TAVSİYE EDİLEN")
+                        Text(OL.s(.planRecommended))
                             .font(.custom("Poppins-Bold", size: 12))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 10)
@@ -103,10 +105,10 @@ struct PlanSelectionView: View {
                     navigateToLoading = true
                 } label: {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Ücretsiz Öğrenim")
+                        Text(OL.s(.planFreeTitle))
                             .font(.custom("Poppins-Bold", size: 18))
                             .foregroundStyle(Color(hex: "#1e293b"))
-                        Text("Reklamlarla birlikte ana öğrenim özellikleri")
+                        Text(OL.s(.planFreeSubtitle))
                             .font(.custom("Poppins-Regular", size: 15))
                             .foregroundStyle(Color(hex: "#64748b"))
                     }
@@ -131,7 +133,7 @@ struct PlanSelectionView: View {
                 Button {
                     navigateToLoading = true
                 } label: {
-                    Text("DEVAM ET")
+                    Text(OL.s(.continueButton))
                         .font(.custom("Poppins-Bold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -149,7 +151,11 @@ struct PlanSelectionView: View {
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToLoading) {
-            OnboardingLoadingView(languageName: languageName)
+            OnboardingLoadingView(
+                languageName: languageName,
+                languageCode: languageCode,
+                proficiencyLevel: proficiencyLevel
+            )
         }
         // Pro seçilince paywall fullscreen açılır
         .fullScreenCover(isPresented: $showPaywall) {
@@ -162,5 +168,5 @@ struct PlanSelectionView: View {
 }
 
 #Preview {
-    PlanSelectionView(languageName: "İngilizce")
+    PlanSelectionView(languageName: "İngilizce", languageCode: "en", proficiencyLevel: 0)
 }

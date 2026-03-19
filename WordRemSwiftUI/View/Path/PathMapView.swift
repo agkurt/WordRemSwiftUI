@@ -40,6 +40,9 @@ struct PathMapView: View {
                 } else if let err = vm.errorMessage {
                     errorState(err)
 
+                } else if vm.noCoursesForLanguage {
+                    noCoursesForLanguageState
+
                 } else if vm.levelsWithProgress.isEmpty && !vm.isLoading {
                     emptyState
 
@@ -61,7 +64,7 @@ struct PathMapView: View {
                                 HStack(spacing: 8) {
                                     Image(systemName: "exclamationmark.triangle.fill")
                                         .foregroundStyle(.white)
-                                    Text("Practice \(MistakesManager.shared.count) Mistakes")
+                                    Text(AL.f(.pathMistakesFormat, MistakesManager.shared.count))
                                         .font(.custom("Poppins-SemiBold", size: 14))
                                         .foregroundStyle(.white)
                                 }
@@ -134,7 +137,7 @@ struct PathMapView: View {
                             ProgressView()
                                 .scaleEffect(1.6)
                                 .tint(.white)
-                            Text("Updating your progress...")
+                            Text(AL.s(.pathUpdating))
                                 .font(.custom("Poppins-SemiBold", size: 15))
                                 .foregroundStyle(.white)
                         }
@@ -201,7 +204,7 @@ struct PathMapView: View {
                     justClearedMistakes = false
                 }
             }) {
-                GameQuizView(sessionType: .mistakes, title: "Mistakes Review")
+                GameQuizView(sessionType: .mistakes, title: AL.s(.pathMistakesReview))
             }
         }
     }
@@ -240,7 +243,7 @@ struct PathMapView: View {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 48))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
-            Text("Something went wrong")
+            Text(AL.s(.pathSomethingWrong))
                 .font(.custom("Poppins-SemiBold", size: 17))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(err)
@@ -251,7 +254,7 @@ struct PathMapView: View {
             Button {
                 Task { await vm.loadCourses() }
             } label: {
-                Text("Try Again")
+                Text(AL.s(.pathTryAgain))
                     .font(.custom("Poppins-SemiBold", size: 15))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
@@ -261,23 +264,41 @@ struct PathMapView: View {
         }
     }
 
+    // MARK: - No Course For Selected Language State
+    private var noCoursesForLanguageState: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "globe.slash")
+                .font(.system(size: 64))
+                .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
+            Text(AL.s(.pathNoCourseForLang))
+                .font(.custom("Poppins-Bold", size: 20))
+                .foregroundStyle(AppTheme.Colors.textPrimary)
+                .multilineTextAlignment(.center)
+            Text(AL.s(.pathNoCourseForLangHint))
+                .font(.custom("Poppins-Regular", size: 14))
+                .foregroundStyle(AppTheme.Colors.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+    }
+
     // MARK: - Empty State
     private var emptyState: some View {
         VStack(spacing: 16) {
             Image(systemName: "map")
                 .font(.system(size: 64))
                 .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
-            Text("No courses yet")
+            Text(AL.s(.pathNoCourses))
                 .font(.custom("Poppins-Bold", size: 20))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
-            Text("Run supabase_seed.sql in your\nSupabase SQL Editor to add courses.")
+            Text(AL.s(.pathNoCoursesHint))
                 .font(.custom("Poppins-Regular", size: 14))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
             Button {
                 Task { await vm.loadCourses() }
             } label: {
-                Label("Refresh", systemImage: "arrow.clockwise")
+                Label(AL.s(.pathRefresh), systemImage: "arrow.clockwise")
                     .font(.custom("Poppins-SemiBold", size: 15))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 28)
@@ -303,7 +324,7 @@ private struct PathHeaderView: View {
         VStack(spacing: 14) {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(course?.title ?? "Select a Course")
+                    Text(course?.title ?? AL.s(.pathSelectCourse))
                         .font(.custom("Poppins-Bold", size: 22))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
@@ -360,10 +381,10 @@ private struct PathHeaderView: View {
     }
 
     private var motivationText: String {
-        if progress >= 1.0 { return "You're a master! 🏆" }
-        if progress >= 0.7 { return "Almost there! Keep it up! 💪" }
-        if progress >= 0.3 { return "Great progress! You're doing amazing! 🌟" }
-        return "Keep going! You're doing great 🎯"
+        if progress >= 1.0 { return AL.s(.pathMotivation3) }
+        if progress >= 0.7 { return AL.s(.pathMotivation2) }
+        if progress >= 0.3 { return AL.s(.pathMotivation1) }
+        return AL.s(.pathMotivation0)
     }
 }
 
@@ -411,7 +432,7 @@ struct PathNodeView: View {
         VStack(spacing: 8) {
             // Level label above node
             if item.status == .unlocked || item.status == .inProgress {
-                Text("START")
+                Text(AL.s(.pathStart))
                     .font(.custom("Poppins-Bold", size: 11))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 14)
@@ -742,11 +763,11 @@ struct LevelCompletePopupView: View {
 
                 // Text Content
                 VStack(spacing: 8) {
-                    Text("Well Done! 🎉")
+                    Text(AL.s(.pathWellDone))
                         .font(.custom("Poppins-Bold", size: 28))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                    Text("You've successfully completed this level and earned XP. Keep up the great work!")
+                    Text(AL.s(.pathWellDoneDesc))
                         .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -755,7 +776,7 @@ struct LevelCompletePopupView: View {
 
                 // Action Button
                 Button(action: dismiss) {
-                    Text("Continue")
+                    Text(AL.s(.pathContinue))
                         .font(.custom("Poppins-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -822,11 +843,11 @@ struct MistakesSavedPopupView: View {
                 .padding(.top, 10)
 
                 VStack(spacing: 8) {
-                    Text("Don't be sad... 🩹")
+                    Text(AL.s(.pathDontBeSad))
                         .font(.custom("Poppins-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                    Text("We saved the words you missed so you can practice them later. Keep going!")
+                    Text(AL.s(.pathDontBeSadDesc))
                         .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -834,7 +855,7 @@ struct MistakesSavedPopupView: View {
                 }
 
                 Button(action: dismiss) {
-                    Text("Got it")
+                    Text(AL.s(.pathGotIt))
                         .font(.custom("Poppins-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -880,11 +901,11 @@ struct MistakesClearedPopupView: View {
                 .padding(.top, 10)
 
                 VStack(spacing: 8) {
-                    Text("Great Work! 🌟")
+                    Text(AL.s(.pathGreatWork))
                         .font(.custom("Poppins-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                    Text("You've cleared all your mistakes and reinforced your memory! You are awesome!")
+                    Text(AL.s(.pathGreatWorkDesc))
                         .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -892,7 +913,7 @@ struct MistakesClearedPopupView: View {
                 }
 
                 Button(action: dismiss) {
-                    Text("Hooray!")
+                    Text(AL.s(.pathHooray))
                         .font(.custom("Poppins-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

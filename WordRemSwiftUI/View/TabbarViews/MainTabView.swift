@@ -27,11 +27,11 @@ enum AppTab: Int, CaseIterable {
 
     var label: String {
         switch self {
-        case .home:         return "Decks"
-        case .path:         return "Path"
-        case .translate:    return "Translate"
-        case .leaderboard:  return "Rank"
-        case .profile:      return "Profile"
+        case .home:         return AL.s(.tabDecks)
+        case .path:         return AL.s(.tabPath)
+        case .translate:    return AL.s(.tabTranslate)
+        case .leaderboard:  return AL.s(.tabRank)
+        case .profile:      return AL.s(.tabProfile)
         }
     }
 }
@@ -39,7 +39,7 @@ enum AppTab: Int, CaseIterable {
 struct MainTabView: View {
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @StateObject private var homeVM = HomeScreenViewModel()
-    @State private var selectedTab: AppTab = .home
+    @State private var selectedTab: AppTab = .path
     @State private var showCreateDeck = false
 
     var body: some View {
@@ -88,7 +88,7 @@ private struct CustomTabBar: View {
 
     /// All tabs except home and profile which anchor the sides;
     /// home = leftmost, profile = rightmost, path/translate/news fill middle.
-    private var leftTabs:  [AppTab] { [.home, .path] }
+    private var leftTabs:  [AppTab] { [.path, .home] }
     private var rightTabs: [AppTab] { [.leaderboard, .profile] }
 
     var body: some View {

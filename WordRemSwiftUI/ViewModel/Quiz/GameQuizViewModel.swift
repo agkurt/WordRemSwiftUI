@@ -3,7 +3,8 @@
 //  WordRemSwiftUI
 //
 //  Gamified quiz ViewModel for the Path module.
-//  Manages 3-heart lives, XP award, and the complete_level RPC call.
+//  Manages daily 25-question limit, XP award, and the complete_level RPC call.
+//  Lives / hearts system removed — replaced with daily question limit.
 //
 
 import SwiftUI
@@ -21,14 +22,13 @@ final class GameQuizViewModel: ObservableObject {
         case loading
         case question
         case answered(isCorrect: Bool)
-        case outOfLives
+        case dailyLimitReached                              // replaces outOfLives
         case completed(score: Int, stars: Int, xpEarned: Int)
     }
 
     // MARK: - Published
     @Published var questions: [GameQuestion]  = []
     @Published var currentIndex: Int          = 0
-    @Published var lives: Int                 = 3
     @Published var score: Int                 = 0
     @Published var state: State               = .loading
     @Published var writingAnswer: String      = ""
@@ -39,6 +39,8 @@ final class GameQuizViewModel: ObservableObject {
     // MARK: - Inputs
     private(set) var sessionType: QuizSessionType = .level(UUID())
     private var sessionMistakes: Set<String> = []
+    private var levelTitle: String = ""
+    private var targetLangCode: String = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
 
     // MARK: - Computed
     var currentQuestion: GameQuestion? {
@@ -62,46 +64,54 @@ final class GameQuizViewModel: ObservableObject {
     }
 
     // MARK: - Setup
-    func setup(sessionType: QuizSessionType, words: [SBWord]) {
-        self.sessionType = sessionType
-        self.questions  = GameQuestion.generate(from: words)
-        self.currentIndex = 0
-        self.score      = 0
-        self.lives      = 3
-        self.writingAnswer = ""
+    func setup(sessionType: QuizSessionType, words: [SBWord], levelTitle: String = "") {
+        self.sessionType    = sessionType
+        self.levelTitle     = levelTitle
+        self.targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+        self.questions      = GameQuestion.generate(from: words)
+        self.currentIndex   = 0
+        self.score          = 0
+        self.writingAnswer  = ""
         self.sessionMistakes = []
-        self.state      = questions.isEmpty ? .outOfLives : .question
+
+        if questions.isEmpty {
+            self.state = .dailyLimitReached
+        } else if !DailyLimitManager.shared.canAskQuestion {
+            self.state = .dailyLimitReached
+        } else {
+            self.state = .question
+        }
     }
 
     // MARK: - Answer: Multiple Choice
     func submitMultipleChoice(selected: String) {
         guard case .question = state, let q = currentQuestion else { return }
-        let correct = selected == q.correctAnswer
-        recordAnswer(isCorrect: correct)
+        recordAnswer(isCorrect: selected == q.correctAnswer)
     }
 
     // MARK: - Answer: True / False
     func submitTrueFalse(answer: Bool) {
         guard case .question = state, let q = currentQuestion else { return }
-        let correct = answer == q.isCorrectPair
-        recordAnswer(isCorrect: correct)
+        recordAnswer(isCorrect: answer == q.isCorrectPair)
     }
 
     // MARK: - Answer: Writing
     func submitWriting() {
         guard case .question = state, let q = currentQuestion else { return }
-        let normalizedUser    = writingAnswer.trimmingCharacters(in: .whitespaces).lowercased()
-        let normalizedCorrect = q.correctAnswer.lowercased()
-        recordAnswer(isCorrect: normalizedUser == normalizedCorrect)
+        let user    = writingAnswer.trimmingCharacters(in: .whitespaces).lowercased()
+        let correct = q.correctAnswer.lowercased()
+        recordAnswer(isCorrect: user == correct)
     }
 
     // MARK: - Core Record
     private func recordAnswer(isCorrect: Bool) {
+        // Günlük soru hakkını kullan
+        DailyLimitManager.shared.recordQuestion()
+
         if isCorrect {
             score += 1
             showXPToastAnimation()
         } else {
-            lives -= 1
             if let q = currentQuestion {
                 sessionMistakes.insert(q.word.id.uuidString)
             }
@@ -121,17 +131,21 @@ final class GameQuizViewModel: ObservableObject {
     // MARK: - Navigation
     func nextQuestion() {
         writingAnswer = ""
-        guard lives > 0 else {
-            handleGameOverMistakes()
-            state = .outOfLives
-            return
-        }
+
         if isLastQuestion {
             Task { await finishQuiz() }
-        } else {
-            currentIndex += 1
-            state = .question
+            return
         }
+
+        // Günlük limit doldu mu?
+        if !DailyLimitManager.shared.canAskQuestion {
+            handleGameOverMistakes()
+            state = .dailyLimitReached
+            return
+        }
+
+        currentIndex += 1
+        state = .question
     }
 
     private func handleGameOverMistakes() {
@@ -142,13 +156,10 @@ final class GameQuizViewModel: ObservableObject {
                 UserDefaults.standard.set(true, forKey: "justSavedMistakes")
             }
         case .mistakes:
-            // Remove correctly answered words from the mistakes pool even if failed
-            let answeredQuestions = questions.prefix(currentIndex + 1)
-            let answeredWordIds = Set(answeredQuestions.map { $0.word.id.uuidString })
-            let correctWordIds = answeredWordIds.subtracting(sessionMistakes)
-            
-            if !correctWordIds.isEmpty {
-                MistakesManager.shared.removeMistakes(correctWordIds)
+            let answeredIds  = Set(questions.prefix(currentIndex + 1).map { $0.word.id.uuidString })
+            let correctIds   = answeredIds.subtracting(sessionMistakes)
+            if !correctIds.isEmpty {
+                MistakesManager.shared.removeMistakes(correctIds)
             }
         }
     }
@@ -156,14 +167,24 @@ final class GameQuizViewModel: ObservableObject {
     // MARK: - Finish & Save
     private func finishQuiz() async {
         isSaving = true
-        
+
         switch sessionType {
         case .level(let levelId):
             if !sessionMistakes.isEmpty {
                 MistakesManager.shared.addMistakes(sessionMistakes)
                 UserDefaults.standard.set(true, forKey: "justSavedMistakes")
+                let mistakesCopy = sessionMistakes
+                let titleCopy    = levelTitle
+                let langCopy     = targetLangCode
+                Task.detached(priority: .background) {
+                    await PathMistakesDeckService.shared.createDeckFromMistakes(
+                        mistakeWordIds: mistakesCopy,
+                        levelTitle: titleCopy,
+                        targetLangCode: langCopy
+                    )
+                }
             }
-            
+
             do {
                 let response = try await SupabaseDataService.shared.completeLevel(
                     levelId: levelId,
@@ -184,33 +205,18 @@ final class GameQuizViewModel: ObservableObject {
                 print("⚠️ completeLevel error: \(error)")
                 state = .completed(score: scorePercent, stars: 0, xpEarned: 0)
             }
-            
+
         case .mistakes:
-            // Remove correctly answered words from the mistakes pool
-            let allWordIds = Set(questions.map { $0.word.id.uuidString })
-            let correctWordIds = allWordIds.subtracting(sessionMistakes)
-            
-            if !correctWordIds.isEmpty {
-                MistakesManager.shared.removeMistakes(correctWordIds)
-            }
-            
+            let allIds     = Set(questions.map { $0.word.id.uuidString })
+            let correctIds = allIds.subtracting(sessionMistakes)
+            if !correctIds.isEmpty { MistakesManager.shared.removeMistakes(correctIds) }
             if !MistakesManager.shared.hasMistakes {
                 UserDefaults.standard.set(true, forKey: "justClearedMistakes")
             }
             state = .completed(score: scorePercent, stars: 3, xpEarned: score * 5)
         }
-        
-        isSaving = false
-    }
 
-    // MARK: - Restart
-    func restart() {
-        currentIndex = 0
-        score        = 0
-        lives        = 3
-        writingAnswer = ""
-        questions    = questions.shuffled()
-        state        = .question
+        isSaving = false
     }
 }
 
@@ -219,23 +225,22 @@ struct GameQuestion: Identifiable {
     let id = UUID()
     let word: SBWord
     let mode: QuizMode
-    let options: [String]       // For multipleChoice
+    let options: [String]
     let correctAnswer: String
     let displayedMeaning: String
-    let isCorrectPair: Bool     // For trueFalse
+    let isCorrectPair: Bool
 
     static func generate(from words: [SBWord]) -> [GameQuestion] {
-        let shuffled = words.shuffled()
+        let phoneCode = OL.phoneCode
+        let shuffled  = words.shuffled()
         return shuffled.map { word in
-            let correct = word.translation
-            let wrong   = words.filter { $0.id != word.id }.map { $0.translation }.shuffled()
-
-            let options: [String]
-            if words.count >= 4 {
-                options = (Array(wrong.prefix(3)) + [correct]).shuffled()
-            } else {
-                options = []
-            }
+            let correct = word.displayTranslation(phoneCode: phoneCode)
+            let wrong   = words.filter { $0.id != word.id }
+                               .map { $0.displayTranslation(phoneCode: phoneCode) }
+                               .shuffled()
+            let options: [String] = words.count >= 4
+                ? (Array(wrong.prefix(3)) + [correct]).shuffled()
+                : []
 
             let showWrong = Bool.random() && !wrong.isEmpty
             let display   = showWrong ? (wrong.first ?? correct) : correct

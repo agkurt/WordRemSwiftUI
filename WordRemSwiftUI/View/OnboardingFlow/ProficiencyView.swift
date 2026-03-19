@@ -9,16 +9,19 @@ import SwiftUI
 
 struct ProficiencyView: View {
     let selectedLanguageName: String
+    let selectedLanguageCode: String
     @State private var selectedLevel: Int?
     @State private var navigateToBenefits = false
     
-    let proficiencyLevels = [
-        "Yeni başlıyorum",
-        "Bazı yaygın kelimeleri biliyorum",
-        "Basit konuşmalar yapabilirim",
-        "Çeşitli konular hakkında konuşabilirim",
-        "Çoğu konuyu ayrıntılı tartışabilirim"
-    ]
+    var proficiencyLevels: [String] {
+        [
+            OL.s(.level1),
+            OL.s(.level2),
+            OL.s(.level3),
+            OL.s(.level4),
+            OL.s(.level5)
+        ]
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -40,7 +43,7 @@ struct ProficiencyView: View {
                 MascotAnimationView(width: 70, height: 70)
                 
                 // Speech Bubble
-                Text("Ne kadar \(selectedLanguageName) biliyorsun?")
+                Text(OL.f(.howMuchFormat, selectedLanguageName))
                     .font(.custom("Poppins-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -111,7 +114,7 @@ struct ProficiencyView: View {
                 Button(action: {
                     navigateToBenefits = true
                 }) {
-                    Text("DEVAM ET")
+                    Text(OL.s(.continueButton))
                         .font(.custom("Poppins-Bold", size: 17))
                         .foregroundStyle(selectedLevel == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
@@ -130,11 +133,15 @@ struct ProficiencyView: View {
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToBenefits) {
-            BenefitsView(selectedLanguageName: selectedLanguageName)
+            BenefitsView(
+                selectedLanguageName: selectedLanguageName,
+                selectedLanguageCode: selectedLanguageCode,
+                proficiencyLevel: selectedLevel ?? 0
+            )
         }
     }
 }
 
 #Preview {
-    ProficiencyView(selectedLanguageName: "İngilizce")
+    ProficiencyView(selectedLanguageName: "İngilizce", selectedLanguageCode: "en")
 }

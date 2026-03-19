@@ -7,47 +7,58 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct OnboardingQuizView: View {
     let languageName: String
+    let languageCode: String
+    let proficiencyLevel: Int
     @State private var navigateToPlan = false
-    
+    @State private var isSpeaking = false
+    private let synthesizer = AVSpeechSynthesizer()
+
     // Mock Data
     let questionText = "Aşağıdaki cümleyi çevir:"
-    
+
+    // Her dil için cümle — hepsi "Dil öğrenmeyi seviyorum" anlamında
     var foreignSentence: String {
         switch languageName {
-        case "İngilizce", "English": return "I love learning languages."
-        case "Almanca", "German": return "Ich liebe es, Sprachen zu lernen."
-        case "İspanyolca", "Spanish": return "Me encanta aprender idiomas."
-        case "Fransızca", "French": return "J'adore apprendre des langues."
-        default: return "Il loro video è fantastico." // Default to italian mock
+        case "İngilizce", "English":   return "I love learning languages."
+        case "Almanca", "German":      return "Ich liebe es, Sprachen zu lernen."
+        case "İspanyolca", "Spanish":  return "Me encanta aprender idiomas."
+        case "Fransızca", "French":    return "J'adore apprendre des langues."
+        case "İtalyanca", "Italian":   return "Adoro imparare le lingue."
+        case "Rusça", "Russian":       return "Я люблю изучать языки."
+        case "Çince", "Chinese":       return "我喜欢学习语言。"
+        default:                       return "I love learning languages."
         }
     }
-    
-    var correctWords: [String] {
+
+    // Telefon diline göre doğru cevap
+    var correctWords: [String] { OL.quizCorrectWords }
+
+    // Ses için dil kodu
+    var voiceLanguageCode: String {
         switch languageName {
-        case "İngilizce", "English", "Almanca", "German", "İspanyolca", "Spanish", "Fransızca", "French":
-            return ["Dil", "öğrenmeyi", "seviyorum"]
-        default:
-            return ["Onların", "videosu", "harika"]
+        case "İngilizce", "English":   return "en-US"
+        case "Almanca", "German":      return "de-DE"
+        case "İspanyolca", "Spanish":  return "es-ES"
+        case "Fransızca", "French":    return "fr-FR"
+        case "İtalyanca", "Italian":   return "it-IT"
+        case "Rusça", "Russian":       return "ru-RU"
+        case "Çince", "Chinese":       return "zh-CN"
+        default:                       return "en-US"
         }
     }
-    
+
     @State private var availableWords: [String]
     @State private var selectedWords: [String] = []
-    
-    init(languageName: String) {
+
+    init(languageName: String, languageCode: String = "en", proficiencyLevel: Int = 0) {
         self.languageName = languageName
-        
-        var initialWords: [String]
-        switch languageName {
-        case "İngilizce", "English", "Almanca", "German", "İspanyolca", "Spanish", "Fransızca", "French":
-            initialWords = ["Dil", "olmak", "öğrenmeyi", "seviyorum", "Nasılsın", "zaman", "Harika"]
-        default:
-            initialWords = ["harika", "iyisi", "Onların", "renk", "Şarkıcıyı", "videosu", "olmak"]
-        }
-        
+        self.languageCode = languageCode
+        self.proficiencyLevel = proficiencyLevel
+        let initialWords = OL.quizCorrectWords + OL.quizDecoyWords
         self._availableWords = State(initialValue: initialWords.shuffled())
     }
     
@@ -72,28 +83,30 @@ struct OnboardingQuizView: View {
             
             // Question Section
             VStack(alignment: .leading, spacing: 24) {
-                Text(questionText)
+                Text(OL.s(.quizInstruction))
                     .font(.custom("Poppins-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1e293b"))
                 
                 HStack(spacing: 16) {
                     // Speaker Button
                     Button(action: {
-                        // Play sound mock
+                        speakSentence()
                     }) {
-                        Image(systemName: "speaker.wave.2.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(Color.blue)
-                            .frame(width: 50, height: 50)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.blue.opacity(0.1))
-                            )
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(isSpeaking ? Color.blue : Color.blue.opacity(0.1))
+                                .frame(width: 50, height: 50)
+                            Image(systemName: isSpeaking ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
+                                .font(.system(size: 22))
+                                .foregroundStyle(isSpeaking ? .white : Color.blue)
+                        }
                     }
-                    
+                    .animation(.easeInOut(duration: 0.2), value: isSpeaking)
+
                     Text(foreignSentence)
                         .font(.custom("Poppins-Regular", size: 18))
                         .foregroundStyle(Color(hex: "#1e293b"))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding(.horizontal, 24)
@@ -154,7 +167,7 @@ struct OnboardingQuizView: View {
                 if checkStatus == .correct {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text("Harika!")
+                            Text(OL.s(.quizCorrect))
                                 .font(.custom("Poppins-Bold", size: 20))
                                 .foregroundStyle(Color.green)
                         }
@@ -166,10 +179,10 @@ struct OnboardingQuizView: View {
                 } else if checkStatus == .wrong {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Yanlış Cevap")
+                            Text(OL.s(.quizWrong))
                                 .font(.custom("Poppins-Bold", size: 20))
                                 .foregroundStyle(Color.red)
-                            Text("Doğrusu: \(correctWords.joined(separator: " "))")
+                            Text(OL.f(.quizCorrectAnswer, correctWords.joined(separator: " ")))
                                 .font(.custom("Poppins-Medium", size: 16))
                                 .foregroundStyle(Color.red.opacity(0.8))
                         }
@@ -189,7 +202,7 @@ struct OnboardingQuizView: View {
                         validateAnswer()
                     }
                 }) {
-                    Text(checkStatus == .idle ? "KONTROL ET" : "DEVAM ET")
+                    Text(checkStatus == .idle ? OL.s(.quizCheck) : OL.s(.continueButton))
                         .font(.custom("Poppins-Bold", size: 17))
                         .foregroundStyle(selectedWords.isEmpty && checkStatus == .idle ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
@@ -207,11 +220,37 @@ struct OnboardingQuizView: View {
         }
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            synthesizer.stopSpeaking(at: .immediate)
+            isSpeaking = false
+        }
         .navigationDestination(isPresented: $navigateToPlan) {
-            PlanSelectionView(languageName: languageName)
+            PlanSelectionView(
+                languageName: languageName,
+                languageCode: languageCode,
+                proficiencyLevel: proficiencyLevel
+            )
         }
     }
     
+    private func speakSentence() {
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+            isSpeaking = false
+            return
+        }
+        let utterance = AVSpeechUtterance(string: foreignSentence)
+        utterance.voice = AVSpeechSynthesisVoice(language: voiceLanguageCode)
+        utterance.rate = 0.45
+        utterance.volume = 1.0
+        isSpeaking = true
+        synthesizer.speak(utterance)
+        // Konuşma bitince isSpeaking'i sıfırla
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(foreignSentence.count) * 0.08 + 1.0) {
+            isSpeaking = false
+        }
+    }
+
     private var buttonColor: Color {
         if checkStatus == .correct { return Color(hex: "#22c55e") } // Green
         if checkStatus == .wrong { return Color(hex: "#ef4444") } // Red

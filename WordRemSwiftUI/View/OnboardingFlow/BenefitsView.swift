@@ -9,6 +9,8 @@ import SwiftUI
 
 struct BenefitsView: View {
     let selectedLanguageName: String
+    let selectedLanguageCode: String
+    let proficiencyLevel: Int
     @State private var navigateToQuiz = false
     
     var body: some View {
@@ -30,7 +32,7 @@ struct BenefitsView: View {
                 MascotAnimationView(width: 70, height: 70)
                 
                 // Speech Bubble
-                Text("İşte 3 ayda elde\nedebileceklerin!")
+                Text(OL.s(.benefitsTitle))
                     .font(.custom("Poppins-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -65,10 +67,10 @@ struct BenefitsView: View {
                         .frame(width: 40)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Korkusuzca konuş")
+                        Text(OL.s(.benefit1Title))
                             .font(.custom("Poppins-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
-                        Text("Stressiz konuşma ve dinleme egzersizleri")
+                        Text(OL.s(.benefit1Desc))
                             .font(.custom("Poppins-Regular", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
@@ -83,10 +85,10 @@ struct BenefitsView: View {
                         .frame(width: 40)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Kelime hazneni geliştirme")
+                        Text(OL.s(.benefit2Title))
                             .font(.custom("Poppins-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
-                        Text("Yaygın kelimeler ve kullanışlı ifadeler")
+                        Text(OL.s(.benefit2Desc))
                             .font(.custom("Poppins-Regular", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
@@ -101,10 +103,10 @@ struct BenefitsView: View {
                         .frame(width: 40)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Öğrenim alışkanlığı edin")
+                        Text(OL.s(.benefit3Title))
                             .font(.custom("Poppins-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
-                        Text("Akıllı bildirimler, eğlenceli mücadeleler ve daha fazlası")
+                        Text(OL.s(.benefit3Desc))
                             .font(.custom("Poppins-Regular", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
@@ -121,7 +123,7 @@ struct BenefitsView: View {
                 Button(action: {
                     navigateToQuiz = true
                 }) {
-                    Text("DEVAM ET")
+                    Text(OL.s(.continueButton))
                         .font(.custom("Poppins-Bold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -139,11 +141,15 @@ struct BenefitsView: View {
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToQuiz) {
-            OnboardingQuizView(languageName: selectedLanguageName)
+            OnboardingQuizView(
+                languageName: selectedLanguageName,
+                languageCode: selectedLanguageCode,
+                proficiencyLevel: proficiencyLevel
+            )
         }
     }
 }
 
 #Preview {
-    BenefitsView(selectedLanguageName: "İngilizce")
+    BenefitsView(selectedLanguageName: "İngilizce", selectedLanguageCode: "en", proficiencyLevel: 0)
 }
