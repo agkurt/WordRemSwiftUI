@@ -491,9 +491,23 @@ struct PathNodeView: View {
                         .frame(width: 72, height: 72)
 
                     // Icon
-                    Image(systemName: nodeIcon)
-                        .font(.system(size: 26, weight: .bold))
-                        .foregroundStyle(nodeIconColor)
+                    Group {
+                        if item.status == .locked {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundStyle(Color.white.opacity(0.8))
+                        } else if item.status == .completed {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundStyle(Color.white)
+                        } else {
+                            Image("starss")
+                                .resizable()
+                                .renderingMode(.original)
+                                .scaledToFit()
+                                .frame(width: 38, height: 38)
+                        }
+                    }
                 }
             }
             .buttonStyle(BounceButtonStyle())
@@ -579,21 +593,6 @@ struct PathNodeView: View {
         }
     }
 
-    private var nodeIcon: String {
-        switch item.status {
-        case .completed:   return "checkmark"
-        case .unlocked, .inProgress: return item.level.iconName ?? "star.fill"
-        case .locked:      return "lock.fill"
-        }
-    }
-
-    private var nodeIconColor: Color {
-        switch item.status {
-        case .completed:   return .white
-        case .unlocked, .inProgress: return AppTheme.Colors.primaryOrange
-        case .locked:      return Color.white.opacity(0.7)
-        }
-    }
 }
 
 // MARK: - Bounce Button Style
@@ -662,15 +661,15 @@ private struct PathStarView: View {
     let stars: Int
 
     var body: some View {
-        HStack(spacing: 3) {
+        HStack(spacing: 2) {
             ForEach(1...3, id: \.self) { i in
-                Image(systemName: i <= stars ? "star.fill" : "star")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(i <= stars
-                        ? Color(hex: "#f59e0b")
-                        : Color(hex: "#d1d5db"))
-                    .shadow(color: i <= stars ? Color(hex: "#f59e0b").opacity(0.4) : .clear,
-                            radius: 4, y: 2)
+                Image("starss")
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .opacity(i <= stars ? 1.0 : 0.25)
+                    .scaleEffect(i <= stars ? 1.0 : 0.85)
             }
         }
     }

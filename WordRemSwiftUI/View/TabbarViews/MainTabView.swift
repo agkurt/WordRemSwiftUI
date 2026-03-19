@@ -148,24 +148,48 @@ private struct TabBarItem: View {
     let isSelected: Bool
     let action: () -> Void
 
+    private let gradientColors: [Color] = [
+        Color(hex: "#f97316"),
+        Color(hex: "#ec4899"),
+        Color(hex: "#8b5cf6")
+    ]
+
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 5) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: isSelected ? 22 : 20, weight: isSelected ? .bold : .medium))
-                    .foregroundStyle(isSelected ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textSecondary)
-                    .scaleEffect(isSelected ? 1.05 : 1.0)
-                    .frame(height: 24)
-                    .shadow(color: isSelected ? AppTheme.Colors.primaryOrange.opacity(0.4) : .clear, radius: 4, y: 2)
+            VStack(spacing: 6) {
+                ZStack {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(
+                                LinearGradient(
+                                    colors: gradientColors.map { $0.opacity(0.15) },
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 52, height: 44)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                    Image(tab.icon)
+                        .resizable()
+                        .renderingMode(.original)
+                        .scaledToFit()
+                        .frame(width: 28, height: 28)
+                        .scaleEffect(isSelected ? 1.12 : 1.0)
+                }
+                .frame(width: 52, height: 44)
 
-                Text(tab.label)
-                    .font(.custom(isSelected ? "Poppins-SemiBold" : "Poppins-Medium", size: 10))
-                    .foregroundStyle(isSelected ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textSecondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: gradientColors,
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: isSelected ? 20 : 0, height: 3)
+                    .opacity(isSelected ? 1 : 0)
             }
-            .padding(.top, 4)
-            .padding(.bottom, 2)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
             .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isSelected)
@@ -180,25 +204,27 @@ private struct AddButton: View {
 
     var body: some View {
         Button(action: action) {
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
-                        )
+            Image("plusicon")
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+                .padding(14)
+                .background(
+                    LinearGradient(
+                        colors: [Color(hex: "#f97316"), Color(hex: "#ec4899"), Color(hex: "#8b5cf6")],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                    .frame(width: 58, height: 58)
-                    .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.5),
-                            radius: 8, y: 4)
-                
-                Image(systemName: "plus")
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(.white)
-            }
-            .scaleEffect(isPressed ? 0.85 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-            .offset(y: -22)
+                )
+                .clipShape(Circle())
+                .shadow(
+                    color: Color(hex: "#ec4899").opacity(0.45),
+                    radius: 10, y: 4
+                )
+                .scaleEffect(isPressed ? 0.9 : 1.0)
+                .animation(.spring(response: 0.25), value: isPressed)
+                .offset(y: -18)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(

@@ -14,14 +14,16 @@ enum AppTab: Int, CaseIterable {
     case translate
     case leaderboard // 🏆 Leaderboard
     case profile
+    
 
     var icon: String {
         switch self {
-        case .home:         return "rectangle.stack.fill"
-        case .path:         return "map.fill"
+        case .home:         return "folder"
+        case .path:         return "path"
         case .translate:    return "translate"
-        case .leaderboard:  return "trophy.fill"
-        case .profile:      return "person.fill"
+        case .leaderboard:  return "leaderboards"
+        case .profile:      return "setting"
+      
         }
     }
 
@@ -32,6 +34,7 @@ enum AppTab: Int, CaseIterable {
         case .translate:    return "Translate"
         case .leaderboard:  return "Rank"
         case .profile:      return "Profile"
+      
         }
     }
 }
@@ -149,24 +152,54 @@ private struct TabBarItem: View {
     let isSelected: Bool
     let action: () -> Void
 
+    // Gradient renkler (görüntüdeki palette: turuncu → pembe → mor)
+    private let gradientColors: [Color] = [
+        Color(hex: "#f97316"),
+        Color(hex: "#ec4899"),
+        Color(hex: "#8b5cf6")
+    ]
+
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
-                    .foregroundStyle(isSelected ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textSecondary)
-                    .scaleEffect(isSelected ? 1.15 : 1.0)
-                    .frame(height: 24)
-                    .animation(.spring(response: 0.3), value: isSelected)
+            VStack(spacing: 6) {
+                ZStack {
+                    // Seçili arka plan (gradient glow)
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(
+                                LinearGradient(
+                                    colors: gradientColors.map { $0.opacity(0.15) },
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 52, height: 44)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                    Image(tab.icon)
+                        .resizable()
+                        .renderingMode(.original)
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                        .scaleEffect(isSelected ? 1.12 : 1.0)
+                }
+                .frame(width: 52, height: 44)
 
-                Text(tab.label)
-                    .font(.custom(isSelected ? "Poppins-SemiBold" : "Poppins-Regular", size: 10))
-                    .foregroundStyle(isSelected ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textSecondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                // Seçim göstergesi — küçük gradient kapsül
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: gradientColors,
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: isSelected ? 20 : 0, height: 3)
+                    .opacity(isSelected ? 1 : 0)
             }
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
+            .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isSelected)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -178,25 +211,27 @@ private struct AddButton: View {
 
     var body: some View {
         Button(action: action) {
-            ZStack {
-                Image(systemName: "plus")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
-                    .background(
-                        LinearGradient(
-                            colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
-                        )
+            Image("plusicon")
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+                .padding(14)
+                .background(
+                    LinearGradient(
+                        colors: [Color(hex: "#f97316"), Color(hex: "#ec4899"), Color(hex: "#8b5cf6")],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                    .clipShape(Circle())
-                    .shadow(color: AppTheme.Shadows.vibrantColor,
-                            radius: AppTheme.Shadows.vibrantRadius,
-                            y: AppTheme.Shadows.vibrantY)
-            }
-            .scaleEffect(isPressed ? 0.9 : 1.0)
-            .animation(.spring(response: 0.25), value: isPressed)
-            .offset(y: -20)
+                )
+                .clipShape(Circle())
+                .shadow(
+                    color: Color(hex: "#ec4899").opacity(0.45),
+                    radius: 10, y: 4
+                )
+                .scaleEffect(isPressed ? 0.9 : 1.0)
+                .animation(.spring(response: 0.25), value: isPressed)
+                .offset(y: -18)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(
@@ -206,3 +241,8 @@ private struct AddButton: View {
         )
     }
 }
+
+#Preview {
+    MainTabView()
+}
+
