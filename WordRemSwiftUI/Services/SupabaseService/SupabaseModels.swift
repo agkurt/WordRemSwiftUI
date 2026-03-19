@@ -219,6 +219,32 @@ struct SBQuizAttemptInsert: Codable {
     }
 }
 
+// MARK: - Sentence (full-sentence translation questions)
+/// A complete sentence stored in the DB for sentenceBuilder quiz questions.
+/// `target_text` = the sentence shown (target language), `native_text` = correct translation.
+struct SBSentence: Codable, Identifiable {
+    let id: UUID
+    let courseId: UUID
+    let levelId: UUID?
+    let targetText: String      // sentence in target language (shown to user)
+    let nativeText: String      // correct native-language translation
+    let keyWord: String?        // the word in targetText to highlight and translate
+    let keyWordNative: String?  // native-language translation of keyWord
+    let difficulty: Int
+    let isActive: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id, difficulty
+        case courseId      = "course_id"
+        case levelId       = "level_id"
+        case targetText    = "target_text"
+        case nativeText    = "native_text"
+        case keyWord       = "key_word"
+        case keyWordNative = "key_word_native"
+        case isActive      = "is_active"
+    }
+}
+
 // MARK: - complete_level RPC Payload
 struct CompleteLevelPayload: Encodable {
     let p_user_id: String

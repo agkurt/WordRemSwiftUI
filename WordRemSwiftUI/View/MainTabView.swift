@@ -39,7 +39,8 @@ enum AppTab: Int, CaseIterable {
 struct MainTabView: View {
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @StateObject private var homeVM = HomeScreenViewModel()
-    @State private var selectedTab: AppTab = .home
+    @StateObject private var pathVM = PathMapViewModel()
+    @State private var selectedTab: AppTab = .path
     @State private var showCreateDeck = false
 
     var body: some View {
@@ -50,15 +51,13 @@ struct MainTabView: View {
                 case .home:
                     HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
                 case .path:
-                    PathMapView()
-//                case .translate:
-//                    NavigationStack { TranslationView() }
+                    PathMapView(vm: pathVM)
+                case .translate:
+                    NavigationStack { LeaderboardView() }
                 case .leaderboard:
                     LeaderboardView()
                 case .profile:
                     NavigationStack { ProfileView() }
-                case .translate:
-                    PathMapView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -90,7 +89,7 @@ private struct CustomTabBar: View {
 
     /// All tabs except home and profile which anchor the sides;
     /// home = leftmost, profile = rightmost, path/translate/news fill middle.
-    private var leftTabs:  [AppTab] { [.home, .path] }
+    private var leftTabs:  [AppTab] { [.path, .home] }
     private var rightTabs: [AppTab] { [.leaderboard, .profile] }
 
     var body: some View {

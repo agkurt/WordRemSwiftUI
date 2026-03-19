@@ -86,6 +86,7 @@ struct HomeScreenView: View {
                                             isEditing: $isEditing,
                                             title: viewModel.cardNames[index],
                                             image: viewModel.selectedFlag[index],
+                                            wordCount: index < viewModel.cardWordCounts.count ? viewModel.cardWordCounts[index] : 0,
                                             onDelete: {
                                                 if isEditing {
                                                     withAnimation { viewModel.deleteCard(at: index) }

@@ -27,6 +27,7 @@ struct CardFlipView: View {
                 isEditing: $isEditing,
                 targetLanguageCode: viewModel.targetLang,
                 nativeLanguageCode: viewModel.sourceLang,
+                sentenceHighlightWord: viewModel.wordMeans.indices.contains(index) ? viewModel.wordMeans[index] : nil,
                 onDelete: {
                     if isEditing {
                         viewModel.deleteCard(at: index, deckId: cardId)

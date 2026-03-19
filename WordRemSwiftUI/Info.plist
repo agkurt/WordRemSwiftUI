@@ -20,6 +20,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>WordRem uses your microphone for the Speaking quiz mode so you can practice pronunciation aloud.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>WordRem uses speech recognition to evaluate your pronunciation during the Speaking quiz mode.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Poppins-Light.ttf</string>

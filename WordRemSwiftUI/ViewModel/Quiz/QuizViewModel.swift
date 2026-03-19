@@ -86,7 +86,7 @@ final class QuizViewModel: ObservableObject {
             .shuffled()
 
         let options: [String]
-        if mode == .multipleChoice {
+        if mode == .multipleChoice || mode == .listening {
             let wrongOptions = Array(wrong.prefix(3))
             options = (wrongOptions + [correct]).shuffled()
         } else {
@@ -105,7 +105,19 @@ final class QuizViewModel: ObservableObject {
             isCorrectPair = true
         }
 
-        return QuizQuestion(
+        // Fill in the Blank / Sentence Builder: scrambled word choices from other cards' means
+        let scrambledWords: [String]
+        if mode == .fillInTheBlank || mode == .sentenceBuilder {
+            let wrongMeans = allWords.filter { $0.id != wordInfo.id }.map { $0.means }.shuffled()
+            scrambledWords = (Array(wrongMeans.prefix(3)) + [correct]).filter { !$0.isEmpty }.shuffled()
+        } else {
+            scrambledWords = []
+        }
+        let gapSentence = (mode == .fillInTheBlank || mode == .sentenceBuilder)
+            ? "\(wordInfo.names) → _____"
+            : ""
+
+        var q = QuizQuestion(
             wordInfo: wordInfo,
             mode: mode,
             options: options,
@@ -113,6 +125,9 @@ final class QuizViewModel: ObservableObject {
             displayedMeaning: displayedMeaning,
             isCorrectPair: isCorrectPair
         )
+        q.sentenceWords = scrambledWords
+        q.gapSentence   = gapSentence
+        return q
     }
 
     // MARK: - Answer Handling
@@ -141,6 +156,20 @@ final class QuizViewModel: ObservableObject {
         let normalizedCorrect = question.correctAnswer.lowercased()
         let isCorrect = normalizedUser == normalizedCorrect
         recordAnswer(question: question, userAnswer: writingAnswer, isCorrect: isCorrect)
+    }
+
+    func submitFillInTheBlank(selected: String) {
+        guard case .active = state,
+              let question = currentQuestion else { return }
+        let isCorrect = selected == question.correctAnswer
+        recordAnswer(question: question, userAnswer: selected, isCorrect: isCorrect)
+    }
+
+    func submitSentenceBuilder(selectedWord: String) {
+        guard case .active = state,
+              let question = currentQuestion else { return }
+        let isCorrect = selectedWord == question.correctAnswer
+        recordAnswer(question: question, userAnswer: selectedWord, isCorrect: isCorrect)
     }
 
     private func recordAnswer(question: QuizQuestion, userAnswer: String, isCorrect: Bool) {

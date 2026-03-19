@@ -200,6 +200,19 @@ struct AL {
         case gameNotQuite           = "game.not_quite"
         case gameContinue           = "game.continue"
 
+        // Listening mode
+        case gameListenPrompt       = "game.listen_prompt"
+        case gameListenNormal       = "game.listen_normal"
+        case gameListenSlow         = "game.listen_slow"
+        case gameListenCantHear     = "game.listen_cant_hear"
+
+        // Speaking mode
+        case gameSpeakPrompt        = "game.speak_prompt"
+        case gameSpeakMicHint       = "game.speak_mic_hint"
+        case gameSpeakCantSpeak     = "game.speak_cant_speak"
+        case gameSpeakListening     = "game.speak_listening"
+        case gameSpeakNoPermission  = "game.speak_no_permission"
+
         // Daily Limit
         case dailyLimitTitle        = "daily.limit_title"
         case dailyLimitSubtitle     = "daily.limit_subtitle"
@@ -328,6 +341,17 @@ struct AL {
             .gameCorrect:           "Doğru! 🎉",
             .gameNotQuite:          "Pek değil…",
             .gameContinue:          "Devam",
+            // Listening
+            .gameListenPrompt:      "Kelimeyi dinle, doğru anlamı seç",
+            .gameListenNormal:      "Dinle",
+            .gameListenSlow:        "Yavaş Dinle",
+            .gameListenCantHear:    "Duyamıyor musun?",
+            // Speaking
+            .gameSpeakPrompt:       "Kelimeyi gör ve yüksek sesle söyle",
+            .gameSpeakMicHint:      "Mikrofona dokun ve konuş",
+            .gameSpeakCantSpeak:    "Konuşamıyor musun? Geç",
+            .gameSpeakListening:    "Dinleniyor…",
+            .gameSpeakNoPermission: "Mikrofon izni gerekli",
             // Result
             .resultLevelComplete:   "Seviye Tamamlandı!",
             .resultKeepPracticing:  "Pratik Yapmaya Devam Et!",
@@ -445,6 +469,17 @@ struct AL {
             .gameCorrect:           "Correct! 🎉",
             .gameNotQuite:          "Not quite…",
             .gameContinue:          "Continue",
+            // Listening
+            .gameListenPrompt:      "Listen to the word, pick the correct meaning",
+            .gameListenNormal:      "Play",
+            .gameListenSlow:        "Play Slowly",
+            .gameListenCantHear:    "Can't hear it?",
+            // Speaking
+            .gameSpeakPrompt:       "See the word and say it aloud",
+            .gameSpeakMicHint:      "Tap the mic and speak",
+            .gameSpeakCantSpeak:    "Can't speak? Skip",
+            .gameSpeakListening:    "Listening…",
+            .gameSpeakNoPermission: "Microphone permission required",
             // Result
             .resultLevelComplete:   "Level Complete!",
             .resultKeepPracticing:  "Keep Practicing!",
@@ -562,6 +597,17 @@ struct AL {
             .gameCorrect:           "Richtig! 🎉",
             .gameNotQuite:          "Nicht ganz…",
             .gameContinue:          "Weiter",
+            // Listening
+            .gameListenPrompt:      "Höre das Wort, wähle die richtige Bedeutung",
+            .gameListenNormal:      "Abspielen",
+            .gameListenSlow:        "Langsam abspielen",
+            .gameListenCantHear:    "Kannst du es nicht hören?",
+            // Speaking
+            .gameSpeakPrompt:       "Sieh das Wort und sage es laut",
+            .gameSpeakMicHint:      "Tippe auf das Mikrofon und sprich",
+            .gameSpeakCantSpeak:    "Kannst du nicht sprechen? Überspringen",
+            .gameSpeakListening:    "Wird gehört…",
+            .gameSpeakNoPermission: "Mikrofonberechtigung erforderlich",
             // Result
             .resultLevelComplete:   "Level abgeschlossen!",
             .resultKeepPracticing:  "Weiter üben!",
@@ -679,6 +725,17 @@ struct AL {
             .gameCorrect:           "Correct ! 🎉",
             .gameNotQuite:          "Pas tout à fait…",
             .gameContinue:          "Continuer",
+            // Listening
+            .gameListenPrompt:      "Écoute le mot, choisis le bon sens",
+            .gameListenNormal:      "Écouter",
+            .gameListenSlow:        "Écouter lentement",
+            .gameListenCantHear:    "Tu n'entends pas ?",
+            // Speaking
+            .gameSpeakPrompt:       "Vois le mot et dis-le à voix haute",
+            .gameSpeakMicHint:      "Appuie sur le micro et parle",
+            .gameSpeakCantSpeak:    "Tu ne peux pas parler ? Passer",
+            .gameSpeakListening:    "Écoute en cours…",
+            .gameSpeakNoPermission: "Permission du microphone requise",
             // Result
             .resultLevelComplete:   "Niveau terminé !",
             .resultKeepPracticing:  "Continue à t'entraîner !",
@@ -796,6 +853,17 @@ struct AL {
             .gameCorrect:           "¡Correcto! 🎉",
             .gameNotQuite:          "No del todo…",
             .gameContinue:          "Continuar",
+            // Listening
+            .gameListenPrompt:      "Escucha la palabra, elige el significado correcto",
+            .gameListenNormal:      "Reproducir",
+            .gameListenSlow:        "Reproducir despacio",
+            .gameListenCantHear:    "¿No puedes escuchar?",
+            // Speaking
+            .gameSpeakPrompt:       "Ve la palabra y dila en voz alta",
+            .gameSpeakMicHint:      "Toca el micrófono y habla",
+            .gameSpeakCantSpeak:    "¿No puedes hablar? Saltar",
+            .gameSpeakListening:    "Escuchando…",
+            .gameSpeakNoPermission: "Se requiere permiso del micrófono",
             // Result
             .resultLevelComplete:   "¡Nivel completado!",
             .resultKeepPracticing:  "¡Sigue practicando!",
@@ -913,6 +981,17 @@ struct AL {
             .gameCorrect:           "Corretto! 🎉",
             .gameNotQuite:          "Non proprio…",
             .gameContinue:          "Continua",
+            // Listening
+            .gameListenPrompt:      "Ascolta la parola, scegli il significato corretto",
+            .gameListenNormal:      "Ascolta",
+            .gameListenSlow:        "Ascolta lentamente",
+            .gameListenCantHear:    "Non riesci a sentire?",
+            // Speaking
+            .gameSpeakPrompt:       "Guarda la parola e dilla ad alta voce",
+            .gameSpeakMicHint:      "Tocca il microfono e parla",
+            .gameSpeakCantSpeak:    "Non riesci a parlare? Salta",
+            .gameSpeakListening:    "In ascolto…",
+            .gameSpeakNoPermission: "Autorizzazione microfono richiesta",
             // Result
             .resultLevelComplete:   "Livello completato!",
             .resultKeepPracticing:  "Continua ad esercitarti!",
@@ -1030,6 +1109,17 @@ struct AL {
             .gameCorrect:           "Верно! 🎉",
             .gameNotQuite:          "Не совсем…",
             .gameContinue:          "Продолжить",
+            // Listening
+            .gameListenPrompt:      "Послушай слово, выбери правильное значение",
+            .gameListenNormal:      "Слушать",
+            .gameListenSlow:        "Слушать медленно",
+            .gameListenCantHear:    "Не слышишь?",
+            // Speaking
+            .gameSpeakPrompt:       "Посмотри на слово и произнеси его вслух",
+            .gameSpeakMicHint:      "Нажми на микрофон и говори",
+            .gameSpeakCantSpeak:    "Не можешь говорить? Пропустить",
+            .gameSpeakListening:    "Слушаю…",
+            .gameSpeakNoPermission: "Требуется разрешение на микрофон",
             // Result
             .resultLevelComplete:   "Уровень пройден!",
             .resultKeepPracticing:  "Продолжай тренироваться!",
@@ -1147,6 +1237,17 @@ struct AL {
             .gameCorrect:           "正确！🎉",
             .gameNotQuite:          "不太对…",
             .gameContinue:          "继续",
+            // Listening
+            .gameListenPrompt:      "听单词，选择正确的意思",
+            .gameListenNormal:      "播放",
+            .gameListenSlow:        "慢速播放",
+            .gameListenCantHear:    "听不见？",
+            // Speaking
+            .gameSpeakPrompt:       "看单词并大声说出来",
+            .gameSpeakMicHint:      "点击麦克风并说话",
+            .gameSpeakCantSpeak:    "无法说话？跳过",
+            .gameSpeakListening:    "正在聆听…",
+            .gameSpeakNoPermission: "需要麦克风权限",
             // Result
             .resultLevelComplete:   "关卡完成！",
             .resultKeepPracticing:  "继续练习！",

@@ -16,6 +16,10 @@ struct CardDetailDesignView: View {
     @Binding var isEditing: Bool
     var targetLanguageCode: String = "EN"
     var nativeLanguageCode: String = "TR"
+    /// Override which word gets highlighted in the example sentence.
+    /// If nil, falls back to `wordName`. Pass the target-language word
+    /// (wordMean) so the sentence highlights the correct term.
+    var sentenceHighlightWord: String? = nil
     var onDelete: () -> Void
     var onEdit: (() -> Void)? = nil  // Edit callback
     
@@ -131,7 +135,7 @@ struct CardDetailDesignView: View {
                     if let desc = wordDescription, !desc.isEmpty, let word = wordName, !word.isEmpty {
                         InteractiveSentenceView(
                             sentence: desc,
-                            highlightedWord: word,
+                            highlightedWord: sentenceHighlightWord ?? word,
                             targetLanguageCode: targetLanguageCode,
                             nativeLanguageCode: nativeLanguageCode
                         )

@@ -13,6 +13,7 @@ final class HomeScreenViewModel: ObservableObject {
     @Published var cardNames: [String] = []
     @Published var cardIds: [String] = []
     @Published var selectedFlag:[String] = []
+    @Published var cardWordCounts: [Int] = []
     @Published var isEditing: Bool = false
     @Published var cards: [Card] = []
     @Published var isLoading:Bool = false
@@ -27,6 +28,7 @@ final class HomeScreenViewModel: ObservableObject {
                 self.selectedFlag = fetchedCards.map { $0.selectedFlag?.rawValue ?? "" }
                 self.cardNames = fetchedCards.map { $0.name ?? "" }
                 self.cardIds = fetchedCards.map { $0.id ?? "" }
+                self.cardWordCounts = fetchedCards.map { $0.wordCount }
                 self.isLoading = false
             }
         } catch {
@@ -53,6 +55,9 @@ final class HomeScreenViewModel: ObservableObject {
                     self.cardNames.remove(at: index)
                     self.cardIds.remove(at: index)
                     self.selectedFlag.remove(at: index)
+                    if index < self.cardWordCounts.count {
+                        self.cardWordCounts.remove(at: index)
+                    }
                 }
             } catch {
                 print("Error deleting card: \(error.localizedDescription)")

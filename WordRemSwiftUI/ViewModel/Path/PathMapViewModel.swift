@@ -20,6 +20,9 @@ final class PathMapViewModel: ObservableObject {
     /// Kullanıcının seçtiği dil için henüz kurs yok
     @Published var noCoursesForLanguage = false
 
+    /// True after the first successful load; prevents re-fetching on every tab switch.
+    private(set) var hasInitiallyLoaded = false
+
     // MARK: - Load Courses (kullanıcının seçtiği dile göre filtreli)
     func loadCourses() async {
         isLoading = true
@@ -46,6 +49,7 @@ final class PathMapViewModel: ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
         }
+        hasInitiallyLoaded = true
         isLoading = false
     }
 

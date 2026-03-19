@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct QuizSessionView: View {
 
@@ -11,6 +12,7 @@ struct QuizSessionView: View {
     let mode: QuizMode
     let cardId: String
     let cardName: String
+    var targetLang: String = "EN"
 
     @StateObject private var viewModel = QuizViewModel()
     @Environment(\.dismiss) private var dismiss
@@ -98,6 +100,46 @@ struct QuizSessionView: View {
                                         withAnimation { viewModel.submitWriting() }
                                     }
                                 )
+
+                            case .listening:
+                                ListeningModeInput(
+                                    wordToPlay: question.wordInfo.names,
+                                    langCode: targetLang,
+                                    options: question.options,
+                                    correctAnswer: question.correctAnswer,
+                                    state: viewModel.state
+                                ) { selected in
+                                    withAnimation { viewModel.submitMultipleChoice(selected: selected) }
+                                }
+
+                            case .speaking:
+                                // Speaking fallback: write the pronunciation / translation
+                                WritingInput(
+                                    text: $viewModel.writingAnswer,
+                                    state: viewModel.state,
+                                    onSubmit: {
+                                        withAnimation { viewModel.submitWriting() }
+                                    }
+                                )
+
+                            case .fillInTheBlank:
+                                FillInTheBlankInput(
+                                    gapSentence: question.gapSentence,
+                                    sentenceWords: question.sentenceWords,
+                                    correctAnswer: question.correctAnswer,
+                                    state: viewModel.state
+                                ) { selected in
+                                    withAnimation { viewModel.submitFillInTheBlank(selected: selected) }
+                                }
+
+                            case .sentenceBuilder:
+                                SentenceBuilderInput(
+                                    sentenceWords: question.sentenceWords,
+                                    correctAnswer: question.correctAnswer,
+                                    state: viewModel.state
+                                ) { selected in
+                                    withAnimation { viewModel.submitSentenceBuilder(selectedWord: selected) }
+                                }
                             }
 
                             // Next button
@@ -341,6 +383,204 @@ private struct WritingInput: View {
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+        }
+    }
+}
+
+// MARK: - Listening Mode Input
+private struct ListeningModeInput: View {
+    let wordToPlay: String
+    let langCode: String
+    let options: [String]
+    let correctAnswer: String
+    let state: QuizViewModel.QuizState
+    let onSelect: (String) -> Void
+
+    var isAnswered: Bool {
+        if case .answered = state { return true }
+        return false
+    }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            // Audio buttons
+            HStack(spacing: 12) {
+                Button {
+                    TTSManager.shared.speak(wordToPlay, langCode: langCode)
+                } label: {
+                    Label("Play", systemImage: "play.fill")
+                        .font(.custom("Poppins-SemiBold", size: 14))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(hex: "#f97316"), Color(hex: "#ea580c")],
+                                startPoint: .leading, endPoint: .trailing
+                            ),
+                            in: Capsule()
+                        )
+                }
+                Button {
+                    TTSManager.shared.speakSlow(wordToPlay, langCode: langCode)
+                } label: {
+                    Label("Slow", systemImage: "tortoise.fill")
+                        .font(.custom("Poppins-Medium", size: 13))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 12)
+                        .background(Color(.systemGray5), in: Capsule())
+                }
+            }
+
+            // Options
+            VStack(spacing: 10) {
+                ForEach(options, id: \.self) { option in
+                    OptionRow(
+                        option: option,
+                        isCorrect: option == correctAnswer,
+                        isAnswered: isAnswered,
+                        onSelect: { onSelect(option) }
+                    )
+                    .disabled(isAnswered)
+                    .animation(.easeInOut(duration: 0.2), value: isAnswered)
+                }
+            }
+        }
+        .onAppear {
+            TTSManager.shared.speak(wordToPlay, langCode: langCode)
+        }
+    }
+}
+
+// MARK: - Fill in the Blank
+private struct FillInTheBlankInput: View {
+    let gapSentence: String
+    let sentenceWords: [String]
+    let correctAnswer: String
+    let state: QuizViewModel.QuizState
+    let onSelect: (String) -> Void
+
+    var isAnswered: Bool {
+        if case .answered = state { return true }
+        return false
+    }
+
+    var body: some View {
+        VStack(spacing: 14) {
+            // Gap sentence card
+            Text(gapSentence)
+                .font(.custom("Poppins-SemiBold", size: 18))
+                .multilineTextAlignment(.center)
+                .padding(16)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(hex: "#fff7ed"))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color(hex: "#f97316").opacity(0.4), lineWidth: 1.5)
+                        )
+                )
+
+            // Word options grid (2 columns)
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                ForEach(sentenceWords, id: \.self) { word in
+                    Button {
+                        onSelect(word)
+                    } label: {
+                        Text(word)
+                            .font(.custom("Poppins-Medium", size: 15))
+                            .foregroundStyle(
+                                isAnswered
+                                    ? (word == correctAnswer ? .white : .secondary)
+                                    : .primary
+                            )
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 8)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(
+                                        isAnswered
+                                            ? (word == correctAnswer ? Color.green.opacity(0.8) : Color(.systemGray5))
+                                            : Color.white
+                                    )
+                                    .shadow(color: isAnswered ? .clear : AppTheme.Shadows.softColor, radius: 4, y: 2)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(
+                                                isAnswered && word == correctAnswer
+                                                    ? Color.green
+                                                    : AppTheme.Colors.inputBorder,
+                                                lineWidth: 1.5
+                                            )
+                                    )
+                            )
+                    }
+                    .disabled(isAnswered)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Sentence Builder
+private struct SentenceBuilderInput: View {
+    let sentenceWords: [String]
+    let correctAnswer: String
+    let state: QuizViewModel.QuizState
+    let onSelect: (String) -> Void
+
+    var isAnswered: Bool {
+        if case .answered = state { return true }
+        return false
+    }
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Text("Tap the correct translation")
+                .font(.custom("Poppins-Regular", size: 14))
+                .foregroundStyle(.secondary)
+
+            // Word bubble grid (flexible wrapping layout)
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())],
+                      spacing: 10) {
+                ForEach(sentenceWords, id: \.self) { word in
+                    Button {
+                        onSelect(word)
+                    } label: {
+                        Text(word)
+                            .font(.custom("Poppins-Medium", size: 14))
+                            .foregroundStyle(
+                                isAnswered
+                                    ? (word == correctAnswer ? .white : .secondary)
+                                    : Color(hex: "#f97316")
+                            )
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 6)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(
+                                        isAnswered
+                                            ? (word == correctAnswer ? Color.green.opacity(0.8) : Color(.systemGray5))
+                                            : Color(hex: "#fff7ed")
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .stroke(
+                                                isAnswered && word == correctAnswer
+                                                    ? Color.green
+                                                    : Color(hex: "#f97316").opacity(0.4),
+                                                lineWidth: 1.5
+                                            )
+                                    )
+                            )
+                    }
+                    .disabled(isAnswered)
+                }
             }
         }
     }

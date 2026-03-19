@@ -37,32 +37,22 @@ final class PathMistakesDeckService {
             guard !words.isEmpty else { return }
 
             // 2. Firestore'da yeni deck oluştur
-            let flag        = flagModel(for: targetLangCode)
-            let phoneCode   = OL.phoneCode.uppercased()
-            let name        = deckTitle(levelTitle: levelTitle, targetLangCode: targetLangCode)
+            let flag      = flagModel(for: targetLangCode)
+            let phoneCode = OL.phoneCode.uppercased()
+            let name      = deckTitle(levelTitle: levelTitle, targetLangCode: targetLangCode)
 
-            await FirebaseService.shared.addCardNameInfo(
-                name: name,
-                selectedFlag: flag,
-                sourceLang: phoneCode,
-                targetLang: targetLangCode.uppercased()
-            )
+            guard let deckId = await FirebaseService.shared.addCardNameInfo(
+                name: name, selectedFlag: flag, sourceLang: phoneCode, targetLang: targetLangCode.uppercased()
+            ) else { return }
 
-            // En son oluşturulan deck'i bul
-            guard let cards  = try? await FirebaseService.shared.fetchCardName(),
-                  let deckId = cards.first?.id else { return }
-
-            // 3. Her kelimeyi ekle: çeviri + örnek cümle
+            // 3. Her kelimeyi ekle (convention: wordName = native, wordMean = target language word)
             for word in words {
                 let nativeTranslation = word.displayTranslation(phoneCode: OL.phoneCode)
                 let sentence = (try? await generateSentence(term: word.term, langCode: targetLangCode)) ?? ""
-
-                // Ön yüz: hedef dildeki kelime (örn. Fransızca)
-                // Arka yüz: telefon dilindeki çeviri
                 await FirebaseService.shared.addWordToCard(
                     cardId: deckId,
-                    wordName: nativeTranslation,   // arka yüz
-                    wordMean: word.term,            // ön yüz
+                    wordName: nativeTranslation,   // ön yüz: kullanıcının dilindeki çeviri (native)
+                    wordMean: word.term,            // arka yüz: öğrenilen dildeki kelime (target)
                     wordDescription: sentence
                 )
             }
@@ -86,9 +76,8 @@ final class PathMistakesDeckService {
     // MARK: - Deck adı
 
     private func deckTitle(levelTitle: String, targetLangCode: String) -> String {
-        let emoji  = langEmoji(for: targetLangCode)
-        let date   = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
-        return "\(emoji) Path — \(levelTitle) (\(date))"
+        let emoji = langEmoji(for: targetLangCode)
+        return "\(emoji) Path — \(levelTitle)"
     }
 
     // MARK: - Örnek cümle üretimi (OpenAI)

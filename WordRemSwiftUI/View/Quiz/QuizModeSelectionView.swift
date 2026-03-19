@@ -13,6 +13,7 @@ struct QuizModeSelectionView: View {
 
     @State private var selectedMode: QuizMode? = nil
     @State private var showQuiz = false
+    @State private var targetLang: String = "EN"
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -100,8 +101,15 @@ struct QuizModeSelectionView: View {
                         wordInfos: wordInfos,
                         mode: mode,
                         cardId: cardId,
-                        cardName: cardName
+                        cardName: cardName,
+                        targetLang: targetLang
                     )
+                }
+            }
+            .task {
+                if let cards = try? await FirebaseService.shared.fetchSourceAndTargetLang(cardId: cardId),
+                   let lang = cards.first?.targetLang {
+                    targetLang = lang
                 }
             }
         }

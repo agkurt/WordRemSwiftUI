@@ -143,85 +143,29 @@ private struct AlignedSentenceText: View {
         let word: String
         let highlightedWord: String
         let wordAlignments: [String: (translation: String, colorIndex: Int)]
-        
-        @State private var showMeaning = false
-        @State private var wordMeaning: String = ""
-        
+
         var body: some View {
-            let cleanWord = word.trimmingCharacters(in: .punctuationCharacters)
-                .lowercased()
-            
-            // Check if this is the highlighted word
-            let isHighlighted = cleanWord.contains(highlightedWord.lowercased())
-            
-            Button {
-                if !isHighlighted && !cleanWord.isEmpty {
-                    // Get meaning from alignments
-                    print("🔍 Tapped word: '\(cleanWord)'")
-                    print("📚 Available alignments: \(wordAlignments.keys.sorted())")
-                    
-                    // Try exact match first
-                    if let alignment = wordAlignments[cleanWord] {
-                        wordMeaning = alignment.translation
-                        print("✅ Found exact meaning: \(wordMeaning)")
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showMeaning.toggle()
-                        }
-                    } else {
-                        // Try prefix matching (for conjugated words)
-                        var found = false
-                        for (key, value) in wordAlignments {
-                            if cleanWord.hasPrefix(key) || key.hasPrefix(cleanWord) {
-                                wordMeaning = value.translation
-                                print("✅ Found prefix meaning: \(wordMeaning)")
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    showMeaning.toggle()
-                                }
-                                found = true
-                                break
-                            }
-                        }
-                        if !found {
-                            print("❌ No alignment found for '\(cleanWord)'")
-                        }
-                    }
-                }
-            } label: {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(word)
-                        .font(.custom("Poppins-Regular", size: 14))
-                        .foregroundStyle(
-                            isHighlighted
-                            ? AppTheme.Colors.primaryOrange
-                            : AppTheme.Colors.textSecondary
-                        )
-                        .fontWeight(isHighlighted ? .semibold : .regular)
-                        .padding(.horizontal, isHighlighted ? 6 : 2)
-                        .padding(.vertical, isHighlighted ? 3 : 0)
-                        .background(
-                            isHighlighted
-                            ? AppTheme.Colors.primaryOrange.opacity(0.15)
-                            : Color.clear
-                        )
-                        .cornerRadius(6)
-                        .fixedSize()
-                    
-                    // Show meaning below word
-                    if showMeaning && !wordMeaning.isEmpty {
-                        Text(wordMeaning)
-                            .font(.custom("Poppins-Regular", size: 10))
-                            .foregroundStyle(AppTheme.Colors.primaryOrange)
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 2)
-                            .background(AppTheme.Colors.primaryOrange.opacity(0.1))
-                            .cornerRadius(4)
-                            .transition(.scale.combined(with: .opacity))
-                            .fixedSize()
-                    }
-                }
-                .frame(maxHeight: .infinity, alignment: .top)
-            }
-            .buttonStyle(.plain)
+            let cleanWord = word.trimmingCharacters(in: .punctuationCharacters).lowercased()
+            let isHighlighted = !highlightedWord.isEmpty &&
+                cleanWord.contains(highlightedWord.lowercased())
+
+            Text(word)
+                .font(.custom("Poppins-Regular", size: 14))
+                .foregroundStyle(
+                    isHighlighted
+                    ? AppTheme.Colors.primaryOrange
+                    : AppTheme.Colors.textSecondary
+                )
+                .fontWeight(isHighlighted ? .semibold : .regular)
+                .padding(.horizontal, isHighlighted ? 6 : 2)
+                .padding(.vertical, isHighlighted ? 3 : 0)
+                .background(
+                    isHighlighted
+                    ? AppTheme.Colors.primaryOrange.opacity(0.15)
+                    : Color.clear
+                )
+                .cornerRadius(6)
+                .fixedSize()
         }
     }
 }

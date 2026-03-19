@@ -8,10 +8,11 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct PathMapView: View {
 
-    @StateObject private var vm = PathMapViewModel()
+    @ObservedObject var vm: PathMapViewModel
     @State private var selectedLevel: SBLevelWithProgress?
     @State private var appeared = false
     
@@ -33,9 +34,14 @@ struct PathMapView: View {
                 pathBackground
 
                 if vm.isLoading && vm.levelsWithProgress.isEmpty {
-                    ProgressView()
-                        .scaleEffect(1.4)
-                        .tint(AppTheme.Colors.primaryOrange)
+                    VStack(spacing: 8) {
+                        LottieView(animation: .named("reeny_waving"))
+                            .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                            .frame(width: 120, height: 120)
+                        Text("Yükleniyor...")
+                            .font(.custom("Poppins-Regular", size: 14))
+                            .foregroundStyle(AppTheme.Colors.textSecondary)
+                    }
 
                 } else if let err = vm.errorMessage {
                     errorState(err)
@@ -162,6 +168,7 @@ struct PathMapView: View {
             }
             .navigationBarHidden(true)
             .task {
+                guard !vm.hasInitiallyLoaded else { return }
                 await vm.loadCourses()
                 await vm.loadUserProfile()
                 withAnimation(.easeOut(duration: 0.6).delay(0.2)) {
@@ -742,24 +749,11 @@ struct LevelCompletePopupView: View {
                 .onTapGesture { dismiss() }
 
             VStack(spacing: 24) {
-                // Trophy/Badge icon
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(hex: "#f59e0b"), Color(hex: "#d97706")],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 80, height: 80)
-                        .shadow(color: Color(hex: "#f59e0b").opacity(0.4), radius: 10, y: 5)
-                    
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 40))
-                        .foregroundStyle(.white)
-                }
-                .padding(.top, 10)
+                // Mascot celebrating
+                LottieView(animation: .named("reeny_waving"))
+                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: 120, height: 120)
+                    .padding(.top, 10)
 
                 // Text Content
                 VStack(spacing: 8) {
@@ -831,16 +825,10 @@ struct MistakesSavedPopupView: View {
             Color.black.opacity(0.4).ignoresSafeArea().onTapGesture { dismiss() }
 
             VStack(spacing: 24) {
-                ZStack {
-                    Circle()
-                        .fill(LinearGradient(colors: [Color.red, Color.orange], startPoint: .topLeading, endPoint: .bottomTrailing))
-                        .frame(width: 80, height: 80)
-                        .shadow(color: Color.red.opacity(0.4), radius: 10, y: 5)
-                    Image(systemName: "heart.text.square.fill")
-                        .font(.system(size: 36))
-                        .foregroundStyle(.white)
-                }
-                .padding(.top, 10)
+                LottieView(animation: .named("reeny_waving"))
+                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: 110, height: 110)
+                    .padding(.top, 10)
 
                 VStack(spacing: 8) {
                     Text(AL.s(.pathDontBeSad))
@@ -889,16 +877,10 @@ struct MistakesClearedPopupView: View {
             Color.black.opacity(0.4).ignoresSafeArea().onTapGesture { dismiss() }
 
             VStack(spacing: 24) {
-                ZStack {
-                    Circle()
-                        .fill(LinearGradient(colors: [Color.green, Color.mint], startPoint: .topLeading, endPoint: .bottomTrailing))
-                        .frame(width: 80, height: 80)
-                        .shadow(color: Color.green.opacity(0.4), radius: 10, y: 5)
-                    Image(systemName: "hands.sparkles.fill")
-                        .font(.system(size: 36))
-                        .foregroundStyle(.white)
-                }
-                .padding(.top, 10)
+                LottieView(animation: .named("reeny_waving"))
+                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: 110, height: 110)
+                    .padding(.top, 10)
 
                 VStack(spacing: 8) {
                     Text(AL.s(.pathGreatWork))
@@ -939,5 +921,5 @@ struct MistakesClearedPopupView: View {
 
 // MARK: - Preview
 #Preview {
-    PathMapView()
+    PathMapView(vm: PathMapViewModel())
 }

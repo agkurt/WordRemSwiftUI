@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct SplashScreenView: View {
     
@@ -56,12 +57,12 @@ struct SplashScreenView: View {
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .opacity(logoOpacity)
                     
-                    // Loading Indicator (opsiyonel)
-                    ProgressView()
-                        .tint(AppTheme.Colors.primaryOrange)
-                        .scaleEffect(1.2)
-                        .padding(.top, 20)
-                        .opacity(logoOpacity * 0.7)
+                    // Lottie loading animation
+                    LottieView(animation: .named("StartAnimation"))
+                        .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                        .frame(width: 80, height: 80)
+                        .padding(.top, 8)
+                        .opacity(logoOpacity)
                 }
             }
             .onAppear {
@@ -84,4 +85,73 @@ struct SplashScreenView: View {
 
 #Preview {
     SplashScreenView()
+}
+
+// MARK: - Launch Screen (returning users — shown on every app open)
+
+struct LaunchScreenView: View {
+
+    let onReady: () -> Void
+
+    @State private var logoScale: CGFloat = 0.7
+    @State private var logoOpacity: Double = 0.0
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(hex: "#fef3c7"),
+                    Color(hex: "#fff7ed"),
+                    Color.white
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 24) {
+                Image("appLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 160, height: 160)
+                    .shadow(
+                        color: AppTheme.Colors.primaryOrange.opacity(0.4),
+                        radius: 30,
+                        y: 15
+                    )
+                    .scaleEffect(logoScale)
+                    .opacity(logoOpacity)
+
+                Text("Flash AI")
+                    .font(.custom("Poppins-Bold", size: 48))
+                    .foregroundStyle(AppTheme.Colors.primaryOrange)
+                    .opacity(logoOpacity)
+
+                LottieView(animation: .named("StartAnimation"))
+                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: 80, height: 80)
+                    .padding(.top, 8)
+                    .opacity(logoOpacity)
+            }
+        }
+        .task {
+            withAnimation(.easeOut(duration: 1.0)) {
+                logoScale = 1.0
+                logoOpacity = 1.0
+            }
+
+            // Prefetch user profile and wait at least 2.5 seconds (concurrent)
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    _ = try? await SupabaseDataService.shared.fetchUserProfile()
+                }
+                group.addTask {
+                    try? await Task.sleep(nanoseconds: 2_500_000_000)
+                }
+                await group.waitForAll()
+            }
+
+            onReady()
+        }
+    }
 }

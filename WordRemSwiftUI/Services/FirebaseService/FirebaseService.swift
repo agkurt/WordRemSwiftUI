@@ -23,43 +23,54 @@ class FirebaseService: ObservableObject {
         return SupabaseAuthService.shared.currentUserId?.uuidString
     }
     
-    func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async {
+    @discardableResult
+    func addCardNameInfo(name:String,selectedFlag:FlagModel,sourceLang:String,targetLang:String) async -> String? {
         guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
-            return
+            return nil
         }
         let flagString = selectedFlag.rawValue
         let creationDate = Timestamp(date: Date())
-        
+
         do {
-            _ = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: ["cardName" : name,"selectedFlag":flagString,"targetLang":targetLang,"sourceLang":sourceLang,"creationData":creationDate])
-        }catch {
+            let ref = try await Firestore.firestore().collection("users").document(uid).collection("cards").addDocument(data: [
+                "cardName": name,
+                "selectedFlag": flagString,
+                "targetLang": targetLang,
+                "sourceLang": sourceLang,
+                "creationData": creationDate,
+                "wordCount": 0
+            ])
+            return ref.documentID
+        } catch {
             print("Error fetching data: \(error.localizedDescription)")
+            return nil
         }
     }
     
     func fetchCardName() async throws -> [Card] {
-        
+
         guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return []
         }
-        
+
         let db = Firestore.firestore()
         var cards: [Card] = []
-        
+
         do {
             let querySnapshot = try await db.collection("users").document(uid).collection("cards").order(by: "creationData",descending: true).getDocuments()
             for document in querySnapshot.documents {
                 if let cardName = document.data()["cardName"] as? String,
                    let flagString = document.data()["selectedFlag"] as? String,
                    let flag = FlagModel(rawValue: flagString) {
-                    let card = Card(id: document.documentID, name: cardName, selectedFlag: flag)
+                    let wordCount = document.data()["wordCount"] as? Int ?? 0
+                    let card = Card(id: document.documentID, name: cardName, selectedFlag: flag, wordCount: wordCount)
                     cards.append(card)
                 }
             }
         } catch {
             throw error
         }
-        
+
         return cards
     }
 
@@ -149,21 +160,24 @@ class FirebaseService: ObservableObject {
     
     
     func addWordToCard(cardId: String, wordName: String, wordMean: String, wordDescription: String) async  {
-        
+
         guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {
             return
         }
-        
+
         let db = Firestore.firestore()
         let creationDate = Timestamp(date: Date())
-        
+        let cardRef = db.collection("users").document(uid).collection("cards").document(cardId)
+
         do {
-            _ = try await db.collection("users").document(uid).collection("cards").document(cardId).collection("words").addDocument(data: [
+            _ = try await cardRef.collection("words").addDocument(data: [
                 "wordName": wordName,
                 "wordMean": wordMean,
                 "wordDescription": wordDescription,
-                "creationDate":creationDate
+                "creationDate": creationDate
             ])
+            // Atomically increment word count on the parent card doc
+            try await cardRef.updateData(["wordCount": FieldValue.increment(Int64(1))])
         }catch {
             print(error)
         }

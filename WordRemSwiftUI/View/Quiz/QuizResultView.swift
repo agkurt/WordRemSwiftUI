@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct QuizResultView: View {
 
@@ -35,9 +36,10 @@ struct QuizResultView: View {
             VStack(spacing: 32) {
                 Spacer()
 
-                // Emoji result
-                Text(passed ? "🎉" : "😓")
-                    .font(.system(size: 80))
+                // Mascot animation
+                LottieView(animation: .named("reeny_waving"))
+                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: 160, height: 160)
 
                 // Title
                 Text(passed ? AL.s(.resultLevelComplete) : AL.s(.resultKeepPracticing))

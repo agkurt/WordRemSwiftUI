@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import Speech
 
 enum QuizSessionType: Equatable {
     case level(UUID)
@@ -64,11 +65,11 @@ final class GameQuizViewModel: ObservableObject {
     }
 
     // MARK: - Setup
-    func setup(sessionType: QuizSessionType, words: [SBWord], levelTitle: String = "") {
+    func setup(sessionType: QuizSessionType, words: [SBWord], sentences: [SBSentence] = [], levelTitle: String = "") {
         self.sessionType    = sessionType
         self.levelTitle     = levelTitle
         self.targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
-        self.questions      = GameQuestion.generate(from: words)
+        self.questions      = GameQuestion.generate(from: words, sentences: sentences)
         self.currentIndex   = 0
         self.score          = 0
         self.writingAnswer  = ""
@@ -80,6 +81,17 @@ final class GameQuizViewModel: ObservableObject {
             self.state = .dailyLimitReached
         } else {
             self.state = .question
+        }
+
+        // Prefetch audio for all listening/speaking questions so they play instantly
+        let audioWords = questions
+            .filter { $0.mode == .listening || $0.mode == .speaking }
+            .map { $0.word.term }
+        let lang = targetLangCode
+        Task.detached(priority: .background) {
+            for word in audioWords {
+                await TTSManager.shared.prefetchAsync(word, langCode: lang)
+            }
         }
     }
 
@@ -101,6 +113,35 @@ final class GameQuizViewModel: ObservableObject {
         let user    = writingAnswer.trimmingCharacters(in: .whitespaces).lowercased()
         let correct = q.correctAnswer.lowercased()
         recordAnswer(isCorrect: user == correct)
+    }
+
+    // MARK: - Answer: Speaking
+    func submitSpeaking(recognized: String) {
+        guard case .question = state, let q = currentQuestion else { return }
+        let correct = SpeechRecognitionManager.shared.isCorrect(
+            recognized: recognized,
+            expected: q.word.term
+        )
+        recordAnswer(isCorrect: correct)
+    }
+
+    // MARK: - Answer: Listening (same tap logic as multipleChoice)
+    func submitListening(selected: String) {
+        guard case .question = state, let q = currentQuestion else { return }
+        recordAnswer(isCorrect: selected == q.correctAnswer)
+    }
+
+    // MARK: - Answer: Fill in the Blank
+    func submitFillInTheBlank(selected: String) {
+        guard case .question = state, let q = currentQuestion else { return }
+        recordAnswer(isCorrect: selected == q.word.term)
+    }
+
+    // MARK: - Answer: Sentence Builder
+    func submitSentenceBuilder(selectedWord: String) {
+        guard case .question = state, let q = currentQuestion else { return }
+        // correctAnswer = nativeMeaning for sentenceBuilder (targetToNative direction)
+        recordAnswer(isCorrect: selectedWord.lowercased() == q.correctAnswer.lowercased())
     }
 
     // MARK: - Core Record
@@ -220,6 +261,12 @@ final class GameQuizViewModel: ObservableObject {
     }
 }
 
+// MARK: - Question direction
+enum QuestionDirection: Equatable {
+    case targetToNative  // show target-lang word → pick native translation (classic)
+    case nativeToTarget  // show native meaning   → pick target-lang word  (new)
+}
+
 // MARK: - GameQuestion model
 struct GameQuestion: Identifiable {
     let id = UUID()
@@ -229,30 +276,152 @@ struct GameQuestion: Identifiable {
     let correctAnswer: String
     let displayedMeaning: String
     let isCorrectPair: Bool
+    var questionDirection: QuestionDirection = .targetToNative
+    /// Text shown in the word-card (target term OR native meaning depending on direction)
+    var promptText: String = ""
+    var sentenceWords: [String] = []   // for sentenceBuilder / fillInTheBlank: scrambled word choices
+    var gapSentence: String     = ""   // for fillInTheBlank: "_____ → native meaning"
+    /// Set when this is a DB sentence question (sentenceBuilder from sentences table)
+    var sentence: SBSentence?   = nil
 
-    static func generate(from words: [SBWord]) -> [GameQuestion] {
-        let phoneCode = OL.phoneCode
-        let shuffled  = words.shuffled()
-        return shuffled.map { word in
-            let correct = word.displayTranslation(phoneCode: phoneCode)
-            let wrong   = words.filter { $0.id != word.id }
-                               .map { $0.displayTranslation(phoneCode: phoneCode) }
-                               .shuffled()
-            let options: [String] = words.count >= 4
-                ? (Array(wrong.prefix(3)) + [correct]).shuffled()
-                : []
+    static func generate(from words: [SBWord], sentences: [SBSentence] = []) -> [GameQuestion] {
+        let phoneCode   = OL.phoneCode
+        let shuffled    = words.shuffled()
+        let canMulti    = words.count >= 4
+        let canListen   = canMulti
+        let canSpeak    = words.count >= 1
+        let canFill     = words.count >= 4
+        let canSentence = words.count >= 2
 
-            let showWrong = Bool.random() && !wrong.isEmpty
-            let display   = showWrong ? (wrong.first ?? correct) : correct
+        let wordQuestions: [GameQuestion] = shuffled.enumerated().map { index, word in
+            let nativeMeaning = word.displayTranslation(phoneCode: phoneCode)
+            let wrongNative   = words.filter { $0.id != word.id }
+                                     .map { $0.displayTranslation(phoneCode: phoneCode) }
+                                     .shuffled()
+            let wrongTerms    = words.filter { $0.id != word.id }
+                                     .map { $0.term }
+                                     .shuffled()
 
-            return GameQuestion(
+            // ── mode selection ───────────────────────────────────────────
+            let shouldBeFill     = canFill && index % 6 == 5
+            let shouldBeSentence = canSentence && index % 8 == 7 && !shouldBeFill
+
+            let finalMode: QuizMode
+            if canListen && index % 5 == 4 {
+                finalMode = .listening
+            } else if canSpeak && index % 7 == 6 {
+                finalMode = .speaking
+            } else if shouldBeFill {
+                finalMode = .fillInTheBlank
+            } else if shouldBeSentence {
+                finalMode = .sentenceBuilder
+            } else if canMulti {
+                finalMode = .multipleChoice
+            } else {
+                finalMode = .writing
+            }
+            // ─────────────────────────────────────────────────────────────
+
+            // ── question direction (only for multipleChoice & writing) ───
+            let canFlipDirection = (finalMode == .multipleChoice || finalMode == .writing) && canMulti
+            let direction: QuestionDirection = canFlipDirection && Bool.random()
+                ? .nativeToTarget
+                : .targetToNative
+            // ─────────────────────────────────────────────────────────────
+
+            // ── build options & correctAnswer based on direction ─────────
+            let finalCorrect: String
+            let finalOptions: [String]
+            let finalPrompt:  String
+
+            if direction == .nativeToTarget {
+                // Card shows native meaning → user picks target-lang word
+                finalPrompt   = nativeMeaning
+                finalCorrect  = word.term
+                finalOptions  = canMulti
+                    ? (Array(wrongTerms.prefix(3)) + [word.term]).shuffled()
+                    : []
+            } else {
+                // Card shows target word → user picks native translation
+                finalPrompt   = word.term
+                finalCorrect  = nativeMeaning
+                finalOptions  = canMulti
+                    ? (Array(wrongNative.prefix(3)) + [nativeMeaning]).shuffled()
+                    : []
+            }
+            // ─────────────────────────────────────────────────────────────
+
+            // trueFalse display pair (always targetToNative logic)
+            let showWrong = Bool.random() && !wrongNative.isEmpty
+            let display   = showWrong ? (wrongNative.first ?? nativeMeaning) : nativeMeaning
+
+            // sentenceWords:
+            //  • sentenceBuilder → native chips (user picks the correct native meaning)
+            //  • fillInTheBlank  → target terms (user picks the correct target word)
+            let sentenceBuilderChips = (Array(wrongNative.prefix(3)) + [nativeMeaning])
+                .filter { !$0.isEmpty }.shuffled()
+            let fillBlankChips = (Array(wrongTerms.prefix(3)) + [word.term])
+                .filter { !$0.isEmpty }.shuffled()
+
+            var q = GameQuestion(
                 word: word,
-                mode: words.count >= 4 ? .multipleChoice : .writing,
-                options: options,
-                correctAnswer: correct,
+                mode: finalMode,
+                options: finalOptions,
+                correctAnswer: finalCorrect,
                 displayedMeaning: display,
                 isCorrectPair: !showWrong
             )
+            q.questionDirection = direction
+            q.promptText  = finalPrompt
+            q.sentenceWords = (finalMode == .sentenceBuilder) ? sentenceBuilderChips : fillBlankChips
+            q.gapSentence = "_____ → \(nativeMeaning)"
+            return q
         }
+
+        // ── Append DB sentence questions (one per sentence) ──────────────
+        // Each sentence question shows the full target-lang sentence and the user
+        // picks the correct key-word meaning from word chips.
+        let allNative = words.map { $0.displayTranslation(phoneCode: phoneCode) }
+        let sentenceQuestions: [GameQuestion] = sentences.compactMap { sentence in
+            guard let keyWord = sentence.keyWord,
+                  let keyNative = sentence.keyWordNative,
+                  !keyWord.isEmpty, !keyNative.isEmpty else { return nil }
+
+            // Distractors: random native meanings from the word pool (excluding keyNative)
+            let distractors = allNative.filter { $0 != keyNative }.shuffled().prefix(3)
+            let chips = (Array(distractors) + [keyNative]).shuffled()
+
+            // Use a placeholder SBWord (term = keyWord, translation = keyNative)
+            let placeholder = SBWord(
+                id: UUID(), sourceLangId: 1, targetLangId: 2,
+                term: keyWord, translation: keyNative,
+                phonetic: nil, description: nil,
+                exampleSentence: sentence.targetText,
+                difficulty: sentence.difficulty,
+                translations: nil
+            )
+            var q = GameQuestion(
+                word: placeholder,
+                mode: .sentenceBuilder,
+                options: [],
+                correctAnswer: keyNative,
+                displayedMeaning: keyNative,
+                isCorrectPair: true
+            )
+            q.questionDirection = .targetToNative
+            q.promptText    = sentence.targetText   // full sentence shown to user
+            q.sentenceWords = chips
+            q.sentence      = sentence
+            return q
+        }
+
+        // Interleave sentence questions evenly throughout the word questions
+        var result = wordQuestions
+        let step = max(1, result.count / max(1, sentenceQuestions.count))
+        for (i, sq) in sentenceQuestions.enumerated() {
+            let insertAt = min((i + 1) * step, result.count)
+            result.insert(sq, at: insertAt)
+        }
+        return result
     }
 }

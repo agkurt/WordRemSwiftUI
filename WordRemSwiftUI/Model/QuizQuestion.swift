@@ -17,4 +17,8 @@ struct QuizQuestion: Identifiable {
     // True / False
     let displayedMeaning: String // shown meaning (may be fake)
     let isCorrectPair: Bool      // whether wordInfo.means == displayedMeaning
+
+    // Fill in the Blank / Sentence Builder
+    var sentenceWords: [String] = []  // scrambled word choices (means)
+    var gapSentence: String    = ""   // e.g. "[names] → _____"
 }

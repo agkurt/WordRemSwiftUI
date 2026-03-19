@@ -185,6 +185,30 @@ final class SupabaseDataService {
         return rows.map { $0.words }
     }
 
+    // MARK: - Find course_id for a level (needed to fetch sentences)
+    func fetchCourseId(forLevel levelId: UUID) async throws -> UUID? {
+        let levels: [SBLevel] = try await db
+            .from("levels")
+            .select("id, course_id")
+            .eq("id", value: levelId.uuidString)
+            .limit(1)
+            .execute()
+            .value
+        return levels.first?.courseId
+    }
+
+    // MARK: - Sentences for a course (sentenceBuilder questions)
+    func fetchSentences(courseId: UUID) async throws -> [SBSentence] {
+        try await db
+            .from("sentences")
+            .select()
+            .eq("course_id", value: courseId.uuidString)
+            .eq("is_active", value: true)
+            .order("order_index")
+            .execute()
+            .value
+    }
+
     // MARK: - Words by IDs (For Mistakes Practice)
     func fetchWords(byIds ids: [UUID]) async throws -> [SBWord] {
         guard !ids.isEmpty else { return [] }

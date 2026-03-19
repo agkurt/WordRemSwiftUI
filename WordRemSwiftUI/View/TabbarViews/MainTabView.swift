@@ -39,6 +39,7 @@ enum AppTab: Int, CaseIterable {
 struct MainTabView: View {
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @StateObject private var homeVM = HomeScreenViewModel()
+    @StateObject private var pathVM = PathMapViewModel()
     @State private var selectedTab: AppTab = .path
     @State private var showCreateDeck = false
 
@@ -50,7 +51,7 @@ struct MainTabView: View {
                 case .home:
                     HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
                 case .path:
-                    PathMapView()
+                    PathMapView(vm: pathVM)
                 case .translate:
                     NavigationStack { TranslationView() }
                 case .leaderboard:

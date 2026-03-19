@@ -22,7 +22,7 @@ struct OnboardingQuizView: View {
 
     // Her dil için cümle — hepsi "Dil öğrenmeyi seviyorum" anlamında
     var foreignSentence: String {
-        switch languageName {
+        switch effectiveLanguageName {
         case "İngilizce", "English":   return "I love learning languages."
         case "Almanca", "German":      return "Ich liebe es, Sprachen zu lernen."
         case "İspanyolca", "Spanish":  return "Me encanta aprender idiomas."
@@ -30,7 +30,7 @@ struct OnboardingQuizView: View {
         case "İtalyanca", "Italian":   return "Adoro imparare le lingue."
         case "Rusça", "Russian":       return "Я люблю изучать языки."
         case "Çince", "Chinese":       return "我喜欢学习语言。"
-        default:                       return "I love learning languages."
+        default:                       return "J'adore apprendre des langues."
         }
     }
 
@@ -39,7 +39,7 @@ struct OnboardingQuizView: View {
 
     // Ses için dil kodu
     var voiceLanguageCode: String {
-        switch languageName {
+        switch effectiveLanguageName {
         case "İngilizce", "English":   return "en-US"
         case "Almanca", "German":      return "de-DE"
         case "İspanyolca", "Spanish":  return "es-ES"
@@ -47,7 +47,7 @@ struct OnboardingQuizView: View {
         case "İtalyanca", "Italian":   return "it-IT"
         case "Rusça", "Russian":       return "ru-RU"
         case "Çince", "Chinese":       return "zh-CN"
-        default:                       return "en-US"
+        default:                       return "fr-FR"
         }
     }
 
@@ -62,10 +62,57 @@ struct OnboardingQuizView: View {
         self._availableWords = State(initialValue: initialWords.shuffled())
     }
     
+    /// True when user is learning the same language as their phone language (e.g. English phone + English target).
+    /// In this edge case we show French as the demo foreign language to avoid showing an identical Q&A.
+    private var targetMatchesNative: Bool {
+        let phone = OL.phoneCode.lowercased()
+        let target = languageCode.lowercased()
+        return target.hasPrefix(phone) || phone.hasPrefix(target)
+    }
+
+    /// Effective language name used for sentence & TTS — falls back to French when target == native.
+    private var effectiveLanguageName: String {
+        targetMatchesNative ? "Fransızca" : languageName
+    }
+
     @State private var checkStatus: QuizValidationStatus = .idle
-    
+    @State private var tappedWordIdx: Int? = nil  // tooltip için tıklanan kelime indexi
+
     enum QuizValidationStatus {
         case idle, correct, wrong
+    }
+
+    /// Kelime → çeviri eşleşmesi (demo cümle için sabit).
+    /// OL.phoneCode'a göre native dil seçilir.
+    private var sentenceWordMeanings: [String: String] {
+        let phone = OL.phoneCode.uppercased()
+        switch effectiveLanguageName {
+        case "Fransızca", "French":
+            if phone == "EN" {
+                return ["J'adore": "I love", "apprendre": "to learn", "des": "some", "langues": "languages"]
+            }
+            return ["J'adore": "Seviyorum", "apprendre": "öğrenmeyi", "des": "-", "langues": "dilleri"]
+        case "Rusça", "Russian":
+            if phone == "EN" {
+                return ["Я": "I", "люблю": "love", "изучать": "to learn", "языки": "languages"]
+            }
+            return ["Я": "Ben", "люблю": "seviyorum", "изучать": "öğrenmeyi", "языки": "dilleri"]
+        case "Almanca", "German":
+            if phone == "EN" {
+                return ["Ich": "I", "liebe": "love", "Sprachen": "languages", "lernen": "to learn"]
+            }
+            return ["Ich": "Ben", "liebe": "seviyorum", "Sprachen": "dilleri", "lernen": "öğrenmeyi"]
+        case "İspanyolca", "Spanish":
+            if phone == "EN" {
+                return ["Me": "I", "encanta": "love", "aprender": "to learn", "idiomas": "languages"]
+            }
+            return ["Me": "Ben", "encanta": "seviyorum", "aprender": "öğrenmeyi", "idiomas": "dilleri"]
+        default:
+            if phone == "EN" {
+                return ["I": "Ben", "love": "seviyorum", "learning": "öğrenmeyi", "languages": "dilleri"]
+            }
+            return ["I": "I", "love": "love", "learning": "learning", "languages": "languages"]
+        }
     }
     
     var body: some View {
@@ -87,26 +134,104 @@ struct OnboardingQuizView: View {
                     .font(.custom("Poppins-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1e293b"))
                 
-                HStack(spacing: 16) {
-                    // Speaker Button
-                    Button(action: {
-                        speakSentence()
-                    }) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(isSpeaking ? Color.blue : Color.blue.opacity(0.1))
-                                .frame(width: 50, height: 50)
-                            Image(systemName: isSpeaking ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
-                                .font(.system(size: 22))
-                                .foregroundStyle(isSpeaking ? .white : Color.blue)
+                HStack(alignment: .bottom, spacing: 0) {
+                    // Maskot (sol — Duolingo tarzı)
+                    MascotAnimationView(width: 90, height: 90)
+                        .offset(y: 8)
+
+                    // Speech bubble (sağ)
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Speaker button (bubble içinde)
+                        HStack {
+                            Button(action: { speakSentence() }) {
+                                Image(systemName: isSpeaking ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
+                                    .font(.system(size: 18))
+                                    .foregroundStyle(isSpeaking ? .white : Color.blue)
+                                    .padding(8)
+                                    .background(
+                                        isSpeaking ? Color.blue : Color.blue.opacity(0.1),
+                                        in: Circle()
+                                    )
+                            }
+                            .animation(.easeInOut(duration: 0.2), value: isSpeaking)
+                            Spacer()
+                        }
+                        let words = foreignSentence.components(separatedBy: " ").filter { !$0.isEmpty }
+                        OBFlowLayout(spacing: 8) {
+                            ForEach(Array(words.enumerated()), id: \.offset) { idx, word in
+                                let clean = word.trimmingCharacters(in: .punctuationCharacters)
+                                let hasMeaning = sentenceWordMeanings[clean] != nil
+
+                                Text(word)
+                                    .font(.custom("Poppins-Regular", size: 18))
+                                    .foregroundStyle(tappedWordIdx == idx
+                                        ? Color.blue
+                                        : Color(hex: "#1e293b"))
+                                    .padding(.horizontal, hasMeaning ? 6 : 0)
+                                    .padding(.vertical, hasMeaning ? 2 : 0)
+                                    .background(
+                                        hasMeaning
+                                        ? (tappedWordIdx == idx ? Color.blue.opacity(0.12) : Color.blue.opacity(0.06))
+                                        : Color.clear,
+                                        in: RoundedRectangle(cornerRadius: 5)
+                                    )
+                                    .underline(hasMeaning, color: Color.blue.opacity(0.4))
+                                    .onTapGesture {
+                                        withAnimation(.spring(response: 0.25)) {
+                                            tappedWordIdx = tappedWordIdx == idx ? nil : idx
+                                        }
+                                        // Tıklanan kelimeyi seslendir
+                                        let utterance = AVSpeechUtterance(string: clean)
+                                        utterance.voice = AVSpeechSynthesisVoice(language: voiceLanguageCode)
+                                        utterance.rate = 0.4
+                                        synthesizer.speak(utterance)
+                                    }
+                            }
+                        }
+
+                        // Tooltip (tıklanan kelimenin çevirisi)
+                        if let idx = tappedWordIdx,
+                           idx < words.count {
+                            let clean = words[idx].trimmingCharacters(in: .punctuationCharacters)
+                            if let meaning = sentenceWordMeanings[clean] {
+                                HStack(spacing: 8) {
+                                    Text(clean)
+                                        .font(.custom("Poppins-SemiBold", size: 13))
+                                        .foregroundStyle(Color.blue)
+                                    Text("=")
+                                        .foregroundStyle(Color(hex: "#94a3b8"))
+                                    Text(meaning)
+                                        .font(.custom("Poppins-Regular", size: 13))
+                                        .foregroundStyle(Color(hex: "#1e293b"))
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 7)
+                                .background(Color(hex: "#f0f9ff"), in: RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.blue.opacity(0.25), lineWidth: 1)
+                                )
+                                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                            }
                         }
                     }
-                    .animation(.easeInOut(duration: 0.2), value: isSpeaking)
-
-                    Text(foreignSentence)
-                        .font(.custom("Poppins-Regular", size: 18))
-                        .foregroundStyle(Color(hex: "#1e293b"))
-                        .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color(hex: "#e2e8f0"), lineWidth: 1.5)
+                    )
+                    // Speech bubble tail
+                    .overlay(alignment: .bottomLeading) {
+                        Image(systemName: "triangle.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Color(hex: "#e2e8f0"))
+                            .rotationEffect(.degrees(-90))
+                            .offset(x: -7, y: -14)
+                    }
+                    .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+                    .animation(.spring(response: 0.3), value: tappedWordIdx)
                 }
             }
             .padding(.horizontal, 24)
@@ -259,14 +384,11 @@ struct OnboardingQuizView: View {
     }
     
     private func validateAnswer() {
+        tappedWordIdx = nil  // tooltip'i kapat
         if selectedWords == correctWords {
-            withAnimation {
-                checkStatus = .correct
-            }
+            withAnimation { checkStatus = .correct }
         } else {
-            withAnimation {
-                checkStatus = .wrong
-            }
+            withAnimation { checkStatus = .wrong }
         }
     }
 }
