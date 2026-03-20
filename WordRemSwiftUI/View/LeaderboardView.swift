@@ -2,87 +2,103 @@
 //  LeaderboardView.swift
 //  WordRemSwiftUI
 //
-//  Gamified leaderboard — XP ranking with crown icons,
-//  highlighted current user, and decorative elements.
-//
 
 import SwiftUI
+import Lottie
 
 struct LeaderboardView: View {
 
     @StateObject private var vm = LeaderboardViewModel()
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                // Background
-                LinearGradient(
-                    colors: [Color(hex: "#fef3c7"), Color(hex: "#fff7ed"), Color.white],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+        ZStack {
+            Color(hex: "#f4f6f9").ignoresSafeArea()
 
-                VStack(spacing: 0) {
-                    // Header
-                    leaderboardHeader
+            VStack(spacing: 0) {
+                // ── Header (PathHeaderView ile aynı stil) ─────────
+                leaderboardHeader
 
-                    if vm.isLoading && vm.users.isEmpty {
-                        Spacer()
-                        ProgressView()
-                            .scaleEffect(1.3)
-                            .tint(AppTheme.Colors.primaryOrange)
-                        Spacer()
-                    } else if let err = vm.errorMessage {
-                        Spacer()
-                        VStack(spacing: 12) {
-                            Image(systemName: "wifi.slash")
-                                .font(.system(size: 40))
-                                .foregroundStyle(.secondary)
-                            Text(err)
-                                .font(.custom("Poppins-Regular", size: 13))
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                            Button(AL.s(.leaderboardTryAgain)) {
-                                Task { await vm.loadLeaderboard() }
+                if vm.isLoading && vm.users.isEmpty {
+                    Spacer()
+                    VStack(spacing: 8) {
+                        LottieView(animation: .named("reeny_waving"))
+                            .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
+                            .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                            .frame(width: 110, height: 110)
+                        Text("Yükleniyor...")
+                            .font(.custom("Poppins-Regular", size: 14))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+
+                } else if let err = vm.errorMessage {
+                    Spacer()
+                    VStack(spacing: 14) {
+                        Image(systemName: "wifi.slash")
+                            .font(.system(size: 44))
+                            .foregroundStyle(.secondary)
+                        Text(err)
+                            .font(.custom("Poppins-Regular", size: 13))
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                        Button(AL.s(.leaderboardTryAgain)) {
+                            Task { await vm.loadLeaderboard() }
+                        }
+                        .font(.custom("Poppins-SemiBold", size: 14))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 28).padding(.vertical, 12)
+                        .background(AppTheme.Colors.primaryOrange, in: Capsule())
+                    }
+                    Spacer()
+
+                } else if vm.users.isEmpty {
+                    Spacer()
+                    VStack(spacing: 12) {
+                        Text("🏆").font(.system(size: 60))
+                        Text(AL.s(.leaderboardNoPlayers))
+                            .font(.custom("Poppins-SemiBold", size: 17))
+                        Text(AL.s(.leaderboardNoPlayersHint))
+                            .font(.custom("Poppins-Regular", size: 13))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            // ── Top 3 Podium ───────────────────────
+                            if vm.users.count >= 3 {
+                                PodiumView(
+                                    first:  vm.users[0],
+                                    second: vm.users[1],
+                                    third:  vm.users[2],
+                                    currentUserId: vm.currentUserId
+                                )
+                                .padding(.top, 20)
+                                .padding(.bottom, 8)
                             }
-                            .font(.custom("Poppins-SemiBold", size: 14))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 10)
-                            .background(AppTheme.Colors.primaryOrange, in: Capsule())
-                        }
-                        Spacer()
-                    } else if vm.users.isEmpty {
-                        Spacer()
-                        VStack(spacing: 12) {
-                            Text("🏆")
-                                .font(.system(size: 60))
-                            Text(AL.s(.leaderboardNoPlayers))
-                                .font(.custom("Poppins-SemiBold", size: 17))
-                            Text(AL.s(.leaderboardNoPlayersHint))
-                                .font(.custom("Poppins-Regular", size: 13))
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                    } else {
-                        // Top 3 podium
-                        if vm.users.count >= 3 {
-                            PodiumView(
-                                first: vm.users[0],
-                                second: vm.users[1],
-                                third: vm.users[2],
-                                currentUserId: vm.currentUserId
-                            )
-                            .padding(.top, 8)
-                        }
 
-                        // Rankings list
-                        ScrollView(showsIndicators: false) {
+                            // ── Divider ────────────────────────────
+                            HStack {
+                                Rectangle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Color.clear, Color(hex: "#e2e8f0"), Color.clear],
+                                            startPoint: .leading, endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(height: 1)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+
+                            // ── Rankings 4th+ ─────────────────────
                             LazyVStack(spacing: 8) {
                                 let startIndex = min(3, vm.users.count)
-                                ForEach(Array(vm.users.dropFirst(startIndex).enumerated()),
-                                        id: \.element.id) { index, user in
+                                ForEach(
+                                    Array(vm.users.dropFirst(startIndex).enumerated()),
+                                    id: \.element.id
+                                ) { index, user in
                                     RankRow(
                                         rank: startIndex + index + 1,
                                         user: user,
@@ -91,84 +107,76 @@ struct LeaderboardView: View {
                                 }
                             }
                             .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
+                            .padding(.bottom, 20)
                         }
-                        .refreshable {
-                            await vm.loadLeaderboard()
-                        }
+                    }
+                    .refreshable { await vm.loadLeaderboard() }
 
-                        // My Rank (Sticky Bottom) if not in Top 50
-                        if let uid = vm.currentUserId, 
-                           let specificRank = vm.specificUserRank, 
-                           let specificUser = vm.currentUser,
-                           !vm.users.contains(where: { $0.id == uid }) {
-                            
-                            VStack(spacing: 0) {
-                                Divider()
-                                    .background(AppTheme.Colors.primaryOrange.opacity(0.3))
-                                RankRow(
-                                    rank: specificRank,
-                                    user: specificUser,
-                                    isCurrentUser: true
-                                )
+                    // ── Sticky "Benim Sıram" ───────────────────────
+                    if let uid = vm.currentUserId,
+                       let specificRank = vm.specificUserRank,
+                       let specificUser = vm.currentUser,
+                       !vm.users.contains(where: { $0.id == uid }) {
+                        VStack(spacing: 0) {
+                            LinearGradient(
+                                colors: [Color.clear, Color(hex: "#e2e8f0")],
+                                startPoint: .top, endPoint: .bottom
+                            )
+                            .frame(height: 1)
+                            RankRow(rank: specificRank, user: specificUser, isCurrentUser: true)
                                 .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(Color.white.shadow(color: .black.opacity(0.08), radius: 8, y: -4))
-                            }
+                                .padding(.vertical, 10)
+                                .background(.ultraThinMaterial)
                         }
                     }
                 }
             }
-            .navigationBarHidden(true)
-            .onAppear {
-                Task {
-                    await vm.loadLeaderboard()
-                }
-            }
         }
+        .navigationBarHidden(true)
+        .onAppear { Task { await vm.loadLeaderboard() } }
     }
 
     // MARK: - Header
     private var leaderboardHeader: some View {
-        VStack(spacing: 6) {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(AL.s(.leaderboardTitle))
-                        .font(.custom("Poppins-Bold", size: 24))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
-                    Text(AL.s(.leaderboardSubtitle))
-                        .font(.custom("Poppins-Regular", size: 12))
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-
-                if let rank = vm.currentUserRank() {
-                    HStack(spacing: 4) {
-                        Image(systemName: "medal.fill")
-                            .foregroundStyle(Color(hex: "#f59e0b"))
-                        Text("#\(rank)")
-                            .font(.custom("Poppins-Bold", size: 16))
-                            .foregroundStyle(Color(hex: "#1a1a2e"))
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color(hex: "#f59e0b").opacity(0.15), in: Capsule())
-                }
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(AL.s(.leaderboardTitle))
+                    .font(.custom("Poppins-Bold", size: 22))
+                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                Text(AL.s(.leaderboardSubtitle))
+                    .font(.custom("Poppins-Regular", size: 12))
+                    .foregroundStyle(.secondary)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
-            .padding(.bottom, 10)
+            Spacer()
+
+            // Kullanıcının kendi sırası
+            if let rank = vm.currentUserRank() {
+                HStack(spacing: 5) {
+                    Image(systemName: "medal.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#f59e0b"))
+                    Text("#\(rank)")
+                        .font(.custom("Poppins-Bold", size: 15))
+                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(Color(hex: "#f59e0b").opacity(0.13), in: Capsule())
+            }
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .padding(.bottom, 14)
         .background(
-            RoundedRectangle(cornerRadius: 0)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
+            Color.clear
+                .background(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
         )
     }
 }
 
 // MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Top 3 Podium
+// MARK: - Podium
 // MARK: ═══════════════════════════════════════════════════════════
 
 private struct PodiumView: View {
@@ -179,82 +187,74 @@ private struct PodiumView: View {
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
-            // #2 (Silver)
-            PodiumSlot(
-                user: second,
-                rank: 2,
-                height: 90,
-                color: Color(hex: "#94a3b8"),
-                crownColor: Color(hex: "#c0c0c0"),
-                isCurrentUser: second.id == currentUserId
-            )
+            PodiumSlot(user: second, rank: 2, barHeight: 90,
+                       podiumColor: Color(hex: "#94a3b8"), crownColor: Color(hex: "#c0c0c0"),
+                       isCurrentUser: second.id == currentUserId)
 
-            // #1 (Gold)
-            PodiumSlot(
-                user: first,
-                rank: 1,
-                height: 120,
-                color: Color(hex: "#f59e0b"),
-                crownColor: Color(hex: "#fbbf24"),
-                isCurrentUser: first.id == currentUserId
-            )
+            PodiumSlot(user: first, rank: 1, barHeight: 120,
+                       podiumColor: Color(hex: "#f59e0b"), crownColor: Color(hex: "#fbbf24"),
+                       isCurrentUser: first.id == currentUserId)
 
-            // #3 (Bronze)
-            PodiumSlot(
-                user: third,
-                rank: 3,
-                height: 70,
-                color: Color(hex: "#d97706"),
-                crownColor: Color(hex: "#cd7f32"),
-                isCurrentUser: third.id == currentUserId
-            )
+            PodiumSlot(user: third, rank: 3, barHeight: 70,
+                       podiumColor: Color(hex: "#cd7f32"), crownColor: Color(hex: "#d97706"),
+                       isCurrentUser: third.id == currentUserId)
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 16)
     }
 }
 
 private struct PodiumSlot: View {
     let user: SBUser
     let rank: Int
-    let height: CGFloat
-    let color: Color
+    let barHeight: CGFloat
+    let podiumColor: Color
     let crownColor: Color
     let isCurrentUser: Bool
 
     @State private var appeared = false
 
+    private var avatarSize: CGFloat { rank == 1 ? 68 : 54 }
+
     var body: some View {
         VStack(spacing: 6) {
-            // Crown / medal
+            // Crown (1. yer)
             if rank == 1 {
                 Image(systemName: "crown.fill")
-                    .font(.system(size: 24))
+                    .font(.system(size: 26))
                     .foregroundStyle(crownColor)
-                    .shadow(color: crownColor.opacity(0.5), radius: 6, y: 2)
+                    .shadow(color: crownColor.opacity(0.6), radius: 6, y: 2)
+                    .offset(y: 4)
+            } else {
+                Color.clear.frame(height: 18)
             }
 
-            // Avatar circle
+            // Avatar
             ZStack {
+                if isCurrentUser {
+                    Circle()
+                        .stroke(
+                            LinearGradient(
+                                colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C"), Color(hex: "#6B22E0")],
+                                startPoint: .topLeading, endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 3
+                        )
+                        .frame(width: avatarSize + 8, height: avatarSize + 8)
+                }
+
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [color, color.opacity(0.7)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            colors: [podiumColor, podiumColor.opacity(0.7)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
                         )
                     )
-                    .frame(width: rank == 1 ? 64 : 52, height: rank == 1 ? 64 : 52)
-                    .shadow(color: color.opacity(0.3), radius: 8, y: 4)
+                    .frame(width: avatarSize, height: avatarSize)
+                    .shadow(color: podiumColor.opacity(0.35), radius: 10, y: 5)
 
                 Text(user.username.prefix(1).uppercased())
-                    .font(.custom("Poppins-Bold", size: rank == 1 ? 24 : 20))
+                    .font(.custom("Poppins-Bold", size: rank == 1 ? 26 : 20))
                     .foregroundStyle(.white)
-
-                if isCurrentUser {
-                    Circle()
-                        .strokeBorder(AppTheme.Colors.primaryOrange, lineWidth: 3)
-                        .frame(width: rank == 1 ? 70 : 58, height: rank == 1 ? 70 : 58)
-                }
             }
 
             // Username
@@ -266,24 +266,28 @@ private struct PodiumSlot: View {
             // XP
             Text("\(user.totalXp) XP")
                 .font(.custom("Poppins-Bold", size: 11))
-                .foregroundStyle(color)
+                .foregroundStyle(podiumColor)
 
             // Podium bar
-            RoundedRectangle(cornerRadius: 8)
-                .fill(
-                    LinearGradient(
-                        colors: [color, color.opacity(0.6)],
-                        startPoint: .top,
-                        endPoint: .bottom
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(
+                        LinearGradient(
+                            colors: [podiumColor, podiumColor.opacity(0.55)],
+                            startPoint: .top, endPoint: .bottom
+                        )
                     )
-                )
-                .frame(height: appeared ? height : 0)
-                .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(Double(rank) * 0.15), value: appeared)
-                .overlay(
-                    Text("#\(rank)")
-                        .font(.custom("Poppins-Bold", size: 20))
-                        .foregroundStyle(.white.opacity(0.8))
-                )
+
+                Text("#\(rank)")
+                    .font(.custom("Poppins-Bold", size: rank == 1 ? 22 : 18))
+                    .foregroundStyle(.white.opacity(0.85))
+            }
+            .frame(height: appeared ? barHeight : 4)
+            .animation(
+                .spring(response: 0.65, dampingFraction: 0.72)
+                    .delay(Double(4 - rank) * 0.12),
+                value: appeared
+            )
         }
         .frame(maxWidth: .infinity)
         .onAppear { appeared = true }
@@ -291,7 +295,7 @@ private struct PodiumSlot: View {
 }
 
 // MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Rank Row (4th place and beyond)
+// MARK: - Rank Row
 // MARK: ═══════════════════════════════════════════════════════════
 
 private struct RankRow: View {
@@ -301,30 +305,31 @@ private struct RankRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            // Rank number
+            // Sıra numarası
             Text("\(rank)")
                 .font(.custom("Poppins-Bold", size: 15))
-                .foregroundStyle(.secondary)
-                .frame(width: 30, alignment: .center)
+                .foregroundStyle(rank <= 10 ? AppTheme.Colors.primaryOrange : .secondary)
+                .frame(width: 32, alignment: .center)
 
             // Avatar
             ZStack {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [Color(hex: "#e2e8f0"), Color(hex: "#cbd5e1")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            colors: isCurrentUser
+                                ? [Color(hex: "#FFAA44"), Color(hex: "#E8409C")]
+                                : [Color(hex: "#e2e8f0"), Color(hex: "#cbd5e1")],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
                         )
                     )
-                    .frame(width: 42, height: 42)
+                    .frame(width: 44, height: 44)
 
                 Text(user.username.prefix(1).uppercased())
-                    .font(.custom("Poppins-SemiBold", size: 17))
-                    .foregroundStyle(Color(hex: "#64748b"))
+                    .font(.custom("Poppins-SemiBold", size: 18))
+                    .foregroundStyle(isCurrentUser ? .white : Color(hex: "#64748b"))
             }
 
-            // Name + streak
+            // İsim + streak
             VStack(alignment: .leading, spacing: 2) {
                 Text(user.username)
                     .font(.custom("Poppins-SemiBold", size: 14))
@@ -343,21 +348,42 @@ private struct RankRow: View {
 
             Spacer()
 
-            // XP
+            // XP badge
             Text("\(user.totalXp) XP")
-                .font(.custom("Poppins-SemiBold", size: 14))
-                .foregroundStyle(AppTheme.Colors.primaryOrange)
+                .font(.custom("Poppins-SemiBold", size: 13))
+                .foregroundStyle(isCurrentUser ? .white : AppTheme.Colors.primaryOrange)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(
+                    isCurrentUser
+                        ? AnyShapeStyle(LinearGradient(
+                            colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C")],
+                            startPoint: .leading, endPoint: .trailing))
+                        : AnyShapeStyle(AppTheme.Colors.primaryOrange.opacity(0.1)),
+                    in: Capsule()
+                )
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(isCurrentUser ? AppTheme.Colors.primaryOrange.opacity(0.08) : Color.white)
-                .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(isCurrentUser
+                      ? LinearGradient(
+                          colors: [Color(hex: "#FFAA44").opacity(0.06), Color(hex: "#E8409C").opacity(0.06)],
+                          startPoint: .leading, endPoint: .trailing)
+                      : LinearGradient(colors: [Color.white], startPoint: .top, endPoint: .bottom))
+                .shadow(color: .black.opacity(0.04), radius: 5, y: 2)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(isCurrentUser ? AppTheme.Colors.primaryOrange.opacity(0.3) : Color.clear, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    isCurrentUser
+                        ? AnyShapeStyle(LinearGradient(
+                            colors: [Color(hex: "#FFAA44").opacity(0.4), Color(hex: "#E8409C").opacity(0.4)],
+                            startPoint: .leading, endPoint: .trailing))
+                        : AnyShapeStyle(Color.clear),
+                    lineWidth: 1.5
+                )
         )
     }
 }

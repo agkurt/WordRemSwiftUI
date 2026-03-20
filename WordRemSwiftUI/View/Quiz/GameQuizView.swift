@@ -13,6 +13,7 @@ struct GameQuizView: View {
 
     let sessionType: QuizSessionType
     let title: String
+    var preloadedQuestions: [GameQuestion] = []
 
     @StateObject private var vm = GameQuizViewModel()
     @Environment(\.dismiss) private var dismiss
@@ -79,19 +80,24 @@ struct GameQuizView: View {
         .task {
             guard !wordsLoaded else { return }
             wordsLoaded = true
+            // .aiGenerated: sorular AIQuizView'dan preloadedQuestions olarak gelir
+            if case .aiGenerated(let t) = sessionType {
+                vm.setupAIQuiz(questions: preloadedQuestions, title: t)
+                return
+            }
             do {
                 let words: [SBWord]
                 var sentences: [SBSentence] = []
                 switch sessionType {
                 case .level(let lId):
                     words = try await SupabaseDataService.shared.fetchWords(levelId: lId)
-                    // fetch course_id for this level to load sentences
                     if let courseId = words.isEmpty ? nil : (try? await SupabaseDataService.shared.fetchCourseId(forLevel: lId)) {
                         sentences = (try? await SupabaseDataService.shared.fetchSentences(courseId: courseId)) ?? []
                     }
                 case .mistakes:
                     let ids = MistakesManager.shared.mistakeUUIDs
                     words = try await SupabaseDataService.shared.fetchWords(byIds: ids)
+                case .aiGenerated: return   // already handled above
                 }
                 vm.setup(sessionType: sessionType, words: words, sentences: sentences, levelTitle: title)
             } catch {

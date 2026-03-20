@@ -38,7 +38,16 @@ final class SupabaseService {
             """)
         }
 
-        client = SupabaseClient(supabaseURL: supabaseURL, supabaseKey: anonKey)
+        client = SupabaseClient(
+            supabaseURL: supabaseURL,
+            supabaseKey: anonKey,
+            options: SupabaseClientOptions(
+                auth: SupabaseClientOptions.AuthOptions(
+                    autoRefreshToken: true,
+                    emitLocalSessionAsInitialSession: true
+                )
+            )
+        )
     }
 
     // MARK: - Convenience

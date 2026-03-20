@@ -38,6 +38,7 @@ struct QuizResultView: View {
 
                 // Mascot animation
                 LottieView(animation: .named("reeny_waving"))
+                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                     .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
                     .frame(width: 160, height: 160)
 
@@ -50,7 +51,7 @@ struct QuizResultView: View {
                     .font(.custom("Poppins-Regular", size: 15))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
 
-                // Star display
+               
                 HStack(spacing: 12) {
                     ForEach(1...3, id: \.self) { i in
                         Image(systemName: i <= stars ? "star.fill" : "star")

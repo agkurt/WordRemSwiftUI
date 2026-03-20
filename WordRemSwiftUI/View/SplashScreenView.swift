@@ -59,6 +59,7 @@ struct SplashScreenView: View {
                     
                     // Lottie loading animation
                     LottieView(animation: .named("StartAnimation"))
+                        .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                         .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
                         .frame(width: 80, height: 80)
                         .padding(.top, 8)
@@ -128,6 +129,7 @@ struct LaunchScreenView: View {
                     .opacity(logoOpacity)
 
                 LottieView(animation: .named("StartAnimation"))
+                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                     .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
                     .frame(width: 80, height: 80)
                     .padding(.top, 8)

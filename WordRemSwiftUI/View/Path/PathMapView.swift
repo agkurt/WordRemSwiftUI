@@ -26,6 +26,7 @@ struct PathMapView: View {
     @State private var isRefreshingAfterQuiz = false
     
     @State private var showMistakesQuiz = false
+    @State private var showAIQuiz = false
 
     var body: some View {
         NavigationStack {
@@ -34,11 +35,12 @@ struct PathMapView: View {
                 pathBackground
 
                 if vm.isLoading && vm.levelsWithProgress.isEmpty {
-                    VStack(spacing: 8) {
+                    VStack(spacing: 4) {
                         LottieView(animation: .named("reeny_waving"))
+                            .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                             .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
                             .frame(width: 120, height: 120)
-                        Text("Yükleniyor...")
+                        Text(AL.s(.gameLoading))
                             .font(.custom("Poppins-Regular", size: 14))
                             .foregroundStyle(AppTheme.Colors.textSecondary)
                     }
@@ -90,6 +92,37 @@ struct PathMapView: View {
                             .padding(.top, 12)
                             .transition(.scale.combined(with: .opacity))
                         }
+
+                        // ── AI Quiz Button ─────────────────────────
+                        Button {
+                            showAIQuiz = true
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                Text("AI Grammar Quiz")
+                                    .font(.custom("Poppins-SemiBold", size: 14))
+                                    .foregroundStyle(.white)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(.white.opacity(0.8))
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color(hex: "#8b5cf6"), Color(hex: "#6366f1")],
+                                    startPoint: .leading, endPoint: .trailing
+                                ),
+                                in: RoundedRectangle(cornerRadius: 16)
+                            )
+                            .shadow(color: Color(hex: "#8b5cf6").opacity(0.35), radius: 6, y: 3)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
 
                         // ── Zigzag Level Map ──────────────────────
                         ScrollViewReader { proxy in
@@ -212,6 +245,10 @@ struct PathMapView: View {
                 }
             }) {
                 GameQuizView(sessionType: .mistakes, title: AL.s(.pathMistakesReview))
+            }
+            // ── AI Quiz Navigation ────────────────────────────────
+            .fullScreenCover(isPresented: $showAIQuiz) {
+                AIQuizView()
             }
         }
     }
@@ -455,57 +492,87 @@ struct PathNodeView: View {
             // Main circular node
             Button(action: onTap) {
                 ZStack {
-                    // Outer glow ring for active node
+                    // Outer pulse ring — gradient for active, plain for others
                     if item.status == .unlocked || item.status == .inProgress {
+                        // Second outer ring (softer, larger)
                         Circle()
                             .stroke(
                                 LinearGradient(
                                     colors: [
-                                        AppTheme.Colors.primaryOrange.opacity(0.6),
-                                        AppTheme.Colors.darkOrange.opacity(0.3),
-                                        AppTheme.Colors.primaryOrange.opacity(0.1)
+                                        Color(hex: "#FFAA44").opacity(0.25),
+                                        Color(hex: "#E8409C").opacity(0.15),
+                                        Color(hex: "#6B22E0").opacity(0.08)
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ),
-                                lineWidth: 4
+                                lineWidth: 6
                             )
-                            .frame(width: 84, height: 84)
-                            .scaleEffect(pulse ? 1.15 : 1.0)
-                            .opacity(pulse ? 0.5 : 1.0)
+                            .frame(width: 96, height: 96)
+                            .scaleEffect(pulse ? 1.12 : 1.0)
+                            .opacity(pulse ? 0.4 : 0.9)
+                            .animation(
+                                .easeInOut(duration: 1.8).repeatForever(autoreverses: true),
+                                value: pulse
+                            )
+
+                        // Inner ring (sharper gradient border)
+                        Circle()
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Color(hex: "#FFAA44"),
+                                        Color(hex: "#E8409C"),
+                                        Color(hex: "#6B22E0")
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 3
+                            )
+                            .frame(width: 80, height: 80)
+                            .scaleEffect(pulse ? 1.08 : 1.0)
+                            .opacity(pulse ? 0.6 : 1.0)
                             .animation(
                                 .easeInOut(duration: 1.5).repeatForever(autoreverses: true),
                                 value: pulse
                             )
                     }
 
-                    // Main circle
+                    // Main circle (shadow only, image covers it)
                     Circle()
                         .fill(nodeFill)
                         .frame(width: 72, height: 72)
-                        .shadow(color: nodeShadow, radius: pulse ? 16 : 8, y: 4)
+                        .shadow(color: nodeShadow, radius: pulse ? 18 : 8, y: 4)
 
-                    // Inner circle border
-                    Circle()
-                        .strokeBorder(nodeBorder, lineWidth: 3)
-                        .frame(width: 72, height: 72)
-
-                    // Icon
+                    // Icon — starss fills the entire circle for active nodes
                     Group {
                         if item.status == .locked {
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundStyle(Color.white.opacity(0.8))
+                            Circle()
+                                .strokeBorder(nodeBorder, lineWidth: 3)
+                                .frame(width: 72, height: 72)
+                                .overlay {
+                                    Image(systemName: "lock.fill")
+                                        .font(.system(size: 22, weight: .bold))
+                                        .foregroundStyle(Color.white.opacity(0.8))
+                                }
                         } else if item.status == .completed {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundStyle(Color.white)
+                            Circle()
+                                .strokeBorder(nodeBorder, lineWidth: 3)
+                                .frame(width: 72, height: 72)
+                                .overlay {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 26, weight: .bold))
+                                        .foregroundStyle(Color.white)
+                                }
                         } else {
+                            // starss covers the full circle — clip to circle shape
                             Image("starss")
                                 .resizable()
                                 .renderingMode(.original)
-                                .scaledToFit()
-                                .frame(width: 38, height: 38)
+                                .scaledToFill()
+                                .frame(width: 72, height: 72)
+                                .clipShape(Circle())
                         }
                     }
                 }
@@ -587,9 +654,9 @@ struct PathNodeView: View {
 
     private var nodeShadow: Color {
         switch item.status {
-        case .completed:   return Color(hex: "#22c55e").opacity(0.35)
-        case .unlocked, .inProgress: return AppTheme.Colors.primaryOrange.opacity(0.3)
-        case .locked:      return Color.clear
+        case .completed:              return Color(hex: "#22c55e").opacity(0.35)
+        case .unlocked, .inProgress:  return Color(hex: "#E8409C").opacity(0.4)
+        case .locked:                 return Color.clear
         }
     }
 
@@ -750,6 +817,7 @@ struct LevelCompletePopupView: View {
             VStack(spacing: 24) {
                 // Mascot celebrating
                 LottieView(animation: .named("reeny_waving"))
+                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                     .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
                     .frame(width: 120, height: 120)
                     .padding(.top, 10)
@@ -825,6 +893,7 @@ struct MistakesSavedPopupView: View {
 
             VStack(spacing: 24) {
                 LottieView(animation: .named("reeny_waving"))
+                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                     .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
                     .frame(width: 110, height: 110)
                     .padding(.top, 10)
@@ -877,6 +946,7 @@ struct MistakesClearedPopupView: View {
 
             VStack(spacing: 24) {
                 LottieView(animation: .named("reeny_waving"))
+                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                     .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
                     .frame(width: 110, height: 110)
                     .padding(.top, 10)

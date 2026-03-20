@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct HomeScreenView: View {
 
@@ -56,7 +57,10 @@ struct HomeScreenView: View {
                     // MARK: Content
                     if viewModel.isLoading {
                         Spacer()
-                        ProgressView().tint(.orange).scaleEffect(1.3)
+                        LottieView(animation: .named("reeny_waving"))
+                            .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
+                            .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                            .frame(width: 140, height: 140)
                         Spacer()
                     } else if viewModel.cardNames.isEmpty {
                         EmptyDecksView(onAdd: { showCreateDeck = true })
@@ -192,3 +196,28 @@ private struct EmptyDecksView: View {
         Spacer()
     }
 }
+
+// MARK: - Empty State
+private struct EmptyDescksView: View {
+
+    var body: some View {
+        Spacer()
+        VStack(spacing: 20) {
+            ZStack {
+                LottieView(animation: .named("reeny_waving"))
+                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
+                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: 140, height: 140)
+            }
+           
+        }
+        Spacer()
+    }
+}
+
+#Preview {
+    EmptyDescksView()
+}
+
+
+

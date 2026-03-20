@@ -116,7 +116,7 @@ private struct CustomTabBar: View {
                     .frame(maxWidth: .infinity)
 
                     // Space for AddButton
-                    Spacer().frame(width: 50)
+                    Spacer().frame(width: 84)
 
                     // Right group
                     HStack(spacing: 0) {
@@ -174,8 +174,8 @@ private struct TabBarItem: View {
                         .resizable()
                         .renderingMode(.original)
                         .scaledToFit()
-                        .frame(width: 28, height: 28)
-                        .scaleEffect(isSelected ? 1.12 : 1.0)
+                        .frame(width: 36, height: 36)
+                        .scaleEffect(isSelected ? 1.10 : 1.0)
                 }
                 .frame(width: 52, height: 44)
 
@@ -204,27 +204,33 @@ private struct AddButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image("plusicon")
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: 32, height: 32)
-                .padding(14)
-                .background(
-                    LinearGradient(
-                        colors: [Color(hex: "#f97316"), Color(hex: "#ec4899"), Color(hex: "#8b5cf6")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+            ZStack {
+                // White circle background with shadow
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 62, height: 62)
+                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+                    .overlay(
+                        Circle()
+                            .stroke(
+                                LinearGradient(
+                                    colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C"), Color(hex: "#6B22E0")],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 2
+                            )
                     )
-                )
-                .clipShape(Circle())
-                .shadow(
-                    color: Color(hex: "#ec4899").opacity(0.45),
-                    radius: 10, y: 4
-                )
-                .scaleEffect(isPressed ? 0.9 : 1.0)
-                .animation(.spring(response: 0.25), value: isPressed)
-                .offset(y: -18)
+
+                Image("plusicon")
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: 38, height: 38)
+            }
+            .scaleEffect(isPressed ? 0.88 : 1.0)
+            .animation(.spring(response: 0.25), value: isPressed)
+            .offset(y: -22)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(

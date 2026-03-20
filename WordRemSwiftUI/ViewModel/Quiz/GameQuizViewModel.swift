@@ -13,6 +13,7 @@ import Speech
 enum QuizSessionType: Equatable {
     case level(UUID)
     case mistakes
+    case aiGenerated(title: String)
 }
 
 @MainActor
@@ -93,6 +94,19 @@ final class GameQuizViewModel: ObservableObject {
                 await TTSManager.shared.prefetchAsync(word, langCode: lang)
             }
         }
+    }
+
+    // MARK: - Setup: AI Generated Quiz
+    func setupAIQuiz(questions: [GameQuestion], title: String) {
+        self.sessionType     = .aiGenerated(title: title)
+        self.levelTitle      = title
+        self.targetLangCode  = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+        self.questions       = questions
+        self.currentIndex    = 0
+        self.score           = 0
+        self.writingAnswer   = ""
+        self.sessionMistakes = []
+        self.state           = questions.isEmpty ? .dailyLimitReached : .question
     }
 
     // MARK: - Answer: Multiple Choice
@@ -202,6 +216,8 @@ final class GameQuizViewModel: ObservableObject {
             if !correctIds.isEmpty {
                 MistakesManager.shared.removeMistakes(correctIds)
             }
+        case .aiGenerated:
+            break   // AI quiz doesn't track mistakes
         }
     }
 
@@ -255,6 +271,11 @@ final class GameQuizViewModel: ObservableObject {
                 UserDefaults.standard.set(true, forKey: "justClearedMistakes")
             }
             state = .completed(score: scorePercent, stars: 3, xpEarned: score * 5)
+
+        case .aiGenerated:
+            // AI quiz: XP ver ama level tamamlama RPC'si çağırma
+            let stars = scorePercent >= 80 ? 3 : scorePercent >= 60 ? 2 : scorePercent >= 40 ? 1 : 0
+            state = .completed(score: scorePercent, stars: stars, xpEarned: score * 8)
         }
 
         isSaving = false
