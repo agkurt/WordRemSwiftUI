@@ -25,15 +25,15 @@ struct RegisterScreenView: View {
                             VStack(alignment: .leading, spacing: 15) {
                                 Text(" Welcome")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .font(.custom("Poppins-Medium", size: 25))
+                                    .font(.custom("Feather-Bold", size: 25))
                                 Text(" Sign Up")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .font(.custom("Poppins-Bold", size: 25))
+                                    .font(.custom("Feather-Bold", size: 25))
                             }
                             .padding(.bottom, 30)
 
                             Text("Sign up with email")
-                                .font(.custom("Poppins-Light", size: 15))
+                                .font(.custom("Feather-Bold", size: 15))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading)
 
@@ -55,7 +55,7 @@ struct RegisterScreenView: View {
                                     presentationMode.wrappedValue.dismiss()
                                 } label: {
                                     Text("I already have an account")
-                                        .font(.custom("Poppins-Medium", size: 14))
+                                        .font(.custom("Feather-Bold", size: 14))
                                         .foregroundColor(AppTheme.Colors.textSecondary)
                                 }
 
@@ -76,7 +76,7 @@ struct RegisterScreenView: View {
                                             .cornerRadius(30)
                                     } else {
                                         Text("Sign Up")
-                                            .font(.custom("Poppins-SemiBold", size: 16))
+                                            .font(.custom("Feather-Bold", size: 16))
                                             .frame(maxWidth: .infinity, alignment: .center)
                                             .padding()
                                             .background(
@@ -94,7 +94,7 @@ struct RegisterScreenView: View {
 
                                 if let err = viewModel.errorMessage {
                                     Text(err)
-                                        .font(.custom("Poppins-Regular", size: 13))
+                                        .font(.custom("Feather-Bold", size: 13))
                                         .foregroundStyle(.red)
                                         .multilineTextAlignment(.center)
                                         .padding(.horizontal)

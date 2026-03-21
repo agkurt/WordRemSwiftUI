@@ -35,7 +35,7 @@ struct TranslationView: View {
                                 Text(sourceLang.flag)
                                     .font(.system(size: 22))
                                 Text(sourceLang.shortName)
-                                    .font(.custom("Poppins-SemiBold", size: 15))
+                                    .font(.custom("Feather-Bold", size: 15))
                                 Image(systemName: "chevron.down")
                                     .font(.system(size: 12, weight: .semibold))
                             }
@@ -69,7 +69,7 @@ struct TranslationView: View {
                                 Text(targetLang.flag)
                                     .font(.system(size: 22))
                                 Text(targetLang.shortName)
-                                    .font(.custom("Poppins-SemiBold", size: 15))
+                                    .font(.custom("Feather-Bold", size: 15))
                                 Image(systemName: "chevron.down")
                                     .font(.system(size: 12, weight: .semibold))
                             }
@@ -90,7 +90,7 @@ struct TranslationView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Text("From: \(sourceLang.rawValue)")
-                                .font(.custom("Poppins-SemiBold", size: 14))
+                                .font(.custom("Feather-Bold", size: 14))
                                 .foregroundColor(AppTheme.Colors.textSecondary)
                             
                             Spacer()
@@ -107,14 +107,14 @@ struct TranslationView: View {
                         ZStack(alignment: .topLeading) {
                             if inputText.isEmpty {
                                 Text("Enter text to translate...")
-                                    .font(.custom("Poppins-Regular", size: 16))
+                                    .font(.custom("Feather-Bold", size: 16))
                                     .foregroundColor(AppTheme.Colors.textSecondary.opacity(0.5))
                                     .padding(.top, 8)
                                     .padding(.leading, 4)
                             }
                             
                             TextEditor(text: $inputText)
-                                .font(.custom("Poppins-Regular", size: 16))
+                                .font(.custom("Feather-Bold", size: 16))
                                 .foregroundColor(AppTheme.Colors.textPrimary)
                                 .scrollContentBackground(.hidden)
                                 .background(Color.clear)
@@ -134,7 +134,7 @@ struct TranslationView: View {
                         
                         HStack {
                             Text("\(inputText.count) / \(maxCharacters)")
-                                .font(.custom("Poppins-Regular", size: 12))
+                                .font(.custom("Feather-Bold", size: 12))
                                 .foregroundColor(AppTheme.Colors.textSecondary)
                             
                             Spacer()
@@ -145,7 +145,7 @@ struct TranslationView: View {
                                         Image(systemName: "doc.on.clipboard")
                                         Text("Paste")
                                     }
-                                    .font(.custom("Poppins-Medium", size: 12))
+                                    .font(.custom("Feather-Bold", size: 12))
                                     .foregroundColor(AppTheme.Colors.primaryOrange)
                                 }
                             }
@@ -169,7 +169,7 @@ struct TranslationView: View {
                             ProgressView()
                                 .tint(AppTheme.Colors.primaryOrange)
                             Text("Translating...")
-                                .font(.custom("Poppins-Medium", size: 14))
+                                .font(.custom("Feather-Bold", size: 14))
                                 .foregroundColor(AppTheme.Colors.textSecondary)
                         }
                         .padding(.vertical, 8)
@@ -180,7 +180,7 @@ struct TranslationView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 Text("To: \(targetLang.rawValue)")
-                                    .font(.custom("Poppins-SemiBold", size: 14))
+                                    .font(.custom("Feather-Bold", size: 14))
                                     .foregroundColor(AppTheme.Colors.textSecondary)
                                 
                                 Spacer()
@@ -191,7 +191,7 @@ struct TranslationView: View {
                                             Image(systemName: viewModel.showCopiedConfirmation ? "checkmark" : "doc.on.doc")
                                             Text(viewModel.showCopiedConfirmation ? "Copied" : "Copy")
                                         }
-                                        .font(.custom("Poppins-Medium", size: 12))
+                                        .font(.custom("Feather-Bold", size: 12))
                                         .foregroundColor(viewModel.showCopiedConfirmation ? .green : AppTheme.Colors.primaryOrange)
                                     }
                                 }
@@ -207,7 +207,7 @@ struct TranslationView: View {
                                 .frame(height: 100)
                             } else {
                                 Text(viewModel.translatedText)
-                                    .font(.custom("Poppins-Regular", size: 16))
+                                    .font(.custom("Feather-Bold", size: 16))
                                     .foregroundColor(AppTheme.Colors.textPrimary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.vertical, 8)
@@ -327,7 +327,7 @@ struct LanguagePickerSheet: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(AppTheme.Colors.textSecondary)
                         TextField("Search languages...", text: $searchText)
-                            .font(.custom("Poppins-Regular", size: 16))
+                            .font(.custom("Feather-Bold", size: 16))
                             .foregroundColor(AppTheme.Colors.textPrimary)
                             .autocapitalization(.none)
                     }
@@ -352,7 +352,7 @@ struct LanguagePickerSheet: View {
                                             .font(.system(size: 28))
                                         
                                         Text(language.rawValue)
-                                            .font(.custom("Poppins-Regular", size: 16))
+                                            .font(.custom("Feather-Bold", size: 16))
                                             .foregroundColor(AppTheme.Colors.textPrimary)
                                         
                                         Spacer()
@@ -386,7 +386,7 @@ struct LanguagePickerSheet: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundColor(AppTheme.Colors.primaryOrange)
                 }
             }

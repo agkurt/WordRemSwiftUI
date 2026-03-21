@@ -22,10 +22,10 @@ enum AppTab: Int, CaseIterable {
 
     var label: String {
         switch self {
-        case .home:        return "Decks"
-        case .path:        return "Path"
-        case .leaderboard: return "Rank"
-        case .profile:     return "Profile"
+        case .home:        return AL.s(.tabDecks)
+        case .path:        return AL.s(.tabPath)
+        case .leaderboard: return AL.s(.tabRank)
+        case .profile:     return AL.s(.tabProfile)
         }
     }
 }
@@ -68,8 +68,8 @@ struct MainTabView: View {
     // MARK: - Floating Bottom Bar
     private var floatingBottomBar: some View {
         VStack(spacing: 0) {
-            // + butonu sadece Decks tabında görünür
-            if selectedTab == .home {
+            // + butonu sadece Decks tabında ve deste varken görünür
+            if selectedTab == .home && !homeVM.cardNames.isEmpty {
                 Button {
                     if let action = tabBarModifier.customAddAction {
                         action()
@@ -142,7 +142,7 @@ private struct TabBarItem: View {
                     .scaleEffect(isSelected ? 1.12 : 1.0)
 
                 Text(tab.label)
-                    .font(.custom("Poppins-Medium", size: 10))
+                    .font(.custom("Feather-Bold", size: 10))
                     .foregroundStyle(
                         isSelected
                         ? Color(hex: "#f97316")

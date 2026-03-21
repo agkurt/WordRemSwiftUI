@@ -29,10 +29,10 @@ struct SentenceScreenView: View {
                                 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("Learn with Examples")
-                                        .font(.custom("Poppins-Bold", size: 20))
+                                        .font(.custom("Feather-Bold", size: 20))
                                         .foregroundStyle(AppTheme.Colors.textPrimary)
                                     Text("Enter an English word to see real-world usage")
-                                        .font(.custom("Poppins-Regular", size: 13))
+                                        .font(.custom("Feather-Bold", size: 13))
                                         .foregroundStyle(AppTheme.Colors.textSecondary)
                                 }
                                 Spacer()
@@ -45,7 +45,7 @@ struct SentenceScreenView: View {
                                     .font(.system(size: 16, weight: .medium))
                                 
                                 TextField("Type a word (e.g., beautiful, journey)", text: $sentenceViewModel.word)
-                                    .font(.custom("Poppins-Regular", size: 16))
+                                    .font(.custom("Feather-Bold", size: 16))
                                     .foregroundStyle(AppTheme.Colors.textPrimary)
                                     .autocorrectionDisabled()
                                     .textInputAutocapitalization(.never)
@@ -81,7 +81,7 @@ struct SentenceScreenView: View {
                                     } else {
                                         Image(systemName: "sparkles")
                                         Text("Generate Examples")
-                                            .font(.custom("Poppins-SemiBold", size: 16))
+                                            .font(.custom("Feather-Bold", size: 16))
                                     }
                                 }
                                 .foregroundStyle(.white)
@@ -177,20 +177,20 @@ private struct WordHeaderCard: View {
                     .fill(AppTheme.Colors.primaryOrange.opacity(0.15))
                     .frame(width: 50, height: 50)
                 Text(word.prefix(1).uppercased())
-                    .font(.custom("Poppins-Bold", size: 24))
+                    .font(.custom("Feather-Bold", size: 24))
                     .foregroundStyle(AppTheme.Colors.primaryOrange)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(word.capitalized)
-                    .font(.custom("Poppins-Bold", size: 22))
+                    .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 
                 HStack(spacing: 8) {
                     Image(systemName: "text.badge.checkmark")
                         .font(.system(size: 12))
                     Text("\(word.count) letters")
-                        .font(.custom("Poppins-Regular", size: 13))
+                        .font(.custom("Feather-Bold", size: 13))
                 }
                 .foregroundStyle(AppTheme.Colors.textSecondary)
             }
@@ -218,7 +218,7 @@ private struct ExampleSentenceCard: View {
             HStack {
                 HStack(spacing: 8) {
                     Text("#\(index)")
-                        .font(.custom("Poppins-Bold", size: 14))
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
@@ -228,7 +228,7 @@ private struct ExampleSentenceCard: View {
                         )
                     
                     Text("Example")
-                        .font(.custom("Poppins-Medium", size: 13))
+                        .font(.custom("Feather-Bold", size: 13))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
                 
@@ -249,7 +249,7 @@ private struct ExampleSentenceCard: View {
                         Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                         if isCopied {
                             Text("Copied")
-                                .font(.custom("Poppins-Medium", size: 12))
+                                .font(.custom("Feather-Bold", size: 12))
                         }
                     }
                     .font(.system(size: 14))
@@ -258,7 +258,7 @@ private struct ExampleSentenceCard: View {
             }
             
             Text(highlightWord(in: example, word: word))
-                .font(.custom("Poppins-Regular", size: 15))
+                .font(.custom("Feather-Bold", size: 15))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .lineSpacing(4)
                 .fixedSize(horizontal: false, vertical: true)
@@ -280,7 +280,7 @@ private struct ExampleSentenceCard: View {
         
         if let range = attributedString.range(of: word, options: .caseInsensitive) {
             attributedString[range].foregroundColor = AppTheme.Colors.primaryOrange
-            attributedString[range].font = .custom("Poppins-SemiBold", size: 15)
+            attributedString[range].font = .custom("Feather-Bold", size: 15)
         }
         
         return attributedString
@@ -297,11 +297,11 @@ private struct LoadingExamplesView: View {
             
             VStack(spacing: 8) {
                 Text("Generating Examples...")
-                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 
                 Text("Finding the best usage examples")
-                    .font(.custom("Poppins-Regular", size: 13))
+                    .font(.custom("Feather-Bold", size: 13))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
         }
@@ -331,11 +331,11 @@ private struct EmptyResultsView: View {
             
             VStack(spacing: 8) {
                 Text("No Examples Found")
-                    .font(.custom("Poppins-SemiBold", size: 18))
+                    .font(.custom("Feather-Bold", size: 18))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 
                 Text("Please try a different English word")
-                    .font(.custom("Poppins-Regular", size: 14))
+                    .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }

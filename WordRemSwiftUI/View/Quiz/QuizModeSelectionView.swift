@@ -25,13 +25,13 @@ struct QuizModeSelectionView: View {
                     // Header
                     VStack(spacing: 6) {
                         Text("Quiz Mode")
-                            .font(.custom("Poppins-SemiBold", size: 28))
+                            .font(.custom("Feather-Bold", size: 28))
                             .foregroundStyle(.primary)
                         Text(cardName)
-                            .font(.custom("Poppins-Regular", size: 14))
+                            .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(.secondary)
                         Text("\(wordInfos.count) words")
-                            .font(.custom("Poppins-Regular", size: 13))
+                            .font(.custom("Feather-Bold", size: 13))
                             .foregroundStyle(.secondary)
                     }
                     .padding(.top, 20)
@@ -63,7 +63,7 @@ struct QuizModeSelectionView: View {
                         HStack(spacing: 10) {
                             Image(systemName: "play.fill")
                             Text("Start Quiz")
-                                .font(.custom("Poppins-SemiBold", size: 17))
+                                .font(.custom("Feather-Bold", size: 17))
                         }
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -140,14 +140,14 @@ private struct QuizModeCard: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(mode.rawValue)
-                        .font(.custom("Poppins-SemiBold", size: 15))
+                        .font(.custom("Feather-Bold", size: 15))
                         .foregroundStyle(isAvailable ? .primary : .secondary)
                     Text(mode.description)
-                        .font(.custom("Poppins-Regular", size: 12))
+                        .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(.secondary)
                     if !isAvailable {
                         Text("Needs at least \(mode.minimumWordCount) words")
-                            .font(.custom("Poppins-Regular", size: 11))
+                            .font(.custom("Feather-Bold", size: 11))
                             .foregroundStyle(.orange)
                     }
                 }

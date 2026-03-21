@@ -69,3 +69,15 @@ struct AppTheme {
         static let vibrantColor = Colors.primaryOrange.opacity(0.3)
     }
 }
+
+// MARK: - Keyboard Dismiss
+extension View {
+    /// Boş alana tıklandığında klavyeyi kapat
+    func hideKeyboardOnTap() -> some View {
+        self.simultaneousGesture(
+            TapGesture().onEnded {
+                UIApplication.shared.hideKeyboard()
+            }
+        )
+    }
+}

@@ -56,13 +56,13 @@ struct OnboardingPaywallView: View {
                             .padding(.top, 8)
 
                         Text("WordRem Pro")
-                            .font(.custom("Poppins-Bold", size: 26))
+                            .font(.custom("Feather-Bold", size: 26))
                             .foregroundStyle(
                                 LinearGradient(colors: [proColor, proColorDark],
                                                startPoint: .leading, endPoint: .trailing)
                             )
                         Text(AL.s(.paywallSubtitle))
-                            .font(.custom("Poppins-Regular", size: 14))
+                            .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .multilineTextAlignment(.center)
                     }
@@ -86,10 +86,10 @@ struct OnboardingPaywallView: View {
 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(title)
-                                        .font(.custom("Poppins-SemiBold", size: 15))
+                                        .font(.custom("Feather-Bold", size: 15))
                                         .foregroundStyle(Color(hex: "#1e293b"))
                                     Text(subtitle)
-                                        .font(.custom("Poppins-Regular", size: 12))
+                                        .font(.custom("Feather-Bold", size: 12))
                                         .foregroundStyle(Color(hex: "#64748b"))
                                 }
 
@@ -106,10 +106,10 @@ struct OnboardingPaywallView: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(AL.s(.paywallWeeklyPro))
-                                        .font(.custom("Poppins-Bold", size: 17))
+                                        .font(.custom("Feather-Bold", size: 17))
                                         .foregroundStyle(.white)
                                     Text(AL.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
-                                        .font(.custom("Poppins-Regular", size: 14))
+                                        .font(.custom("Feather-Bold", size: 14))
                                         .foregroundStyle(.white.opacity(0.88))
                                 }
                                 Spacer()
@@ -127,7 +127,7 @@ struct OnboardingPaywallView: View {
                             .shadow(color: proColor.opacity(0.35), radius: 10, y: 5)
                             .overlay(alignment: .topTrailing) {
                                 Text(AL.s(.paywallRecommended))
-                                    .font(.custom("Poppins-Bold", size: 10))
+                                    .font(.custom("Feather-Bold", size: 10))
                                     .foregroundStyle(.white)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 4)
@@ -138,11 +138,11 @@ struct OnboardingPaywallView: View {
                         } else if fetchFailed {
                             VStack(spacing: 8) {
                                 Text(AL.s(.paywallPriceFailed))
-                                    .font(.custom("Poppins-Regular", size: 14))
+                                    .font(.custom("Feather-Bold", size: 14))
                                     .foregroundStyle(Color(hex: "#64748b"))
                                 Button { fetchPackage() } label: {
                                     Text(AL.s(.paywallRetry))
-                                        .font(.custom("Poppins-Bold", size: 13))
+                                        .font(.custom("Feather-Bold", size: 13))
                                         .foregroundStyle(proColor)
                                 }
                             }
@@ -163,7 +163,7 @@ struct OnboardingPaywallView: View {
                     // ── Purchase Button ────────────────────────────────
                     Button(action: purchaseWeekly) {
                         Text(AL.s(.paywallContinue))
-                            .font(.custom("Poppins-Bold", size: 17))
+                            .font(.custom("Feather-Bold", size: 17))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
@@ -229,7 +229,7 @@ struct OnboardingPaywallView: View {
     private func legalButton(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.custom("Poppins-Regular", size: 11))
+                .font(.custom("Feather-Bold", size: 11))
                 .foregroundStyle(Color(hex: "#94a3b8"))
         }
     }

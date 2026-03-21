@@ -26,6 +26,7 @@
 	<string>WordRem uses speech recognition to evaluate your pronunciation during the Speaking quiz mode.</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>feather_bold.ttf</string>
 		<string>Poppins-Light.ttf</string>
 		<string>Poppins-Bold.ttf</string>
 		<string>Poppins-Medium.ttf</string>

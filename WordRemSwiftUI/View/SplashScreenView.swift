@@ -52,7 +52,7 @@ struct SplashScreenView: View {
                     
                     // App Name
                     Text("WordRem AI")
-                        .font(.custom("Poppins-Bold", size: 48))
+                        .font(.custom("Feather-Bold", size: 48))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .opacity(logoOpacity)
                     
@@ -120,7 +120,7 @@ struct LaunchScreenView: View {
                     .opacity(logoOpacity)
 
                 Text("WordRem AI")
-                    .font(.custom("Poppins-Bold", size: 48))
+                    .font(.custom("Feather-Bold", size: 48))
                     .foregroundStyle(AppTheme.Colors.primaryOrange)
                     .opacity(logoOpacity)
 

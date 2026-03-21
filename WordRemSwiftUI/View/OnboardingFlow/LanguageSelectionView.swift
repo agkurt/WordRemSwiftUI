@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct LanguageSelectionView: View {
+    let nativeLangCode: String          // NativeLanguageSelectionView'dan gelir
+
     @State private var selectedLanguage: String?
     @State private var navigateToProficiency = false
-    
+
     // Tüm diller
     private let allLanguages: [(flag: String, name: String, code: String)] = [
+        ("🇹🇷", "Türkçe", "tr"),
         ("🇬🇧", "İngilizce", "en"),
         ("🇩🇪", "Almanca", "de"),
         ("🇷🇺", "Rusça", "ru"),
@@ -22,10 +25,9 @@ struct LanguageSelectionView: View {
         ("🇪🇸", "İspanyolca", "es")
     ]
 
-    // Telefon dilini listeden çıkar — kendi ana dilini öğrenmek mantıksız
+    // Seçilen anadili listeden çıkar — kendi anadilini öğrenmek mantıksız
     var availableLanguages: [(flag: String, name: String, code: String)] {
-        let phoneCode = OL.phoneCode.lowercased()
-        return allLanguages.filter { $0.code.lowercased() != phoneCode }
+        allLanguages.filter { $0.code.lowercased() != nativeLangCode.lowercased() }
     }
 
     var body: some View {
@@ -47,7 +49,7 @@ struct LanguageSelectionView: View {
                 MascotAnimationView(width: 70, height: 70)
 
                 Text(OL.s(.whatToLearn))
-                    .font(.custom("Poppins-Bold", size: 18))
+                    .font(.custom("Feather-Bold", size: 18))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
                     .background(
@@ -68,10 +70,10 @@ struct LanguageSelectionView: View {
             .padding(.top, 24)
             .padding(.bottom, 20)
 
-            // Subtitle — telefon diline göre dinamik ("For English speakers" vs.)
+            // Subtitle — seçilen anadile göre dinamik ("Türkçe bilenler için" vs.)
             HStack {
-                Text(OL.forSpeakersSubtitle)
-                    .font(.custom("Poppins-Bold", size: 16))
+                Text(OL.forSpeakersSubtitle(nativeLangCode: nativeLangCode))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(.secondary)
                 Spacer()
                 Image(systemName: "chevron.up")
@@ -95,7 +97,7 @@ struct LanguageSelectionView: View {
                                     .frame(width: 40)
 
                                 Text(OL.languageName(for: lang.code))
-                                    .font(.custom("Poppins-SemiBold", size: 15))
+                                    .font(.custom("Feather-Bold", size: 15))
                                     .foregroundStyle(Color(hex: "#1e293b"))
                                     .multilineTextAlignment(.leading)
 
@@ -125,7 +127,7 @@ struct LanguageSelectionView: View {
                     navigateToProficiency = true
                 }) {
                     Text(OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedLanguage == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -146,12 +148,13 @@ struct LanguageSelectionView: View {
             let code = availableLanguages.first(where: { $0.name == selectedLanguage })?.code ?? "en"
             ProficiencyView(
                 selectedLanguageName: selectedLanguage ?? "İngilizce",
-                selectedLanguageCode: code
+                selectedLanguageCode: code,
+                nativeLangCode: nativeLangCode
             )
         }
     }
 }
 
 #Preview {
-    LanguageSelectionView()
+    NavigationStack { LanguageSelectionView(nativeLangCode: "tr") }
 }

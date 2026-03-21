@@ -54,7 +54,7 @@ struct ArcMenuButton: View {
                                                 .foregroundStyle(.white)
                                         }
                                         Text(menuItems[index].label)
-                                            .font(.custom("Poppins-Regular", size: 9))
+                                            .font(.custom("Feather-Bold", size: 9))
                                             .foregroundStyle(.white.opacity(0.85))
                                             .shadow(radius: 3)
                                     }

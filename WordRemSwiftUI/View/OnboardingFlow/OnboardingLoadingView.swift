@@ -14,6 +14,7 @@ struct OnboardingLoadingView: View {
     let proficiencyLevel: Int
     var learningInterest: String = ""
     var dailyGoalMinutes: Int = 10
+    var nativeLangCode: String = OL.phoneCode
 
     @EnvironmentObject var authManager: AuthManager
 
@@ -26,10 +27,10 @@ struct OnboardingLoadingView: View {
                 LoadingAnimationView(width: 160, height: 160)
                 VStack(spacing: 16) {
                     Text(OL.s(.loadingText))
-                        .font(.custom("Poppins-Bold", size: 18))
+                        .font(.custom("Feather-Bold", size: 18))
                         .foregroundStyle(Color(hex: "#94a3b8"))
                     Text(OL.s(.loadingMessage))
-                        .font(.custom("Poppins-Regular", size: 16))
+                        .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -49,6 +50,7 @@ struct OnboardingLoadingView: View {
             UserDefaults.standard.set(languageName, forKey: "selectedTargetLanguageName")
             UserDefaults.standard.set(proficiencyLevel, forKey: "selectedProficiencyLevel")
             UserDefaults.standard.set(dailyGoalMinutes, forKey: "dailyGoalMinutes")
+            UserDefaults.standard.set(nativeLangCode, forKey: "userNativeLangCode")   // ← anadil
             if !learningInterest.isEmpty {
                 UserDefaults.standard.set(learningInterest, forKey: "learningInterest")
             }
@@ -70,7 +72,7 @@ struct OnboardingLoadingView: View {
             Task {
                 try? await SupabaseDataService.shared.saveUserPreferences(
                     targetLangCode: languageCode,
-                    nativeLangCode: OL.phoneCode,
+                    nativeLangCode: nativeLangCode,
                     proficiencyLevel: proficiencyLevel,
                     learningInterest: learningInterest,
                     dailyGoalMinutes: dailyGoalMinutes

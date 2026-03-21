@@ -53,8 +53,8 @@ final class AIQuizViewModel: ObservableObject {
         // Kısa kodu ("en", "de"…) tam dil adına çevir
         let rawCode    = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en"
         let targetLang = OpenAIQuizService.shared.fullLangName(for: rawCode)
-        let localeCode = Locale.current.language.languageCode?.identifier ?? "en"
-        let nativeLang = Locale.current.localizedString(forLanguageCode: localeCode) ?? "English"
+        let nativeCode = OL.nativeLangCode
+        let nativeLang = Locale.current.localizedString(forLanguageCode: nativeCode) ?? "English"
 
         Task {
             do {

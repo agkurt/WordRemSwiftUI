@@ -48,7 +48,7 @@ struct CardView: View {
                 // Texts
                 VStack(alignment: .leading, spacing: 5) {
                     Text(title)
-                        .font(.custom("Poppins-SemiBold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                         .lineLimit(1)
 
@@ -57,7 +57,7 @@ struct CardView: View {
                             .font(.system(size: 10))
                             .foregroundStyle(AppTheme.Colors.primaryOrange)
                         Text(wordCount == 0 ? "No words yet" : "\(wordCount) word\(wordCount == 1 ? "" : "s")")
-                            .font(.custom("Poppins-Medium", size: 12))
+                            .font(.custom("Feather-Bold", size: 12))
                             .foregroundStyle(AppTheme.Colors.textSecondary)
                     }
                 }

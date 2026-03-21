@@ -38,7 +38,7 @@ final class PathMistakesDeckService {
 
             // 2. Firestore'da mevcut deck var mı kontrol et, yoksa yeni oluştur
             let flag      = flagModel(for: targetLangCode)
-            let phoneCode = OL.phoneCode.uppercased()
+            let phoneCode = OL.nativeLangCode.uppercased()
             let name      = deckTitle(levelTitle: levelTitle, targetLangCode: targetLangCode)
 
             let deckId: String
@@ -54,7 +54,7 @@ final class PathMistakesDeckService {
 
             // 3. Her kelimeyi ekle (convention: wordName = native, wordMean = target language word)
             for word in words {
-                let nativeTranslation = word.displayTranslation(phoneCode: OL.phoneCode)
+                let nativeTranslation = word.displayTranslation(phoneCode: OL.nativeLangCode)
                 let sentence = (try? await generateSentence(term: word.term, langCode: targetLangCode)) ?? ""
                 await FirebaseService.shared.addWordToCard(
                     cardId: deckId,
@@ -92,7 +92,7 @@ final class PathMistakesDeckService {
         guard !questions.isEmpty else { return }
 
         let flag      = flagModel(for: targetLangCode)
-        let phoneCode = OL.phoneCode.uppercased()
+        let phoneCode = OL.nativeLangCode.uppercased()
         let emoji     = langEmoji(for: targetLangCode)
         let name      = "\(emoji) AI — \(topicTitle)"
 

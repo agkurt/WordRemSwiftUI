@@ -274,18 +274,29 @@ final class GameQuizViewModel: ObservableObject {
                     score: scorePercent,
                     quizMode: "multipleChoice"
                 )
-                if response.success {
+                // Kolaylaştırılmış geçiş: sunucu onayı VEYA %50+ doğruluk oranı yeterli
+                let isLevelPassed = response.success || scorePercent >= 50
+                if isLevelPassed {
                     UserDefaults.standard.set(true, forKey: "justCompletedLevel")
                 }
-                // success=false olsa bile yıldız/XP göster (25-49% arası 1 yıldız alabilir)
+                let earnedStars: Int
+                if scorePercent >= 90 { earnedStars = 3 }
+                else if scorePercent >= 70 { earnedStars = 2 }
+                else if scorePercent >= 50 { earnedStars = 1 }
+                else { earnedStars = response.stars ?? 0 }
                 state = .completed(
                     score: scorePercent,
-                    stars: response.stars ?? 0,
-                    xpEarned: response.xpEarned ?? 0
+                    stars: max(earnedStars, response.stars ?? 0),
+                    xpEarned: response.xpEarned ?? max(score * 10, 0)
                 )
             } catch {
                 print("⚠️ completeLevel error: \(error)")
-                state = .completed(score: scorePercent, stars: 0, xpEarned: 0)
+                // Hata durumunda bile %50+ ise geçti say
+                if scorePercent >= 50 {
+                    UserDefaults.standard.set(true, forKey: "justCompletedLevel")
+                }
+                let fallbackStars = scorePercent >= 90 ? 3 : scorePercent >= 70 ? 2 : scorePercent >= 50 ? 1 : 0
+                state = .completed(score: scorePercent, stars: fallbackStars, xpEarned: score * 10)
             }
 
         case .mistakes:
@@ -348,11 +359,18 @@ struct GameQuestion: Identifiable {
     var sentence: SBSentence?   = nil
 
     static func generate(from words: [SBWord], sentences: [SBSentence] = []) -> [GameQuestion] {
-        let phoneCode   = OL.phoneCode
+        let phoneCode   = OL.nativeLangCode
         let shuffled    = words.shuffled()
         let canMulti    = words.count >= 4
         let canListen   = canMulti
-        let canSpeak    = words.count >= 1
+        // Speaking is disabled when user has activated the 15-minute mute
+        let isSpeakingMuted: Bool = {
+            if let muteUntil = UserDefaults.standard.object(forKey: "speakingMutedUntil") as? Date {
+                return Date() < muteUntil
+            }
+            return false
+        }()
+        let canSpeak    = words.count >= 1 && !isSpeakingMuted
         let canFill     = words.count >= 4
         let canSentence = words.count >= 2
 

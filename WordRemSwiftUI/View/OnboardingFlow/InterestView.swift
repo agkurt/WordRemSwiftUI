@@ -11,6 +11,7 @@ struct InterestView: View {
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let proficiencyLevel: Int
+    let nativeLangCode: String
 
     @State private var selectedInterest: Int?
     @State private var navigateToGoal = false
@@ -43,7 +44,7 @@ struct InterestView: View {
                 MascotAnimationView(width: 70, height: 70)
 
                 Text("Why do you want to learn \(selectedLanguageName)?")
-                    .font(.custom("Poppins-Bold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
                     .background(
@@ -79,7 +80,7 @@ struct InterestView: View {
                                     .frame(width: 36, height: 36)
 
                                 Text(item.label)
-                                    .font(.custom("Poppins-SemiBold", size: 15))
+                                    .font(.custom("Feather-Bold", size: 15))
                                     .foregroundStyle(Color(hex: "#1e293b"))
 
                                 Spacer()
@@ -112,7 +113,7 @@ struct InterestView: View {
                     navigateToGoal = true
                 } label: {
                     Text(OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedInterest == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -138,7 +139,8 @@ struct InterestView: View {
                 selectedLanguageName: selectedLanguageName,
                 selectedLanguageCode: selectedLanguageCode,
                 proficiencyLevel: proficiencyLevel,
-                learningInterest: label
+                learningInterest: label,
+                nativeLangCode: nativeLangCode
             )
         }
     }
@@ -146,6 +148,6 @@ struct InterestView: View {
 
 #Preview {
     NavigationStack {
-        InterestView(selectedLanguageName: "English", selectedLanguageCode: "en", proficiencyLevel: 1)
+        InterestView(selectedLanguageName: "English", selectedLanguageCode: "en", proficiencyLevel: 1, nativeLangCode: "tr")
     }
 }

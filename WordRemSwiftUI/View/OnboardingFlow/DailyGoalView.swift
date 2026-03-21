@@ -12,6 +12,7 @@ struct DailyGoalView: View {
     let selectedLanguageCode: String
     let proficiencyLevel: Int
     let learningInterest: String
+    let nativeLangCode: String
 
     @State private var selectedGoal: Int?
     @State private var navigateToQuiz = false
@@ -53,7 +54,7 @@ struct DailyGoalView: View {
                 MascotAnimationView(width: 70, height: 70)
 
                 Text("What is your daily goal\nfor practicing?")
-                    .font(.custom("Poppins-Bold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
                     .background(
@@ -95,13 +96,13 @@ struct DailyGoalView: View {
                             .frame(width: 34, height: 32, alignment: .bottom)
 
                             Text("\(goal.minutes) min")
-                                .font(.custom("Poppins-SemiBold", size: 16))
+                                .font(.custom("Feather-Bold", size: 16))
                                 .foregroundStyle(Color(hex: "#1e293b"))
 
                             Spacer()
 
                             Text(goal.label)
-                                .font(.custom("Poppins-Regular", size: 14))
+                                .font(.custom("Feather-Bold", size: 14))
                                 .foregroundStyle(Color(hex: "#94a3b8"))
                         }
                         .padding(.horizontal, 16)
@@ -135,7 +136,7 @@ struct DailyGoalView: View {
                     navigateToQuiz = true
                 } label: {
                     Text(OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedGoal == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -162,7 +163,8 @@ struct DailyGoalView: View {
                 languageCode: selectedLanguageCode,
                 proficiencyLevel: proficiencyLevel,
                 learningInterest: learningInterest,
-                dailyGoalMinutes: minutes
+                dailyGoalMinutes: minutes,
+                nativeLangCode: nativeLangCode
             )
         }
     }
@@ -170,6 +172,6 @@ struct DailyGoalView: View {
 
 #Preview {
     NavigationStack {
-        DailyGoalView(selectedLanguageName: "English", selectedLanguageCode: "en", proficiencyLevel: 1, learningInterest: "Career")
+        DailyGoalView(selectedLanguageName: "English", selectedLanguageCode: "en", proficiencyLevel: 1, learningInterest: "Career", nativeLangCode: "tr")
     }
 }

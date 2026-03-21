@@ -11,6 +11,7 @@ struct BenefitsView: View {
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let proficiencyLevel: Int
+    let nativeLangCode: String
     @State private var navigateToQuiz = false
     
     var body: some View {
@@ -33,7 +34,7 @@ struct BenefitsView: View {
                 
                 // Speech Bubble
                 Text(OL.s(.benefitsTitle))
-                    .font(.custom("Poppins-Bold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
                     .background(
@@ -68,10 +69,10 @@ struct BenefitsView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(OL.s(.benefit1Title))
-                            .font(.custom("Poppins-Bold", size: 16))
+                            .font(.custom("Feather-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
                         Text(OL.s(.benefit1Desc))
-                            .font(.custom("Poppins-Regular", size: 14))
+                            .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -86,10 +87,10 @@ struct BenefitsView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(OL.s(.benefit2Title))
-                            .font(.custom("Poppins-Bold", size: 16))
+                            .font(.custom("Feather-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
                         Text(OL.s(.benefit2Desc))
-                            .font(.custom("Poppins-Regular", size: 14))
+                            .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -104,10 +105,10 @@ struct BenefitsView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(OL.s(.benefit3Title))
-                            .font(.custom("Poppins-Bold", size: 16))
+                            .font(.custom("Feather-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
                         Text(OL.s(.benefit3Desc))
-                            .font(.custom("Poppins-Regular", size: 14))
+                            .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -124,7 +125,7 @@ struct BenefitsView: View {
                     navigateToQuiz = true
                 }) {
                     Text(OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -144,12 +145,13 @@ struct BenefitsView: View {
             InterestView(
                 selectedLanguageName: selectedLanguageName,
                 selectedLanguageCode: selectedLanguageCode,
-                proficiencyLevel: proficiencyLevel
+                proficiencyLevel: proficiencyLevel,
+                nativeLangCode: nativeLangCode
             )
         }
     }
 }
 
 #Preview {
-    BenefitsView(selectedLanguageName: "İngilizce", selectedLanguageCode: "en", proficiencyLevel: 0)
+    BenefitsView(selectedLanguageName: "İngilizce", selectedLanguageCode: "en", proficiencyLevel: 0, nativeLangCode: "tr")
 }

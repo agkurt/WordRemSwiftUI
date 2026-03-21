@@ -37,11 +37,11 @@ struct WelcomeView: View {
                             .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.3), radius: 20, y: 10)
                         
                         Text("WordRem AI")
-                            .font(.custom("Poppins-Bold", size: 42))
+                            .font(.custom("Feather-Bold", size: 42))
                             .foregroundStyle(AppTheme.Colors.primaryOrange)
                         
                         Text(AL.s(.welcomeTagline))
-                            .font(.custom("Poppins-SemiBold", size: 18))
+                            .font(.custom("Feather-Bold", size: 18))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .multilineTextAlignment(.center)
                     }
@@ -55,7 +55,7 @@ struct WelcomeView: View {
                             navigateToLanguage = true
                         }) {
                             Text(AL.s(.welcomeStart))
-                                .font(.custom("Poppins-Bold", size: 17))
+                                .font(.custom("Feather-Bold", size: 17))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 56)
@@ -69,7 +69,7 @@ struct WelcomeView: View {
                             navigateToLogin = true
                         }) {
                             Text(AL.s(.welcomeHaveAccount))
-                                .font(.custom("Poppins-Bold", size: 17))
+                                .font(.custom("Feather-Bold", size: 17))
                                 .foregroundStyle(AppTheme.Colors.primaryOrange)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 56)
@@ -88,7 +88,7 @@ struct WelcomeView: View {
             }
             // Logic for Navigation Links
             .navigationDestination(isPresented: $navigateToLanguage) {
-                LanguageSelectionView()
+                NativeLanguageSelectionView()
             }
             .navigationDestination(isPresented: $navigateToLogin) {
                 LoginScreenView()

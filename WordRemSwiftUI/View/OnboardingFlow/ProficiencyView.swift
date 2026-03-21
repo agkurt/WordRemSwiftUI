@@ -10,6 +10,7 @@ import SwiftUI
 struct ProficiencyView: View {
     let selectedLanguageName: String
     let selectedLanguageCode: String
+    let nativeLangCode: String
     @State private var selectedLevel: Int?
     @State private var navigateToResult = false
     
@@ -43,7 +44,7 @@ struct ProficiencyView: View {
                 
                 // Speech Bubble
                 Text(OL.f(.howMuchFormat, selectedLanguageName))
-                    .font(.custom("Poppins-Bold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
                     .background(
@@ -80,7 +81,7 @@ struct ProficiencyView: View {
                                     .frame(width: 32, height: 32)
                                 
                                 Text(proficiencyLevels[index])
-                                    .font(.custom("Poppins-SemiBold", size: 15))
+                                    .font(.custom("Feather-Bold", size: 15))
                                     .foregroundStyle(Color(hex: "#1e293b"))
                                     .multilineTextAlignment(.leading)
                                 
@@ -110,7 +111,7 @@ struct ProficiencyView: View {
                     navigateToResult = true
                 }) {
                     Text(OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedLevel == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -131,12 +132,13 @@ struct ProficiencyView: View {
             ProficiencyResultView(
                 selectedLanguageName: selectedLanguageName,
                 selectedLanguageCode: selectedLanguageCode,
-                proficiencyLevel: selectedLevel ?? 0
+                proficiencyLevel: selectedLevel ?? 0,
+                nativeLangCode: nativeLangCode
             )
         }
     }
 }
 
 #Preview {
-    ProficiencyView(selectedLanguageName: "İngilizce", selectedLanguageCode: "en")
+    ProficiencyView(selectedLanguageName: "İngilizce", selectedLanguageCode: "en", nativeLangCode: "tr")
 }

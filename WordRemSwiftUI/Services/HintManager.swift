@@ -27,13 +27,17 @@ final class HintManager {
     }
 
     var hintsRemaining: Int {
-        max(0, HintManager.dailyHintLimit - hintsUsedToday)
+        if DailyLimitManager.shared.isPremium { return Int.max }
+        return max(0, HintManager.dailyHintLimit - hintsUsedToday)
     }
 
-    var canUseHint: Bool { hintsRemaining > 0 }
+    var canUseHint: Bool {
+        DailyLimitManager.shared.isPremium || hintsRemaining > 0
+    }
 
     // MARK: - Record hint usage
     func useHint() {
+        guard !DailyLimitManager.shared.isPremium else { return }
         refreshIfNeeded()
         let used = UserDefaults.standard.integer(forKey: usedKey)
         if used == 0 {
@@ -59,7 +63,7 @@ final class HintManager {
     /// Returns an AI hint in the user's native language that hints at the word
     /// without directly translating it.
     func fetchHint(term: String, targetLangCode: String, options: [String] = [], correctAnswer: String = "") async -> String {
-        let phoneCode   = OL.phoneCode.uppercased()
+        let phoneCode   = OL.nativeLangCode.uppercased()
         let langName    = languageName(for: phoneCode)
         let targetName  = languageName(for: targetLangCode)
 

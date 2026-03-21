@@ -38,9 +38,6 @@ struct ProfileView: View {
 
                         // Alt aksiyonlar
                         VStack(spacing: 10) {
-                            if !authManager.isAnonymous, (vm.user?.usernameChanges ?? 0) == 1 {
-                                changeUsernameButton
-                            }
                             signOutButton
                         }
 
@@ -109,11 +106,11 @@ struct ProfileView: View {
                         .foregroundStyle(Color(hex: "#f97316"))
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("İlerlemenizi Kaydedin")
-                        .font(.custom("Poppins-SemiBold", size: 14))
+                    Text(AL.s(.profileSaveProgress))
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
-                    Text("Hesap oluşturun, her şey güvende kalsın")
-                        .font(.custom("Poppins-Regular", size: 12))
+                    Text(AL.s(.profileSaveProgressHint))
+                        .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -140,10 +137,10 @@ struct ProfileView: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(vm.username)
-                    .font(.custom("Poppins-Bold", size: 22))
+                    .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
                 Text(AL.f(.profileLevelFormat, vm.userLevel))
-                    .font(.custom("Poppins-Regular", size: 12))
+                    .font(.custom("Feather-Bold", size: 12))
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -154,7 +151,7 @@ struct ProfileView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Color(hex: "#f59e0b"))
                 Text("\(vm.user?.totalXp ?? 0) XP")
-                    .font(.custom("Poppins-Bold", size: 14))
+                    .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
             }
             .padding(.horizontal, 12)
@@ -167,7 +164,7 @@ struct ProfileView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.orange)
                 Text("\(vm.user?.streakDays ?? 0)")
-                    .font(.custom("Poppins-Bold", size: 14))
+                    .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
             }
             .padding(.horizontal, 12)
@@ -200,27 +197,39 @@ struct ProfileView: View {
                             .clipShape(Circle())
                     } else {
                         Text(vm.initials)
-                            .font(.custom("Poppins-Bold", size: 26))
+                            .font(.custom("Feather-Bold", size: 26))
                             .foregroundStyle(Color(hex: "#64748b"))
                     }
                 }
                 .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(vm.username)
-                        .font(.custom("Poppins-Bold", size: 18))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                    HStack(spacing: 6) {
+                        Text(vm.username)
+                            .font(.custom("Feather-Bold", size: 18))
+                            .foregroundStyle(Color(hex: "#1a1a2e"))
+
+                        if !authManager.isAnonymous, (vm.user?.usernameChanges ?? 0) == 1 {
+                            Button { showUsernameSetup = true } label: {
+                                Image(systemName: "pencil")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(AppTheme.Colors.primaryOrange)
+                                    .padding(6)
+                                    .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Circle())
+                            }
+                        }
+                    }
 
                     // Level + XP + Streak inline
                     HStack(spacing: 8) {
                         Label(AL.f(.profileLevelFormat, vm.userLevel), systemImage: "star.fill")
-                            .font(.custom("Poppins-SemiBold", size: 11))
+                            .font(.custom("Feather-Bold", size: 11))
                             .foregroundStyle(Color(hex: "#f59e0b"))
                         Label("\(vm.user?.totalXp ?? 0) XP", systemImage: "bolt.fill")
-                            .font(.custom("Poppins-SemiBold", size: 11))
+                            .font(.custom("Feather-Bold", size: 11))
                             .foregroundStyle(Color(hex: "#64748b"))
                         Label("\(vm.user?.streakDays ?? 0)", systemImage: "flame.fill")
-                            .font(.custom("Poppins-SemiBold", size: 11))
+                            .font(.custom("Feather-Bold", size: 11))
                             .foregroundStyle(.orange)
                     }
                 }
@@ -241,7 +250,7 @@ struct ProfileView: View {
                     Image(systemName: "crown.fill")
                         .font(.system(size: 14, weight: .semibold))
                     Text(AL.s(.profileUpgradePro))
-                        .font(.custom("Poppins-Bold", size: 14))
+                        .font(.custom("Feather-Bold", size: 14))
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
@@ -280,7 +289,7 @@ struct ProfileView: View {
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(AL.s(.profileAchievements))
-                .font(.custom("Poppins-SemiBold", size: 17))
+                .font(.custom("Feather-Bold", size: 17))
                 .foregroundStyle(Color(hex: "#1a1a2e"))
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -300,26 +309,6 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Change Username (1 kereye mahsus)
-    private var changeUsernameButton: some View {
-        Button { showUsernameSetup = true } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "pencil")
-                    .font(.system(size: 14, weight: .semibold))
-                Text("Kullanıcı Adını Değiştir")
-                    .font(.custom("Poppins-SemiBold", size: 14))
-            }
-            .foregroundStyle(AppTheme.Colors.primaryOrange)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(AppTheme.Colors.primaryOrange.opacity(0.07))
-                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(AppTheme.Colors.primaryOrange.opacity(0.2), lineWidth: 1))
-            )
-        }
-    }
-
     // MARK: - Sign Out
     private var signOutButton: some View {
         Button { authManager.signOut() } label: {
@@ -327,7 +316,7 @@ struct ProfileView: View {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 14, weight: .semibold))
                 Text(AL.s(.profileSignOut))
-                    .font(.custom("Poppins-SemiBold", size: 14))
+                    .font(.custom("Feather-Bold", size: 14))
             }
             .foregroundStyle(.red)
             .frame(maxWidth: .infinity)
@@ -438,10 +427,10 @@ private struct CompactStatTile: View {
             }
             VStack(alignment: .leading, spacing: 1) {
                 Text(value)
-                    .font(.custom("Poppins-Bold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
                 Text(label)
-                    .font(.custom("Poppins-Regular", size: 11))
+                    .font(.custom("Feather-Bold", size: 11))
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -471,10 +460,10 @@ private struct ProfileStatCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(value)
-                        .font(.custom("Poppins-Bold", size: 22))
+                        .font(.custom("Feather-Bold", size: 22))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
                     Text(title)
-                        .font(.custom("Poppins-Regular", size: 12))
+                        .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -501,10 +490,10 @@ private struct MiniStatCard: View {
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(color)
             Text(value)
-                .font(.custom("Poppins-Bold", size: 18))
+                .font(.custom("Feather-Bold", size: 18))
                 .foregroundStyle(Color(hex: "#1a1a2e"))
             Text(label)
-                .font(.custom("Poppins-Regular", size: 11))
+                .font(.custom("Feather-Bold", size: 11))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -536,7 +525,7 @@ private struct AchievementBadge: View {
                     .foregroundStyle(isUnlocked ? color : .gray.opacity(0.35))
             }
             Text(title)
-                .font(.custom("Poppins-Regular", size: 10))
+                .font(.custom("Feather-Bold", size: 10))
                 .foregroundStyle(isUnlocked ? Color(hex: "#1a1a2e") : .secondary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
@@ -573,10 +562,10 @@ struct CharacterPickerSheet: View {
                             .font(.system(size: 56))
                             .foregroundStyle(Color(hex: "#E8409C").opacity(0.6))
                         Text("Karakterler yakında!")
-                            .font(.custom("Poppins-SemiBold", size: 18))
+                            .font(.custom("Feather-Bold", size: 18))
                             .foregroundStyle(Color(hex: "#1a1a2e"))
                         Text("xcassets'e karakter görselleri eklenecek")
-                            .font(.custom("Poppins-Regular", size: 13))
+                            .font(.custom("Feather-Bold", size: 13))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -626,12 +615,11 @@ struct CharacterPickerSheet: View {
                     }
                 }
             }
-            .navigationTitle("Karakter Seç")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Kapat") { dismiss() }
-                        .font(.custom("Poppins-SemiBold", size: 14))
+                    Button(AL.s(.profileClose)) { dismiss() }
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(Color(hex: "#E8409C"))
                 }
             }
@@ -672,12 +660,12 @@ struct GuestLoginSheet: View {
                             )
                             .padding(.top, 8)
 
-                        Text("İlerlemenizi Kaydedin")
-                            .font(.custom("Poppins-Bold", size: 22))
+                        Text(AL.s(.profileSaveProgress))
+                            .font(.custom("Feather-Bold", size: 22))
                             .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                        Text("Hesap oluşturarak XP'leriniz, serileriniz ve tüm ilerlemeniz güvende kalsın. Uygulamayı silseniz bile her şey yerli yerinde.")
-                            .font(.custom("Poppins-Regular", size: 14))
+                        Text(AL.s(.profileSaveProgressDesc))
+                            .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -688,7 +676,7 @@ struct GuestLoginSheet: View {
                         // Apple
                         GuestLoginButton(
                             icon: "apple.logo",
-                            label: "Apple ile Devam Et",
+                            label: AL.s(.profileLoginApple),
                             background: Color.black,
                             foreground: .white
                         ) {
@@ -701,7 +689,7 @@ struct GuestLoginSheet: View {
                         // Google
                         GuestLoginButton(
                             icon: "g.circle.fill",
-                            label: "Google ile Devam Et",
+                            label: AL.s(.profileLoginGoogle),
                             background: Color(hex: "#f1f5f9"),
                             foreground: Color(hex: "#1a1a2e")
                         ) {
@@ -716,7 +704,7 @@ struct GuestLoginSheet: View {
                         // E-posta
                         GuestLoginButton(
                             icon: "envelope.fill",
-                            label: "E-posta ile Kayıt Ol",
+                            label: AL.s(.profileLoginEmail),
                             background: Color(hex: "#f97316"),
                             foreground: .white
                         ) {
@@ -726,7 +714,7 @@ struct GuestLoginSheet: View {
 
                     if let err = errorMessage {
                         Text(err)
-                            .font(.custom("Poppins-Regular", size: 13))
+                            .font(.custom("Feather-Bold", size: 13))
                             .foregroundStyle(.red)
                             .multilineTextAlignment(.center)
                     }
@@ -736,8 +724,8 @@ struct GuestLoginSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Kapat") { dismiss() }
-                        .font(.custom("Poppins-SemiBold", size: 14))
+                    Button(AL.s(.profileClose)) { dismiss() }
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -765,7 +753,7 @@ private struct GuestLoginButton: View {
                 Image(systemName: icon)
                     .font(.system(size: 18, weight: .medium))
                 Text(label)
-                    .font(.custom("Poppins-SemiBold", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
             }
             .foregroundStyle(foreground)
             .frame(maxWidth: .infinity)
@@ -821,22 +809,22 @@ private struct UsernameSetupPopup: View {
 
                 MascotAnimationView(width: 110, height: 110)
 
-                Text(isFirstSetup ? "Kullanıcı adın ne olsun?" : "Kullanıcı adını değiştir")
-                    .font(.custom("Poppins-Bold", size: 20))
+                Text(isFirstSetup ? AL.s(.profileSetUsername) : AL.s(.profileChangeUsername))
+                    .font(.custom("Feather-Bold", size: 20))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
                     .padding(.top, 6)
 
                 Text(isFirstSetup
-                     ? "Bu isim leaderboard ve profilinde görünecek."
-                     : "Bu hakkı yalnızca 1 kez kullanabilirsin.\nLeaderboard ve profilinde güncellenir.")
-                    .font(.custom("Poppins-Regular", size: 13))
+                     ? AL.s(.profileUsernameLeaderboard)
+                     : AL.s(.profileUsernameOneChange))
+                    .font(.custom("Feather-Bold", size: 13))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .padding(.top, 4)
 
-                TextField("Kullanıcı adı (min. 3 karakter)", text: $username)
-                    .font(.custom("Poppins-Medium", size: 15))
+                TextField(AL.s(.profileUsernamePlaceholder), text: $username)
+                    .font(.custom("Feather-Bold", size: 15))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
                     .background(Color(hex: "#f4f6f9"), in: RoundedRectangle(cornerRadius: 14))
@@ -856,8 +844,8 @@ private struct UsernameSetupPopup: View {
                         if isSaving {
                             ProgressView().tint(.white)
                         } else {
-                            Text("Kaydet")
-                                .font(.custom("Poppins-SemiBold", size: 16))
+                            Text(AL.s(.profileSave))
+                                .font(.custom("Feather-Bold", size: 16))
                                 .foregroundStyle(.white)
                         }
                     }

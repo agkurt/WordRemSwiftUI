@@ -29,7 +29,7 @@ struct LoginScreenView: View {
                                 Task { await viewModel.loginRequest() }
                             } label: {
                                 Text("Login")
-                                    .font(.custom("Poppins-SemiBold", size: 16))
+                                    .font(.custom("Feather-Bold", size: 16))
                                     .frame(maxWidth: .infinity, alignment: .center)
                                     .padding()
                                     .background(

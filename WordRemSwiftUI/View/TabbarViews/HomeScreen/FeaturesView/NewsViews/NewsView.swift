@@ -18,11 +18,11 @@ struct NewsView: View {
           .foregroundColor(Color(hex: "#f97316"))
         
         Text("News Coming Soon")
-          .font(.custom("Poppins-SemiBold", size: 22))
+          .font(.custom("Feather-Bold", size: 22))
           .foregroundColor(.white)
         
         Text("We are working hard to bring you the best news articles for language learning.")
-          .font(.custom("Poppins-Regular", size: 14))
+          .font(.custom("Feather-Bold", size: 14))
           .foregroundColor(.gray)
           .multilineTextAlignment(.center)
           .padding(.horizontal, 32)

@@ -44,11 +44,11 @@ struct QuizResultView: View {
 
                 // Title
                 Text(passed ? AL.s(.resultLevelComplete) : AL.s(.resultKeepPracticing))
-                    .font(.custom("Poppins-Bold", size: 28))
+                    .font(.custom("Feather-Bold", size: 28))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
 
                 Text(levelTitle)
-                    .font(.custom("Poppins-Regular", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
 
                
@@ -99,7 +99,7 @@ struct QuizResultView: View {
                 // Action button
                 Button(action: onDone) {
                     Text(passed ? AL.s(.resultContinue) : AL.s(.resultTryAgain))
-                        .font(.custom("Poppins-SemiBold", size: 18))
+                        .font(.custom("Feather-Bold", size: 18))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -143,10 +143,10 @@ private struct ResultChip: View {
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(color)
             Text(value)
-                .font(.custom("Poppins-Bold", size: 20))
+                .font(.custom("Feather-Bold", size: 20))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(label)
-                .font(.custom("Poppins-Regular", size: 12))
+                .font(.custom("Feather-Bold", size: 12))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
         .frame(width: 120, height: 96)

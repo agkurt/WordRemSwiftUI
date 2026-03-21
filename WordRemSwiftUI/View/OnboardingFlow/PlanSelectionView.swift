@@ -14,6 +14,7 @@ struct PlanSelectionView: View {
     let proficiencyLevel: Int
     var learningInterest: String = ""
     var dailyGoalMinutes: Int = 10
+    var nativeLangCode: String = OL.phoneCode
 
     // 0 = Pro, 1 = Free. Default Pro (recommended)
     @State private var selectedPlan: Int = 0
@@ -38,7 +39,7 @@ struct PlanSelectionView: View {
                 MascotAnimationView(width: 70, height: 70)
 
                 Text(OL.s(.planSpeechBubble))
-                    .font(.custom("Poppins-Bold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
                     .background(
@@ -69,10 +70,10 @@ struct PlanSelectionView: View {
                 } label: {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("WordRem Pro")
-                            .font(.custom("Poppins-Bold", size: 18))
+                            .font(.custom("Feather-Bold", size: 18))
                             .foregroundStyle(Color.white)
                         Text(OL.s(.planProSubtitle))
-                            .font(.custom("Poppins-Regular", size: 15))
+                            .font(.custom("Feather-Bold", size: 15))
                             .foregroundStyle(Color.white.opacity(0.9))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -100,7 +101,7 @@ struct PlanSelectionView: View {
                     )
                     .overlay(alignment: .topTrailing) {
                         Text(OL.s(.planRecommended))
-                            .font(.custom("Poppins-Bold", size: 12))
+                            .font(.custom("Feather-Bold", size: 12))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 4)
@@ -127,10 +128,10 @@ struct PlanSelectionView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(OL.s(.planFreeTitle))
-                                .font(.custom("Poppins-Bold", size: 18))
+                                .font(.custom("Feather-Bold", size: 18))
                                 .foregroundStyle(Color(hex: "#1e293b"))
                             Text(OL.s(.planFreeSubtitle))
-                                .font(.custom("Poppins-Regular", size: 15))
+                                .font(.custom("Feather-Bold", size: 15))
                                 .foregroundStyle(Color(hex: "#64748b"))
                         }
                         Spacer()
@@ -178,7 +179,7 @@ struct PlanSelectionView: View {
                     }
                 } label: {
                     Text(OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -200,7 +201,8 @@ struct PlanSelectionView: View {
                 languageCode: languageCode,
                 proficiencyLevel: proficiencyLevel,
                 learningInterest: learningInterest,
-                dailyGoalMinutes: dailyGoalMinutes
+                dailyGoalMinutes: dailyGoalMinutes,
+                nativeLangCode: nativeLangCode
             )
         }
         .fullScreenCover(isPresented: $showPaywall) {

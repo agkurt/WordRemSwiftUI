@@ -10,13 +10,19 @@ import Foundation
 
 struct OL {
 
-    // MARK: - Telefon Dili
+    // MARK: - Telefon Dili (UI metinleri için)
     static var phoneCode: String {
         let code = Locale.current.language.languageCode?.identifier ?? "en"
         return supported.contains(code) ? code : "en"
     }
 
     private static let supported = ["tr","en","de","fr","es","it","ru","zh"]
+
+    // MARK: - Kullanıcının Seçtiği Anadil (öğrenme içeriği için)
+    /// Onboarding'de seçilen anadil kodu. Bulunamazsa telefon diline döner.
+    static var nativeLangCode: String {
+        UserDefaults.standard.string(forKey: "userNativeLangCode") ?? phoneCode
+    }
 
     // MARK: - String Çekme
     static func s(_ key: Key) -> String {
@@ -27,14 +33,18 @@ struct OL {
         String(format: s(key), arg)
     }
 
-    // MARK: - "For X speakers" subtitle — tamamen dinamik
-    /// Telefon dilini kendi dilinde yazar: "Türkçe bilenler için", "For English speakers", "Für Deutschsprachige" vs.
-    static var forSpeakersSubtitle: String {
-        let code = phoneCode
-        let langName = Locale.current.localizedString(forLanguageCode: code)
-                       ?? Locale(identifier: "en").localizedString(forLanguageCode: code)
-                       ?? code.uppercased()
+    // MARK: - "For X speakers" subtitle — seçilen anadile göre
+    /// Kullanıcının seçtiği anadili kendi dilinde yazar: "Türkçe bilenler için" vs.
+    static func forSpeakersSubtitle(nativeLangCode: String) -> String {
+        let langName = Locale.current.localizedString(forLanguageCode: nativeLangCode)
+                       ?? Locale(identifier: "en").localizedString(forLanguageCode: nativeLangCode)
+                       ?? nativeLangCode.uppercased()
         return f(.forSpeakersFormat, langName)
+    }
+
+    /// Geriye dönük uyumluluk (telefon diline göre)
+    static var forSpeakersSubtitle: String {
+        forSpeakersSubtitle(nativeLangCode: phoneCode)
     }
 
     // MARK: - Dil İsimlerini Telefon Diline Göre Döndür
@@ -74,6 +84,10 @@ struct OL {
     enum Key: String {
         // Shared
         case continueButton     = "continue_button"
+
+        // NativeLanguageSelectionView
+        case nativeLangTitle    = "native_lang.title"
+        case nativeLangHint     = "native_lang.hint"
 
         // LanguageSelectionView
         case whatToLearn        = "lang_select.title"
@@ -123,6 +137,8 @@ struct OL {
         // ─────────────────────────────────────────
         "tr": [
             .continueButton:    "DEVAM ET",
+            .nativeLangTitle:   "Ana dilin hangisi?",
+            .nativeLangHint:    "Bunu bilerek sana en uygun dersleri hazırlıyoruz.",
             .whatToLearn:       "Ne öğrenmek istersin?",
             .forSpeakersFormat: "%@ bilenler için",
             .nativeSpeakers:    "Türkçe bilenler için",
@@ -156,6 +172,8 @@ struct OL {
         // ─────────────────────────────────────────
         "en": [
             .continueButton:    "CONTINUE",
+            .nativeLangTitle:   "What is your native language?",
+            .nativeLangHint:    "We'll personalize your lessons based on this.",
             .whatToLearn:       "What do you want to learn?",
             .forSpeakersFormat: "For %@ speakers",
             .nativeSpeakers:    "For English speakers",
@@ -189,6 +207,8 @@ struct OL {
         // ─────────────────────────────────────────
         "de": [
             .continueButton:    "WEITER",
+            .nativeLangTitle:   "Was ist deine Muttersprache?",
+            .nativeLangHint:    "So können wir deine Lektionen optimal anpassen.",
             .whatToLearn:       "Was möchtest du lernen?",
             .forSpeakersFormat: "Für %@-Sprecher",
             .nativeSpeakers:    "Für Deutschsprachige",
@@ -222,6 +242,8 @@ struct OL {
         // ─────────────────────────────────────────
         "fr": [
             .continueButton:    "CONTINUER",
+            .nativeLangTitle:   "Quelle est ta langue maternelle ?",
+            .nativeLangHint:    "Cela nous permet de personnaliser tes leçons.",
             .whatToLearn:       "Que veux-tu apprendre ?",
             .forSpeakersFormat: "Pour les locuteurs %@",
             .nativeSpeakers:    "Pour les francophones",
@@ -255,6 +277,8 @@ struct OL {
         // ─────────────────────────────────────────
         "es": [
             .continueButton:    "CONTINUAR",
+            .nativeLangTitle:   "¿Cuál es tu idioma nativo?",
+            .nativeLangHint:    "Así personalizamos tus lecciones.",
             .whatToLearn:       "¿Qué quieres aprender?",
             .forSpeakersFormat: "Para hablantes de %@",
             .nativeSpeakers:    "Para hispanohablantes",
@@ -288,6 +312,8 @@ struct OL {
         // ─────────────────────────────────────────
         "it": [
             .continueButton:    "CONTINUA",
+            .nativeLangTitle:   "Qual è la tua lingua madre?",
+            .nativeLangHint:    "In questo modo personalizziamo le tue lezioni.",
             .whatToLearn:       "Cosa vuoi imparare?",
             .forSpeakersFormat: "Per i parlanti %@",
             .nativeSpeakers:    "Per gli italofoni",
@@ -321,6 +347,8 @@ struct OL {
         // ─────────────────────────────────────────
         "ru": [
             .continueButton:    "ПРОДОЛЖИТЬ",
+            .nativeLangTitle:   "Какой у тебя родной язык?",
+            .nativeLangHint:    "Это поможет нам персонализировать твои уроки.",
             .whatToLearn:       "Что ты хочешь выучить?",
             .forSpeakersFormat: "Для носителей %@",
             .nativeSpeakers:    "Для русскоязычных",
@@ -354,6 +382,8 @@ struct OL {
         // ─────────────────────────────────────────
         "zh": [
             .continueButton:    "继续",
+            .nativeLangTitle:   "你的母语是什么？",
+            .nativeLangHint:    "这样我们可以为你量身定制课程。",
             .whatToLearn:       "你想学什么？",
             .forSpeakersFormat: "适合%@使用者",
             .nativeSpeakers:    "适合中文使用者",

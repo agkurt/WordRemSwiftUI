@@ -140,7 +140,7 @@ private struct TabBarItem: View {
                     .scaleEffect(isSelected ? 1.12 : 1.0)
 
                 Text(tab.label)
-                    .font(.custom("Poppins-Medium", size: 10))
+                    .font(.custom("Feather-Bold", size: 10))
                     .foregroundStyle(
                         isSelected
                         ? Color(hex: "#f97316")

@@ -26,6 +26,10 @@ struct AL {
         String(format: s(key), arg)
     }
 
+    static func f(_ key: Key, _ arg1: Int, _ arg2: Int) -> String {
+        String(format: s(key), arg1, arg2)
+    }
+
     // MARK: - Paywall Reviews (per language)
     static var paywallReviews: [(String, String)] {
         switch phoneCode {
@@ -235,6 +239,38 @@ struct AL {
         case resultXPEarned         = "result.xp_earned"
         case resultContinue         = "result.continue"
         case resultTryAgain         = "result.try_again"
+
+        // Profile - Guest & Username flow
+        case profileSaveProgress        = "profile.save_progress"
+        case profileSaveProgressHint    = "profile.save_progress_hint"
+        case profileSaveProgressDesc    = "profile.save_progress_desc"
+        case profileLoginApple          = "profile.login_apple"
+        case profileLoginGoogle         = "profile.login_google"
+        case profileLoginEmail          = "profile.login_email"
+        case profileClose               = "profile.close"
+        case profileSave                = "profile.save"
+        case profileSetUsername         = "profile.set_username"
+        case profileChangeUsername      = "profile.change_username"
+        case profileUsernameLeaderboard = "profile.username_leaderboard"
+        case profileUsernameOneChange   = "profile.username_one_change"
+        case profileUsernamePlaceholder = "profile.username_placeholder"
+
+        // Leaderboard - Guest
+        case leaderboardJoinTitle       = "leaderboard.join_title"
+        case leaderboardJoinDesc        = "leaderboard.join_desc"
+        case leaderboardSignIn          = "leaderboard.sign_in"
+
+        // Home - Empty state
+        case homeCreateFirstDeck        = "home.create_first_deck"
+        case homeCreateFirstDeckHint    = "home.create_first_deck_hint"
+        case homeCreateDeck             = "home.create_deck"
+
+        // Path - Unit & Status
+        case pathUnitFormat             = "path.unit_format"
+        case pathLevelProgressFormat    = "path.level_progress_format"
+        case pathStatusCompleted        = "path.status_completed"
+        case pathStatusInProgress       = "path.status_in_progress"
+        case pathStatusLocked           = "path.status_locked"
     }
 
     // MARK: - Çeviriler
@@ -375,6 +411,34 @@ struct AL {
             .resultXPEarned:        "Kazanılan XP",
             .resultContinue:        "Devam",
             .resultTryAgain:        "Tekrar Dene",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "İlerlemenizi Kaydedin",
+            .profileSaveProgressHint:   "Hesap oluşturun, her şey güvende kalsın",
+            .profileSaveProgressDesc:   "Hesap oluşturarak XP'leriniz, serileriniz ve tüm ilerlemeniz güvende kalsın. Uygulamayı silseniz bile her şey yerli yerinde.",
+            .profileLoginApple:         "Apple ile Devam Et",
+            .profileLoginGoogle:        "Google ile Devam Et",
+            .profileLoginEmail:         "E-posta ile Kayıt Ol",
+            .profileClose:              "Kapat",
+            .profileSave:               "Kaydet",
+            .profileSetUsername:        "Kullanıcı adın ne olsun?",
+            .profileChangeUsername:     "Kullanıcı adını değiştir",
+            .profileUsernameLeaderboard: "Bu isim leaderboard ve profilinde görünecek.",
+            .profileUsernameOneChange:  "Bu hakkı yalnızca 1 kez kullanabilirsin.\nLeaderboard ve profilinde güncellenir.",
+            .profileUsernamePlaceholder: "Kullanıcı adı (min. 3 karakter)",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "Sıralamaya katıl! 🏆",
+            .leaderboardJoinDesc:       "Leaderboard'u görmek ve\nsıralamaya girmek için giriş yapman gerekiyor.",
+            .leaderboardSignIn:         "Giriş Yap",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "İlk desteni oluştur! 🎉",
+            .homeCreateFirstDeckHint:   "Kelimelerini ekle, Reeny seninle\nçalışmaya hazır!",
+            .homeCreateDeck:            "Deste Oluştur",
+            // Path - Unit & Status
+            .pathUnitFormat:            "Ünite %d",
+            .pathLevelProgressFormat:   "%d/%d seviye",
+            .pathStatusCompleted:       "Tamamlandı",
+            .pathStatusInProgress:      "Devam Ediyor",
+            .pathStatusLocked:          "Kilitli",
         ],
 
         // ─────────────────────────────────────────
@@ -511,6 +575,34 @@ struct AL {
             .resultXPEarned:        "XP Earned",
             .resultContinue:        "Continue",
             .resultTryAgain:        "Try Again",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "Save Your Progress",
+            .profileSaveProgressHint:   "Create an account, keep everything safe",
+            .profileSaveProgressDesc:   "Create an account to keep your XP, streaks and all progress safe. Even if you delete the app, everything stays intact.",
+            .profileLoginApple:         "Continue with Apple",
+            .profileLoginGoogle:        "Continue with Google",
+            .profileLoginEmail:         "Sign Up with Email",
+            .profileClose:              "Close",
+            .profileSave:               "Save",
+            .profileSetUsername:        "What should your username be?",
+            .profileChangeUsername:     "Change your username",
+            .profileUsernameLeaderboard: "This name will appear on the leaderboard and your profile.",
+            .profileUsernameOneChange:  "You can only use this right once.\nWill be updated on the leaderboard and your profile.",
+            .profileUsernamePlaceholder: "Username (min. 3 characters)",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "Join the leaderboard! 🏆",
+            .leaderboardJoinDesc:       "You need to log in to see the leaderboard\nand join the rankings.",
+            .leaderboardSignIn:         "Sign In",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "Create Your First Deck! 🎉",
+            .homeCreateFirstDeckHint:   "Add your words, Reeny is ready\nto study with you!",
+            .homeCreateDeck:            "Create Deck",
+            // Path - Unit & Status
+            .pathUnitFormat:            "Unit %d",
+            .pathLevelProgressFormat:   "%d/%d levels",
+            .pathStatusCompleted:       "Completed",
+            .pathStatusInProgress:      "In Progress",
+            .pathStatusLocked:          "Locked",
         ],
 
         // ─────────────────────────────────────────
@@ -647,6 +739,34 @@ struct AL {
             .resultXPEarned:        "XP verdient",
             .resultContinue:        "Weiter",
             .resultTryAgain:        "Erneut versuchen",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "Fortschritt sichern",
+            .profileSaveProgressHint:   "Konto erstellen, alles sicher aufbewahren",
+            .profileSaveProgressDesc:   "Erstelle ein Konto, um deine XP, Serien und Fortschritte zu sichern. Auch nach dem Löschen der App bleibt alles erhalten.",
+            .profileLoginApple:         "Mit Apple fortfahren",
+            .profileLoginGoogle:        "Mit Google fortfahren",
+            .profileLoginEmail:         "Mit E-Mail registrieren",
+            .profileClose:              "Schließen",
+            .profileSave:               "Speichern",
+            .profileSetUsername:        "Wie soll dein Benutzername lauten?",
+            .profileChangeUsername:     "Benutzernamen ändern",
+            .profileUsernameLeaderboard: "Dieser Name erscheint im Leaderboard und deinem Profil.",
+            .profileUsernameOneChange:  "Du kannst dieses Recht nur einmal nutzen.\nWird im Leaderboard und Profil aktualisiert.",
+            .profileUsernamePlaceholder: "Benutzername (min. 3 Zeichen)",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "Tritt dem Leaderboard bei! 🏆",
+            .leaderboardJoinDesc:       "Melde dich an, um das Leaderboard zu sehen\nund mitzumachen.",
+            .leaderboardSignIn:         "Anmelden",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "Erstelle deinen ersten Stapel! 🎉",
+            .homeCreateFirstDeckHint:   "Füge deine Wörter hinzu, Reeny ist bereit\nmit dir zu lernen!",
+            .homeCreateDeck:            "Stapel erstellen",
+            // Path - Unit & Status
+            .pathUnitFormat:            "Einheit %d",
+            .pathLevelProgressFormat:   "%d/%d Level",
+            .pathStatusCompleted:       "Abgeschlossen",
+            .pathStatusInProgress:      "In Bearbeitung",
+            .pathStatusLocked:          "Gesperrt",
         ],
 
         // ─────────────────────────────────────────
@@ -783,6 +903,34 @@ struct AL {
             .resultXPEarned:        "XP gagné",
             .resultContinue:        "Continuer",
             .resultTryAgain:        "Réessayer",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "Sauvegarde tes progrès",
+            .profileSaveProgressHint:   "Crée un compte, garde tout en sécurité",
+            .profileSaveProgressDesc:   "Crée un compte pour garder tes XP, séries et tous tes progrès en sécurité. Même si tu supprimes l'appli, tout reste intact.",
+            .profileLoginApple:         "Continuer avec Apple",
+            .profileLoginGoogle:        "Continuer avec Google",
+            .profileLoginEmail:         "S'inscrire avec l'e-mail",
+            .profileClose:              "Fermer",
+            .profileSave:               "Sauvegarder",
+            .profileSetUsername:        "Quel devrait être ton pseudo ?",
+            .profileChangeUsername:     "Changer ton pseudo",
+            .profileUsernameLeaderboard: "Ce nom apparaîtra sur le classement et ton profil.",
+            .profileUsernameOneChange:  "Tu ne peux utiliser ce droit qu'une seule fois.\nSera mis à jour dans le classement et ton profil.",
+            .profileUsernamePlaceholder: "Pseudo (min. 3 caractères)",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "Rejoins le classement ! 🏆",
+            .leaderboardJoinDesc:       "Tu dois te connecter pour voir le classement\net y participer.",
+            .leaderboardSignIn:         "Se connecter",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "Crée ton premier deck ! 🎉",
+            .homeCreateFirstDeckHint:   "Ajoute tes mots, Reeny est prêt\nà étudier avec toi !",
+            .homeCreateDeck:            "Créer un deck",
+            // Path - Unit & Status
+            .pathUnitFormat:            "Unité %d",
+            .pathLevelProgressFormat:   "%d/%d niveaux",
+            .pathStatusCompleted:       "Terminé",
+            .pathStatusInProgress:      "En cours",
+            .pathStatusLocked:          "Verrouillé",
         ],
 
         // ─────────────────────────────────────────
@@ -919,6 +1067,34 @@ struct AL {
             .resultXPEarned:        "XP ganado",
             .resultContinue:        "Continuar",
             .resultTryAgain:        "Reintentar",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "Guarda tu progreso",
+            .profileSaveProgressHint:   "Crea una cuenta, mantén todo seguro",
+            .profileSaveProgressDesc:   "Crea una cuenta para guardar tu XP, rachas y todo tu progreso. Aunque borres la app, todo quedará intacto.",
+            .profileLoginApple:         "Continuar con Apple",
+            .profileLoginGoogle:        "Continuar con Google",
+            .profileLoginEmail:         "Registrarse con correo",
+            .profileClose:              "Cerrar",
+            .profileSave:               "Guardar",
+            .profileSetUsername:        "¿Cuál debería ser tu nombre de usuario?",
+            .profileChangeUsername:     "Cambiar tu nombre de usuario",
+            .profileUsernameLeaderboard: "Este nombre aparecerá en el marcador y tu perfil.",
+            .profileUsernameOneChange:  "Solo puedes usar este derecho una vez.\nSe actualizará en el marcador y tu perfil.",
+            .profileUsernamePlaceholder: "Nombre de usuario (mín. 3 caracteres)",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "¡Únete al marcador! 🏆",
+            .leaderboardJoinDesc:       "Necesitas iniciar sesión para ver el marcador\ny unirte a las clasificaciones.",
+            .leaderboardSignIn:         "Iniciar sesión",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "¡Crea tu primer mazo! 🎉",
+            .homeCreateFirstDeckHint:   "Añade tus palabras, Reeny está listo\npara estudiar contigo!",
+            .homeCreateDeck:            "Crear mazo",
+            // Path - Unit & Status
+            .pathUnitFormat:            "Unidad %d",
+            .pathLevelProgressFormat:   "%d/%d niveles",
+            .pathStatusCompleted:       "Completado",
+            .pathStatusInProgress:      "En progreso",
+            .pathStatusLocked:          "Bloqueado",
         ],
 
         // ─────────────────────────────────────────
@@ -1055,6 +1231,34 @@ struct AL {
             .resultXPEarned:        "XP guadagnato",
             .resultContinue:        "Continua",
             .resultTryAgain:        "Riprova",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "Salva i tuoi progressi",
+            .profileSaveProgressHint:   "Crea un account, tieni tutto al sicuro",
+            .profileSaveProgressDesc:   "Crea un account per mantenere XP, serie e progressi al sicuro. Anche se elimini l'app, tutto rimane intatto.",
+            .profileLoginApple:         "Continua con Apple",
+            .profileLoginGoogle:        "Continua con Google",
+            .profileLoginEmail:         "Registrati con email",
+            .profileClose:              "Chiudi",
+            .profileSave:               "Salva",
+            .profileSetUsername:        "Come vuoi chiamarti?",
+            .profileChangeUsername:     "Cambia il tuo nome utente",
+            .profileUsernameLeaderboard: "Questo nome apparirà nella classifica e nel tuo profilo.",
+            .profileUsernameOneChange:  "Puoi usare questo diritto solo una volta.\nViene aggiornato nella classifica e nel tuo profilo.",
+            .profileUsernamePlaceholder: "Nome utente (min. 3 caratteri)",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "Unisciti alla classifica! 🏆",
+            .leaderboardJoinDesc:       "Devi accedere per vedere la classifica\ne partecipare.",
+            .leaderboardSignIn:         "Accedi",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "Crea il tuo primo mazzo! 🎉",
+            .homeCreateFirstDeckHint:   "Aggiungi le tue parole, Reeny è pronto\na studiare con te!",
+            .homeCreateDeck:            "Crea mazzo",
+            // Path - Unit & Status
+            .pathUnitFormat:            "Unità %d",
+            .pathLevelProgressFormat:   "%d/%d livelli",
+            .pathStatusCompleted:       "Completato",
+            .pathStatusInProgress:      "In corso",
+            .pathStatusLocked:          "Bloccato",
         ],
 
         // ─────────────────────────────────────────
@@ -1191,6 +1395,34 @@ struct AL {
             .resultXPEarned:        "Получено XP",
             .resultContinue:        "Продолжить",
             .resultTryAgain:        "Повторить",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "Сохрани прогресс",
+            .profileSaveProgressHint:   "Создай аккаунт, чтобы всё было в безопасности",
+            .profileSaveProgressDesc:   "Создай аккаунт, чтобы сохранить XP, серии и весь прогресс. Даже после удаления приложения — всё останется.",
+            .profileLoginApple:         "Продолжить с Apple",
+            .profileLoginGoogle:        "Продолжить с Google",
+            .profileLoginEmail:         "Зарегистрироваться по email",
+            .profileClose:              "Закрыть",
+            .profileSave:               "Сохранить",
+            .profileSetUsername:        "Как тебя называть?",
+            .profileChangeUsername:     "Изменить имя пользователя",
+            .profileUsernameLeaderboard: "Это имя появится в таблице лидеров и твоём профиле.",
+            .profileUsernameOneChange:  "Это право можно использовать только один раз.\nБудет обновлено в таблице лидеров и профиле.",
+            .profileUsernamePlaceholder: "Имя пользователя (мин. 3 символа)",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "Присоединяйся к таблице! 🏆",
+            .leaderboardJoinDesc:       "Войди, чтобы увидеть таблицу лидеров\nи участвовать.",
+            .leaderboardSignIn:         "Войти",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "Создай свою первую колоду! 🎉",
+            .homeCreateFirstDeckHint:   "Добавь слова, Reeny готов\nучиться вместе с тобой!",
+            .homeCreateDeck:            "Создать колоду",
+            // Path - Unit & Status
+            .pathUnitFormat:            "Блок %d",
+            .pathLevelProgressFormat:   "%d/%d уровней",
+            .pathStatusCompleted:       "Завершено",
+            .pathStatusInProgress:      "В процессе",
+            .pathStatusLocked:          "Заблокировано",
         ],
 
         // ─────────────────────────────────────────
@@ -1327,6 +1559,34 @@ struct AL {
             .resultXPEarned:        "获得XP",
             .resultContinue:        "继续",
             .resultTryAgain:        "重试",
+            // Profile - Guest & Username
+            .profileSaveProgress:       "保存你的进度",
+            .profileSaveProgressHint:   "创建账户，保持一切安全",
+            .profileSaveProgressDesc:   "创建账户以保护你的XP、连续记录和所有进度。即使删除应用，一切都会保持完好。",
+            .profileLoginApple:         "使用Apple继续",
+            .profileLoginGoogle:        "使用Google继续",
+            .profileLoginEmail:         "使用邮箱注册",
+            .profileClose:              "关闭",
+            .profileSave:               "保存",
+            .profileSetUsername:        "你的用户名是什么？",
+            .profileChangeUsername:     "更改用户名",
+            .profileUsernameLeaderboard: "此名称将显示在排行榜和你的个人资料上。",
+            .profileUsernameOneChange:  "你只能使用这个权利一次。\n将在排行榜和个人资料中更新。",
+            .profileUsernamePlaceholder: "用户名（最少3个字符）",
+            // Leaderboard - Guest
+            .leaderboardJoinTitle:      "加入排行榜！🏆",
+            .leaderboardJoinDesc:       "你需要登录才能查看排行榜\n并加入排名。",
+            .leaderboardSignIn:         "登录",
+            // Home - Empty state
+            .homeCreateFirstDeck:       "创建你的第一个卡组！🎉",
+            .homeCreateFirstDeckHint:   "添加你的单词，Reeny准备好\n和你一起学习了！",
+            .homeCreateDeck:            "创建卡组",
+            // Path - Unit & Status
+            .pathUnitFormat:            "单元 %d",
+            .pathLevelProgressFormat:   "%d/%d 关卡",
+            .pathStatusCompleted:       "已完成",
+            .pathStatusInProgress:      "进行中",
+            .pathStatusLocked:          "已锁定",
         ],
     ]
     // swiftlint:enable line_length

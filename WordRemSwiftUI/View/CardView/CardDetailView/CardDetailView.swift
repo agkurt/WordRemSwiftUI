@@ -31,10 +31,10 @@ struct CardDetailView: View {
                                 .font(.system(size: 48))
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                             Text("No words yet")
-                                .font(.custom("Poppins-SemiBold", size: 18))
+                                .font(.custom("Feather-Bold", size: 18))
                                 .foregroundStyle(AppTheme.Colors.textPrimary)
                             Text("Tap + to add your first word")
-                                .font(.custom("Poppins-Regular", size: 14))
+                                .font(.custom("Feather-Bold", size: 14))
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                         }
                         Spacer()
@@ -67,7 +67,7 @@ struct CardDetailView: View {
                                     Image(systemName: "brain.head.profile")
                                         .font(.system(size: 16, weight: .semibold))
                                     Text("Quiz")
-                                        .font(.custom("Poppins-SemiBold", size: 15))
+                                        .font(.custom("Feather-Bold", size: 15))
                                 }
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 20)

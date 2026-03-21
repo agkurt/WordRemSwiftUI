@@ -30,7 +30,7 @@ struct FlagSelectionView: View {
                             .animation(.spring(response: 0.3), value: selectedFlag)
                         
                         Text(flag.rawValue.capitalized)
-                            .font(.custom("Poppins-Medium", size: 12))
+                            .font(.custom("Feather-Bold", size: 12))
                             .foregroundStyle(selectedFlag == flag ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textSecondary)
                     }
                     .padding(.vertical, 8)

@@ -100,7 +100,7 @@ struct CardDetailDesignView: View {
                     ZStack {
                         if let name = wordName, !name.isEmpty {
                             Text(name)
-                                .font(.custom("Poppins-Bold", size: 32))
+                                .font(.custom("Feather-Bold", size: 32))
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [
@@ -114,7 +114,7 @@ struct CardDetailDesignView: View {
                         }
                         if let mean = wordMean, !mean.isEmpty {
                             Text(mean)
-                                .font(.custom("Poppins-Bold", size: 32))
+                                .font(.custom("Feather-Bold", size: 32))
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [

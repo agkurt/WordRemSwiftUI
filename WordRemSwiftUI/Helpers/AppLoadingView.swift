@@ -20,7 +20,7 @@ struct AppLoadingView: View {
 
             if let message {
                 Text(message)
-                    .font(.custom("Poppins-Regular", size: 13))
+                    .font(.custom("Feather-Bold", size: 13))
                     .foregroundStyle(Color(hex: "#94a3b8"))
             }
         }

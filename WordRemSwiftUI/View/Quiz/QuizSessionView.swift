@@ -37,10 +37,10 @@ struct QuizSessionView: View {
                     }
                     Spacer()
                     Text(mode.rawValue)
-                        .font(.custom("Poppins-SemiBold", size: 15))
+                        .font(.custom("Feather-Bold", size: 15))
                     Spacer()
                     Text("\(viewModel.currentIndex + 1)/\(viewModel.questions.count)")
-                        .font(.custom("Poppins-Regular", size: 15))
+                        .font(.custom("Feather-Bold", size: 15))
                         .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 20)
@@ -150,7 +150,7 @@ struct QuizSessionView: View {
                                     }
                                 } label: {
                                     Text(viewModel.isLastQuestion ? "See Results" : "Next Question")
-                                        .font(.custom("Poppins-SemiBold", size: 16))
+                                        .font(.custom("Feather-Bold", size: 16))
                                         .foregroundStyle(.white)
                                         .frame(maxWidth: .infinity)
                                         .frame(height: 50)
@@ -193,17 +193,17 @@ private struct QuizQuestionCard: View {
     var body: some View {
         VStack(spacing: 12) {
             Text("What is the meaning of")
-                .font(.custom("Poppins-Regular", size: 14))
+                .font(.custom("Feather-Bold", size: 14))
                 .foregroundStyle(.secondary)
 
             Text(question.wordInfo.names)
-                .font(.custom("Poppins-SemiBold", size: 32))
+                .font(.custom("Feather-Bold", size: 32))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
 
             if !question.wordInfo.descriptions.isEmpty {
                 Text("\"\(question.wordInfo.descriptions)\"")
-                    .font(.custom("Poppins-Regular", size: 13))
+                    .font(.custom("Feather-Bold", size: 13))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
@@ -264,7 +264,7 @@ private struct OptionRow: View {
         Button(action: onSelect) {
             HStack {
                 Text(option)
-                    .font(.custom("Poppins-Regular", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(isAnswered ? (isCorrect ? .white : .secondary) : .primary)
                     .multilineTextAlignment(.leading)
                 Spacer()
@@ -324,7 +324,7 @@ private struct TFButton: View {
                 Image(systemName: icon)
                     .font(.system(size: 26, weight: .bold))
                 Text(title)
-                    .font(.custom("Poppins-SemiBold", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
@@ -353,7 +353,7 @@ private struct WritingInput: View {
     var body: some View {
         VStack(spacing: 12) {
             TextField("Type the meaning...", text: $text)
-                .font(.custom("Poppins-Regular", size: 16))
+                .font(.custom("Feather-Bold", size: 16))
                 .padding(16)
                 .background(
                     RoundedRectangle(cornerRadius: 14)
@@ -371,7 +371,7 @@ private struct WritingInput: View {
                     onSubmit()
                 } label: {
                     Text("Check Answer")
-                        .font(.custom("Poppins-SemiBold", size: 16))
+                        .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
@@ -410,7 +410,7 @@ private struct ListeningModeInput: View {
                     TTSManager.shared.speak(wordToPlay, langCode: langCode)
                 } label: {
                     Label("Play", systemImage: "play.fill")
-                        .font(.custom("Poppins-SemiBold", size: 14))
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 12)
@@ -426,7 +426,7 @@ private struct ListeningModeInput: View {
                     TTSManager.shared.speakSlow(wordToPlay, langCode: langCode)
                 } label: {
                     Label("Slow", systemImage: "tortoise.fill")
-                        .font(.custom("Poppins-Medium", size: 13))
+                        .font(.custom("Feather-Bold", size: 13))
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 12)
@@ -471,7 +471,7 @@ private struct FillInTheBlankInput: View {
         VStack(spacing: 14) {
             // Gap sentence card
             Text(gapSentence)
-                .font(.custom("Poppins-SemiBold", size: 18))
+                .font(.custom("Feather-Bold", size: 18))
                 .multilineTextAlignment(.center)
                 .padding(16)
                 .frame(maxWidth: .infinity)
@@ -491,7 +491,7 @@ private struct FillInTheBlankInput: View {
                         onSelect(word)
                     } label: {
                         Text(word)
-                            .font(.custom("Poppins-Medium", size: 15))
+                            .font(.custom("Feather-Bold", size: 15))
                             .foregroundStyle(
                                 isAnswered
                                     ? (word == correctAnswer ? .white : .secondary)
@@ -541,7 +541,7 @@ private struct SentenceBuilderInput: View {
     var body: some View {
         VStack(spacing: 12) {
             Text("Tap the correct translation")
-                .font(.custom("Poppins-Regular", size: 14))
+                .font(.custom("Feather-Bold", size: 14))
                 .foregroundStyle(.secondary)
 
             // Word bubble grid (flexible wrapping layout)
@@ -552,7 +552,7 @@ private struct SentenceBuilderInput: View {
                         onSelect(word)
                     } label: {
                         Text(word)
-                            .font(.custom("Poppins-Medium", size: 14))
+                            .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(
                                 isAnswered
                                     ? (word == correctAnswer ? .white : .secondary)
@@ -598,10 +598,10 @@ private struct QuizFeedbackBanner: View {
                 .foregroundStyle(isCorrect ? .green : .orange)
             VStack(alignment: .leading, spacing: 2) {
                 Text(isCorrect ? "Correct! 🎉" : "Not quite...")
-                    .font(.custom("Poppins-SemiBold", size: 14))
+                    .font(.custom("Feather-Bold", size: 14))
                 if !isCorrect {
                     Text("Answer: \(correctAnswer)")
-                        .font(.custom("Poppins-Regular", size: 13))
+                        .font(.custom("Feather-Bold", size: 13))
                         .foregroundStyle(.secondary)
                 }
             }

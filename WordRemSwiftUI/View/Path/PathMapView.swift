@@ -9,6 +9,7 @@
 
 import SwiftUI
 import Lottie
+import StoreKit
 
 struct PathMapView: View {
 
@@ -16,19 +17,22 @@ struct PathMapView: View {
     @ObservedObject private var mistakes = MistakesManager.shared
     @State private var selectedLevel: SBLevelWithProgress?
     @State private var appeared = false
-    
+
     @AppStorage("justCompletedLevel") private var justCompletedLevel = false
     @AppStorage("justSavedMistakes") private var justSavedMistakes = false
     @AppStorage("justClearedMistakes") private var justClearedMistakes = false
-    
+    @AppStorage("hasRequestedReview") private var hasRequestedReview = false
+
     @State private var showCompletionPopup = false
     @State private var showMistakesSavedPopup = false
     @State private var showMistakesClearedPopup = false
     @State private var isRefreshingAfterQuiz = false
-    
+
     @State private var showMistakesQuiz = false
     @State private var showAIQuiz = false
     @State private var currentUnitIndex = 0
+
+    @Environment(\.requestReview) private var requestReview
 
     // MARK: - Unit Grouping (her 5 level = 1 ünite)
     private var unitGroups: [[SBLevelWithProgress]] {
@@ -83,7 +87,7 @@ struct PathMapView: View {
                                         Image(systemName: "exclamationmark.triangle.fill")
                                             .foregroundStyle(.white)
                                         Text(AL.f(.pathMistakesFormat, mistakes.count))
-                                            .font(.custom("Poppins-SemiBold", size: 14))
+                                            .font(.custom("Feather-Bold", size: 14))
                                             .foregroundStyle(.white)
                                     }
                                     .padding(.horizontal, 20)
@@ -113,7 +117,7 @@ struct PathMapView: View {
                                     .font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(.white)
                                 Text("AI Grammar Quiz")
-                                    .font(.custom("Poppins-SemiBold", size: 14))
+                                    .font(.custom("Feather-Bold", size: 14))
                                     .foregroundStyle(.white)
                                 Spacer()
                                 Image(systemName: "chevron.right")
@@ -225,9 +229,9 @@ struct PathMapView: View {
                     Task {
                         await vm.loadCourses()
                         await vm.loadUserProfile()
-                        
+
                         try? await Task.sleep(nanoseconds: 700_000_000)
-                        
+
                         withAnimation {
                             isRefreshingAfterQuiz = false
                             if justSavedMistakes {
@@ -237,6 +241,14 @@ struct PathMapView: View {
                                 showCompletionPopup = true
                             }
                             justCompletedLevel = false
+                        }
+
+                        // İlk seviye tamamlandığında App Store rating iste
+                        if !hasRequestedReview && vm.completedCount == 1 {
+                            hasRequestedReview = true
+                            // Completion popup gösterildikten sonra iste
+                            try? await Task.sleep(nanoseconds: 1_500_000_000)
+                            await MainActor.run { requestReview() }
                         }
                     }
                 } else {
@@ -299,10 +311,10 @@ struct PathMapView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
             Text(AL.s(.pathSomethingWrong))
-                .font(.custom("Poppins-SemiBold", size: 17))
+                .font(.custom("Feather-Bold", size: 17))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(err)
-                .font(.custom("Poppins-Regular", size: 13))
+                .font(.custom("Feather-Bold", size: 13))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
@@ -310,7 +322,7 @@ struct PathMapView: View {
                 Task { await vm.loadCourses() }
             } label: {
                 Text(AL.s(.pathTryAgain))
-                    .font(.custom("Poppins-SemiBold", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 12)
@@ -326,11 +338,11 @@ struct PathMapView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
             Text(AL.s(.pathNoCourseForLang))
-                .font(.custom("Poppins-Bold", size: 20))
+                .font(.custom("Feather-Bold", size: 20))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
             Text(AL.s(.pathNoCourseForLangHint))
-                .font(.custom("Poppins-Regular", size: 14))
+                .font(.custom("Feather-Bold", size: 14))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
         }
@@ -344,17 +356,17 @@ struct PathMapView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
             Text(AL.s(.pathNoCourses))
-                .font(.custom("Poppins-Bold", size: 20))
+                .font(.custom("Feather-Bold", size: 20))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(AL.s(.pathNoCoursesHint))
-                .font(.custom("Poppins-Regular", size: 14))
+                .font(.custom("Feather-Bold", size: 14))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
             Button {
                 Task { await vm.loadCourses() }
             } label: {
                 Label(AL.s(.pathRefresh), systemImage: "arrow.clockwise")
-                    .font(.custom("Poppins-SemiBold", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
@@ -464,8 +476,8 @@ private struct UnitDividerView: View {
                             .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(accentColor)
                     }
-                    Text("Ünite \(unitNumber)")
-                        .font(.custom("Poppins-Bold", size: 12))
+                    Text(AL.f(.pathUnitFormat, unitNumber))
+                        .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(status == .locked ? Color(hex: "#94a3b8") : Color(hex: "#1a1a2e"))
                 }
                 .padding(.horizontal, 14)
@@ -504,8 +516,8 @@ private struct UnitDividerView: View {
                 .frame(height: 3)
                 .padding(.horizontal, 48)
 
-                Text("\(completed)/\(total) seviye")
-                    .font(.custom("Poppins-Regular", size: 10))
+                Text(AL.f(.pathLevelProgressFormat, completed, total))
+                    .font(.custom("Feather-Bold", size: 10))
                     .foregroundStyle(Color(hex: "#94a3b8"))
             }
         }
@@ -539,8 +551,8 @@ private struct UnitHeaderView: View {
 
             // Orta: başlık + progress
             VStack(alignment: .leading, spacing: 4) {
-                Text("Ünite \(unitNumber)")
-                    .font(.custom("Poppins-Bold", size: 17))
+                Text(AL.f(.pathUnitFormat, unitNumber))
+                    .font(.custom("Feather-Bold", size: 17))
                     .foregroundStyle(status == .locked ? Color(hex: "#9ca3af") : Color(hex: "#1a1a2e"))
 
                 // İlerleme çubuğu
@@ -557,8 +569,8 @@ private struct UnitHeaderView: View {
                 }
                 .frame(height: 6)
 
-                Text("\(completedLevels)/\(totalLevels) seviye")
-                    .font(.custom("Poppins-Regular", size: 11))
+                Text(AL.f(.pathLevelProgressFormat, completedLevels, totalLevels))
+                    .font(.custom("Feather-Bold", size: 11))
                     .foregroundStyle(Color(hex: "#9ca3af"))
             }
 
@@ -566,7 +578,7 @@ private struct UnitHeaderView: View {
 
             // Sağ: durum badge
             Text(statusText)
-                .font(.custom("Poppins-SemiBold", size: 11))
+                .font(.custom("Feather-Bold", size: 11))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
@@ -603,9 +615,9 @@ private struct UnitHeaderView: View {
 
     private var statusText: String {
         switch status {
-        case .completed:            return "Tamamlandı"
-        case .inProgress, .unlocked: return "Devam Ediyor"
-        case .locked:               return "Kilitli"
+        case .completed:            return AL.s(.pathStatusCompleted)
+        case .inProgress, .unlocked: return AL.s(.pathStatusInProgress)
+        case .locked:               return AL.s(.pathStatusLocked)
         }
     }
 }
@@ -628,21 +640,21 @@ private struct PathHeaderView: View {
                 // Sol: Ünite bilgisi (scroll ile güncellenir)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
-                        Text("Ünite \(currentUnit)")
-                            .font(.custom("Poppins-Bold", size: 20))
+                        Text(AL.f(.pathUnitFormat, currentUnit))
+                            .font(.custom("Feather-Bold", size: 20))
                             .foregroundStyle(Color(hex: "#1a1a2e"))
                             .contentTransition(.numericText())
                             .animation(.easeInOut(duration: 0.2), value: currentUnit)
 
                         if totalUnits > 1 {
                             Text("/ \(totalUnits)")
-                                .font(.custom("Poppins-Regular", size: 14))
+                                .font(.custom("Feather-Bold", size: 14))
                                 .foregroundStyle(Color(hex: "#94a3b8"))
                         }
                     }
 
                     Text(course?.title ?? AL.s(.pathSelectCourse))
-                        .font(.custom("Poppins-Regular", size: 12))
+                        .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(.secondary)
                 }
 
@@ -675,7 +687,7 @@ private struct PathHeaderView: View {
 
                     if progress > 0.08 {
                         Text("\(Int(progress * 100))%")
-                            .font(.custom("Poppins-Bold", size: 8))
+                            .font(.custom("Feather-Bold", size: 8))
                             .foregroundStyle(.white)
                             .offset(x: max(geo.size.width * CGFloat(progress) - 24, 4))
                     }
@@ -714,7 +726,7 @@ private struct StatPill: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(color)
             Text(value)
-                .font(.custom("Poppins-SemiBold", size: 13))
+                .font(.custom("Feather-Bold", size: 13))
                 .foregroundStyle(Color(hex: "#1a1a2e"))
         }
         .padding(.horizontal, 10)
@@ -747,7 +759,7 @@ struct PathNodeView: View {
             // Level label above node
             if item.status == .unlocked || item.status == .inProgress {
                 Text(AL.s(.pathStart))
-                    .font(.custom("Poppins-Bold", size: 11))
+                    .font(.custom("Feather-Bold", size: 11))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 4)
@@ -854,7 +866,7 @@ struct PathNodeView: View {
 
             // Level title
             Text(item.level.title)
-                .font(.custom("Poppins-SemiBold", size: 13))
+                .font(.custom("Feather-Bold", size: 13))
                 .foregroundStyle(item.status == .locked
                     ? AppTheme.Colors.textSecondary.opacity(0.5)
                     : Color(hex: "#1a1a2e"))
@@ -862,7 +874,7 @@ struct PathNodeView: View {
 
             // XP badge
             Text("\(item.level.xpReward) XP")
-                .font(.custom("Poppins-Regular", size: 11))
+                .font(.custom("Feather-Bold", size: 11))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
 
             // Stars (completed)
@@ -1095,11 +1107,11 @@ struct LevelCompletePopupView: View {
                 // Text Content
                 VStack(spacing: 8) {
                     Text(AL.s(.pathWellDone))
-                        .font(.custom("Poppins-Bold", size: 28))
+                        .font(.custom("Feather-Bold", size: 28))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
                     Text(AL.s(.pathWellDoneDesc))
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
@@ -1108,7 +1120,7 @@ struct LevelCompletePopupView: View {
                 // Action Button
                 Button(action: dismiss) {
                     Text(AL.s(.pathContinue))
-                        .font(.custom("Poppins-Bold", size: 16))
+                        .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1170,11 +1182,11 @@ struct MistakesSavedPopupView: View {
 
                 VStack(spacing: 8) {
                     Text(AL.s(.pathDontBeSad))
-                        .font(.custom("Poppins-Bold", size: 24))
+                        .font(.custom("Feather-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
                     Text(AL.s(.pathDontBeSadDesc))
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
@@ -1182,7 +1194,7 @@ struct MistakesSavedPopupView: View {
 
                 Button(action: dismiss) {
                     Text(AL.s(.pathGotIt))
-                        .font(.custom("Poppins-Bold", size: 16))
+                        .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1223,11 +1235,11 @@ struct MistakesClearedPopupView: View {
 
                 VStack(spacing: 8) {
                     Text(AL.s(.pathGreatWork))
-                        .font(.custom("Poppins-Bold", size: 24))
+                        .font(.custom("Feather-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
                     Text(AL.s(.pathGreatWorkDesc))
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
@@ -1235,7 +1247,7 @@ struct MistakesClearedPopupView: View {
 
                 Button(action: dismiss) {
                     Text(AL.s(.pathHooray))
-                        .font(.custom("Poppins-Bold", size: 16))
+                        .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1275,7 +1287,7 @@ private struct MistakesUrgentBanner: View {
                 )
 
             Text(AL.s(.pathMistakesUrgent))
-                .font(.custom("Poppins-SemiBold", size: 13))
+                .font(.custom("Feather-Bold", size: 13))
                 .foregroundStyle(Color(hex: "#ff3b30"))
                 .multilineTextAlignment(.leading)
 

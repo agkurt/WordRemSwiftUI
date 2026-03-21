@@ -34,13 +34,13 @@ struct LeaderboardView: View {
                             .font(.system(size: 44))
                             .foregroundStyle(.secondary)
                         Text(err)
-                            .font(.custom("Poppins-Regular", size: 13))
+                            .font(.custom("Feather-Bold", size: 13))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                         Button(AL.s(.leaderboardTryAgain)) {
                             Task { await vm.loadLeaderboard() }
                         }
-                        .font(.custom("Poppins-SemiBold", size: 14))
+                        .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 28).padding(.vertical, 12)
                         .background(AppTheme.Colors.primaryOrange, in: Capsule())
@@ -52,9 +52,9 @@ struct LeaderboardView: View {
                     VStack(spacing: 12) {
                         Text("🏆").font(.system(size: 60))
                         Text(AL.s(.leaderboardNoPlayers))
-                            .font(.custom("Poppins-SemiBold", size: 17))
+                            .font(.custom("Feather-Bold", size: 17))
                         Text(AL.s(.leaderboardNoPlayersHint))
-                            .font(.custom("Poppins-Regular", size: 13))
+                            .font(.custom("Feather-Bold", size: 13))
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -141,20 +141,20 @@ struct LeaderboardView: View {
             MascotAnimationView(width: 130, height: 130)
 
             VStack(spacing: 6) {
-                Text("Sıralamaya katıl! 🏆")
-                    .font(.custom("Poppins-Bold", size: 22))
+                Text(AL.s(.leaderboardJoinTitle))
+                    .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                Text("Leaderboard'u görmek ve\nsıralamaya girmek için giriş yapman gerekiyor.")
-                    .font(.custom("Poppins-Regular", size: 14))
+                Text(AL.s(.leaderboardJoinDesc))
+                    .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
 
             NavigationLink(destination: LoginScreenView()) {
-                Text("Giriş Yap")
-                    .font(.custom("Poppins-SemiBold", size: 16))
+                Text(AL.s(.leaderboardSignIn))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -175,10 +175,10 @@ struct LeaderboardView: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(AL.s(.leaderboardTitle))
-                    .font(.custom("Poppins-Bold", size: 22))
+                    .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
                 Text(AL.s(.leaderboardSubtitle))
-                    .font(.custom("Poppins-Regular", size: 12))
+                    .font(.custom("Feather-Bold", size: 12))
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -190,7 +190,7 @@ struct LeaderboardView: View {
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(Color(hex: "#f59e0b"))
                     Text("#\(rank)")
-                        .font(.custom("Poppins-Bold", size: 15))
+                        .font(.custom("Feather-Bold", size: 15))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
                 }
                 .padding(.horizontal, 14)
@@ -287,19 +287,19 @@ private struct PodiumSlot: View {
                     .shadow(color: podiumColor.opacity(0.35), radius: 10, y: 5)
 
                 Text(user.username.prefix(1).uppercased())
-                    .font(.custom("Poppins-Bold", size: rank == 1 ? 26 : 20))
+                    .font(.custom("Feather-Bold", size: rank == 1 ? 26 : 20))
                     .foregroundStyle(.white)
             }
 
             // Username
             Text(user.username)
-                .font(.custom("Poppins-SemiBold", size: 12))
+                .font(.custom("Feather-Bold", size: 12))
                 .foregroundStyle(Color(hex: "#1a1a2e"))
                 .lineLimit(1)
 
             // XP
             Text("\(user.totalXp) XP")
-                .font(.custom("Poppins-Bold", size: 11))
+                .font(.custom("Feather-Bold", size: 11))
                 .foregroundStyle(podiumColor)
 
             // Podium bar
@@ -313,7 +313,7 @@ private struct PodiumSlot: View {
                     )
 
                 Text("#\(rank)")
-                    .font(.custom("Poppins-Bold", size: rank == 1 ? 22 : 18))
+                    .font(.custom("Feather-Bold", size: rank == 1 ? 22 : 18))
                     .foregroundStyle(.white.opacity(0.85))
             }
             .frame(height: appeared ? barHeight : 4)
@@ -341,7 +341,7 @@ private struct RankRow: View {
         HStack(spacing: 14) {
             // Sıra numarası
             Text("\(rank)")
-                .font(.custom("Poppins-Bold", size: 15))
+                .font(.custom("Feather-Bold", size: 15))
                 .foregroundStyle(rank <= 10 ? AppTheme.Colors.primaryOrange : .secondary)
                 .frame(width: 32, alignment: .center)
 
@@ -359,14 +359,14 @@ private struct RankRow: View {
                     .frame(width: 44, height: 44)
 
                 Text(user.username.prefix(1).uppercased())
-                    .font(.custom("Poppins-SemiBold", size: 18))
+                    .font(.custom("Feather-Bold", size: 18))
                     .foregroundStyle(isCurrentUser ? .white : Color(hex: "#64748b"))
             }
 
             // İsim + streak
             VStack(alignment: .leading, spacing: 2) {
                 Text(user.username)
-                    .font(.custom("Poppins-SemiBold", size: 14))
+                    .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
                     .lineLimit(1)
 
@@ -375,7 +375,7 @@ private struct RankRow: View {
                         .font(.system(size: 10))
                         .foregroundStyle(.orange)
                     Text(AL.f(.leaderboardDayStreak, user.streakDays))
-                        .font(.custom("Poppins-Regular", size: 11))
+                        .font(.custom("Feather-Bold", size: 11))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -384,7 +384,7 @@ private struct RankRow: View {
 
             // XP badge
             Text("\(user.totalXp) XP")
-                .font(.custom("Poppins-SemiBold", size: 13))
+                .font(.custom("Feather-Bold", size: 13))
                 .foregroundStyle(isCurrentUser ? .white : AppTheme.Colors.primaryOrange)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)

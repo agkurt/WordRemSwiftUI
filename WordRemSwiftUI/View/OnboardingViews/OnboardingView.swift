@@ -45,7 +45,7 @@ struct OnboardingView: View {
                                 Image(systemName: "chevron.left")
                                 Text("Back")
                             }
-                            .font(.custom("Poppins-SemiBold", size: 16))
+                            .font(.custom("Feather-Bold", size: 16))
                             .foregroundColor(AppTheme.Colors.textSecondary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
@@ -69,7 +69,7 @@ struct OnboardingView: View {
                             Text(viewModel.currentPage == 2 ? "Get Started" : "Continue")
                             Image(systemName: viewModel.currentPage == 2 ? "checkmark" : "chevron.right")
                         }
-                        .font(.custom("Poppins-Bold", size: 16))
+                        .font(.custom("Feather-Bold", size: 16))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
@@ -129,12 +129,12 @@ struct AgeSelectionPage: View {
                     .font(.system(size: 80))
                 
                 Text("Welcome to WordRem!")
-                    .font(.custom("Poppins-Bold", size: 32))
+                    .font(.custom("Feather-Bold", size: 32))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
                 
                 Text("Let's personalize your learning experience")
-                    .font(.custom("Poppins-Regular", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -142,7 +142,7 @@ struct AgeSelectionPage: View {
             
             VStack(spacing: 16) {
                 Text("What's your age range?")
-                    .font(.custom("Poppins-SemiBold", size: 18))
+                    .font(.custom("Feather-Bold", size: 18))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 
                 VStack(spacing: 12) {
@@ -175,10 +175,10 @@ struct AgeRangeButton: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(age.rawValue)
-                        .font(.custom("Poppins-SemiBold", size: 16))
+                        .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                     Text(age.description)
-                        .font(.custom("Poppins-Regular", size: 13))
+                        .font(.custom("Feather-Bold", size: 13))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
                 
@@ -227,12 +227,12 @@ struct NativeLanguagePage: View {
                     .font(.system(size: 60))
                 
                 Text("What's your native language?")
-                    .font(.custom("Poppins-Bold", size: 26))
+                    .font(.custom("Feather-Bold", size: 26))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
                 
                 Text("This will be your translation source")
-                    .font(.custom("Poppins-Regular", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -244,7 +244,7 @@ struct NativeLanguagePage: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(AppTheme.Colors.textSecondary)
                 TextField("Search language...", text: $searchText)
-                    .font(.custom("Poppins-Regular", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .autocapitalization(.none)
             }
@@ -292,12 +292,12 @@ struct TargetLanguagePage: View {
                     .font(.system(size: 60))
                 
                 Text("Which language do you want to learn?")
-                    .font(.custom("Poppins-Bold", size: 26))
+                    .font(.custom("Feather-Bold", size: 26))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
                 
                 Text("This will be your learning target")
-                    .font(.custom("Poppins-Regular", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -309,7 +309,7 @@ struct TargetLanguagePage: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(AppTheme.Colors.textSecondary)
                 TextField("Search language...", text: $searchText)
-                    .font(.custom("Poppins-Regular", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .autocapitalization(.none)
             }
@@ -351,7 +351,7 @@ struct LanguageCardButton: View {
                     .font(.system(size: 40))
                 
                 Text(language.shortName)
-                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 
                 if isSelected {

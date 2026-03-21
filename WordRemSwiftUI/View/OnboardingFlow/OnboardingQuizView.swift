@@ -15,6 +15,7 @@ struct OnboardingQuizView: View {
     let proficiencyLevel: Int
     var learningInterest: String = ""
     var dailyGoalMinutes: Int = 10
+    var nativeLangCode: String = OL.phoneCode   // NativeLanguageSelectionView'dan gelir
     @State private var navigateToPlan = false
     @State private var isSpeaking = false
     private let synthesizer = AVSpeechSynthesizer()
@@ -57,12 +58,13 @@ struct OnboardingQuizView: View {
     @State private var selectedWords: [String] = []
 
     init(languageName: String, languageCode: String = "en", proficiencyLevel: Int = 0,
-         learningInterest: String = "", dailyGoalMinutes: Int = 10) {
+         learningInterest: String = "", dailyGoalMinutes: Int = 10, nativeLangCode: String = OL.phoneCode) {
         self.languageName = languageName
         self.languageCode = languageCode
         self.proficiencyLevel = proficiencyLevel
         self.learningInterest = learningInterest
         self.dailyGoalMinutes = dailyGoalMinutes
+        self.nativeLangCode = nativeLangCode
         let initialWords = OL.quizCorrectWords + OL.quizDecoyWords
         self._availableWords = State(initialValue: initialWords.shuffled())
     }
@@ -74,13 +76,13 @@ struct OnboardingQuizView: View {
         case idle, correct, wrong
     }
 
-    /// Kelime → çeviri eşleşmesi — seçilen dil kodu + telefon diline göre
+    /// Kelime → çeviri eşleşmesi — seçilen dil kodu + kullanıcının anadili
     private var sentenceWordMeanings: [String: String] {
-        // Telefon dili == öğrenilen dil → aynı dili "çevirmenin" anlamı yok, tooltip gösterme
-        if OL.phoneCode.lowercased() == languageCode.lowercased() { return [:] }
+        // Anadil == öğrenilen dil → aynı dili "çevirmenin" anlamı yok, tooltip gösterme
+        if nativeLangCode.lowercased() == languageCode.lowercased() { return [:] }
 
-        let phone = OL.phoneCode  // "tr", "en", "de" ...
-        // Telefon Türkçe ise Türkçe çeviri, değilse İngilizce çeviri
+        let phone = nativeLangCode  // "tr", "en", "de" ...
+        // Anadil Türkçe ise Türkçe çeviri, değilse İngilizce çeviri
         let isTR = phone == "tr"
         switch languageCode.lowercased() {
         case "en":
@@ -128,7 +130,7 @@ struct OnboardingQuizView: View {
             // Question Section
             VStack(alignment: .leading, spacing: 24) {
                 Text(OL.s(.quizInstruction))
-                    .font(.custom("Poppins-Bold", size: 22))
+                    .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1e293b"))
                 
                 HStack(alignment: .bottom, spacing: 0) {
@@ -160,7 +162,7 @@ struct OnboardingQuizView: View {
                                 let hasMeaning = sentenceWordMeanings[clean] != nil
 
                                 Text(word)
-                                    .font(.custom("Poppins-Regular", size: 18))
+                                    .font(.custom("Feather-Bold", size: 18))
                                     .foregroundStyle(tappedWordIdx == idx
                                         ? Color.blue
                                         : Color(hex: "#1e293b"))
@@ -193,12 +195,12 @@ struct OnboardingQuizView: View {
                             if let meaning = sentenceWordMeanings[clean] {
                                 HStack(spacing: 8) {
                                     Text(clean)
-                                        .font(.custom("Poppins-SemiBold", size: 13))
+                                        .font(.custom("Feather-Bold", size: 13))
                                         .foregroundStyle(Color.blue)
                                     Text("=")
                                         .foregroundStyle(Color(hex: "#94a3b8"))
                                     Text(meaning)
-                                        .font(.custom("Poppins-Regular", size: 13))
+                                        .font(.custom("Feather-Bold", size: 13))
                                         .foregroundStyle(Color(hex: "#1e293b"))
                                 }
                                 .padding(.horizontal, 12)
@@ -290,7 +292,7 @@ struct OnboardingQuizView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(OL.s(.quizCorrect))
-                                .font(.custom("Poppins-Bold", size: 20))
+                                .font(.custom("Feather-Bold", size: 20))
                                 .foregroundStyle(Color.green)
                         }
                         Spacer()
@@ -302,10 +304,10 @@ struct OnboardingQuizView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(OL.s(.quizWrong))
-                                .font(.custom("Poppins-Bold", size: 20))
+                                .font(.custom("Feather-Bold", size: 20))
                                 .foregroundStyle(Color.red)
                             Text(OL.f(.quizCorrectAnswer, correctWords.joined(separator: " ")))
-                                .font(.custom("Poppins-Medium", size: 16))
+                                .font(.custom("Feather-Bold", size: 16))
                                 .foregroundStyle(Color.red.opacity(0.8))
                         }
                         Spacer()
@@ -325,7 +327,7 @@ struct OnboardingQuizView: View {
                     }
                 }) {
                     Text(checkStatus == .idle ? OL.s(.quizCheck) : OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedWords.isEmpty && checkStatus == .idle ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -352,7 +354,8 @@ struct OnboardingQuizView: View {
                 languageCode: languageCode,
                 proficiencyLevel: proficiencyLevel,
                 learningInterest: learningInterest,
-                dailyGoalMinutes: dailyGoalMinutes
+                dailyGoalMinutes: dailyGoalMinutes,
+                nativeLangCode: nativeLangCode
             )
         }
     }
@@ -397,7 +400,7 @@ struct WordBubble: View {
     let word: String
     var body: some View {
         Text(word)
-            .font(.custom("Poppins-Regular", size: 16))
+            .font(.custom("Feather-Bold", size: 16))
             .foregroundStyle(Color(hex: "#1e293b"))
             .padding(.horizontal, 16)
             .padding(.vertical, 10)

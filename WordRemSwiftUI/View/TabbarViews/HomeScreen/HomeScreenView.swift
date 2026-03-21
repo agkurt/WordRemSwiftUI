@@ -35,7 +35,7 @@ struct HomeScreenView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(AppTheme.Colors.textSecondary)
                         TextField(AL.s(.homeSearchPlaceholder), text: $searchText)
-                            .font(.custom("Poppins-Regular", size: 15))
+                            .font(.custom("Feather-Bold", size: 15))
                             .autocorrectionDisabled()
                             .foregroundStyle(AppTheme.Colors.textPrimary)
                             .tint(AppTheme.Colors.primaryOrange)
@@ -66,7 +66,7 @@ struct HomeScreenView: View {
                                 .font(.system(size: 36))
                                 .foregroundStyle(.secondary)
                             Text(AL.f(.homeNoResultsFormat, searchText))
-                                .font(.custom("Poppins-Regular", size: 15))
+                                .font(.custom("Feather-Bold", size: 15))
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -103,6 +103,7 @@ struct HomeScreenView: View {
                 }
             }
             .navigationBarHidden(true)
+            .hideKeyboardOnTap()
             .onAppear {
                 Task { await viewModel.fetchCardName() }
             }
@@ -122,40 +123,25 @@ private struct HomeHeaderView: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(AL.s(.homeMyDecks))
-                    .font(.custom("Poppins-Bold", size: 28))
+                    .font(.custom("Feather-Bold", size: 28))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 Text(AL.s(.homeTapToStudy))
-                    .font(.custom("Poppins-Regular", size: 14))
+                    .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
             Spacer()
-            HStack(spacing: 12) {
-                // Profile Button
-                NavigationLink(destination: ProfileView()) {
-                    ZStack {
-                        Circle()
-                            .fill(AppTheme.Colors.circularButtonBg)
-                            .frame(width: 44, height: 44)
-                            .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: 3)
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(AppTheme.Colors.circularButtonIcon)
-                    }
-                }
-                
-                // Edit/Delete Button
-                Button {
-                    withAnimation(.spring()) { isEditing.toggle() }
-                } label: {
-                    ZStack {
-                        Circle()
-                            .fill(isEditing ? AppTheme.Colors.destructiveSoft : AppTheme.Colors.circularButtonBg)
-                            .frame(width: 44, height: 44)
-                            .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: 3)
-                        Image(systemName: isEditing ? "checkmark" : "trash")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(isEditing ? AppTheme.Colors.destructive : AppTheme.Colors.circularButtonIcon)
-                    }
+            // Edit/Delete Button
+            Button {
+                withAnimation(.spring()) { isEditing.toggle() }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(isEditing ? AppTheme.Colors.destructiveSoft : AppTheme.Colors.circularButtonBg)
+                        .frame(width: 44, height: 44)
+                        .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: 3)
+                    Image(systemName: isEditing ? "checkmark" : "trash")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(isEditing ? AppTheme.Colors.destructive : AppTheme.Colors.circularButtonIcon)
                 }
             }
         }
@@ -169,49 +155,52 @@ private struct EmptyDecksView: View {
     let onAdd: () -> Void
 
     var body: some View {
-        Spacer()
-        VStack(spacing: 20) {
-            ZStack {
-                Circle()
-                    .fill(Color(hex: "#f97316").opacity(0.1))
-                    .frame(width: 110, height: 110)
-                Image(systemName: "rectangle.stack.badge.plus")
-                    .font(.system(size: 44))
-                    .foregroundStyle(Color(hex: "#f97316"))
-            }
-            VStack(spacing: 6) {
-                Text(AL.s(.homeNoDecks))
-                    .font(.custom("Poppins-SemiBold", size: 20))
-                Text(AL.s(.homeNoDecksHint))
-                    .font(.custom("Poppins-Regular", size: 14))
+        VStack(spacing: 24) {
+            LottieView(animation: .named("reeny_waving"))
+                .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
+                .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                .frame(width: 160, height: 160)
+
+            VStack(spacing: 8) {
+                Text(AL.s(.homeCreateFirstDeck))
+                    .font(.custom("Feather-Bold", size: 22))
+                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                Text(AL.s(.homeCreateFirstDeckHint))
+                    .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+            }
+
+            Button(action: onAdd) {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text(AL.s(.homeCreateDeck))
+                        .font(.custom("Feather-Bold", size: 15))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 28)
+                .padding(.vertical, 13)
+                .background(
+                    LinearGradient(
+                        colors: [Color(hex: "#f97316"), Color(hex: "#E8409C")],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ),
+                    in: Capsule()
+                )
+                .shadow(color: Color(hex: "#f97316").opacity(0.35), radius: 12, y: 5)
             }
         }
-        Spacer()
-    }
-}
-
-// MARK: - Empty State
-private struct EmptyDescksView: View {
-
-    var body: some View {
-        Spacer()
-        VStack(spacing: 20) {
-            ZStack {
-                LottieView(animation: .named("reeny_waving"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 140, height: 140)
-            }
-           
-        }
-        Spacer()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 32)
+        .padding(.bottom, 60)
     }
 }
 
 #Preview {
-    EmptyDescksView()
+    EmptyDecksView(onAdd: {})
 }
 
 

@@ -11,6 +11,7 @@ struct ProficiencyResultView: View {
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let proficiencyLevel: Int
+    let nativeLangCode: String
     @State private var navigateToBenefits = false
 
     // MARK: - Dynamic content based on selected level
@@ -43,13 +44,13 @@ struct ProficiencyResultView: View {
                         .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
 
                     (Text("It's okay! ")
-                        .font(.custom("Poppins-Bold", size: 20))
+                        .font(.custom("Feather-Bold", size: 20))
                         .foregroundColor(Color(hex: "#1e293b"))
                     + Text(percentage)
-                        .font(.custom("Poppins-Bold", size: 20))
+                        .font(.custom("Feather-Bold", size: 20))
                         .foregroundColor(AppTheme.Colors.primaryOrange)
                     + Text(" people\nare \(levelLabel)")
-                        .font(.custom("Poppins-Bold", size: 20))
+                        .font(.custom("Feather-Bold", size: 20))
                         .foregroundColor(Color(hex: "#1e293b")))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
@@ -77,7 +78,7 @@ struct ProficiencyResultView: View {
                     navigateToBenefits = true
                 }) {
                     Text(OL.s(.continueButton))
-                        .font(.custom("Poppins-Bold", size: 17))
+                        .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -97,7 +98,8 @@ struct ProficiencyResultView: View {
             BenefitsView(
                 selectedLanguageName: selectedLanguageName,
                 selectedLanguageCode: selectedLanguageCode,
-                proficiencyLevel: proficiencyLevel
+                proficiencyLevel: proficiencyLevel,
+                nativeLangCode: nativeLangCode
             )
         }
     }
@@ -123,7 +125,8 @@ private struct PRDownwardTriangle: Shape {
         ProficiencyResultView(
             selectedLanguageName: "İngilizce",
             selectedLanguageCode: "en",
-            proficiencyLevel: 0
+            proficiencyLevel: 0,
+            nativeLangCode: "tr"
         )
     }
 }

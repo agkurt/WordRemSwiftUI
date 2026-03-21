@@ -318,13 +318,28 @@ final class SupabaseDataService {
 
     // MARK: - Specific User Rank
     func fetchUserRank(userId: UUID) async throws -> Int {
-        // Calling our newly generated RPC function get_user_rank
-        struct RankPayload: Encodable { let p_user_id: String }
-        let rank: Int = try await db.rpc(
-            "get_user_rank",
-            params: RankPayload(p_user_id: userId.uuidString)
-        ).execute().value
-        return rank
+        // Step 1: Get the user's own XP
+        struct XPRow: Decodable { let total_xp: Int }
+        let xpRows: [XPRow] = try await db
+            .from("users")
+            .select("total_xp")
+            .eq("id", value: userId.uuidString)
+            .limit(1)
+            .execute()
+            .value
+
+        guard let myXP = xpRows.first?.total_xp else { return 0 }
+
+        // Step 2: Count users with strictly MORE XP → those ranked above us
+        struct IdOnly: Decodable { let id: String }
+        let above: [IdOnly] = try await db
+            .from("users")
+            .select("id")
+            .gt("total_xp", value: myXP)
+            .execute()
+            .value
+
+        return above.count + 1
     }
 
     // MARK: - User Stats (completed levels, total quizzes, accuracy)
