@@ -75,19 +75,26 @@ final class SupabaseAuthService {
         client.auth.currentSession?.user.id
     }
 
+    var isCurrentUserAnonymous: Bool {
+        client.auth.currentSession?.user.isAnonymous ?? true
+    }
+
     // MARK: - Ensure user row in public.users
     /// Called once right after successful sign-in / sign-up.
+    /// ignoreDuplicates: true → mevcut kullanıcının username'ini asla ezmez,
+    /// sadece DB'de satır yoksa yeni satır ekler.
     func ensureUserRow(username: String) async throws {
         guard let uid = currentUserId else { return }
 
-        // Upsert: if user already exists it's a no-op (conflict on id)
         struct UserInsert: Encodable {
             let id: UUID
             let username: String
         }
         try await SupabaseService.shared.client
             .from("users")
-            .upsert(UserInsert(id: uid, username: username), onConflict: "id")
+            .upsert(UserInsert(id: uid, username: username),
+                    onConflict: "id",
+                    ignoreDuplicates: true)
             .execute()
     }
 

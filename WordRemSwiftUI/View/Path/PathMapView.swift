@@ -13,6 +13,7 @@ import Lottie
 struct PathMapView: View {
 
     @ObservedObject var vm: PathMapViewModel
+    @ObservedObject private var mistakes = MistakesManager.shared
     @State private var selectedLevel: SBLevelWithProgress?
     @State private var appeared = false
     
@@ -27,6 +28,15 @@ struct PathMapView: View {
     
     @State private var showMistakesQuiz = false
     @State private var showAIQuiz = false
+    @State private var currentUnitIndex = 0
+
+    // MARK: - Unit Grouping (her 5 level = 1 ünite)
+    private var unitGroups: [[SBLevelWithProgress]] {
+        let perUnit = 5
+        return stride(from: 0, to: vm.levelsWithProgress.count, by: perUnit).map {
+            Array(vm.levelsWithProgress[$0..<min($0 + perUnit, vm.levelsWithProgress.count)])
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -35,15 +45,7 @@ struct PathMapView: View {
                 pathBackground
 
                 if vm.isLoading && vm.levelsWithProgress.isEmpty {
-                    VStack(spacing: 4) {
-                        LottieView(animation: .named("reeny_waving"))
-                            .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                            .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                            .frame(width: 120, height: 120)
-                        Text(AL.s(.gameLoading))
-                            .font(.custom("Poppins-Regular", size: 14))
-                            .foregroundStyle(AppTheme.Colors.textSecondary)
-                    }
+                    AppLoadingView(message: AL.s(.gameLoading))
 
                 } else if let err = vm.errorMessage {
                     errorState(err)
@@ -61,32 +63,41 @@ struct PathMapView: View {
                             course: vm.selectedCourse,
                             progress: vm.courseProgress,
                             xp: vm.totalXP,
-                            streak: vm.streakDays
+                            streak: vm.streakDays,
+                            currentUnit: currentUnitIndex + 1,
+                            totalUnits: unitGroups.count
                         )
 
                         // ── Mistakes Practice Button ───────────────
-                        if MistakesManager.shared.hasMistakes {
-                            Button {
-                                showMistakesQuiz = true
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundStyle(.white)
-                                    Text(AL.f(.pathMistakesFormat, MistakesManager.shared.count))
-                                        .font(.custom("Poppins-SemiBold", size: 14))
-                                        .foregroundStyle(.white)
+                        if mistakes.hasMistakes {
+                            VStack(spacing: 6) {
+                                // 10+ hata uyarısı
+                                if mistakes.count > 10 {
+                                    MistakesUrgentBanner()
                                 }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .frame(maxWidth: .infinity)
-                                .background(
-                                    LinearGradient(
-                                        colors: [Color.red.opacity(0.8), Color.orange.opacity(0.8)],
-                                        startPoint: .leading, endPoint: .trailing
-                                    ),
-                                    in: RoundedRectangle(cornerRadius: 16)
-                                )
-                                .shadow(color: Color.red.opacity(0.3), radius: 6, y: 3)
+
+                                Button {
+                                    showMistakesQuiz = true
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundStyle(.white)
+                                        Text(AL.f(.pathMistakesFormat, mistakes.count))
+                                            .font(.custom("Poppins-SemiBold", size: 14))
+                                            .foregroundStyle(.white)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 12)
+                                    .frame(maxWidth: .infinity)
+                                    .background(
+                                        LinearGradient(
+                                            colors: [Color.red.opacity(0.8), Color.orange.opacity(0.8)],
+                                            startPoint: .leading, endPoint: .trailing
+                                        ),
+                                        in: RoundedRectangle(cornerRadius: 16)
+                                    )
+                                    .shadow(color: Color.red.opacity(0.3), radius: 6, y: 3)
+                                }
                             }
                             .padding(.horizontal, 20)
                             .padding(.top, 12)
@@ -124,38 +135,45 @@ struct PathMapView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
 
-                        // ── Zigzag Level Map ──────────────────────
+                        // ── Ünite Bazlı Level Map ─────────────────
                         ScrollViewReader { proxy in
                             ScrollView(.vertical, showsIndicators: false) {
-                                ZStack {
-                                    // Dashed connector path
-                                    PathConnectorView(
-                                        items: vm.levelsWithProgress.reversed()
-                                    )
-
-                                    // Level nodes
-                                    VStack(spacing: 56) {
-                                        ForEach(Array(vm.levelsWithProgress.reversed().enumerated()),
-                                                id: \.element.id) { index, item in
-                                            PathNodeView(
-                                                item: item,
-                                                index: index,
-                                                totalCount: vm.levelsWithProgress.count
-                                            ) {
-                                                if item.status != .locked {
-                                                    selectedLevel = item
-                                                }
+                                VStack(spacing: 0) {
+                                    ForEach(Array(unitGroups.enumerated()), id: \.offset) { unitIndex, unitLevels in
+                                        UnitSectionView(
+                                            unitNumber: unitIndex + 1,
+                                            levels: unitLevels
+                                        ) { level in
+                                            if level.status != .locked {
+                                                selectedLevel = level
                                             }
-                                            .id(item.id)
                                         }
+                                        // Ünite başlığı scroll pozisyonunu raporla
+                                        .background(
+                                            GeometryReader { geo in
+                                                Color.clear.preference(
+                                                    key: UnitScrollKey.self,
+                                                    value: [unitIndex: geo.frame(in: .named("pathScroll")).minY]
+                                                )
+                                            }
+                                        )
                                     }
-                                    .padding(.vertical, 40)
-                                    .padding(.horizontal, 20)
+                                }
+                                .padding(.bottom, 40)
+                            }
+                            .coordinateSpace(name: "pathScroll")
+                            .onPreferenceChange(UnitScrollKey.self) { positions in
+                                // Ekranın üstüne en yakın (ama geçmiş) üniteyi bul
+                                let threshold: CGFloat = 220
+                                let passed = positions.filter { $0.value <= threshold }
+                                if let top = passed.max(by: { $0.value < $1.value }) {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        currentUnitIndex = top.key
+                                    }
                                 }
                             }
                             .onAppear {
-                                // Scroll to current/unlocked level
-                                if let active = vm.levelsWithProgress.reversed()
+                                if let active = vm.levelsWithProgress
                                     .first(where: { $0.status == .unlocked || $0.status == .inProgress }) {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                         withAnimation(.easeOut(duration: 0.5)) {
@@ -171,15 +189,8 @@ struct PathMapView: View {
                 // ── Overlays: Loading & Completion Popup ─────────────────
                 if isRefreshingAfterQuiz {
                     ZStack {
-                        Color.black.opacity(0.4).ignoresSafeArea()
-                        VStack(spacing: 16) {
-                            ProgressView()
-                                .scaleEffect(1.6)
-                                .tint(.white)
-                            Text(AL.s(.pathUpdating))
-                                .font(.custom("Poppins-SemiBold", size: 15))
-                                .foregroundStyle(.white)
-                        }
+                        Color.black.opacity(0.55).ignoresSafeArea()
+                        AppLoadingView(message: AL.s(.pathUpdating))
                     }
                     .zIndex(10)
                 }
@@ -355,6 +366,251 @@ struct PathMapView: View {
 }
 
 // MARK: ═══════════════════════════════════════════════════════════
+// MARK: - Unit Section (Ünite grupları)
+// MARK: ═══════════════════════════════════════════════════════════
+
+private struct UnitSectionView: View {
+    let unitNumber: Int
+    let levels: [SBLevelWithProgress]
+    let onTap: (SBLevelWithProgress) -> Void
+
+    private var unitStatus: SBLevelStatus {
+        if levels.allSatisfy({ $0.status == .completed }) { return .completed }
+        if levels.contains(where: { $0.status == .unlocked || $0.status == .inProgress }) { return .inProgress }
+        return .locked
+    }
+
+    private var completedCount: Int {
+        levels.filter { $0.status == .completed }.count
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // ── Ünite ayraç bandı ──────────────────────────────────
+            UnitDividerView(
+                unitNumber: unitNumber,
+                status: unitStatus,
+                completed: completedCount,
+                total: levels.count
+            )
+
+            // ── Level node'ları ────────────────────────────────────
+            ZStack {
+                PathConnectorView(items: levels)
+
+                VStack(spacing: 56) {
+                    ForEach(Array(levels.enumerated()), id: \.element.id) { index, item in
+                        PathNodeView(
+                            item: item,
+                            index: index,
+                            totalCount: levels.count
+                        ) {
+                            onTap(item)
+                        }
+                        .id(item.id)
+                    }
+                }
+                .padding(.vertical, 40)
+                .padding(.horizontal, 20)
+            }
+        }
+    }
+}
+
+// MARK: ═══════════════════════════════════════════════════════════
+// MARK: - Unit Divider (sade ayraç)
+// MARK: ═══════════════════════════════════════════════════════════
+
+private struct UnitDividerView: View {
+    let unitNumber: Int
+    let status: SBLevelStatus
+    let completed: Int
+    let total: Int
+
+    private var accentColor: Color {
+        switch status {
+        case .completed:              return Color(hex: "#22c55e")
+        case .inProgress, .unlocked:  return AppTheme.Colors.primaryOrange
+        case .locked:                 return Color(hex: "#cbd5e1")
+        }
+    }
+
+    private var progress: CGFloat {
+        total > 0 ? CGFloat(completed) / CGFloat(total) : 0
+    }
+
+    var body: some View {
+        VStack(spacing: 10) {
+            // Çizgi + pill
+            HStack(spacing: 12) {
+                // Sol çizgi
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.clear, accentColor.opacity(0.35)],
+                            startPoint: .leading, endPoint: .trailing
+                        )
+                    )
+                    .frame(height: 1.5)
+
+                // Ünite pill
+                HStack(spacing: 5) {
+                    if status == .completed {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(accentColor)
+                    } else if status == .locked {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(accentColor)
+                    }
+                    Text("Ünite \(unitNumber)")
+                        .font(.custom("Poppins-Bold", size: 12))
+                        .foregroundStyle(status == .locked ? Color(hex: "#94a3b8") : Color(hex: "#1a1a2e"))
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(accentColor.opacity(status == .locked ? 0.07 : 0.12))
+                        .overlay(Capsule().stroke(accentColor.opacity(0.25), lineWidth: 1))
+                )
+
+                // Sağ çizgi
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [accentColor.opacity(0.35), Color.clear],
+                            startPoint: .leading, endPoint: .trailing
+                        )
+                    )
+                    .frame(height: 1.5)
+            }
+            .padding(.horizontal, 24)
+
+            // Mini progress bar (sadece aktif/tamamlanmış ünitelerde)
+            if status != .locked {
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(Color(hex: "#e2e8f0"))
+                            .frame(height: 3)
+                        Capsule()
+                            .fill(accentColor)
+                            .frame(width: geo.size.width * progress, height: 3)
+                            .animation(.spring(response: 0.7, dampingFraction: 0.8), value: progress)
+                    }
+                }
+                .frame(height: 3)
+                .padding(.horizontal, 48)
+
+                Text("\(completed)/\(total) seviye")
+                    .font(.custom("Poppins-Regular", size: 10))
+                    .foregroundStyle(Color(hex: "#94a3b8"))
+            }
+        }
+        .padding(.top, unitNumber == 1 ? 16 : 8)
+        .padding(.bottom, 4)
+        .opacity(status == .locked ? 0.7 : 1)
+    }
+}
+
+// MARK: ═══════════════════════════════════════════════════════════
+// MARK: - Unit Header
+// MARK: ═══════════════════════════════════════════════════════════
+
+private struct UnitHeaderView: View {
+    let unitNumber: Int
+    let status: SBLevelStatus
+    let totalLevels: Int
+    let completedLevels: Int
+
+    var body: some View {
+        HStack(spacing: 14) {
+            // Sol: ikon dairesi
+            ZStack {
+                Circle()
+                    .fill(statusColor.opacity(0.15))
+                    .frame(width: 48, height: 48)
+                Image(systemName: statusIcon)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(statusColor)
+            }
+
+            // Orta: başlık + progress
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Ünite \(unitNumber)")
+                    .font(.custom("Poppins-Bold", size: 17))
+                    .foregroundStyle(status == .locked ? Color(hex: "#9ca3af") : Color(hex: "#1a1a2e"))
+
+                // İlerleme çubuğu
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(Color(hex: "#e2e8f0"))
+                            .frame(height: 6)
+                        Capsule()
+                            .fill(statusColor)
+                            .frame(width: geo.size.width * CGFloat(completedLevels) / CGFloat(max(totalLevels, 1)), height: 6)
+                            .animation(.spring(response: 0.6), value: completedLevels)
+                    }
+                }
+                .frame(height: 6)
+
+                Text("\(completedLevels)/\(totalLevels) seviye")
+                    .font(.custom("Poppins-Regular", size: 11))
+                    .foregroundStyle(Color(hex: "#9ca3af"))
+            }
+
+            Spacer()
+
+            // Sağ: durum badge
+            Text(statusText)
+                .font(.custom("Poppins-SemiBold", size: 11))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(statusColor, in: Capsule())
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 18)
+                .fill(status == .locked ? Color(hex: "#f1f5f9") : Color.white)
+                .shadow(color: statusColor.opacity(status == .locked ? 0 : 0.15), radius: 10, y: 3)
+        )
+        .padding(.horizontal, 16)
+        .padding(.top, 20)
+        .padding(.bottom, 4)
+        .opacity(status == .locked ? 0.65 : 1.0)
+    }
+
+    private var statusColor: Color {
+        switch status {
+        case .completed:            return Color(hex: "#22c55e")
+        case .inProgress, .unlocked: return AppTheme.Colors.primaryOrange
+        case .locked:               return Color(hex: "#9ca3af")
+        }
+    }
+
+    private var statusIcon: String {
+        switch status {
+        case .completed:            return "checkmark.seal.fill"
+        case .inProgress, .unlocked: return "flame.fill"
+        case .locked:               return "lock.fill"
+        }
+    }
+
+    private var statusText: String {
+        switch status {
+        case .completed:            return "Tamamlandı"
+        case .inProgress, .unlocked: return "Devam Ediyor"
+        case .locked:               return "Kilitli"
+        }
+    }
+}
+
+// MARK: ═══════════════════════════════════════════════════════════
 // MARK: - Path Header
 // MARK: ═══════════════════════════════════════════════════════════
 
@@ -363,29 +619,43 @@ private struct PathHeaderView: View {
     let progress: Double
     let xp: Int
     let streak: Int
+    let currentUnit: Int
+    let totalUnits: Int
 
     var body: some View {
-        VStack(spacing: 14) {
-            HStack {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(course?.title ?? AL.s(.pathSelectCourse))
-                        .font(.custom("Poppins-Bold", size: 22))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+        VStack(spacing: 10) {
+            HStack(alignment: .center) {
+                // Sol: Ünite bilgisi (scroll ile güncellenir)
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text("Ünite \(currentUnit)")
+                            .font(.custom("Poppins-Bold", size: 20))
+                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                            .contentTransition(.numericText())
+                            .animation(.easeInOut(duration: 0.2), value: currentUnit)
 
-                    Text(motivationText)
+                        if totalUnits > 1 {
+                            Text("/ \(totalUnits)")
+                                .font(.custom("Poppins-Regular", size: 14))
+                                .foregroundStyle(Color(hex: "#94a3b8"))
+                        }
+                    }
+
+                    Text(course?.title ?? AL.s(.pathSelectCourse))
                         .font(.custom("Poppins-Regular", size: 12))
                         .foregroundStyle(.secondary)
                 }
+
                 Spacer()
 
-                // Streak pill
-                StatPill(icon: "flame.fill", value: "\(streak)", color: .orange)
-
-                // XP pill
-                StatPill(icon: "bolt.fill", value: "\(xp) XP", color: Color(hex: "#FFD700"))
+                // Sağ: Streak + XP
+                HStack(spacing: 8) {
+                    StatPill(icon: "flame.fill", value: "\(streak)", color: .orange)
+                    StatPill(icon: "bolt.fill", value: "\(xp) XP", color: Color(hex: "#FFD700"))
+                }
             }
 
-            // Progress bar
+            // İlerleme çubuğu (tüm kurs)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
@@ -403,7 +673,6 @@ private struct PathHeaderView: View {
                         .frame(width: max(geo.size.width * CGFloat(progress), 10), height: 10)
                         .animation(.spring(response: 0.6), value: progress)
 
-                    // Percentage text
                     if progress > 0.08 {
                         Text("\(Int(progress * 100))%")
                             .font(.custom("Poppins-Bold", size: 8))
@@ -423,12 +692,13 @@ private struct PathHeaderView: View {
                 .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
         )
     }
+}
 
-    private var motivationText: String {
-        if progress >= 1.0 { return AL.s(.pathMotivation3) }
-        if progress >= 0.7 { return AL.s(.pathMotivation2) }
-        if progress >= 0.3 { return AL.s(.pathMotivation1) }
-        return AL.s(.pathMotivation0)
+// MARK: - Unit Scroll Preference Key
+private struct UnitScrollKey: PreferenceKey {
+    static var defaultValue: [Int: CGFloat] = [:]
+    static func reduce(value: inout [Int: CGFloat], nextValue: () -> [Int: CGFloat]) {
+        value.merge(nextValue()) { _, new in new }
     }
 }
 
@@ -985,6 +1255,43 @@ struct MistakesClearedPopupView: View {
     private func dismiss() {
         withAnimation(.easeIn(duration: 0.2)) { scale = 0.8; opacity = 0.0 }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { isPresented = false }
+    }
+}
+
+// MARK: - Mistakes Urgent Banner
+private struct MistakesUrgentBanner: View {
+    @State private var bouncing = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            // Yukarı ok — mistakes butonuna işaret eder
+            Image(systemName: "arrow.up.circle.fill")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(Color(hex: "#ff3b30"))
+                .offset(y: bouncing ? -4 : 0)
+                .animation(
+                    .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
+                    value: bouncing
+                )
+
+            Text(AL.s(.pathMistakesUrgent))
+                .font(.custom("Poppins-SemiBold", size: 13))
+                .foregroundStyle(Color(hex: "#ff3b30"))
+                .multilineTextAlignment(.leading)
+
+            Spacer()
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(hex: "#ff3b30").opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(Color(hex: "#ff3b30").opacity(0.35), lineWidth: 1)
+                )
+        )
+        .onAppear { bouncing = true }
     }
 }
 

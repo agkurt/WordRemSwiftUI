@@ -11,15 +11,14 @@ struct ProficiencyView: View {
     let selectedLanguageName: String
     let selectedLanguageCode: String
     @State private var selectedLevel: Int?
-    @State private var navigateToBenefits = false
+    @State private var navigateToResult = false
     
     var proficiencyLevels: [String] {
         [
             OL.s(.level1),
             OL.s(.level2),
             OL.s(.level3),
-            OL.s(.level4),
-            OL.s(.level5)
+            OL.s(.level4)
         ]
     }
 
@@ -74,15 +73,11 @@ struct ProficiencyView: View {
                             selectedLevel = index
                         }) {
                             HStack(spacing: 16) {
-                                // Dynamic signal bars
-                                HStack(alignment: .bottom, spacing: 3) {
-                                    ForEach(0..<5) { barIndex in
-                                        Capsule()
-                                            .fill(barIndex <= index ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"))
-                                            .frame(width: 4, height: CGFloat(8 + (barIndex * 4)))
-                                    }
-                                }
-                                .frame(width: 30, height: 24, alignment: .bottom)
+                                // Level icon (level1-level4 assets)
+                                Image("level\(min(index + 1, 4))")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 32, height: 32)
                                 
                                 Text(proficiencyLevels[index])
                                     .font(.custom("Poppins-SemiBold", size: 15))
@@ -112,7 +107,7 @@ struct ProficiencyView: View {
             VStack {
                 Divider()
                 Button(action: {
-                    navigateToBenefits = true
+                    navigateToResult = true
                 }) {
                     Text(OL.s(.continueButton))
                         .font(.custom("Poppins-Bold", size: 17))
@@ -132,8 +127,8 @@ struct ProficiencyView: View {
         }
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(isPresented: $navigateToBenefits) {
-            BenefitsView(
+        .navigationDestination(isPresented: $navigateToResult) {
+            ProficiencyResultView(
                 selectedLanguageName: selectedLanguageName,
                 selectedLanguageCode: selectedLanguageCode,
                 proficiencyLevel: selectedLevel ?? 0

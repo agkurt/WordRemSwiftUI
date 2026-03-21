@@ -36,7 +36,7 @@ struct WelcomeView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 35))
                             .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.3), radius: 20, y: 10)
                         
-                        Text("Flash AI")
+                        Text("WordRem AI")
                             .font(.custom("Poppins-Bold", size: 42))
                             .foregroundStyle(AppTheme.Colors.primaryOrange)
                         

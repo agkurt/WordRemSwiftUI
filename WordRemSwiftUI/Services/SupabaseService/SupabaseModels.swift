@@ -177,22 +177,31 @@ struct SBUser: Codable, Identifiable {
     let targetLangId: Int?
     /// Onboarding'de seçilen seviye 0-4 — Supabase: proficiency_level
     let proficiencyLevel: Int?
+    /// Onboarding'de seçilen ilgi alanı — Supabase: learning_interest
+    let learningInterest: String?
+    /// Günlük pratik hedefi (dakika) — Supabase: daily_goal_minutes
+    let dailyGoalMinutes: Int?
     let totalXp: Int
     let streakDays: Int
     let lastActivityAt: Date?
     let fcmToken: String?
+    /// Kaç kez username değiştirildi. 0=hiç set edilmedi, 1=ilk set, 2=profil butonu kullanıldı
+    let usernameChanges: Int?
 
     enum CodingKeys: String, CodingKey {
         case id, username
-        case displayName    = "display_name"
-        case avatarUrl      = "avatar_url"
-        case nativeLangId   = "native_lang_id"
-        case targetLangId   = "target_lang_id"
+        case displayName      = "display_name"
+        case avatarUrl        = "avatar_url"
+        case nativeLangId     = "native_lang_id"
+        case targetLangId     = "target_lang_id"
         case proficiencyLevel = "proficiency_level"
-        case totalXp        = "total_xp"
-        case streakDays     = "streak_days"
-        case lastActivityAt = "last_activity_at"
-        case fcmToken       = "fcm_token"
+        case learningInterest = "learning_interest"
+        case dailyGoalMinutes = "daily_goal_minutes"
+        case totalXp          = "total_xp"
+        case streakDays       = "streak_days"
+        case usernameChanges  = "username_changes"
+        case lastActivityAt   = "last_activity_at"
+        case fcmToken         = "fcm_token"
     }
 }
 

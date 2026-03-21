@@ -141,9 +141,9 @@ struct BenefitsView: View {
         .background(Color(hex: "#f8fafc").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToQuiz) {
-            OnboardingQuizView(
-                languageName: selectedLanguageName,
-                languageCode: selectedLanguageCode,
+            InterestView(
+                selectedLanguageName: selectedLanguageName,
+                selectedLanguageCode: selectedLanguageCode,
                 proficiencyLevel: proficiencyLevel
             )
         }

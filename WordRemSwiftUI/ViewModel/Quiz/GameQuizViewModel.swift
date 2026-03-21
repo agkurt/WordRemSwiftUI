@@ -106,13 +106,13 @@ final class GameQuizViewModel: ObservableObject {
         self.score           = 0
         self.writingAnswer   = ""
         self.sessionMistakes = []
-        self.state           = questions.isEmpty ? .dailyLimitReached : .question
+        self.state           = questions.isEmpty ? .completed(score: 0, stars: 0, xpEarned: 0) : .question
     }
 
     // MARK: - Answer: Multiple Choice
     func submitMultipleChoice(selected: String) {
         guard case .question = state, let q = currentQuestion else { return }
-        recordAnswer(isCorrect: selected == q.correctAnswer)
+        recordAnswer(isCorrect: selected.trimmingCharacters(in: .whitespaces) == q.correctAnswer.trimmingCharacters(in: .whitespaces))
     }
 
     // MARK: - Answer: True / False
@@ -132,9 +132,10 @@ final class GameQuizViewModel: ObservableObject {
     // MARK: - Answer: Speaking
     func submitSpeaking(recognized: String) {
         guard case .question = state, let q = currentQuestion else { return }
+        // correctAnswer for speaking = word.term (target language word to pronounce)
         let correct = SpeechRecognitionManager.shared.isCorrect(
             recognized: recognized,
-            expected: q.word.term
+            expected: q.correctAnswer
         )
         recordAnswer(isCorrect: correct)
     }
@@ -148,7 +149,8 @@ final class GameQuizViewModel: ObservableObject {
     // MARK: - Answer: Fill in the Blank
     func submitFillInTheBlank(selected: String) {
         guard case .question = state, let q = currentQuestion else { return }
-        recordAnswer(isCorrect: selected == q.word.term)
+        // correctAnswer is now always word.term for fillInTheBlank (fixed in generate())
+        recordAnswer(isCorrect: selected.trimmingCharacters(in: .whitespaces) == q.correctAnswer.trimmingCharacters(in: .whitespaces))
     }
 
     // MARK: - Answer: Sentence Builder
@@ -166,6 +168,10 @@ final class GameQuizViewModel: ObservableObject {
         if isCorrect {
             score += 1
             showXPToastAnimation()
+            // Mistakes quiz: remove correctly answered word immediately so count updates live
+            if case .mistakes = sessionType, let q = currentQuestion {
+                MistakesManager.shared.removeMistakes([q.word.id.uuidString])
+            }
         } else {
             if let q = currentQuestion {
                 sessionMistakes.insert(q.word.id.uuidString)
@@ -242,6 +248,26 @@ final class GameQuizViewModel: ObservableObject {
                 }
             }
 
+            // quiz_attempts kaydet (arka planda)
+            if let uid = SupabaseService.shared.currentUserId {
+                let attempts: [SBQuizAttemptInsert] = questions.map { q in
+                    let isCorrect = !sessionMistakes.contains(q.word.id.uuidString)
+                    return SBQuizAttemptInsert(
+                        userId: uid,
+                        levelId: levelId,
+                        wordId: q.word.id,
+                        quizMode: q.mode.rawValue,
+                        userAnswer: nil,
+                        correctAnswer: q.correctAnswer,
+                        isCorrect: isCorrect,
+                        responseMs: nil
+                    )
+                }
+                Task.detached(priority: .background) {
+                    try? await SupabaseDataService.shared.saveQuizAttempts(attempts)
+                }
+            }
+
             do {
                 let response = try await SupabaseDataService.shared.completeLevel(
                     levelId: levelId,
@@ -250,14 +276,13 @@ final class GameQuizViewModel: ObservableObject {
                 )
                 if response.success {
                     UserDefaults.standard.set(true, forKey: "justCompletedLevel")
-                    state = .completed(
-                        score: scorePercent,
-                        stars: response.stars ?? 1,
-                        xpEarned: response.xpEarned ?? 0
-                    )
-                } else {
-                    state = .completed(score: scorePercent, stars: 0, xpEarned: 0)
                 }
+                // success=false olsa bile yıldız/XP göster (25-49% arası 1 yıldız alabilir)
+                state = .completed(
+                    score: scorePercent,
+                    stars: response.stars ?? 0,
+                    xpEarned: response.xpEarned ?? 0
+                )
             } catch {
                 print("⚠️ completeLevel error: \(error)")
                 state = .completed(score: scorePercent, stars: 0, xpEarned: 0)
@@ -270,12 +295,29 @@ final class GameQuizViewModel: ObservableObject {
             if !MistakesManager.shared.hasMistakes {
                 UserDefaults.standard.set(true, forKey: "justClearedMistakes")
             }
-            state = .completed(score: scorePercent, stars: 3, xpEarned: score * 5)
+            let mistakesXP = score * 5
+            await SupabaseDataService.shared.awardXP(mistakesXP)
+            state = .completed(score: scorePercent, stars: 3, xpEarned: mistakesXP)
 
-        case .aiGenerated:
-            // AI quiz: XP ver ama level tamamlama RPC'si çağırma
-            let stars = scorePercent >= 80 ? 3 : scorePercent >= 60 ? 2 : scorePercent >= 40 ? 1 : 0
-            state = .completed(score: scorePercent, stars: stars, xpEarned: score * 8)
+        case .aiGenerated(let title):
+            let stars  = scorePercent >= 80 ? 3 : scorePercent >= 60 ? 2 : scorePercent >= 40 ? 1 : 0
+            let aiXP   = score * 8
+            await SupabaseDataService.shared.awardXP(aiXP)
+            state = .completed(score: scorePercent, stars: stars, xpEarned: aiXP)
+
+            // Yanlış yapılan soruları Decks'e kaydet
+            if !sessionMistakes.isEmpty {
+                let wrongQs  = questions.filter { sessionMistakes.contains($0.word.id.uuidString) }
+                let langCode = targetLangCode
+                let topicTitle = title
+                Task.detached(priority: .background) {
+                    await PathMistakesDeckService.shared.createDeckFromAIMistakes(
+                        questions: wrongQs,
+                        topicTitle: topicTitle,
+                        targetLangCode: langCode
+                    )
+                }
+            }
         }
 
         isSaving = false
@@ -370,6 +412,10 @@ struct GameQuestion: Identifiable {
                     ? (Array(wrongNative.prefix(3)) + [nativeMeaning]).shuffled()
                     : []
             }
+
+            // fillInTheBlank: user always fills in the target-lang term (from fillBlankChips)
+            // Override correctAnswer so visual coloring matches submission logic
+            let adjustedCorrect = (finalMode == .fillInTheBlank) ? word.term : finalCorrect
             // ─────────────────────────────────────────────────────────────
 
             // trueFalse display pair (always targetToNative logic)
@@ -388,7 +434,7 @@ struct GameQuestion: Identifiable {
                 word: word,
                 mode: finalMode,
                 options: finalOptions,
-                correctAnswer: finalCorrect,
+                correctAnswer: adjustedCorrect,
                 displayedMeaning: display,
                 isCorrectPair: !showWrong
             )

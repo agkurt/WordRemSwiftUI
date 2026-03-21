@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "DEE0634A-F60D-4816-8562-BCE1948CD478"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "WordRemSwiftUI/Services/FirebaseService/EventManager.swift"
@@ -32,7 +32,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "18"
             endingLineNumber = "18"
-            landmarkName = "logRegisterEvent()"
+            landmarkName = "setAnalyticsUserID(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

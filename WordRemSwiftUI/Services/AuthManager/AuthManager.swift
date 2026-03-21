@@ -16,6 +16,8 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
 
     @Published var authState = AuthState.signedOut
     @Published var userIsLoggedIn = false
+    @Published var loginError: String?
+    @Published var isAnonymous: Bool = true
 
     // Nonce for Apple Sign-In
     var currentNonce: String?
@@ -24,6 +26,7 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         super.init()
         // Reflect current session immediately
         userIsLoggedIn = SupabaseAuthService.shared.isSignedIn
+        isAnonymous = SupabaseAuthService.shared.isCurrentUserAnonymous
         if userIsLoggedIn { authState = .signedIn }
 
         // Start listening for auth state changes
@@ -35,23 +38,72 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         for await (event, session) in SupabaseAuthService.shared.authStateStream() {
             await MainActor.run {
                 switch event {
-                case .signedIn:
+                case .initialSession:
+                    // Uygulama açılışında Keychain'den session restore edilirse navigate et.
+                    // session nil ise (no stored session) — hiçbir şey yapma, userIsLoggedIn false kalır.
+                    guard let session = session else { break }
                     self.userIsLoggedIn = true
                     self.authState = .signedIn
-                    // Flush pending FCM token
+                    self.isAnonymous = session.user.isAnonymous
+                    EventManager.shared.setAnalyticsUserID(session.user.id.uuidString)
+                    if !session.user.isAnonymous {
+                        Task { await self.checkAndRestoreOnboardingState(userId: session.user.id) }
+                    }
                     if let token = UserDefaults.standard.string(forKey: "pendingFCMToken") {
                         Task {
                             try? await SupabaseAuthService.shared.updateFCMToken(token)
                             UserDefaults.standard.removeObject(forKey: "pendingFCMToken")
                         }
                     }
+
+                case .signedIn:
+                    // Navigation, explicit sign-in fonksiyonları tarafından yönetiliyor.
+                    // Stream sadece isAnonymous + analytics günceller.
+                    // signedOut → signedIn geçişleri (OAuth flow) burada userIsLoggedIn'i
+                    // sıfırlamaz; explicit çağrılar zaten true yaptı.
+                    self.isAnonymous = session?.user.isAnonymous ?? false
+                    if let uid = session?.user.id.uuidString {
+                        EventManager.shared.setAnalyticsUserID(uid)
+                    }
+                    if let token = UserDefaults.standard.string(forKey: "pendingFCMToken") {
+                        Task {
+                            try? await SupabaseAuthService.shared.updateFCMToken(token)
+                            UserDefaults.standard.removeObject(forKey: "pendingFCMToken")
+                        }
+                    }
+
                 case .signedOut:
-                    self.userIsLoggedIn = false
-                    self.authState = .signedOut
+                    // Sadece analytics temizle. userIsLoggedIn = false SADECE explicit
+                    // signOut() çağrısından gelir. OAuth flow'ları sırasında da bu event
+                    // tetiklenebilir; navigation'ı bozmamak için burada false yapma.
+                    self.isAnonymous = true
+                    EventManager.shared.setAnalyticsUserID(nil)
+
                 default:
                     break
                 }
             }
+        }
+    }
+
+    // Returning user'da target_lang_id varsa onboarding'i atla
+    private func checkAndRestoreOnboardingState(userId: UUID) async {
+        do {
+            struct LangCheck: Decodable { let target_lang_id: Int? }
+            let result = try await SupabaseService.shared.client
+                .from("users")
+                .select("target_lang_id")
+                .eq("id", value: userId.uuidString)
+                .limit(1)
+                .execute()
+            let rows = try JSONDecoder().decode([LangCheck].self, from: result.data)
+            if let first = rows.first, first.target_lang_id != nil {
+                await MainActor.run {
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                }
+            }
+        } catch {
+            print("⚠️ checkAndRestoreOnboardingState: \(error)")
         }
     }
 
@@ -64,6 +116,8 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                 await MainActor.run {
                     self.userIsLoggedIn = false
                     self.authState = .signedOut
+                    self.isAnonymous = true
+                    UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
                 }
                 EventManager.shared.logLogoutEvent()
                 if let uid = uid {
@@ -75,13 +129,28 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         }
     }
 
-    // MARK: - Anonymous Sign-In (forwarded to LoginScreenViewModel)
+    // MARK: - Anonymous Sign-In
     func signInAnonymously() async throws {
-        let tempEmail = "anon_\(UUID().uuidString)@wordrem.local"
-        let tempPassword = UUID().uuidString
-        try await SupabaseAuthService.shared.registerUser(
-            username: "Guest", email: tempEmail, password: tempPassword
-        )
+        if SupabaseAuthService.shared.isSignedIn {
+            await MainActor.run {
+                self.userIsLoggedIn = true
+                self.authState = .signedIn
+                self.isAnonymous = SupabaseAuthService.shared.isCurrentUserAnonymous
+                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+            }
+            print("ℹ️ Session restored → navigating to app")
+            return
+        }
+        try await SupabaseAuthService.shared.signInAnonymously()
+        let randomNum = Int.random(in: 1000...9999)
+        try await SupabaseAuthService.shared.ensureUserRow(username: "Guest-\(randomNum)")
+        await MainActor.run {
+            self.userIsLoggedIn = true
+            self.authState = .signedIn
+            self.isAnonymous = true
+            UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+        }
+        EventManager.shared.logLoginEvent(method: "anonymous")
     }
 
     // MARK: - Apple Sign-In (ASAuthorizationControllerDelegate)
@@ -120,14 +189,25 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                 try await SupabaseAuthService.shared.ensureUserRow(
                     username: name.isEmpty ? "Apple User" : name
                 )
+                await MainActor.run {
+                    self.userIsLoggedIn = true
+                    self.authState = .signedIn
+                    self.isAnonymous = false
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                }
                 EventManager.shared.logLoginEvent(method: "apple")
             } catch {
+                await MainActor.run { self.loginError = error.localizedDescription }
                 print("❌ Apple sign-in error: \(error)")
             }
         }
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        // Kullanıcı iptal ettiyse sessiz çık, gerçek hatalarda UI'ı bilgilendir
+        let code = (error as? ASAuthorizationError)?.code
+        guard code != .canceled else { return }
+        loginError = error.localizedDescription
         print("❌ Apple sign-in error: \(error)")
     }
 
@@ -144,8 +224,13 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
 
-        GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { signResult, error in
+        GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { [weak self] signResult, error in
             if let error {
+                let code = (error as NSError).code
+                // Kullanıcı iptal ettiyse (code -5) sessiz çık
+                if code != -5 {
+                    DispatchQueue.main.async { self?.loginError = error.localizedDescription }
+                }
                 print("❌ Google sign-in error: \(error)")
                 return
             }
@@ -157,10 +242,19 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                         idToken: idToken.tokenString,
                         accessToken: user.accessToken.tokenString
                     )
-                    let name = user.profile?.name ?? "Google User"
+                    let name = user.profile?.name
+                        ?? user.profile?.email.split(separator: "@").first.map(String.init)
+                        ?? "Google User"
                     try await SupabaseAuthService.shared.ensureUserRow(username: name)
+                    await MainActor.run {
+                        self?.userIsLoggedIn = true
+                        self?.authState = .signedIn
+                        self?.isAnonymous = false
+                        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                    }
                     EventManager.shared.logLoginEvent(method: "google")
                 } catch {
+                    await MainActor.run { self?.loginError = error.localizedDescription }
                     print("❌ Supabase Google sign-in error: \(error)")
                 }
             }
@@ -174,8 +268,14 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                     idToken: idToken, accessToken: accessToken
                 )
                 try await SupabaseAuthService.shared.ensureUserRow(username: "Google User")
+                await MainActor.run {
+                    self.userIsLoggedIn = true
+                    self.authState = .signedIn
+                    self.isAnonymous = false
+                }
                 EventManager.shared.logLoginEvent(method: "google")
             } catch {
+                await MainActor.run { self.loginError = error.localizedDescription }
                 print("❌ Google sign-in error: \(error)")
             }
         }

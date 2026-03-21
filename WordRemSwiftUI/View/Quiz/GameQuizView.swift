@@ -22,6 +22,9 @@ struct GameQuizView: View {
     @State private var showHintSheet = false
     @State private var hintText: String = ""
     @State private var isLoadingHint = false
+    @State private var pendingAnswer: String? = nil   // seçildi ama henüz kontrol edilmedi
+    @State private var showConfetti = false           // doğru cevap konfeti
+    @State private var showQuitAlert = false          // çıkış onay uyarısı
     /// Tracks the last question index for which audio was auto-played, preventing
     /// re-triggers when the view re-renders on state transitions (.question → .answered).
     @State private var autoPlayedIndex: Int = -1
@@ -37,12 +40,43 @@ struct GameQuizView: View {
             case .question:
                 if let question = vm.currentQuestion {
                     questionView(question)
+                        // Sesli soru DEĞİLSE doğru cevabı önceden önbelleğe al
+                        // Speaking sorularda prefetch YAPMA — kayıt sırasında TTS çakışır
+                        .task(id: vm.currentIndex) {
+                            guard question.mode != .speaking else { return }
+                            let langCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+                            let text = question.correctAnswer
+                            guard !text.isEmpty else { return }
+                            await TTSManager.shared.prefetchAsync(text, langCode: langCode)
+                        }
                 }
 
             case .answered(let isCorrect):
                 if let question = vm.currentQuestion {
                     questionView(question)
-                        .overlay(feedbackOverlay(isCorrect: isCorrect))
+                        .safeAreaInset(edge: .bottom, spacing: 0) {
+                            feedbackOverlay(isCorrect: isCorrect)
+                        }
+                        .onAppear {
+                            if isCorrect {
+                                showConfetti = true
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                    showConfetti = false
+                                }
+                                // Auto-play the correct answer
+                                let langCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+                                let textToSpeak = vm.currentQuestion?.correctAnswer ?? ""
+                                if !textToSpeak.isEmpty {
+                                    TTSManager.shared.speak(textToSpeak, langCode: langCode)
+                                }
+                            }
+                        }
+                }
+                // Konfeti
+                if showConfetti {
+                    ConfettiView()
+                        .allowsHitTesting(false)
+                        .transition(.opacity)
                 }
 
             case .dailyLimitReached:
@@ -152,6 +186,9 @@ struct GameQuizView: View {
     @ViewBuilder
     private func standardQuestionView(_ question: GameQuestion) -> some View {
         let targetLang = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+        let isMulti = question.mode == .multipleChoice && !question.options.isEmpty
+        let answered: Bool = { if case .answered = vm.state { return true }; return false }()
+
         VStack(spacing: 0) {
             quizHeader
             Spacer(minLength: 24)
@@ -165,12 +202,60 @@ struct GameQuizView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
             Spacer(minLength: 20)
-            if question.mode == .multipleChoice && !question.options.isEmpty {
+            if isMulti {
                 multipleChoiceGrid(question)
             } else {
                 writingField
             }
-            Spacer(minLength: 32)
+            Spacer(minLength: 12)
+        }
+        // Kontrol Et butonu — multipleChoice için her zaman altta sabit
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if isMulti && !answered {
+                bottomCheckBar(onCheck: {
+                    guard let chosen = pendingAnswer else { return }
+                    vm.submitMultipleChoice(selected: chosen)
+                    pendingAnswer = nil
+                })
+            }
+        }
+    }
+
+    private func bottomCheckBar(onCheck: @escaping () -> Void) -> some View {
+        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        let label: String
+        switch lang {
+        case "tr": label = "Kontrol Et"
+        case "de": label = "Überprüfen"
+        case "fr": label = "Vérifier"
+        case "es": label = "Comprobar"
+        case "it": label = "Controlla"
+        case "ru": label = "Проверить"
+        default:   label = "Check"
+        }
+        let hasSelection = pendingAnswer != nil
+        return VStack(spacing: 0) {
+            Divider().opacity(0.15)
+            Button(action: onCheck) {
+                Text(label)
+                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 15)
+                    .background(
+                        hasSelection
+                            ? AnyShapeStyle(LinearGradient(
+                                colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
+                                startPoint: .leading, endPoint: .trailing))
+                            : AnyShapeStyle(Color(hex: "#cbd5e1")),
+                        in: RoundedRectangle(cornerRadius: 14)
+                    )
+            }
+            .disabled(!hasSelection)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background(Color.white)
+            .animation(.spring(response: 0.3), value: hasSelection)
         }
     }
 
@@ -268,7 +353,11 @@ struct GameQuizView: View {
                 // Auto-play once per question; guard prevents replay on state transitions
                 guard vm.currentIndex != autoPlayedIndex else { return }
                 autoPlayedIndex = vm.currentIndex
-                TTSManager.shared.speak(question.word.term, langCode: targetLang)
+                // Önceki sorunun TTS'ini durdur (doğru cevap seslendirmesi bitmemiş olabilir)
+                TTSManager.shared.stop()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    TTSManager.shared.speak(question.word.term, langCode: targetLang)
+                }
             }
 
             Spacer(minLength: 20)
@@ -284,6 +373,7 @@ struct GameQuizView: View {
             // Mic area
             SpeakingMicButton(
                 langCode: targetLang,
+                questionIndex: vm.currentIndex,
                 onResult: { recognized in
                     vm.submitSpeaking(recognized: recognized)
                 },
@@ -308,20 +398,69 @@ struct GameQuizView: View {
             quizHeader
             Spacer(minLength: 24)
 
-            // Gap sentence card
-            VStack(spacing: 12) {
-                Text("Fill in the blank")
-                    .font(.custom("Poppins-Regular", size: 13))
-                    .foregroundStyle(AppTheme.Colors.textSecondary)
+            // Gap sentence card + hint button
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 12) {
+                    Text("Fill in the blank")
+                        .font(.custom("Poppins-Regular", size: 13))
+                        .foregroundStyle(AppTheme.Colors.textSecondary)
 
-                Text(question.gapSentence)
-                    .font(.custom("Poppins-Bold", size: 26))
-                    .foregroundStyle(AppTheme.Colors.textPrimary)
-                    .multilineTextAlignment(.center)
+                    // Path format: "_____ → Good morning" → show "Translate: Good morning"
+                    // AI format: "She ___ to school" → show sentence with gap
+                    let parts = question.gapSentence.components(separatedBy: " → ")
+                    if parts.count == 2 && question.gapSentence.hasPrefix("_") {
+                        // Path word question
+                        VStack(spacing: 4) {
+                            Text("Translate:")
+                                .font(.custom("Poppins-Regular", size: 13))
+                                .foregroundStyle(AppTheme.Colors.textSecondary)
+                            Text(parts[1])
+                                .font(.custom("Poppins-Bold", size: 30))
+                                .foregroundStyle(AppTheme.Colors.textPrimary)
+                                .multilineTextAlignment(.center)
+                        }
+                    } else {
+                        // AI sentence with gap
+                        Text(question.gapSentence)
+                            .font(.custom("Poppins-Bold", size: 22))
+                            .foregroundStyle(AppTheme.Colors.textPrimary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 28)
+                .padding(.horizontal, 56)
+
+                // Hint button
+                if HintManager.shared.canUseHint {
+                    Button { triggerHint(for: question) } label: {
+                        ZStack {
+                            Circle()
+                                .fill(Color(hex: "#f59e0b").opacity(0.15))
+                                .frame(width: 36, height: 36)
+                            if isLoadingHint {
+                                ProgressView().scaleEffect(0.7).tint(Color(hex: "#f59e0b"))
+                            } else {
+                                Image(systemName: "lightbulb.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(Color(hex: "#f59e0b"))
+                            }
+                        }
+                    }
+                    .disabled(isLoadingHint)
+                    .padding(12)
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(AppTheme.Colors.inputBorder.opacity(0.4))
+                            .frame(width: 36, height: 36)
+                        Image(systemName: "lightbulb.slash.fill")
+                            .font(.system(size: 16))
+                            .foregroundStyle(AppTheme.Colors.textSecondary)
+                    }
+                    .padding(12)
+                }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 28)
-            .padding(.horizontal, 24)
             .background(
                 RoundedRectangle(cornerRadius: 20)
                     .fill(Color.white)
@@ -331,35 +470,65 @@ struct GameQuizView: View {
 
             Spacer(minLength: 24)
 
-            // Word options (pick the correct word)
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ForEach(question.sentenceWords, id: \.self) { wordOption in
-                    Button {
-                        if !answered { vm.submitFillInTheBlank(selected: wordOption) }
-                    } label: {
-                        Text(wordOption)
-                            .font(.custom("Poppins-Medium", size: 14))
-                            .foregroundStyle(answered ? (wordOption == question.word.term ? Color.green : Color.red) : AppTheme.Colors.textPrimary)
-                            .padding(.vertical, 14)
-                            .padding(.horizontal, 8)
-                            .frame(maxWidth: .infinity, minHeight: 60)
-                            .background(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(answered ? (wordOption == question.word.term ? Color.green.opacity(0.1) : Color.red.opacity(0.08)) : Color.white)
-                                    .shadow(color: AppTheme.Shadows.cardColor, radius: answered ? 0 : 6, y: answered ? 0 : 3)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .stroke(answered ? (wordOption == question.word.term ? Color.green : Color.red) : AppTheme.Colors.inputBorder, lineWidth: answered ? 2 : 1)
-                            )
+            // Word options — seç → Kontrol Et
+            VStack(spacing: 12) {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    ForEach(question.sentenceWords, id: \.self) { wordOption in
+                        let isSelected = !answered && pendingAnswer == wordOption
+                        Button {
+                            if !answered {
+                                withAnimation(.spring(response: 0.25)) { pendingAnswer = wordOption }
+                            }
+                        } label: {
+                            Text(wordOption)
+                                .font(.custom("Poppins-Medium", size: 14))
+                                .foregroundStyle(
+                                    answered
+                                        ? (wordOption == question.correctAnswer ? Color.green : Color.red)
+                                        : (isSelected ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textPrimary)
+                                )
+                                .padding(.vertical, 14)
+                                .padding(.horizontal, 8)
+                                .frame(maxWidth: .infinity, minHeight: 60)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .fill(
+                                            answered
+                                                ? (wordOption == question.correctAnswer ? Color.green.opacity(0.1) : Color.red.opacity(0.08))
+                                                : (isSelected ? AppTheme.Colors.primaryOrange.opacity(0.1) : Color.white)
+                                        )
+                                        .shadow(color: AppTheme.Shadows.cardColor, radius: (answered || isSelected) ? 0 : 6, y: (answered || isSelected) ? 0 : 3)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .stroke(
+                                            answered
+                                                ? (wordOption == question.correctAnswer ? Color.green : Color.red)
+                                                : (isSelected ? AppTheme.Colors.primaryOrange : AppTheme.Colors.inputBorder),
+                                            lineWidth: (answered || isSelected) ? 2 : 1
+                                        )
+                                )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .disabled(answered)
+                        .animation(.spring(response: 0.25), value: isSelected)
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    .disabled(answered)
                 }
-            }
-            .padding(.horizontal, 20)
+                .padding(.horizontal, 20)
 
-            Spacer(minLength: 32)
+            }
+            .onChange(of: vm.currentIndex) { _ in pendingAnswer = nil }
+
+            Spacer(minLength: 12)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !answered {
+                bottomCheckBar(onCheck: {
+                    guard let chosen = pendingAnswer else { return }
+                    vm.submitFillInTheBlank(selected: chosen)
+                    pendingAnswer = nil
+                })
+            }
         }
     }
 
@@ -389,12 +558,18 @@ struct GameQuizView: View {
         VStack(spacing: 8) {
             HStack(spacing: 12) {
                 // Quit
-                Button { dismiss() } label: {
+                Button { showQuitAlert = true } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                         .padding(10)
                         .background(AppTheme.Colors.inputBorder.opacity(0.5), in: Circle())
+                }
+                .alert(AL.s(.gameQuitTitle), isPresented: $showQuitAlert) {
+                    Button(AL.s(.gameQuitKeepGoing), role: .cancel) { }
+                    Button(AL.s(.gameQuit), role: .destructive) { dismiss() }
+                } message: {
+                    Text(AL.s(.gameQuitMessage))
                 }
 
                 // Progress bar
@@ -562,12 +737,20 @@ struct GameQuizView: View {
         }()
         return LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             ForEach(question.options, id: \.self) { option in
-                OptionButton(text: option, correctAnswer: question.correctAnswer, isAnswered: answered) {
-                    if !answered { vm.submitMultipleChoice(selected: option) }
+                OptionButton(
+                    text: option,
+                    correctAnswer: question.correctAnswer,
+                    isAnswered: answered,
+                    isSelected: !answered && pendingAnswer == option
+                ) {
+                    if !answered {
+                        withAnimation(.spring(response: 0.25)) { pendingAnswer = option }
+                    }
                 }
             }
         }
         .padding(.horizontal, 20)
+        .onChange(of: vm.currentIndex) { _ in pendingAnswer = nil }
     }
 
     // MARK: - Writing Field
@@ -602,29 +785,128 @@ struct GameQuizView: View {
     private func feedbackOverlay(isCorrect: Bool) -> some View {
         VStack {
             Spacer()
-            HStack {
-                Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .font(.system(size: 24, weight: .bold))
-                Text(isCorrect ? AL.s(.gameCorrect) : AL.s(.gameNotQuite))
-                    .font(.custom("Poppins-SemiBold", size: 17))
-                Spacer()
-                Button(AL.s(.gameContinue)) { vm.nextQuestion() }
-                    .font(.custom("Poppins-SemiBold", size: 15))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(isCorrect ? Color.green : AppTheme.Colors.primaryOrange, in: Capsule())
-            }
-            .foregroundStyle(isCorrect ? Color.green : Color.red)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 18)
-            .background(
-                RoundedRectangle(cornerRadius: 0)
-                    .fill(isCorrect ? Color.green.opacity(0.12) : Color.red.opacity(0.09))
+            FeedbackPanel(
+                isCorrect: isCorrect,
+                correctAnswer: vm.currentQuestion?.correctAnswer ?? "",
+                onContinue: { vm.nextQuestion() }
             )
         }
-        .transition(.move(edge: .bottom))
-        .animation(.spring(response: 0.4), value: true)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: isCorrect)
+    }
+}
+
+// MARK: - Feedback Panel
+private struct FeedbackPanel: View {
+    let isCorrect: Bool
+    let correctAnswer: String
+    let onContinue: () -> Void
+
+    // Telefon diline göre tebrik / üzgün mesajları
+    private var titleText: String {
+        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        if isCorrect {
+            switch lang {
+            case "tr": return ["Mükemmel! 🎉", "Harika! ✨", "Bravo! 🔥", "Süper! 🌟"].randomElement()!
+            case "de": return ["Ausgezeichnet! 🎉", "Super! ✨", "Toll gemacht! 🔥", "Wunderbar! 🌟"].randomElement()!
+            case "fr": return ["Excellent ! 🎉", "Parfait ! ✨", "Bravo ! 🔥", "Super ! 🌟"].randomElement()!
+            case "es": return ["¡Excelente! 🎉", "¡Perfecto! ✨", "¡Muy bien! 🔥", "¡Increíble! 🌟"].randomElement()!
+            case "it": return ["Eccellente! 🎉", "Perfetto! ✨", "Bravo! 🔥", "Magnifico! 🌟"].randomElement()!
+            case "ru": return ["Отлично! 🎉", "Прекрасно! ✨", "Молодец! 🔥", "Супер! 🌟"].randomElement()!
+            default:   return ["Well done! 🎉", "Excellent! ✨", "Perfect! 🔥", "Amazing! 🌟"].randomElement()!
+            }
+        } else {
+            switch lang {
+            case "tr": return "Neredeyse! 💪"
+            case "de": return "Fast richtig! 💪"
+            case "fr": return "Presque ! 💪"
+            case "es": return "¡Casi! 💪"
+            case "it": return "Quasi! 💪"
+            case "ru": return "Почти! 💪"
+            default:   return "Not quite! 💪"
+            }
+        }
+    }
+
+    private var subtitleText: String {
+        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        if isCorrect { return "" }
+        switch lang {
+        case "tr": return "Doğru cevap:"
+        case "de": return "Richtige Antwort:"
+        case "fr": return "Bonne réponse :"
+        case "es": return "Respuesta correcta:"
+        case "it": return "Risposta corretta:"
+        case "ru": return "Правильный ответ:"
+        default:   return "Correct answer:"
+        }
+    }
+
+    private var continueText: String {
+        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        switch lang {
+        case "tr": return "Devam Et"
+        case "de": return "Weiter"
+        case "fr": return "Continuer"
+        case "es": return "Continuar"
+        case "it": return "Continua"
+        case "ru": return "Продолжить"
+        default:   return "Continue"
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Top accent bar
+            Rectangle()
+                .fill(isCorrect ? Color.green : Color(hex: "#ef4444"))
+                .frame(height: 3)
+
+            VStack(spacing: 12) {
+                HStack(spacing: 12) {
+                    // Icon
+                    ZStack {
+                        Circle()
+                            .fill(isCorrect ? Color.green.opacity(0.15) : Color(hex: "#ef4444").opacity(0.12))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .font(.system(size: 26, weight: .bold))
+                            .foregroundStyle(isCorrect ? Color.green : Color(hex: "#ef4444"))
+                    }
+
+                    Text(titleText)
+                        .font(.custom("Poppins-Bold", size: 18))
+                        .foregroundStyle(isCorrect ? Color.green : Color(hex: "#ef4444"))
+
+                    Spacer()
+                }
+
+                // Continue button
+                Button(action: onContinue) {
+                    Text(continueText)
+                        .font(.custom("Poppins-SemiBold", size: 16))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            isCorrect
+                                ? AnyShapeStyle(Color.green)
+                                : AnyShapeStyle(LinearGradient(
+                                    colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
+                                    startPoint: .leading, endPoint: .trailing
+                                )),
+                            in: RoundedRectangle(cornerRadius: 14)
+                        )
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 20)
+            .background(
+                isCorrect ? Color.green.opacity(0.06) : Color(hex: "#ef4444").opacity(0.06)
+            )
+        }
+        .background(Color.white)
+        .shadow(color: Color.black.opacity(0.1), radius: 16, y: -4)
     }
 }
 
@@ -729,54 +1011,152 @@ private struct OptionButton: View {
     let text: String
     let correctAnswer: String
     let isAnswered: Bool
+    var isSelected: Bool = false   // seçildi ama henüz kontrol edilmedi
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Text(text)
                 .font(.custom("Poppins-Medium", size: 14))
-                .foregroundStyle(isAnswered ? answerTextColor : AppTheme.Colors.textPrimary)
+                .foregroundStyle(textColor)
                 .multilineTextAlignment(.center)
                 .padding(.vertical, 14)
                 .padding(.horizontal, 8)
                 .frame(maxWidth: .infinity, minHeight: 60)
                 .background(
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(isAnswered ? answerBgColor : Color.white)
+                        .fill(bgColor)
                         .shadow(color: AppTheme.Shadows.cardColor,
-                                radius: isAnswered ? 0 : 6, y: isAnswered ? 0 : 3)
+                                radius: (isAnswered || isSelected) ? 0 : 6,
+                                y: (isAnswered || isSelected) ? 0 : 3)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(isAnswered ? answerBorderColor : AppTheme.Colors.inputBorder,
-                                lineWidth: isAnswered ? 2 : 1)
+                        .stroke(borderColor, lineWidth: (isAnswered || isSelected) ? 2 : 1)
                 )
+                .scaleEffect(isSelected && !isAnswered ? 1.03 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
+        .animation(.spring(response: 0.25), value: isSelected)
         .animation(.spring(response: 0.3), value: isAnswered)
     }
 
-    private var isCorrect: Bool      { text == correctAnswer }
-    private var answerBgColor: Color { isCorrect ? Color.green.opacity(0.1) : Color.red.opacity(0.08) }
-    private var answerBorderColor: Color { isCorrect ? Color.green : Color.red }
-    private var answerTextColor: Color   { isCorrect ? Color.green : Color.red }
+    private var isCorrect: Bool { text == correctAnswer }
+
+    private var textColor: Color {
+        if isAnswered { return isCorrect ? Color.green : Color.red }
+        if isSelected { return AppTheme.Colors.primaryOrange }
+        return AppTheme.Colors.textPrimary
+    }
+    private var bgColor: Color {
+        if isAnswered { return isCorrect ? Color.green.opacity(0.1) : Color.red.opacity(0.08) }
+        if isSelected { return AppTheme.Colors.primaryOrange.opacity(0.1) }
+        return Color.white
+    }
+    private var borderColor: Color {
+        if isAnswered { return isCorrect ? Color.green : Color.red }
+        if isSelected { return AppTheme.Colors.primaryOrange }
+        return AppTheme.Colors.inputBorder
+    }
 }
 
 // MARK: - XP Toast
 private struct XPToastView: View {
     let amount: Int
+    @State private var scale: CGFloat = 0.5
+    @State private var offsetY: CGFloat = 20
+
     var body: some View {
         VStack {
-            Text("+\(amount) XP")
-                .font(.custom("Poppins-Bold", size: 18))
-                .foregroundStyle(AppTheme.Colors.primaryOrange)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .background(Color.orange.opacity(0.12), in: Capsule())
-                .shadow(color: AppTheme.Shadows.vibrantColor, radius: 10, y: 4)
+            HStack(spacing: 8) {
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient(
+                            colors: [Color(hex: "#f59e0b"), Color(hex: "#f97316")],
+                            startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .frame(width: 32, height: 32)
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                Text("+\(amount) XP")
+                    .font(.custom("Poppins-Bold", size: 17))
+                    .foregroundStyle(.white)
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 10)
+            .background(
+                LinearGradient(
+                    colors: [Color(hex: "#f97316"), Color(hex: "#f59e0b")],
+                    startPoint: .leading, endPoint: .trailing),
+                in: Capsule()
+            )
+            .shadow(color: Color(hex: "#f97316").opacity(0.45), radius: 12, y: 6)
+            .scaleEffect(scale)
+            .offset(y: offsetY)
+            .onAppear {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                    scale = 1.0; offsetY = 0
+                }
+            }
             Spacer()
         }
-        .padding(.top, 120)
+        .padding(.top, 110)
+    }
+}
+
+// MARK: - Confetti View
+private struct ConfettiView: View {
+    let particles: [ConfettiParticle] = (0..<26).map { _ in ConfettiParticle() }
+
+    var body: some View {
+        ZStack {
+            ForEach(particles) { p in
+                ConfettiPiece(particle: p)
+            }
+        }
+        .ignoresSafeArea()
+    }
+}
+
+private struct ConfettiParticle: Identifiable {
+    let id = UUID()
+    let x: CGFloat      = CGFloat.random(in: 0.1...0.9)
+    let color: Color    = [Color(hex: "#f97316"), Color(hex: "#6366f1"), Color(hex: "#10b981"),
+                           Color(hex: "#f59e0b"), Color(hex: "#ec4899"), Color(hex: "#3b82f6")].randomElement()!
+    let size: CGFloat   = CGFloat.random(in: 7...14)
+    let isCircle: Bool  = Bool.random()
+    let delay: Double   = Double.random(in: 0...0.3)
+    let endY: CGFloat   = CGFloat.random(in: 0.4...0.85)
+    let rotation: Double = Double.random(in: 0...360)
+}
+
+private struct ConfettiPiece: View {
+    let particle: ConfettiParticle
+    @State private var animating = false
+
+    var body: some View {
+        GeometryReader { geo in
+            Group {
+                if particle.isCircle {
+                    Circle().fill(particle.color).frame(width: particle.size, height: particle.size)
+                } else {
+                    Rectangle().fill(particle.color)
+                        .frame(width: particle.size, height: particle.size * 0.5)
+                        .rotationEffect(.degrees(particle.rotation + (animating ? 360 : 0)))
+                }
+            }
+            .position(
+                x: geo.size.width * particle.x,
+                y: animating ? geo.size.height * particle.endY : geo.size.height * 0.15
+            )
+            .opacity(animating ? 0 : 1)
+            .onAppear {
+                withAnimation(
+                    .easeOut(duration: 1.0).delay(particle.delay)
+                ) { animating = true }
+            }
+        }
     }
 }
 
@@ -866,6 +1246,7 @@ private struct HintSheetView: View {
 // MARK: - Speaking Mic Button
 private struct SpeakingMicButton: View {
     let langCode: String
+    let questionIndex: Int          // yeni soru gelince metni sıfırlamak için
     let onResult: (String) -> Void
     let onSkip: () -> Void
 
@@ -957,6 +1338,12 @@ private struct SpeakingMicButton: View {
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
         }
+        // Yeni soru gelince önceki tanınan metni sıfırla
+        .onChange(of: questionIndex) { _ in
+            srm.recognizedText = ""
+        }
+        // Auto-submit kaldırıldı: kullanıcı metni görür, isterse tekrar kaydeder
+        // veya "Kontrol Et" butonuna basar.
     }
 
     private func handleMicTap() {
@@ -971,6 +1358,8 @@ private struct SpeakingMicButton: View {
         case .undetermined:
             srm.requestMicPermission()
         case .granted:
+            // Kayıt başlamadan önce TTS'i tamamen durdur
+            TTSManager.shared.stop()
             try? srm.startRecording(langCode: langCode)
         default:
             permissionDenied = true

@@ -11,11 +11,10 @@ import GoogleSignIn
 @MainActor
 final class LoginScreenViewModel: ObservableObject {
 
-    var authManager: AuthManager
+    // LoginScreenView.onAppear'da set edilir; başlangıçta nil, kullanım öncesinde set edilmiş olur
+    var authManager: AuthManager?
 
-    init(authManager: AuthManager) {
-        self.authManager = authManager
-    }
+    init() {}
 
     @Published var email: String = ""
     @Published var password: String = ""
@@ -31,9 +30,12 @@ final class LoginScreenViewModel: ObservableObject {
         errorMessage = nil
         do {
             try await SupabaseAuthService.shared.loginUser(email: email, password: password)
-            // Ensure the public.users row exists (in case the user registered on another device)
-            try await SupabaseAuthService.shared.ensureUserRow(username: "")
-            authManager.userIsLoggedIn = true
+            let fallbackUsername = email.split(separator: "@").first.map(String.init) ?? "User"
+            try await SupabaseAuthService.shared.ensureUserRow(username: fallbackUsername)
+            authManager?.userIsLoggedIn = true
+            authManager?.authState = .signedIn
+            authManager?.isAnonymous = false
+            UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
             isLoginSuccess = true
             EventManager.shared.logLoginEvent(method: "email")
             print("✅ Supabase login success")
@@ -44,18 +46,6 @@ final class LoginScreenViewModel: ObservableObject {
             print("❌ Supabase login error: \(error.localizedDescription)")
         }
         isLoading = false
-    }
-
-    // MARK: - Anonymous (Guest) Sign-In
-    func signAnonymously() async throws {
-        // Uses Supabase native anonymous auth — no email, no rate limits
-        try await SupabaseAuthService.shared.signInAnonymously()
-        
-        let randomNum = Int.random(in: 1000...9999)
-        try await SupabaseAuthService.shared.ensureUserRow(username: "Guest-\(randomNum)")
-        
-        authManager.userIsLoggedIn = true
-        EventManager.shared.logLoginEvent(method: "anonymous")
     }
 
 

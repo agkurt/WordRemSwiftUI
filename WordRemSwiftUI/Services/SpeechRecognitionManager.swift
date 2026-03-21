@@ -23,6 +23,10 @@ final class SpeechRecognitionManager: ObservableObject {
     private var audioRecorder: AVAudioRecorder?
     private var tempFileURL: URL?
     private var currentLangCode: String = "EN"
+    private var silenceTimer: Timer?
+    private var autoStopTimer: Timer?
+    var onAutoStop: (() -> Void)?   // callback when auto-stopped
+    private var consecutiveSilenceCount = 0
 
     private init() {}
 
@@ -62,9 +66,39 @@ final class SpeechRecognitionManager: ObservableObject {
         audioRecorder?.prepareToRecord()
         audioRecorder?.record()
         isRecording = true
+        audioRecorder?.isMeteringEnabled = true
+        // Auto-stop after 6 seconds max
+        autoStopTimer = Timer.scheduledTimer(withTimeInterval: 6.0, repeats: false) { [weak self] _ in
+            guard let self, self.isRecording else { return }
+            Task { @MainActor in
+                self.stopRecording()
+                self.onAutoStop?()
+            }
+        }
+        // Silence detection: check every 0.3s, stop after 1.5s of silence
+        silenceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { [weak self] _ in
+            guard let self, let recorder = self.audioRecorder, self.isRecording else { return }
+            recorder.updateMeters()
+            let power = recorder.averagePower(forChannel: 0)
+            if power < -45 { // silence threshold in dB
+                self.consecutiveSilenceCount += 1
+                if self.consecutiveSilenceCount >= 5 { // 5 * 0.3s = 1.5s silence
+                    Task { @MainActor in
+                        guard self.isRecording else { return }
+                        self.stopRecording()
+                        self.onAutoStop?()
+                    }
+                }
+            } else {
+                self.consecutiveSilenceCount = 0
+            }
+        }
     }
 
     func stopRecording() {
+        silenceTimer?.invalidate(); silenceTimer = nil
+        autoStopTimer?.invalidate(); autoStopTimer = nil
+        consecutiveSilenceCount = 0
         audioRecorder?.stop()
         audioRecorder = nil
         isRecording   = false

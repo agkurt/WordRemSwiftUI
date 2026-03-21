@@ -9,6 +9,7 @@ import Lottie
 struct LeaderboardView: View {
 
     @StateObject private var vm = LeaderboardViewModel()
+    @EnvironmentObject var authManager: AuthManager
 
     var body: some View {
         ZStack {
@@ -18,18 +19,13 @@ struct LeaderboardView: View {
                 // ── Header (PathHeaderView ile aynı stil) ─────────
                 leaderboardHeader
 
-                if vm.isLoading && vm.users.isEmpty {
+                // Guest kullanıcıya login yönlendirme
+                if authManager.isAnonymous {
                     Spacer()
-                    VStack(spacing: 8) {
-                        LottieView(animation: .named("reeny_waving"))
-                            .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                            .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                            .frame(width: 110, height: 110)
-                        Text("Yükleniyor...")
-                            .font(.custom("Poppins-Regular", size: 14))
-                            .foregroundStyle(.secondary)
-                    }
+                    guestPromptView
                     Spacer()
+                } else if vm.isLoading && vm.users.isEmpty {
+                    AppLoadingView()
 
                 } else if let err = vm.errorMessage {
                     Spacer()
@@ -92,11 +88,11 @@ struct LeaderboardView: View {
                             .padding(.horizontal, 20)
                             .padding(.vertical, 12)
 
-                            // ── Rankings 4th+ ─────────────────────
+                            // ── Rankings 4th–20th ─────────────────
                             LazyVStack(spacing: 8) {
                                 let startIndex = min(3, vm.users.count)
                                 ForEach(
-                                    Array(vm.users.dropFirst(startIndex).enumerated()),
+                                    Array(vm.users.dropFirst(startIndex).prefix(20 - startIndex).enumerated()),
                                     id: \.element.id
                                 ) { index, user in
                                     RankRow(
@@ -133,7 +129,45 @@ struct LeaderboardView: View {
             }
         }
         .navigationBarHidden(true)
-        .onAppear { Task { await vm.loadLeaderboard() } }
+        .onAppear {
+            guard !authManager.isAnonymous else { return }
+            Task { await vm.loadLeaderboard() }
+        }
+    }
+
+    // MARK: - Guest Prompt
+    private var guestPromptView: some View {
+        VStack(spacing: 20) {
+            MascotAnimationView(width: 130, height: 130)
+
+            VStack(spacing: 6) {
+                Text("Sıralamaya katıl! 🏆")
+                    .font(.custom("Poppins-Bold", size: 22))
+                    .foregroundStyle(Color(hex: "#1a1a2e"))
+
+                Text("Leaderboard'u görmek ve\nsıralamaya girmek için giriş yapman gerekiyor.")
+                    .font(.custom("Poppins-Regular", size: 14))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+
+            NavigationLink(destination: LoginScreenView()) {
+                Text("Giriş Yap")
+                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        LinearGradient(
+                            colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
+                            startPoint: .leading, endPoint: .trailing
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            }
+            .padding(.horizontal, 40)
+        }
     }
 
     // MARK: - Header

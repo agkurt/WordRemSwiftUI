@@ -7,17 +7,22 @@
 
 import Foundation
 
-final class MistakesManager {
+final class MistakesManager: ObservableObject {
     static let shared = MistakesManager()
-    
+
+    /// Reactive count — PathMapView and other views observe this to update live
+    @Published private(set) var count: Int = 0
+
+    var hasMistakes: Bool { count > 0 }
+
     private let defaults = UserDefaults.standard
-    
+
     // Yalnızca o anki kullanıcı bazında benzersiz key
     private var key: String {
         let uid = SupabaseAuthService.shared.currentUserId?.uuidString ?? "anonymous"
         return "userMistakesIds_\(uid)"
     }
-    
+
     // Doğrudan diske giden ve diskten gelen computed property (Cache bleed'i önler)
     private var currentMistakes: Set<String> {
         get {
@@ -28,11 +33,15 @@ final class MistakesManager {
         }
         set {
             defaults.set(Array(newValue), forKey: key)
+            let newCount = newValue.count
+            DispatchQueue.main.async { self.count = newCount }
         }
     }
-    
-    private init() {}
-    
+
+    private init() {
+        count = currentMistakes.count
+    }
+
     /// Quiz seansında yanlış yapılan soruları ekler
     func addMistakes(_ ids: Set<String>) {
         guard !ids.isEmpty else { return }
@@ -40,7 +49,7 @@ final class MistakesManager {
         current.formUnion(ids)
         currentMistakes = current
     }
-    
+
     /// Pratik sırasında doğru bilinenleri siler
     func removeMistakes(_ ids: Set<String>) {
         guard !ids.isEmpty else { return }
@@ -48,19 +57,9 @@ final class MistakesManager {
         current.subtract(ids)
         currentMistakes = current
     }
-    
+
     /// Hatalı UUID array olarak döndürür
     var mistakeUUIDs: [UUID] {
         currentMistakes.compactMap { UUID(uuidString: $0) }
-    }
-    
-    /// Hiç hatası var mı?
-    var hasMistakes: Bool {
-        !currentMistakes.isEmpty
-    }
-    
-    /// Hata sayısı
-    var count: Int {
-        currentMistakes.count
     }
 }

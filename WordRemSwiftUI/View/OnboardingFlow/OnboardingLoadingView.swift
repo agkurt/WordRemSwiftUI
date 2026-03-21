@@ -12,6 +12,8 @@ struct OnboardingLoadingView: View {
     let languageName: String
     let languageCode: String
     let proficiencyLevel: Int
+    var learningInterest: String = ""
+    var dailyGoalMinutes: Int = 10
 
     @EnvironmentObject var authManager: AuthManager
 
@@ -21,7 +23,7 @@ struct OnboardingLoadingView: View {
 
             VStack(spacing: 32) {
                 Spacer()
-                MascotAnimationView(width: 120, height: 120)
+                LoadingAnimationView(width: 160, height: 160)
                 VStack(spacing: 16) {
                     Text(OL.s(.loadingText))
                         .font(.custom("Poppins-Bold", size: 18))
@@ -46,6 +48,10 @@ struct OnboardingLoadingView: View {
             UserDefaults.standard.set(languageCode, forKey: "selectedTargetLanguageCode")
             UserDefaults.standard.set(languageName, forKey: "selectedTargetLanguageName")
             UserDefaults.standard.set(proficiencyLevel, forKey: "selectedProficiencyLevel")
+            UserDefaults.standard.set(dailyGoalMinutes, forKey: "dailyGoalMinutes")
+            if !learningInterest.isEmpty {
+                UserDefaults.standard.set(learningInterest, forKey: "learningInterest")
+            }
 
             // Yükleme animasyonu için kısa bekleme
             try? await Task.sleep(nanoseconds: 2_500_000_000)
@@ -60,11 +66,14 @@ struct OnboardingLoadingView: View {
                 print("⚠️ Anonymous login failed, continuing anyway: \(error.localizedDescription)")
             }
 
-            // Supabase'e tercihleri kaydet (arka planda, başarısız olsa da devam et)
+            // Supabase'e TÜM tercihleri kaydet (arka planda, başarısız olsa da devam et)
             Task {
                 try? await SupabaseDataService.shared.saveUserPreferences(
                     targetLangCode: languageCode,
-                    proficiencyLevel: proficiencyLevel
+                    nativeLangCode: OL.phoneCode,
+                    proficiencyLevel: proficiencyLevel,
+                    learningInterest: learningInterest,
+                    dailyGoalMinutes: dailyGoalMinutes
                 )
             }
 

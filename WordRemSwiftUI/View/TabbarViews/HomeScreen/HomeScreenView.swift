@@ -56,12 +56,7 @@ struct HomeScreenView: View {
 
                     // MARK: Content
                     if viewModel.isLoading {
-                        Spacer()
-                        LottieView(animation: .named("reeny_waving"))
-                            .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                            .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                            .frame(width: 140, height: 140)
-                        Spacer()
+                        AppLoadingView()
                     } else if viewModel.cardNames.isEmpty {
                         EmptyDecksView(onAdd: { showCreateDeck = true })
                     } else if filteredIndices.isEmpty {

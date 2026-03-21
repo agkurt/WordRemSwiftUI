@@ -13,6 +13,8 @@ struct OnboardingQuizView: View {
     let languageName: String
     let languageCode: String
     let proficiencyLevel: Int
+    var learningInterest: String = ""
+    var dailyGoalMinutes: Int = 10
     @State private var navigateToPlan = false
     @State private var isSpeaking = false
     private let synthesizer = AVSpeechSynthesizer()
@@ -20,61 +22,51 @@ struct OnboardingQuizView: View {
     // Mock Data
     let questionText = "Aşağıdaki cümleyi çevir:"
 
-    // Her dil için cümle — hepsi "Dil öğrenmeyi seviyorum" anlamında
+    // Her dil için cümle — seçilen dile göre, her zaman
     var foreignSentence: String {
-        switch effectiveLanguageName {
-        case "İngilizce", "English":   return "I love learning languages."
-        case "Almanca", "German":      return "Ich liebe es, Sprachen zu lernen."
-        case "İspanyolca", "Spanish":  return "Me encanta aprender idiomas."
-        case "Fransızca", "French":    return "J'adore apprendre des langues."
-        case "İtalyanca", "Italian":   return "Adoro imparare le lingue."
-        case "Rusça", "Russian":       return "Я люблю изучать языки."
-        case "Çince", "Chinese":       return "我喜欢学习语言。"
-        default:                       return "J'adore apprendre des langues."
+        switch languageCode.lowercased() {
+        case "en":  return "I love learning languages."
+        case "de":  return "Ich liebe es, Sprachen zu lernen."
+        case "es":  return "Me encanta aprender idiomas."
+        case "fr":  return "J'adore apprendre des langues."
+        case "it":  return "Adoro imparare le lingue."
+        case "ru":  return "Я люблю изучать языки."
+        case "zh":  return "我喜欢学习语言。"
+        default:    return "I love learning languages."
         }
     }
 
     // Telefon diline göre doğru cevap
     var correctWords: [String] { OL.quizCorrectWords }
 
-    // Ses için dil kodu
+    // Ses için dil kodu — seçilen dil kodu üzerinden
     var voiceLanguageCode: String {
-        switch effectiveLanguageName {
-        case "İngilizce", "English":   return "en-US"
-        case "Almanca", "German":      return "de-DE"
-        case "İspanyolca", "Spanish":  return "es-ES"
-        case "Fransızca", "French":    return "fr-FR"
-        case "İtalyanca", "Italian":   return "it-IT"
-        case "Rusça", "Russian":       return "ru-RU"
-        case "Çince", "Chinese":       return "zh-CN"
-        default:                       return "fr-FR"
+        switch languageCode.lowercased() {
+        case "en":  return "en-US"
+        case "de":  return "de-DE"
+        case "es":  return "es-ES"
+        case "fr":  return "fr-FR"
+        case "it":  return "it-IT"
+        case "ru":  return "ru-RU"
+        case "zh":  return "zh-CN"
+        default:    return "en-US"
         }
     }
 
     @State private var availableWords: [String]
     @State private var selectedWords: [String] = []
 
-    init(languageName: String, languageCode: String = "en", proficiencyLevel: Int = 0) {
+    init(languageName: String, languageCode: String = "en", proficiencyLevel: Int = 0,
+         learningInterest: String = "", dailyGoalMinutes: Int = 10) {
         self.languageName = languageName
         self.languageCode = languageCode
         self.proficiencyLevel = proficiencyLevel
+        self.learningInterest = learningInterest
+        self.dailyGoalMinutes = dailyGoalMinutes
         let initialWords = OL.quizCorrectWords + OL.quizDecoyWords
         self._availableWords = State(initialValue: initialWords.shuffled())
     }
     
-    /// True when user is learning the same language as their phone language (e.g. English phone + English target).
-    /// In this edge case we show French as the demo foreign language to avoid showing an identical Q&A.
-    private var targetMatchesNative: Bool {
-        let phone = OL.phoneCode.lowercased()
-        let target = languageCode.lowercased()
-        return target.hasPrefix(phone) || phone.hasPrefix(target)
-    }
-
-    /// Effective language name used for sentence & TTS — falls back to French when target == native.
-    private var effectiveLanguageName: String {
-        targetMatchesNative ? "Fransızca" : languageName
-    }
-
     @State private var checkStatus: QuizValidationStatus = .idle
     @State private var tappedWordIdx: Int? = nil  // tooltip için tıklanan kelime indexi
 
@@ -82,36 +74,41 @@ struct OnboardingQuizView: View {
         case idle, correct, wrong
     }
 
-    /// Kelime → çeviri eşleşmesi (demo cümle için sabit).
-    /// OL.phoneCode'a göre native dil seçilir.
+    /// Kelime → çeviri eşleşmesi — seçilen dil kodu + telefon diline göre
     private var sentenceWordMeanings: [String: String] {
-        let phone = OL.phoneCode.uppercased()
-        switch effectiveLanguageName {
-        case "Fransızca", "French":
-            if phone == "EN" {
-                return ["J'adore": "I love", "apprendre": "to learn", "des": "some", "langues": "languages"]
-            }
-            return ["J'adore": "Seviyorum", "apprendre": "öğrenmeyi", "des": "-", "langues": "dilleri"]
-        case "Rusça", "Russian":
-            if phone == "EN" {
-                return ["Я": "I", "люблю": "love", "изучать": "to learn", "языки": "languages"]
-            }
-            return ["Я": "Ben", "люблю": "seviyorum", "изучать": "öğrenmeyi", "языки": "dilleri"]
-        case "Almanca", "German":
-            if phone == "EN" {
-                return ["Ich": "I", "liebe": "love", "Sprachen": "languages", "lernen": "to learn"]
-            }
-            return ["Ich": "Ben", "liebe": "seviyorum", "Sprachen": "dilleri", "lernen": "öğrenmeyi"]
-        case "İspanyolca", "Spanish":
-            if phone == "EN" {
-                return ["Me": "I", "encanta": "love", "aprender": "to learn", "idiomas": "languages"]
-            }
-            return ["Me": "Ben", "encanta": "seviyorum", "aprender": "öğrenmeyi", "idiomas": "dilleri"]
+        // Telefon dili == öğrenilen dil → aynı dili "çevirmenin" anlamı yok, tooltip gösterme
+        if OL.phoneCode.lowercased() == languageCode.lowercased() { return [:] }
+
+        let phone = OL.phoneCode  // "tr", "en", "de" ...
+        // Telefon Türkçe ise Türkçe çeviri, değilse İngilizce çeviri
+        let isTR = phone == "tr"
+        switch languageCode.lowercased() {
+        case "en":
+            return isTR
+                ? ["I": "Ben", "love": "seviyorum", "learning": "öğrenmeyi", "languages": "dilleri"]
+                : ["I": "I", "love": "love", "learning": "learning", "languages": "languages"]
+        case "fr":
+            return isTR
+                ? ["J'adore": "Seviyorum", "apprendre": "öğrenmeyi", "des": "-", "langues": "dilleri"]
+                : ["J'adore": "I love", "apprendre": "to learn", "des": "some", "langues": "languages"]
+        case "de":
+            return isTR
+                ? ["Ich": "Ben", "liebe": "seviyorum", "Sprachen": "dilleri", "lernen": "öğrenmeyi"]
+                : ["Ich": "I", "liebe": "love", "Sprachen": "languages", "lernen": "to learn"]
+        case "es":
+            return isTR
+                ? ["Me": "Ben", "encanta": "seviyorum", "aprender": "öğrenmeyi", "idiomas": "dilleri"]
+                : ["Me": "I", "encanta": "love", "aprender": "to learn", "idiomas": "languages"]
+        case "it":
+            return isTR
+                ? ["Adoro": "Seviyorum", "imparare": "öğrenmeyi", "le": "-", "lingue": "dilleri"]
+                : ["Adoro": "I love", "imparare": "to learn", "le": "the", "lingue": "languages"]
+        case "ru":
+            return isTR
+                ? ["Я": "Ben", "люблю": "seviyorum", "изучать": "öğrenmeyi", "языки": "dilleri"]
+                : ["Я": "I", "люблю": "love", "изучать": "to learn", "языки": "languages"]
         default:
-            if phone == "EN" {
-                return ["I": "Ben", "love": "seviyorum", "learning": "öğrenmeyi", "languages": "dilleri"]
-            }
-            return ["I": "I", "love": "love", "learning": "learning", "languages": "languages"]
+            return [:]
         }
     }
     
@@ -353,7 +350,9 @@ struct OnboardingQuizView: View {
             PlanSelectionView(
                 languageName: languageName,
                 languageCode: languageCode,
-                proficiencyLevel: proficiencyLevel
+                proficiencyLevel: proficiencyLevel,
+                learningInterest: learningInterest,
+                dailyGoalMinutes: dailyGoalMinutes
             )
         }
     }

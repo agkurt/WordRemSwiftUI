@@ -102,6 +102,10 @@ struct AL {
         case paywallFeature2        = "paywall.feature_2"
         case paywallFeature3        = "paywall.feature_3"
         case paywallFeature4        = "paywall.feature_4"
+        case paywallFeature1Sub     = "paywall.feature_1_sub"
+        case paywallFeature2Sub     = "paywall.feature_2_sub"
+        case paywallFeature3Sub     = "paywall.feature_3_sub"
+        case paywallFeature4Sub     = "paywall.feature_4_sub"
         case paywallReviewsTitle    = "paywall.reviews_title"
         case paywallWeeklyPro       = "paywall.weekly_pro"
         case paywallPerWeek         = "paywall.per_week"
@@ -161,6 +165,7 @@ struct AL {
 
         // PathMapView
         case pathMistakesFormat     = "path.mistakes_format"
+        case pathMistakesUrgent     = "path.mistakes_urgent"
         case pathUpdating           = "path.updating"
         case pathSomethingWrong     = "path.something_wrong"
         case pathTryAgain           = "path.try_again"
@@ -195,6 +200,9 @@ struct AL {
         case gameDontGiveUp         = "game.dont_give_up"
         case gameTryAgain           = "game.try_again"
         case gameQuit               = "game.quit"
+        case gameQuitTitle          = "game.quit_title"
+        case gameQuitMessage        = "game.quit_message"
+        case gameQuitKeepGoing      = "game.quit_keep_going"
         case gameQuestionFormat     = "game.question_format"
         case gameCorrect            = "game.correct"
         case gameNotQuite           = "game.not_quite"
@@ -245,6 +253,10 @@ struct AL {
             .paywallFeature2:       "Öncelikli yeni içeriklere erişim",
             .paywallFeature3:       "Detaylı ilerleme & istatistikler",
             .paywallFeature4:       "Akıllı hatırlatıcılar",
+            .paywallFeature1Sub:    "Hiç reklam olmadan öğrenmeye odaklan",
+            .paywallFeature2Sub:    "Yeni dersler sana ilk açılır",
+            .paywallFeature3Sub:    "Gelişimini grafiklerle takip et",
+            .paywallFeature4Sub:    "Günlük hedefini asla kaçırma",
             .paywallReviewsTitle:   "Kullanıcılar ne diyor?",
             .paywallWeeklyPro:      "Haftalık Pro",
             .paywallPerWeek:        "%@ / hafta",
@@ -299,6 +311,7 @@ struct AL {
             .tabProfile:            "Profil",
             // Path
             .pathMistakesFormat:    "%d Hatayı Çalış",
+            .pathMistakesUrgent:    "10'dan fazla hatan var! Hemen çalış 👆",
             .pathUpdating:          "İlerleme güncelleniyor...",
             .pathSomethingWrong:    "Bir şeyler ters gitti",
             .pathTryAgain:          "Tekrar Dene",
@@ -332,6 +345,9 @@ struct AL {
             .gameDontGiveUp:        "Pes etme — tekrar dene!",
             .gameTryAgain:          "Tekrar Dene",
             .gameQuit:              "Çık",
+            .gameQuitTitle:         "Çıkmak istiyor musun?",
+            .gameQuitMessage:       "İlerlemeyi kaybedeceksin. Sadece 1 dakika daha ayır!",
+            .gameQuitKeepGoing:     "Devam Et",
             .dailyLimitTitle:       "Günlük Limitin Doldu!",
             .dailyLimitSubtitle:    "Bugün 25 soruyu tamamladın.\nYarın tekrar devam edebilirsin.",
             .dailyLimitResetsIn:    "Yenileniyor:",
@@ -373,6 +389,10 @@ struct AL {
             .paywallFeature2:       "Priority access to new content",
             .paywallFeature3:       "Detailed progress & statistics",
             .paywallFeature4:       "Smart reminders",
+            .paywallFeature1Sub:    "Focus on learning with zero distractions",
+            .paywallFeature2Sub:    "New lessons unlock for you first",
+            .paywallFeature3Sub:    "Track your growth with detailed charts",
+            .paywallFeature4Sub:    "Never miss your daily goal",
             .paywallReviewsTitle:   "What users say",
             .paywallWeeklyPro:      "Weekly Pro",
             .paywallPerWeek:        "%@ / week",
@@ -427,6 +447,7 @@ struct AL {
             .tabProfile:            "Profile",
             // Path
             .pathMistakesFormat:    "Practice %d Mistakes",
+            .pathMistakesUrgent:    "You have 10+ mistakes! Practice now 👆",
             .pathUpdating:          "Updating your progress...",
             .pathSomethingWrong:    "Something went wrong",
             .pathTryAgain:          "Try Again",
@@ -460,6 +481,9 @@ struct AL {
             .gameDontGiveUp:        "Don't give up — try again!",
             .gameTryAgain:          "Try Again",
             .gameQuit:              "Quit",
+            .gameQuitTitle:         "Quit the quiz?",
+            .gameQuitMessage:       "You'll lose your progress. Just 1 more minute!",
+            .gameQuitKeepGoing:     "Keep Going",
             .dailyLimitTitle:       "Daily Limit Reached!",
             .dailyLimitSubtitle:    "You've completed 25 questions today.\nCome back tomorrow!",
             .dailyLimitResetsIn:    "Resets in:",
@@ -501,6 +525,10 @@ struct AL {
             .paywallFeature2:       "Frühzeitiger Zugang zu neuen Inhalten",
             .paywallFeature3:       "Detaillierter Fortschritt & Statistiken",
             .paywallFeature4:       "Intelligente Erinnerungen",
+            .paywallFeature1Sub:    "Lerne ohne Ablenkung durch Werbung",
+            .paywallFeature2Sub:    "Neue Lektionen öffnen sich zuerst für dich",
+            .paywallFeature3Sub:    "Verfolge deinen Fortschritt mit Grafiken",
+            .paywallFeature4Sub:    "Verpasse nie dein Tagesziel",
             .paywallReviewsTitle:   "Was sagen Nutzer?",
             .paywallWeeklyPro:      "Wöchentliches Pro",
             .paywallPerWeek:        "%@ / Woche",
@@ -555,6 +583,7 @@ struct AL {
             .tabProfile:            "Profil",
             // Path
             .pathMistakesFormat:    "%d Fehler üben",
+            .pathMistakesUrgent:    "Du hast 10+ Fehler! Jetzt üben 👆",
             .pathUpdating:          "Fortschritt wird aktualisiert...",
             .pathSomethingWrong:    "Etwas ist schiefgelaufen",
             .pathTryAgain:          "Erneut versuchen",
@@ -588,6 +617,9 @@ struct AL {
             .gameDontGiveUp:        "Gib nicht auf — versuche es erneut!",
             .gameTryAgain:          "Erneut versuchen",
             .gameQuit:              "Beenden",
+            .gameQuitTitle:         "Quiz beenden?",
+            .gameQuitMessage:       "Du verlierst deinen Fortschritt. Nur noch 1 Minute!",
+            .gameQuitKeepGoing:     "Weitermachen",
             .dailyLimitTitle:       "Tageslimit erreicht!",
             .dailyLimitSubtitle:    "Du hast heute 25 Fragen abgeschlossen.\nKomm morgen wieder!",
             .dailyLimitResetsIn:    "Zurückgesetzt in:",
@@ -629,6 +661,10 @@ struct AL {
             .paywallFeature2:       "Accès prioritaire aux nouveaux contenus",
             .paywallFeature3:       "Progrès détaillés & statistiques",
             .paywallFeature4:       "Rappels intelligents",
+            .paywallFeature1Sub:    "Concentre-toi sans aucune distraction",
+            .paywallFeature2Sub:    "Les nouveaux cours s'ouvrent pour toi en premier",
+            .paywallFeature3Sub:    "Suis ta progression avec des graphiques",
+            .paywallFeature4Sub:    "Ne manque jamais ton objectif quotidien",
             .paywallReviewsTitle:   "Ce que disent les utilisateurs",
             .paywallWeeklyPro:      "Pro hebdomadaire",
             .paywallPerWeek:        "%@ / semaine",
@@ -683,6 +719,7 @@ struct AL {
             .tabProfile:            "Profil",
             // Path
             .pathMistakesFormat:    "Pratiquer %d erreurs",
+            .pathMistakesUrgent:    "Tu as 10+ erreurs ! Entraîne-toi maintenant 👆",
             .pathUpdating:          "Mise à jour de ta progression...",
             .pathSomethingWrong:    "Quelque chose s'est mal passé",
             .pathTryAgain:          "Réessayer",
@@ -716,6 +753,9 @@ struct AL {
             .gameDontGiveUp:        "N'abandonne pas — réessaie !",
             .gameTryAgain:          "Réessayer",
             .gameQuit:              "Quitter",
+            .gameQuitTitle:         "Quitter le quiz ?",
+            .gameQuitMessage:       "Tu perdras ta progression. Encore 1 minute !",
+            .gameQuitKeepGoing:     "Continuer",
             .dailyLimitTitle:       "Limite quotidienne atteinte !",
             .dailyLimitSubtitle:    "Tu as complété 25 questions aujourd'hui.\nReviens demain !",
             .dailyLimitResetsIn:    "Réinitialisation dans :",
@@ -757,6 +797,10 @@ struct AL {
             .paywallFeature2:       "Acceso prioritario a nuevos contenidos",
             .paywallFeature3:       "Progreso detallado y estadísticas",
             .paywallFeature4:       "Recordatorios inteligentes",
+            .paywallFeature1Sub:    "Concéntrate sin ninguna distracción",
+            .paywallFeature2Sub:    "Las nuevas lecciones se abren para ti primero",
+            .paywallFeature3Sub:    "Sigue tu progreso con gráficos detallados",
+            .paywallFeature4Sub:    "Nunca pierdas tu objetivo diario",
             .paywallReviewsTitle:   "¿Qué dicen los usuarios?",
             .paywallWeeklyPro:      "Pro semanal",
             .paywallPerWeek:        "%@ / semana",
@@ -811,6 +855,7 @@ struct AL {
             .tabProfile:            "Perfil",
             // Path
             .pathMistakesFormat:    "Practicar %d errores",
+            .pathMistakesUrgent:    "¡Tienes 10+ errores! Practica ahora 👆",
             .pathUpdating:          "Actualizando tu progreso...",
             .pathSomethingWrong:    "Algo salió mal",
             .pathTryAgain:          "Reintentar",
@@ -844,6 +889,9 @@ struct AL {
             .gameDontGiveUp:        "No te rindas — ¡inténtalo de nuevo!",
             .gameTryAgain:          "Reintentar",
             .gameQuit:              "Salir",
+            .gameQuitTitle:         "¿Salir del quiz?",
+            .gameQuitMessage:       "Perderás tu progreso. ¡Solo 1 minuto más!",
+            .gameQuitKeepGoing:     "Continuar",
             .dailyLimitTitle:       "¡Límite diario alcanzado!",
             .dailyLimitSubtitle:    "Completaste 25 preguntas hoy.\n¡Vuelve mañana!",
             .dailyLimitResetsIn:    "Se restablece en:",
@@ -885,6 +933,10 @@ struct AL {
             .paywallFeature2:       "Accesso prioritario ai nuovi contenuti",
             .paywallFeature3:       "Progressi dettagliati e statistiche",
             .paywallFeature4:       "Promemoria intelligenti",
+            .paywallFeature1Sub:    "Concentrati senza alcuna distrazione",
+            .paywallFeature2Sub:    "Le nuove lezioni si aprono prima per te",
+            .paywallFeature3Sub:    "Segui i tuoi progressi con grafici dettagliati",
+            .paywallFeature4Sub:    "Non perdere mai il tuo obiettivo giornaliero",
             .paywallReviewsTitle:   "Cosa dicono gli utenti?",
             .paywallWeeklyPro:      "Pro settimanale",
             .paywallPerWeek:        "%@ / settimana",
@@ -939,6 +991,7 @@ struct AL {
             .tabProfile:            "Profilo",
             // Path
             .pathMistakesFormat:    "Esercita %d errori",
+            .pathMistakesUrgent:    "Hai 10+ errori! Esercitati ora 👆",
             .pathUpdating:          "Aggiornamento del progresso...",
             .pathSomethingWrong:    "Qualcosa è andato storto",
             .pathTryAgain:          "Riprova",
@@ -972,6 +1025,9 @@ struct AL {
             .gameDontGiveUp:        "Non arrenderti — riprova!",
             .gameTryAgain:          "Riprova",
             .gameQuit:              "Esci",
+            .gameQuitTitle:         "Uscire dal quiz?",
+            .gameQuitMessage:       "Perderai i tuoi progressi. Solo 1 altro minuto!",
+            .gameQuitKeepGoing:     "Continua",
             .dailyLimitTitle:       "Limite giornaliero raggiunto!",
             .dailyLimitSubtitle:    "Hai completato 25 domande oggi.\nTorna domani!",
             .dailyLimitResetsIn:    "Si azzera in:",
@@ -1013,6 +1069,10 @@ struct AL {
             .paywallFeature2:       "Приоритетный доступ к новому контенту",
             .paywallFeature3:       "Детальный прогресс и статистика",
             .paywallFeature4:       "Умные напоминания",
+            .paywallFeature1Sub:    "Сосредоточься без отвлекающей рекламы",
+            .paywallFeature2Sub:    "Новые уроки открываются для тебя первым",
+            .paywallFeature3Sub:    "Следи за прогрессом с детальными графиками",
+            .paywallFeature4Sub:    "Никогда не пропускай ежедневную цель",
             .paywallReviewsTitle:   "Что говорят пользователи?",
             .paywallWeeklyPro:      "Еженедельный Pro",
             .paywallPerWeek:        "%@ / неделю",
@@ -1067,6 +1127,7 @@ struct AL {
             .tabProfile:            "Профиль",
             // Path
             .pathMistakesFormat:    "Проработать %d ошибок",
+            .pathMistakesUrgent:    "У тебя 10+ ошибок! Повтори сейчас 👆",
             .pathUpdating:          "Обновление прогресса...",
             .pathSomethingWrong:    "Что-то пошло не так",
             .pathTryAgain:          "Повторить",
@@ -1100,6 +1161,9 @@ struct AL {
             .gameDontGiveUp:        "Не сдавайся — попробуй ещё раз!",
             .gameTryAgain:          "Повторить",
             .gameQuit:              "Выйти",
+            .gameQuitTitle:         "Выйти из викторины?",
+            .gameQuitMessage:       "Ты потеряешь прогресс. Ещё 1 минута!",
+            .gameQuitKeepGoing:     "Продолжить",
             .dailyLimitTitle:       "Дневной лимит исчерпан!",
             .dailyLimitSubtitle:    "Сегодня ты ответил на 25 вопросов.\nВозвращайся завтра!",
             .dailyLimitResetsIn:    "Сбросится через:",
@@ -1141,6 +1205,10 @@ struct AL {
             .paywallFeature2:       "优先获取新内容",
             .paywallFeature3:       "详细进度与统计",
             .paywallFeature4:       "智能提醒",
+            .paywallFeature1Sub:    "专注学习，零干扰",
+            .paywallFeature2Sub:    "新课程优先为你解锁",
+            .paywallFeature3Sub:    "用图表追踪你的进步",
+            .paywallFeature4Sub:    "永不错过每日目标",
             .paywallReviewsTitle:   "用户怎么说？",
             .paywallWeeklyPro:      "每周Pro",
             .paywallPerWeek:        "%@ / 周",
@@ -1195,6 +1263,7 @@ struct AL {
             .tabProfile:            "个人",
             // Path
             .pathMistakesFormat:    "练习%d个错误",
+            .pathMistakesUrgent:    "你有10+个错误！现在练习 👆",
             .pathUpdating:          "更新进度中...",
             .pathSomethingWrong:    "出了点问题",
             .pathTryAgain:          "重试",
@@ -1228,6 +1297,9 @@ struct AL {
             .gameDontGiveUp:        "别放弃——再试一次！",
             .gameTryAgain:          "重试",
             .gameQuit:              "退出",
+            .gameQuitTitle:         "退出测验？",
+            .gameQuitMessage:       "你将失去进度。再坚持1分钟！",
+            .gameQuitKeepGoing:     "继续",
             .dailyLimitTitle:       "已达每日上限！",
             .dailyLimitSubtitle:    "你今天已完成25道题。\n明天再来吧！",
             .dailyLimitResetsIn:    "重置倒计时：",

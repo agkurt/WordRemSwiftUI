@@ -8,7 +8,6 @@
 import SwiftUI
 import Firebase
 import FirebaseFirestore
-import FirebaseStorage
 
 class FirebaseService: ObservableObject {
     
@@ -47,6 +46,21 @@ class FirebaseService: ObservableObject {
         }
     }
     
+    /// Returns the document ID of the first deck whose cardName matches `name`, or nil if not found.
+    func findDeckId(named name: String) async -> String? {
+        guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else { return nil }
+        let db = Firestore.firestore()
+        do {
+            let snapshot = try await db.collection("users").document(uid).collection("cards")
+                .whereField("cardName", isEqualTo: name)
+                .limit(to: 1)
+                .getDocuments()
+            return snapshot.documents.first?.documentID
+        } catch {
+            return nil
+        }
+    }
+
     func fetchCardName() async throws -> [Card] {
 
         guard let uid = SupabaseAuthService.shared.currentUserId?.uuidString else {

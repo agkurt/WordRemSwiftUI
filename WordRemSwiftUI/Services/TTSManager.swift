@@ -21,7 +21,19 @@ final class TTSManager {
     private var cache: [String: Data] = [:]
     private let maxCacheSize = 80
 
-    private init() {}
+    private init() {
+        setupAudioSession()
+    }
+
+    private func setupAudioSession() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [.duckOthers, .mixWithOthers])
+            try session.setActive(true)
+        } catch {
+            print("⚠️ TTSManager audio session setup failed: \(error)")
+        }
+    }
 
     // MARK: - Public API
 
@@ -160,8 +172,15 @@ final class TTSManager {
     // MARK: - Helpers
 
     private func configureAudioSession() {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .duckOthers)
-        try? AVAudioSession.sharedInstance().setActive(true)
+        do {
+            let session = AVAudioSession.sharedInstance()
+            if session.category != .playback {
+                try session.setCategory(.playback, mode: .default, options: [.duckOthers, .mixWithOthers])
+            }
+            try session.setActive(true)
+        } catch {
+            print("⚠️ TTSManager configureAudioSession error: \(error)")
+        }
     }
 
     private func evictIfNeeded() {

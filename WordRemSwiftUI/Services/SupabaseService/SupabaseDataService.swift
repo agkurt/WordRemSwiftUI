@@ -58,29 +58,54 @@ final class SupabaseDataService {
         return filtered
     }
 
-    // MARK: - Kullanıcı Tercihlerini Kaydet (dil + seviye)
-    /// Onboarding'de seçilen hedef dil ve seviyeyi Supabase'e yazar.
+    // MARK: - Kullanıcı Tercihlerini Kaydet (tüm onboarding verileri)
+    /// Onboarding'de seçilen tüm tercihleri Supabase'e yazar.
     /// Supabase migration gerekli:
     ///   ALTER TABLE users ADD COLUMN IF NOT EXISTS target_lang_id INTEGER REFERENCES languages(id);
+    ///   ALTER TABLE users ADD COLUMN IF NOT EXISTS native_lang_id INTEGER REFERENCES languages(id);
     ///   ALTER TABLE users ADD COLUMN IF NOT EXISTS proficiency_level INTEGER DEFAULT 0;
-    func saveUserPreferences(targetLangCode: String, proficiencyLevel: Int) async throws {
+    ///   ALTER TABLE users ADD COLUMN IF NOT EXISTS learning_interest TEXT;
+    ///   ALTER TABLE users ADD COLUMN IF NOT EXISTS daily_goal_minutes INTEGER DEFAULT 10;
+    func saveUserPreferences(
+        targetLangCode: String,
+        nativeLangCode: String = "",
+        proficiencyLevel: Int,
+        learningInterest: String = "",
+        dailyGoalMinutes: Int = 10
+    ) async throws {
         guard let uid = SupabaseService.shared.currentUserId else { return }
 
         let languages = try await fetchLanguages()
+
         let targetLangId = languages.first(where: {
             $0.code.uppercased() == targetLangCode.uppercased()
         })?.id
 
+        let nativeLangId: Int? = nativeLangCode.isEmpty ? nil : languages.first(where: {
+            $0.code.uppercased() == nativeLangCode.uppercased()
+        })?.id
+
         struct UserPrefsUpdate: Encodable {
             let target_lang_id: Int?
+            let native_lang_id: Int?
             let proficiency_level: Int
+            let learning_interest: String?
+            let daily_goal_minutes: Int
         }
 
         try await db
             .from("users")
-            .update(UserPrefsUpdate(target_lang_id: targetLangId, proficiency_level: proficiencyLevel))
+            .update(UserPrefsUpdate(
+                target_lang_id: targetLangId,
+                native_lang_id: nativeLangId,
+                proficiency_level: proficiencyLevel,
+                learning_interest: learningInterest.isEmpty ? nil : learningInterest,
+                daily_goal_minutes: dailyGoalMinutes
+            ))
             .eq("id", value: uid.uuidString)
             .execute()
+
+        print("✅ saveUserPreferences: target=\(targetLangCode) native=\(nativeLangCode) level=\(proficiencyLevel) interest=\(learningInterest) goal=\(dailyGoalMinutes)min")
     }
 
     // MARK: - Levels for a course
@@ -130,7 +155,10 @@ final class SupabaseDataService {
 
     /// Kursa ilk kayıtta her zaman 1 level açar. Sonraki levellar quiz tamamlandıkça açılır.
     func enrollWithProficiency(courseId: UUID, proficiencyLevel: Int) async throws {
-        guard let uid = SupabaseService.shared.currentUserId else { return }
+        guard let uid = SupabaseService.shared.currentUserId else {
+            throw NSError(domain: "Auth", code: 401,
+                          userInfo: [NSLocalizedDescriptionKey: "No active user session for enrollment"])
+        }
 
         let levelsToUnlock = 1
 
@@ -240,6 +268,19 @@ final class SupabaseDataService {
             .rpc("complete_level", params: payload)
             .execute()
             .value
+    }
+
+    // MARK: - Award XP (mistakes & AI quiz)
+    func awardXP(_ amount: Int) async {
+        guard amount > 0, let uid = SupabaseService.shared.currentUserId else { return }
+        struct Payload: Encodable { let p_user_id: String; let p_amount: Int }
+        do {
+            try await db
+                .rpc("award_xp", params: Payload(p_user_id: uid.uuidString, p_amount: amount))
+                .execute()
+        } catch {
+            print("⚠️ awardXP error: \(error)")
+        }
     }
 
     // MARK: - Save quiz attempts (batch insert)

@@ -8,12 +8,17 @@
 import SwiftUI
 import Lottie
 
+// Sorular ve başlık birlikte taşınır — timing sorunu yaşanmaz
+private struct AIQuizPayload: Identifiable {
+    let id = UUID()
+    let questions: [GameQuestion]
+    let title: String
+}
+
 struct AIQuizView: View {
     @StateObject private var vm = AIQuizViewModel()
     @Environment(\.dismiss) private var dismiss
-    @State private var showQuiz = false
-    @State private var readyQuestions: [GameQuestion] = []
-    @State private var readyTitle: String = ""
+    @State private var quizPayload: AIQuizPayload? = nil
 
     var body: some View {
         ZStack {
@@ -34,21 +39,20 @@ struct AIQuizView: View {
                 case .loading(let topic, let count):
                     loadingView(topic: topic, count: count)
                 case .ready(let questions, let title):
+                    // questions ve title aynı anda payload'a koyulur — boş geçme riski yok
                     Color.clear.onAppear {
-                        readyQuestions = questions
-                        readyTitle = title
-                        showQuiz = true
+                        quizPayload = AIQuizPayload(questions: questions, title: title)
                     }
                 case .error(let msg):
                     errorView(msg)
                 }
             }
         }
-        .fullScreenCover(isPresented: $showQuiz, onDismiss: { vm.reset() }) {
+        .fullScreenCover(item: $quizPayload, onDismiss: { vm.reset() }) { payload in
             GameQuizView(
-                sessionType: .aiGenerated(title: readyTitle),
-                title: readyTitle,
-                preloadedQuestions: readyQuestions
+                sessionType: .aiGenerated(title: payload.title),
+                title: payload.title,
+                preloadedQuestions: payload.questions
             )
         }
     }

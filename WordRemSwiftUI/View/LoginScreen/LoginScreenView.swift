@@ -9,16 +9,9 @@ import AuthenticationServices
 struct LoginScreenView: View {
 
     @EnvironmentObject var authManager: AuthManager
-    // ✅ Use the shared authManager from environment, not a new instance
-    @StateObject private var viewModel: LoginScreenViewModel
+    @StateObject private var viewModel = LoginScreenViewModel()
     @FocusState var focusedField: FocusableField?
     @Environment(\.colorScheme) private var colorScheme
-
-    init() {
-        // Will be updated with the real authManager via .task
-        // We need a temporary one to satisfy @StateObject init
-        _viewModel = StateObject(wrappedValue: LoginScreenViewModel(authManager: AuthManager()))
-    }
 
     var body: some View {
         NavigationStack {
@@ -56,26 +49,6 @@ struct LoginScreenView: View {
                             Spacer()
                             GoogleAndAppleSignView()
                             Spacer()
-
-                            // ── Continue as Guest ──────────────────────────
-                            Button {
-                                Task {
-                                    do {
-                                        try await viewModel.signAnonymously()
-                                        // ✅ Ensure navigation triggers
-                                        await MainActor.run {
-                                            authManager.userIsLoggedIn = true
-                                        }
-                                    } catch {
-                                        print("Guest login error: \(error)")
-                                    }
-                                }
-                            } label: {
-                                Text("Continue as Guest")
-                                    .font(.custom("Poppins-Medium", size: 15))
-                                    .foregroundColor(AppTheme.Colors.textSecondary)
-                            }
-                            .navigationBarBackButtonHidden(true)
                         }
                         .clipShape(.rect(cornerRadius: 20))
                         .padding()
@@ -103,6 +76,15 @@ struct LoginScreenView: View {
         }
         .onTapGesture {
             UIApplication.shared.hideKeyboard()
+        }
+        // Apple / Google hatalarını alert olarak göster
+        .alert("Giriş Başarısız", isPresented: Binding(
+            get: { authManager.loginError != nil },
+            set: { if !$0 { authManager.loginError = nil } }
+        )) {
+            Button("Tamam", role: .cancel) { authManager.loginError = nil }
+        } message: {
+            Text(authManager.loginError ?? "")
         }
     }
 }

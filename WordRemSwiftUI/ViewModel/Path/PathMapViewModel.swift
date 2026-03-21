@@ -29,6 +29,7 @@ final class PathMapViewModel: ObservableObject {
         noCoursesForLanguage = false
         errorMessage = nil
         do {
+
             // Onboarding'de kaydedilen hedef dil kodunu oku
             let targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode")
             courses = try await SupabaseDataService.shared.fetchCourses(targetLangCode: targetLangCode)

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Lottie
 
 struct SplashScreenView: View {
     
@@ -52,16 +51,13 @@ struct SplashScreenView: View {
                         .opacity(logoOpacity)
                     
                     // App Name
-                    Text("Flash AI")
+                    Text("WordRem AI")
                         .font(.custom("Poppins-Bold", size: 48))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .opacity(logoOpacity)
                     
                     // Lottie loading animation
-                    LottieView(animation: .named("StartAnimation"))
-                        .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                        .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                        .frame(width: 80, height: 80)
+                    LoadingAnimationView(width: 80, height: 80)
                         .padding(.top, 8)
                         .opacity(logoOpacity)
                 }
@@ -123,15 +119,12 @@ struct LaunchScreenView: View {
                     .scaleEffect(logoScale)
                     .opacity(logoOpacity)
 
-                Text("Flash AI")
+                Text("WordRem AI")
                     .font(.custom("Poppins-Bold", size: 48))
                     .foregroundStyle(AppTheme.Colors.primaryOrange)
                     .opacity(logoOpacity)
 
-                LottieView(animation: .named("StartAnimation"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 80, height: 80)
+                LoadingAnimationView(width: 80, height: 80)
                     .padding(.top, 8)
                     .opacity(logoOpacity)
             }

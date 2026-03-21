@@ -10,11 +10,14 @@ import Firebase
 
 extension FirebaseService {
 
+    // Supabase kullanıcı kimliği — Firebase Auth yerine Supabase Auth
+    private var supabaseUid: String? {
+        SupabaseService.shared.currentUserId?.uuidString
+    }
+
     // MARK: - Delete Deck (with all its words)
     func deleteCardAndTransactions(withId cardId: String) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
+        guard let uid = supabaseUid else { return }
 
         let cardRef = Firestore.firestore().collection("users").document(uid).collection("cards").document(cardId)
         let wordsRef = cardRef.collection("words")
@@ -35,9 +38,7 @@ extension FirebaseService {
 
     // MARK: - Delete Single Word from a Deck
     func deleteCardInfoAndTransactions(deckId: String, cardId: String) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
+        guard let uid = supabaseUid else { return }
 
         let cardRef = Firestore.firestore().collection("users").document(uid).collection("cards").document(deckId)
         let wordRef = cardRef.collection("words").document(cardId)
@@ -52,7 +53,7 @@ extension FirebaseService {
 
     // MARK: - Quiz Results
     func saveQuizResult(cardId: String, mode: String, score: Int, total: Int) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = supabaseUid else {
             throw NSError(domain: "FirebaseService", code: -1)
         }
         let db = Firestore.firestore()
@@ -71,7 +72,7 @@ extension FirebaseService {
     }
 
     func fetchQuizResults(cardId: String) async throws -> [[String: Any]] {
-        guard let uid = Auth.auth().currentUser?.uid else { return [] }
+        guard let uid = supabaseUid else { return [] }
         let db = Firestore.firestore()
         var results: [[String: Any]] = []
         let snapshot = try await db.collection("users")

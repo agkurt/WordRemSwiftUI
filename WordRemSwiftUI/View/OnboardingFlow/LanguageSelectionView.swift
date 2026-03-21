@@ -11,7 +11,8 @@ struct LanguageSelectionView: View {
     @State private var selectedLanguage: String?
     @State private var navigateToProficiency = false
     
-    let availableLanguages: [(flag: String, name: String, code: String)] = [
+    // Tüm diller
+    private let allLanguages: [(flag: String, name: String, code: String)] = [
         ("🇬🇧", "İngilizce", "en"),
         ("🇩🇪", "Almanca", "de"),
         ("🇷🇺", "Rusça", "ru"),
@@ -20,6 +21,12 @@ struct LanguageSelectionView: View {
         ("🇮🇹", "İtalyanca", "it"),
         ("🇪🇸", "İspanyolca", "es")
     ]
+
+    // Telefon dilini listeden çıkar — kendi ana dilini öğrenmek mantıksız
+    var availableLanguages: [(flag: String, name: String, code: String)] {
+        let phoneCode = OL.phoneCode.lowercased()
+        return allLanguages.filter { $0.code.lowercased() != phoneCode }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -61,7 +68,7 @@ struct LanguageSelectionView: View {
             .padding(.top, 24)
             .padding(.bottom, 20)
 
-            // Subtitle — telefon diline göre dinamik
+            // Subtitle — telefon diline göre dinamik ("For English speakers" vs.)
             HStack {
                 Text(OL.forSpeakersSubtitle)
                     .font(.custom("Poppins-Bold", size: 16))

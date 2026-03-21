@@ -3,7 +3,7 @@
 //  WordRemSwiftUI
 //
 //  Step 5 of Duolingo-style Onboarding.
-//  Offers Premium / Free choices before final loading step.
+//  Kullanıcı Pro veya Free seçer → Continue ile aksiyon alır.
 //
 
 import SwiftUI
@@ -12,13 +12,17 @@ struct PlanSelectionView: View {
     let languageName: String
     let languageCode: String
     let proficiencyLevel: Int
+    var learningInterest: String = ""
+    var dailyGoalMinutes: Int = 10
 
+    // 0 = Pro, 1 = Free. Default Pro (recommended)
+    @State private var selectedPlan: Int = 0
     @State private var navigateToLoading = false
     @State private var showPaywall = false
 
     var body: some View {
         VStack(spacing: 0) {
-            // Top Progress Bar
+            // ── Progress Bar ────────────────────────────────────────
             HStack(spacing: 8) {
                 ForEach(0..<4, id: \.self) { _ in
                     Capsule()
@@ -29,7 +33,7 @@ struct PlanSelectionView: View {
             .padding(.horizontal, 24)
             .padding(.top, 16)
 
-            // Mascot & Speech Bubble
+            // ── Mascot & Speech Bubble ──────────────────────────────
             HStack(alignment: .top, spacing: 16) {
                 MascotAnimationView(width: 70, height: 70)
 
@@ -54,14 +58,14 @@ struct PlanSelectionView: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, 24)
-            .padding(.bottom, 40)
+            .padding(.bottom, 32)
 
-            // Plans List
-            VStack(spacing: 24) {
-                // Pro Plan → paywall açar
+            // ── Plan Cards ──────────────────────────────────────────
+            VStack(spacing: 16) {
+
+                // Pro Plan
                 Button {
-                    EventManager.shared.logPaywallEvent("pro_selected_onboarding")
-                    showPaywall = true
+                    withAnimation(.easeInOut(duration: 0.2)) { selectedPlan = 0 }
                 } label: {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("WordRem Pro")
@@ -84,9 +88,16 @@ struct PlanSelectionView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.white, lineWidth: 2)
+                            .stroke(
+                                selectedPlan == 0 ? Color.white : Color.clear,
+                                lineWidth: 2.5
+                            )
                     )
-                    .shadow(color: Color(hex: "#8b5cf6").opacity(0.4), radius: 10, y: 5)
+                    .shadow(
+                        color: Color(hex: "#8b5cf6").opacity(selectedPlan == 0 ? 0.5 : 0.25),
+                        radius: selectedPlan == 0 ? 14 : 8,
+                        y: 5
+                    )
                     .overlay(alignment: .topTrailing) {
                         Text(OL.s(.planRecommended))
                             .font(.custom("Poppins-Bold", size: 12))
@@ -97,20 +108,38 @@ struct PlanSelectionView: View {
                             .clipShape(Capsule())
                             .offset(y: -12)
                     }
+                    // Seçim checkmark
+                    .overlay(alignment: .trailing) {
+                        if selectedPlan == 0 {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 22))
+                                .foregroundStyle(.white)
+                                .padding(.trailing, 20)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    }
                 }
 
-                // Free Plan → direkt loading
+                // Free Plan
                 Button {
-                    EventManager.shared.logPaywallEvent("free_selected_onboarding")
-                    navigateToLoading = true
+                    withAnimation(.easeInOut(duration: 0.2)) { selectedPlan = 1 }
                 } label: {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(OL.s(.planFreeTitle))
-                            .font(.custom("Poppins-Bold", size: 18))
-                            .foregroundStyle(Color(hex: "#1e293b"))
-                        Text(OL.s(.planFreeSubtitle))
-                            .font(.custom("Poppins-Regular", size: 15))
-                            .foregroundStyle(Color(hex: "#64748b"))
+                    HStack {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(OL.s(.planFreeTitle))
+                                .font(.custom("Poppins-Bold", size: 18))
+                                .foregroundStyle(Color(hex: "#1e293b"))
+                            Text(OL.s(.planFreeSubtitle))
+                                .font(.custom("Poppins-Regular", size: 15))
+                                .foregroundStyle(Color(hex: "#64748b"))
+                        }
+                        Spacer()
+                        if selectedPlan == 1 {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 22))
+                                .foregroundStyle(AppTheme.Colors.primaryOrange)
+                                .transition(.scale.combined(with: .opacity))
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
@@ -119,19 +148,34 @@ struct PlanSelectionView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color(hex: "#cbd5e1"), lineWidth: 2)
+                            .stroke(
+                                selectedPlan == 1 ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"),
+                                lineWidth: 2
+                            )
                     )
-                    .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
+                    .shadow(
+                        color: .black.opacity(selectedPlan == 1 ? 0.08 : 0.04),
+                        radius: 8, y: 3
+                    )
                 }
             }
             .padding(.horizontal, 24)
 
             Spacer()
 
+            // ── Continue Button ─────────────────────────────────────
             VStack(spacing: 0) {
                 Divider()
                 Button {
-                    navigateToLoading = true
+                    if selectedPlan == 0 {
+                        // Pro seçili → paywall aç
+                        EventManager.shared.logPaywallEvent("pro_selected_onboarding")
+                        showPaywall = true
+                    } else {
+                        // Free seçili → direkt loading
+                        EventManager.shared.logPaywallEvent("free_selected_onboarding")
+                        navigateToLoading = true
+                    }
                 } label: {
                     Text(OL.s(.continueButton))
                         .font(.custom("Poppins-Bold", size: 17))
@@ -154,10 +198,11 @@ struct PlanSelectionView: View {
             OnboardingLoadingView(
                 languageName: languageName,
                 languageCode: languageCode,
-                proficiencyLevel: proficiencyLevel
+                proficiencyLevel: proficiencyLevel,
+                learningInterest: learningInterest,
+                dailyGoalMinutes: dailyGoalMinutes
             )
         }
-        // Pro seçilince paywall fullscreen açılır
         .fullScreenCover(isPresented: $showPaywall) {
             OnboardingPaywallView {
                 showPaywall = false
@@ -168,5 +213,7 @@ struct PlanSelectionView: View {
 }
 
 #Preview {
-    PlanSelectionView(languageName: "İngilizce", languageCode: "en", proficiencyLevel: 0)
+    NavigationStack {
+        PlanSelectionView(languageName: "İngilizce", languageCode: "en", proficiencyLevel: 0)
+    }
 }

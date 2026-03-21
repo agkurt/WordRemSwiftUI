@@ -36,14 +36,21 @@ final class PathMistakesDeckService {
             let words = try await SupabaseDataService.shared.fetchWords(byIds: wordIds)
             guard !words.isEmpty else { return }
 
-            // 2. Firestore'da yeni deck oluştur
+            // 2. Firestore'da mevcut deck var mı kontrol et, yoksa yeni oluştur
             let flag      = flagModel(for: targetLangCode)
             let phoneCode = OL.phoneCode.uppercased()
             let name      = deckTitle(levelTitle: levelTitle, targetLangCode: targetLangCode)
 
-            guard let deckId = await FirebaseService.shared.addCardNameInfo(
-                name: name, selectedFlag: flag, sourceLang: phoneCode, targetLang: targetLangCode.uppercased()
-            ) else { return }
+            let deckId: String
+            if let existingId = await FirebaseService.shared.findDeckId(named: name) {
+                // Aynı isimde deck zaten var — ona ekle
+                deckId = existingId
+            } else {
+                guard let newId = await FirebaseService.shared.addCardNameInfo(
+                    name: name, selectedFlag: flag, sourceLang: phoneCode, targetLang: targetLangCode.uppercased()
+                ) else { return }
+                deckId = newId
+            }
 
             // 3. Her kelimeyi ekle (convention: wordName = native, wordMean = target language word)
             for word in words {
@@ -71,6 +78,55 @@ final class PathMistakesDeckService {
         } catch {
             print("⚠️ PathMistakesDeckService error: \(error)")
         }
+    }
+
+    // MARK: - AI Quiz Mistakes → Deck
+
+    /// AI Quiz'de yanlış yapılan soruları direkt Firestore card olarak kaydeder.
+    /// Supabase ID'si olmadığından soru/cevap çiftini doğrudan kullanır.
+    func createDeckFromAIMistakes(
+        questions: [GameQuestion],
+        topicTitle: String,
+        targetLangCode: String
+    ) async {
+        guard !questions.isEmpty else { return }
+
+        let flag      = flagModel(for: targetLangCode)
+        let phoneCode = OL.phoneCode.uppercased()
+        let emoji     = langEmoji(for: targetLangCode)
+        let name      = "\(emoji) AI — \(topicTitle)"
+
+        let deckId: String
+        if let existingId = await FirebaseService.shared.findDeckId(named: name) {
+            deckId = existingId
+        } else {
+            guard let newId = await FirebaseService.shared.addCardNameInfo(
+                name: name,
+                selectedFlag: flag,
+                sourceLang: phoneCode,
+                targetLang: targetLangCode.uppercased()
+            ) else { return }
+            deckId = newId
+        }
+
+        for q in questions {
+            await FirebaseService.shared.addWordToCard(
+                cardId: deckId,
+                wordName: q.word.term,          // soru metni (ön yüz)
+                wordMean: q.correctAnswer,      // doğru cevap (arka yüz)
+                wordDescription: q.word.description ?? ""
+            )
+        }
+
+        await MainActor.run {
+            NotificationCenter.default.post(
+                name: .pathMistakesDeckCreated,
+                object: nil,
+                userInfo: ["deckName": name]
+            )
+        }
+
+        print("✅ AI Quiz deck created: \(name) (\(questions.count) words)")
     }
 
     // MARK: - Deck adı

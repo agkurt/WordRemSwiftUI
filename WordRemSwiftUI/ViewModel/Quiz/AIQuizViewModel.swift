@@ -50,7 +50,9 @@ final class AIQuizViewModel: ObservableObject {
         let count = questionCounts[selectedCountIndex]
         state = .loading(topic: topic, count: count)
 
-        let targetLang = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "English"
+        // Kısa kodu ("en", "de"…) tam dil adına çevir
+        let rawCode    = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en"
+        let targetLang = OpenAIQuizService.shared.fullLangName(for: rawCode)
         let localeCode = Locale.current.language.languageCode?.identifier ?? "en"
         let nativeLang = Locale.current.localizedString(forLanguageCode: localeCode) ?? "English"
 
@@ -60,7 +62,8 @@ final class AIQuizViewModel: ObservableObject {
                     topic: topic,
                     count: count,
                     targetLang: targetLang,
-                    nativeLang: nativeLang
+                    nativeLang: nativeLang,
+                    langCode: rawCode
                 )
                 state = .ready(questions: questions, title: topic.rawValue)
             } catch {

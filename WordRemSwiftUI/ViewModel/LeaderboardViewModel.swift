@@ -24,7 +24,7 @@ final class LeaderboardViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            users = try await SupabaseDataService.shared.fetchLeaderboard(limit: 50)
+            users = try await SupabaseDataService.shared.fetchLeaderboard(limit: 20)
             
             // Try to find the user in the top 50
             if let uid = currentUserId, let index = users.firstIndex(where: { $0.id == uid }) {

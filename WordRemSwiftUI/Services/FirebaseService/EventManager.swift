@@ -11,6 +11,16 @@ final class EventManager {
     
     private init() {}
     
+    // MARK: - User ID (Firebase Analytics — account bazında sabit, her açılışta set edilmeli)
+    func setAnalyticsUserID(_ uid: String?) {
+        Analytics.setUserID(uid)
+        if let uid {
+            print("📊 [Analytics] user_id set: \(uid)")
+        } else {
+            print("📊 [Analytics] user_id cleared")
+        }
+    }
+
     func logRegisterEvent() {
         Analytics.logEvent(AnalyticsEventSignUp, parameters: [
             AnalyticsParameterMethod: "email"

@@ -30,5 +30,7 @@
 		<string>Poppins-Bold.ttf</string>
 		<string>Poppins-Medium.ttf</string>
 	</array>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Sana özel içerikler ve daha iyi bir deneyim sunmak için bu izni kullanıyoruz.</string>
 </dict>
 </plist>

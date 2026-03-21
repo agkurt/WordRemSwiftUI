@@ -14,12 +14,9 @@ struct OnboardingPaywallView: View {
     @Environment(\.presentationMode) var presentationMode
 
     @State private var weeklyPackage: Package?
-    @State private var isFetchingPackage: Bool = false
     @State private var fetchFailed: Bool = false
     @State private var isLoading: Bool = false
-    @State private var isCloseVisible: Bool = false
-    @State private var scrollOffset: CGFloat = 0
-    @State private var reviewTimer: Timer?
+    @State private var isCloseVisible: Bool = true
     @State private var showPrivacy: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPurchaseErrorAlert: Bool = false
@@ -27,290 +24,208 @@ struct OnboardingPaywallView: View {
     private let proColor     = Color(hex: "#8b5cf6")
     private let proColorDark = Color(hex: "#7c3aed")
 
-    private var features: [(String, String)] {[
-        ("bolt.fill",       AL.s(.paywallFeature1)),
-        ("star.fill",       AL.s(.paywallFeature2)),
-        ("chart.bar.fill",  AL.s(.paywallFeature3)),
-        ("bell.badge.fill", AL.s(.paywallFeature4)),
+    // (asset, title, subtitle)
+    private var features: [(String, String, String)] {[
+        ("paywall1", AL.s(.paywallFeature1), AL.s(.paywallFeature1Sub)),
+        ("paywall2", AL.s(.paywallFeature2), AL.s(.paywallFeature2Sub)),
+        ("paywall3", AL.s(.paywallFeature3), AL.s(.paywallFeature3Sub)),
+        ("paywall4", AL.s(.paywallFeature4), AL.s(.paywallFeature4Sub)),
     ]}
-
-    private var reviews: [(String, String)] { AL.paywallReviews }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                background
-                if isLoading { loadingOverlay }
+                // Background
+                LinearGradient(
+                    colors: [proColor.opacity(0.15), Color(hex: "#f8fafc")],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
 
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        heroSection
-                        featuresSection
-                        reviewsSection
-                        weeklyPlanCard
-                        purchaseButton
-                        legalSection
-                    }
+                if isLoading {
+                    Color.black.opacity(0.35).ignoresSafeArea()
+                        .overlay(ProgressView().tint(.white).scaleEffect(1.5))
                 }
+
+                VStack(spacing: 0) {
+
+                    // ── Hero ───────────────────────────────────────────
+                    VStack(spacing: 8) {
+                        MascotAnimationView(width: 110, height: 110)
+                            .padding(.top, 8)
+
+                        Text("WordRem Pro")
+                            .font(.custom("Poppins-Bold", size: 26))
+                            .foregroundStyle(
+                                LinearGradient(colors: [proColor, proColorDark],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                        Text(AL.s(.paywallSubtitle))
+                            .font(.custom("Poppins-Regular", size: 14))
+                            .foregroundStyle(Color(hex: "#64748b"))
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.bottom, 24)
+
+                    // ── Features ───────────────────────────────────────
+                    VStack(spacing: 16) {
+                        ForEach(features, id: \.0) { asset, title, subtitle in
+                            HStack(spacing: 16) {
+                                // Icon: white circle bg
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.white)
+                                        .frame(width: 52, height: 52)
+                                        .shadow(color: .black.opacity(0.07), radius: 6, y: 2)
+                                    Image(asset)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 30, height: 30)
+                                }
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(title)
+                                        .font(.custom("Poppins-SemiBold", size: 15))
+                                        .foregroundStyle(Color(hex: "#1e293b"))
+                                    Text(subtitle)
+                                        .font(.custom("Poppins-Regular", size: 12))
+                                        .foregroundStyle(Color(hex: "#64748b"))
+                                }
+
+                                Spacer()
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 28)
+                    .padding(.bottom, 24)
+
+                    // ── Plan Card ──────────────────────────────────────
+                    Group {
+                        if let pkg = weeklyPackage {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(AL.s(.paywallWeeklyPro))
+                                        .font(.custom("Poppins-Bold", size: 17))
+                                        .foregroundStyle(.white)
+                                    Text(AL.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
+                                        .font(.custom("Poppins-Regular", size: 14))
+                                        .foregroundStyle(.white.opacity(0.88))
+                                }
+                                Spacer()
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(.white)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 20)
+                            .background(
+                                LinearGradient(colors: [proColor, proColorDark],
+                                               startPoint: .topLeading, endPoint: .bottomTrailing)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .shadow(color: proColor.opacity(0.35), radius: 10, y: 5)
+                            .overlay(alignment: .topTrailing) {
+                                Text(AL.s(.paywallRecommended))
+                                    .font(.custom("Poppins-Bold", size: 10))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 4)
+                                    .background(AppTheme.Colors.primaryOrange)
+                                    .clipShape(Capsule())
+                                    .offset(x: -14, y: -10)
+                            }
+                        } else if fetchFailed {
+                            VStack(spacing: 8) {
+                                Text(AL.s(.paywallPriceFailed))
+                                    .font(.custom("Poppins-Regular", size: 14))
+                                    .foregroundStyle(Color(hex: "#64748b"))
+                                Button { fetchPackage() } label: {
+                                    Text(AL.s(.paywallRetry))
+                                        .font(.custom("Poppins-Bold", size: 13))
+                                        .foregroundStyle(proColor)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 72)
+                            .background(proColor.opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                        } else {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(proColor.opacity(0.1))
+                                .frame(height: 72)
+                                .overlay(ProgressView().tint(proColor))
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 16)
+
+                    // ── Purchase Button ────────────────────────────────
+                    Button(action: purchaseWeekly) {
+                        Text(AL.s(.paywallContinue))
+                            .font(.custom("Poppins-Bold", size: 17))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(
+                                LinearGradient(colors: [proColor, proColorDark],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .shadow(color: proColor.opacity(0.4), radius: 10, y: 5)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 12)
+                    .disabled(weeklyPackage == nil || isLoading)
+                    .opacity(weeklyPackage == nil ? 0.5 : 1)
+
+                    // ── Legal ──────────────────────────────────────────
+                    HStack(spacing: 20) {
+                        legalButton(AL.s(.paywallPrivacy)) { showPrivacy = true }
+                        legalButton(AL.s(.paywallTerms))   { showTerms = true }
+                        legalButton(AL.s(.paywallRestore)) { restorePurchases() }
+                    }
+                    .padding(.bottom, 8)
+                }
+                .padding(.top, 4)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { closeButton }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if isCloseVisible {
+                        Button {
+                            EventManager.shared.logPaywallEvent("close_tapped")
+                            presentationMode.wrappedValue.dismiss()
+                            onContinue()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(Color(hex: "#64748b"))
+                                .padding(8)
+                                .background(Color(hex: "#e2e8f0"))
+                                .clipShape(Circle())
+                        }
+                    }
+                }
             }
         }
         .onAppear {
             fetchPackage()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                withAnimation { isCloseVisible = true }
-            }
         }
-        .onDisappear { reviewTimer?.invalidate() }
         .alert(AL.s(.paywallPurchaseFailed), isPresented: $showPurchaseErrorAlert) {
             Button(AL.s(.paywallOk), role: .cancel) {}
         } message: {
             Text(AL.s(.paywallPurchaseError))
         }
         .sheet(isPresented: $showPrivacy) {
-            SafariWebView(url: URL(string: "https://wordrem.app/privacy")!)
+            SafariWebView(url: URL(string: "https://sites.google.com/view/wordremprivacy/home")!)
         }
         .sheet(isPresented: $showTerms) {
-            SafariWebView(url: URL(string: "https://wordrem.app/terms")!)
+            SafariWebView(url: URL(string: "https://sites.google.com/view/wordremterms/home")!)
         }
     }
 
-    // MARK: - Background
-
-    private var background: some View {
-        LinearGradient(
-            colors: [proColor.opacity(0.15), Color(hex: "#f8fafc")],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
-    }
-
-    private var loadingOverlay: some View {
-        Color.black.opacity(0.35)
-            .ignoresSafeArea()
-            .overlay(ProgressView().tint(.white).scaleEffect(1.5))
-    }
-
-    // MARK: - Close Button
-
-    private var closeButton: some View {
-        Group {
-            if isCloseVisible {
-                Button {
-                    EventManager.shared.logPaywallEvent("close_tapped")
-                    presentationMode.wrappedValue.dismiss()
-                    onContinue()
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#64748b"))
-                        .padding(8)
-                        .background(Color(hex: "#e2e8f0"))
-                        .clipShape(Circle())
-                }
-            }
-        }
-    }
-
-    // MARK: - Hero
-
-    private var heroSection: some View {
-        VStack(spacing: 16) {
-            MascotAnimationView(width: 100, height: 100)
-                .padding(.top, 24)
-
-            VStack(spacing: 8) {
-                Text("WordRem Pro")
-                    .font(.custom("Poppins-Bold", size: 28))
-                    .foregroundStyle(
-                        LinearGradient(colors: [proColor, proColorDark],
-                                       startPoint: .leading, endPoint: .trailing)
-                    )
-                Text(AL.s(.paywallSubtitle))
-                    .font(.custom("Poppins-Regular", size: 16))
-                    .foregroundStyle(Color(hex: "#64748b"))
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(.bottom, 32)
-    }
-
-    // MARK: - Features
-
-    private var featuresSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            ForEach(features, id: \.0) { icon, text in
-                HStack(spacing: 14) {
-                    Image(systemName: icon)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(proColor)
-                        .frame(width: 32, height: 32)
-                        .background(proColor.opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    Text(text)
-                        .font(.custom("Poppins-Regular", size: 15))
-                        .foregroundStyle(Color(hex: "#1e293b"))
-                }
-            }
-        }
-        .padding(.horizontal, 28)
-        .padding(.bottom, 32)
-    }
-
-    // MARK: - Reviews
-
-    private var reviewsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(AL.s(.paywallReviewsTitle))
-                .font(.custom("Poppins-Bold", size: 15))
-                .foregroundStyle(Color(hex: "#1e293b"))
-                .padding(.horizontal, 28)
-
-            GeometryReader { _ in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        ForEach(0 ..< reviews.count * 20, id: \.self) { i in
-                            reviewCard(reviews[i % reviews.count])
-                        }
-                    }
-                    .padding(.horizontal, 28)
-                    .offset(x: scrollOffset)
-                    .onAppear { startScrollTimer() }
-                }
-            }
-            .frame(height: 110)
-        }
-        .padding(.bottom, 28)
-    }
-
-    private func reviewCard(_ review: (String, String)) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 2) {
-                ForEach(0..<5, id: \.self) { _ in
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 10))
-                        .foregroundStyle(AppTheme.Colors.primaryOrange)
-                }
-            }
-            Text(review.0)
-                .font(.custom("Poppins-Regular", size: 12))
-                .foregroundStyle(Color(hex: "#1e293b"))
-                .lineLimit(3)
-            Text("— \(review.1)")
-                .font(.custom("Poppins-Bold", size: 11))
-                .foregroundStyle(Color(hex: "#64748b"))
-        }
-        .frame(width: 200)
-        .padding(14)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
-    }
-
-    // MARK: - Weekly Plan Card
-
-    private var weeklyPlanCard: some View {
-        Group {
-            if let pkg = weeklyPackage {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(AL.s(.paywallWeeklyPro))
-                            .font(.custom("Poppins-Bold", size: 17))
-                            .foregroundStyle(.white)
-                        Text(AL.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
-                            .font(.custom("Poppins-Regular", size: 14))
-                            .foregroundStyle(.white.opacity(0.88))
-                    }
-                    Spacer()
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 24))
-                        .foregroundStyle(.white)
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 20)
-                .background(
-                    LinearGradient(colors: [proColor, proColorDark],
-                                   startPoint: .topLeading, endPoint: .bottomTrailing)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: proColor.opacity(0.35), radius: 10, y: 5)
-                .overlay(alignment: .topTrailing) {
-                    Text(AL.s(.paywallRecommended))
-                        .font(.custom("Poppins-Bold", size: 10))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(AppTheme.Colors.primaryOrange)
-                        .clipShape(Capsule())
-                        .offset(x: -14, y: -10)
-                }
-            } else if fetchFailed {
-                // Ağ hatası — tekrar dene
-                VStack(spacing: 10) {
-                    Text(AL.s(.paywallPriceFailed))
-                        .font(.custom("Poppins-Regular", size: 14))
-                        .foregroundStyle(Color(hex: "#64748b"))
-                    Button {
-                        fetchPackage()
-                    } label: {
-                        Text(AL.s(.paywallRetry))
-                            .font(.custom("Poppins-Bold", size: 13))
-                            .foregroundStyle(proColor)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 72)
-                .background(proColor.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-            } else {
-                // Yükleniyor
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(proColor.opacity(0.1))
-                    .frame(height: 72)
-                    .overlay(ProgressView().tint(proColor))
-            }
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 20)
-    }
-
-    // MARK: - Purchase Button
-
-    private var purchaseButton: some View {
-        Button(action: purchaseWeekly) {
-            Text(AL.s(.paywallContinue))
-                .font(.custom("Poppins-Bold", size: 17))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(
-                    LinearGradient(colors: [proColor, proColorDark],
-                                   startPoint: .leading, endPoint: .trailing)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: proColor.opacity(0.4), radius: 10, y: 5)
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 16)
-        .disabled(weeklyPackage == nil || isLoading)
-        .opacity(weeklyPackage == nil ? 0.5 : 1)
-    }
-
-    // MARK: - Legal
-
-    private var legalSection: some View {
-        HStack(spacing: 20) {
-            legalButton(AL.s(.paywallPrivacy)) { showPrivacy = true }
-            legalButton(AL.s(.paywallTerms)) { showTerms = true }
-            legalButton(AL.s(.paywallRestore)) { restorePurchases() }
-        }
-        .padding(.bottom, 32)
-    }
-
+    // MARK: - Legal Button
     private func legalButton(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
@@ -320,17 +235,10 @@ struct OnboardingPaywallView: View {
     }
 
     // MARK: - Actions
-
     private func fetchPackage() {
-        isFetchingPackage = true
         fetchFailed = false
         InAppPurchaseManager.shared.fetchWeeklyPackage { pkg in
-            isFetchingPackage = false
-            if let pkg {
-                weeklyPackage = pkg
-            } else {
-                fetchFailed = true
-            }
+            if let pkg { weeklyPackage = pkg } else { fetchFailed = true }
         }
     }
 
@@ -338,7 +246,6 @@ struct OnboardingPaywallView: View {
         guard let pkg = weeklyPackage else { return }
         isLoading = true
         EventManager.shared.logPaywallEvent("purchase_tapped_weekly")
-
         InAppPurchaseManager.shared.purchase(package: pkg) { isSuccessful in
             DispatchQueue.main.async { self.isLoading = false }
             if isSuccessful {
@@ -371,26 +278,12 @@ struct OnboardingPaywallView: View {
             }
         }
     }
-
-    private func startScrollTimer() {
-        reviewTimer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { _ in
-            DispatchQueue.main.async {
-                self.scrollOffset -= 0.5
-                if abs(self.scrollOffset) >= 220 * CGFloat(self.reviews.count) {
-                    self.scrollOffset = 0
-                }
-            }
-        }
-    }
 }
 
 // MARK: - SafariWebView
-
 struct SafariWebView: UIViewControllerRepresentable {
     let url: URL
-    func makeUIViewController(context: Context) -> SFSafariViewController {
-        SFSafariViewController(url: url)
-    }
+    func makeUIViewController(context: Context) -> SFSafariViewController { SFSafariViewController(url: url) }
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 }
 
