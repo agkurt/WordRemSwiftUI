@@ -55,7 +55,7 @@ struct MainTabView: View {
                 case .translate:
                     NavigationStack { TranslationView() }
                 case .leaderboard:
-                    LeaderboardView()
+                    LeaderboardView(selectedTab: $selectedTab)
                 case .profile:
                     NavigationStack { ProfileView() }
                 }

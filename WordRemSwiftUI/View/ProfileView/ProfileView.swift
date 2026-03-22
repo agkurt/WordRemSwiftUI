@@ -9,10 +9,12 @@ struct ProfileView: View {
 
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var vm = ProfileScreenViewModel()
+    @ObservedObject private var achievementService = AchievementService.shared
     @State private var showPaywall = false
     @State private var showGuestLoginSheet = false
     @State private var showLoginScreen = false
     @State private var showUsernameSetup = false
+    @State private var showAllAchievements = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -288,24 +290,56 @@ struct ProfileView: View {
     // MARK: - Achievements
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(AL.s(.profileAchievements))
-                .font(.custom("Feather-Bold", size: 17))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+            // Header row
+            HStack {
+                Text(AL.s(.profileAchievements))
+                    .font(.custom("Poppins-Bold", size: 17))
+                    .foregroundStyle(Color(hex: "#1a1a2e"))
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    AchievementBadge(icon: "flame.fill",   title: AL.s(.profileFirstStreak),
-                                     isUnlocked: (vm.user?.streakDays ?? 0) >= 1, color: .orange)
-                    AchievementBadge(icon: "star.fill",    title: AL.s(.profile5Levels),
-                                     isUnlocked: vm.stats.completedLevels >= 5, color: Color(hex: "#FFAA44"))
-                    AchievementBadge(icon: "bolt.fill",    title: AL.s(.profile100XP),
-                                     isUnlocked: (vm.user?.totalXp ?? 0) >= 100, color: Color(hex: "#f59e0b"))
-                    AchievementBadge(icon: "target",       title: AL.s(.profileSharpEye),
-                                     isUnlocked: vm.stats.accuracy >= 90, color: Color(hex: "#E8409C"))
-                    AchievementBadge(icon: "crown.fill",   title: AL.s(.profile500XP),
-                                     isUnlocked: (vm.user?.totalXp ?? 0) >= 500, color: Color(hex: "#6B22E0"))
+                Spacer()
+
+                // Unlocked count badge
+                let unlockedCount = achievementService.all.filter { $0.isUnlocked }.count
+                Text("\(unlockedCount)/\(achievementService.all.count)")
+                    .font(.custom("Poppins-SemiBold", size: 12))
+                    .foregroundStyle(AppTheme.Colors.primaryOrange)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(AppTheme.Colors.primaryOrange.opacity(0.12), in: Capsule())
+
+                Button {
+                    showAllAchievements = true
+                } label: {
+                    Text(AL.s(.achievementViewMore))
+                        .font(.custom("Poppins-SemiBold", size: 12))
+                        .foregroundStyle(AppTheme.Colors.primaryOrange)
                 }
             }
+
+            // First 5 achievements (unlocked first, then locked)
+            let sorted = achievementService.all.sorted {
+                if $0.isUnlocked != $1.isUnlocked { return $0.isUnlocked }
+                return false
+            }
+            let preview = Array(sorted.prefix(5))
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(preview) { ach in
+                        AchievementBadge(
+                            icon: ach.icon,
+                            title: ach.title,
+                            isUnlocked: ach.isUnlocked,
+                            color: ach.color,
+                            rarity: ach.rarity
+                        )
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+        .sheet(isPresented: $showAllAchievements) {
+            AllAchievementsSheet(achievements: achievementService.all)
         }
     }
 
@@ -362,6 +396,8 @@ final class ProfileScreenViewModel: ObservableObject {
         do {
             user  = try await SupabaseDataService.shared.fetchUserProfile()
             stats = try await SupabaseDataService.shared.fetchUserStats()
+            // Fetch already-saved achievements (no new unlock toast on profile open)
+            await AchievementService.shared.fetchSaved()
         } catch {
             print("❌ Profile load error: \(error)")
         }
@@ -511,27 +547,188 @@ private struct AchievementBadge: View {
     let title: String
     let isUnlocked: Bool
     let color: Color
+    var rarity: AchievementRarity = .common
 
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
+                // Outer ring with rarity gradient when unlocked
                 Circle()
-                    .fill(isUnlocked ? color.opacity(0.15) : Color(hex: "#e2e8f0"))
-                    .frame(width: 58, height: 58)
-                    .shadow(color: isUnlocked ? color.opacity(0.2) : .clear, radius: 6, y: 3)
+                    .strokeBorder(
+                        isUnlocked
+                            ? LinearGradient(
+                                colors: rarity.gradientColors,
+                                startPoint: .topLeading, endPoint: .bottomTrailing
+                              )
+                            : LinearGradient(
+                                colors: [Color(hex: "#e2e8f0"), Color(hex: "#e2e8f0")],
+                                startPoint: .top, endPoint: .bottom
+                              ),
+                        lineWidth: isUnlocked ? 2.5 : 1.5
+                    )
+                    .frame(width: 62, height: 62)
+
+                Circle()
+                    .fill(isUnlocked ? color.opacity(0.12) : Color(hex: "#f1f5f9"))
+                    .frame(width: 56, height: 56)
 
                 Image(systemName: icon)
                     .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(isUnlocked ? color : .gray.opacity(0.35))
+                    .foregroundStyle(isUnlocked ? color : Color(hex: "#cbd5e1"))
             }
+            .shadow(color: isUnlocked ? color.opacity(0.25) : .clear, radius: 8, y: 3)
+
             Text(title)
-                .font(.custom("Feather-Bold", size: 10))
-                .foregroundStyle(isUnlocked ? Color(hex: "#1a1a2e") : .secondary)
+                .font(.custom("Poppins-SemiBold", size: 10))
+                .foregroundStyle(isUnlocked ? Color(hex: "#1a1a2e") : Color(hex: "#94a3b8"))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
+                .frame(width: 68)
         }
-        .frame(width: 72)
-        .opacity(isUnlocked ? 1.0 : 0.45)
+        .opacity(isUnlocked ? 1.0 : 0.5)
+        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: isUnlocked)
+    }
+}
+
+// MARK: ═══════════════════════════════════════════════════════════
+// MARK: - All Achievements Sheet
+// MARK: ═══════════════════════════════════════════════════════════
+
+struct AllAchievementsSheet: View {
+    let achievements: [Achievement]
+    @Environment(\.dismiss) private var dismiss
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+
+    // Group by rarity
+    private var grouped: [(String, [Achievement])] {
+        let order: [AchievementRarity] = [.common, .rare, .epic, .legendary]
+        return order.compactMap { rarity in
+            let items = achievements.filter { $0.rarity == rarity }
+            guard !items.isEmpty else { return nil }
+            return (rarity.label, items)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color(hex: "#f4f6f9").ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 28) {
+                        ForEach(grouped, id: \.0) { groupName, items in
+                            VStack(alignment: .leading, spacing: 14) {
+                                // Section header
+                                HStack(spacing: 8) {
+                                    Text(groupName)
+                                        .font(.custom("Poppins-Bold", size: 15))
+                                        .foregroundStyle(Color(hex: "#1a1a2e"))
+
+                                    let unlocked = items.filter { $0.isUnlocked }.count
+                                    Text("\(unlocked)/\(items.count)")
+                                        .font(.custom("Poppins-Regular", size: 12))
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                LazyVGrid(columns: columns, spacing: 16) {
+                                    ForEach(items) { ach in
+                                        AchievementGridCell(achievement: ach)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                    .padding(.bottom, 32)
+                }
+            }
+            .navigationTitle(AL.s(.achievementAllTitle))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 22))
+                            .foregroundStyle(Color(hex: "#94a3b8"))
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct AchievementGridCell: View {
+    let achievement: Achievement
+
+    var body: some View {
+        VStack(spacing: 10) {
+            ZStack {
+                Circle()
+                    .fill(achievement.isUnlocked
+                          ? achievement.color.opacity(0.13)
+                          : Color(hex: "#f1f5f9"))
+                    .frame(width: 64, height: 64)
+
+                Circle()
+                    .strokeBorder(
+                        achievement.isUnlocked
+                            ? LinearGradient(
+                                colors: achievement.rarity.gradientColors,
+                                startPoint: .topLeading, endPoint: .bottomTrailing
+                              )
+                            : LinearGradient(
+                                colors: [Color(hex: "#e2e8f0"), Color(hex: "#e2e8f0")],
+                                startPoint: .top, endPoint: .bottom
+                              ),
+                        lineWidth: achievement.isUnlocked ? 2.5 : 1.5
+                    )
+                    .frame(width: 64, height: 64)
+
+                Image(systemName: achievement.icon)
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(achievement.isUnlocked
+                                     ? achievement.color
+                                     : Color(hex: "#cbd5e1"))
+            }
+            .shadow(color: achievement.isUnlocked ? achievement.color.opacity(0.3) : .clear,
+                    radius: 8, y: 3)
+
+            Text(achievement.title)
+                .font(.custom("Poppins-SemiBold", size: 11))
+                .foregroundStyle(achievement.isUnlocked
+                                  ? Color(hex: "#1a1a2e")
+                                  : Color(hex: "#94a3b8"))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+
+            if achievement.isUnlocked {
+                Text(AL.s(.achievementUnlockedBadge))
+                    .font(.custom("Poppins-Regular", size: 10))
+                    .foregroundStyle(achievement.rarity.color)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(achievement.rarity.color.opacity(0.1), in: Capsule())
+            } else {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Color(hex: "#cbd5e1"))
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .padding(.horizontal, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 18)
+                .fill(Color.white)
+                .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
+        )
+        .opacity(achievement.isUnlocked ? 1.0 : 0.55)
     }
 }
 

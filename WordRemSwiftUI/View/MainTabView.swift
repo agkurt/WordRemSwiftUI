@@ -45,7 +45,7 @@ struct MainTabView: View {
             case .path:
                 PathMapView(vm: pathVM)
             case .leaderboard:
-                LeaderboardView()
+                LeaderboardView(selectedTab: $selectedTab)
             case .profile:
                 NavigationStack { ProfileView() }
             }

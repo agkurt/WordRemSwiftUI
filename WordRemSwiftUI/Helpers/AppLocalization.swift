@@ -271,6 +271,99 @@ struct AL {
         case pathStatusCompleted        = "path.status_completed"
         case pathStatusInProgress       = "path.status_in_progress"
         case pathStatusLocked           = "path.status_locked"
+
+        // Home - Loading
+        case homeLoadingDecks           = "home.loading_decks"
+
+        // Game - Hint popup
+        case gameHintTitle              = "game.hint_title"
+        case gameHintRemainingFormat    = "game.hint_remaining_format"
+        case gameHintGotIt              = "game.hint_got_it"
+
+        // Game - Quiz labels
+        case gameFillBlank              = "game.fill_blank"
+        case gameTranslateLabel         = "game.translate_label"
+        case gameLoadingAudio           = "game.loading_audio"
+        case gameWordQuestionFormat     = "game.word_question_format"
+
+        // Achievement - Rarity labels
+        case achievementRarityCommon    = "achievement.rarity.common"
+        case achievementRarityRare      = "achievement.rarity.rare"
+        case achievementRarityEpic      = "achievement.rarity.epic"
+        case achievementRarityLegendary = "achievement.rarity.legendary"
+
+        // Achievement - UI strings
+        case achievementViewMore        = "achievement.view_more"
+        case achievementAllTitle        = "achievement.all_title"
+        case achievementUnlockedBadge   = "achievement.unlocked_badge"
+        case achievementLockedBadge     = "achievement.locked_badge"
+        case achievementNewUnlocked     = "achievement.new_unlocked"
+        case achievementTapToDismiss    = "achievement.tap_to_dismiss"
+
+        // Achievements - Common
+        case achFirstStepsTitle         = "ach.first_steps.title"
+        case achFirstStepsDesc          = "ach.first_steps.desc"
+        case achFirstStreakTitle         = "ach.first_streak.title"
+        case achFirstStreakDesc          = "ach.first_streak.desc"
+        case ach100XPTitle              = "ach.100xp.title"
+        case ach100XPDesc               = "ach.100xp.desc"
+        case ach5LevelsTitle            = "ach.5levels.title"
+        case ach5LevelsDesc             = "ach.5levels.desc"
+        case ach50CorrectTitle          = "ach.50correct.title"
+        case ach50CorrectDesc           = "ach.50correct.desc"
+        // Achievements - Rare
+        case ach500XPTitle              = "ach.500xp.title"
+        case ach500XPDesc               = "ach.500xp.desc"
+        case achSharpEyeTitle           = "ach.sharp_eye.title"
+        case achSharpEyeDesc            = "ach.sharp_eye.desc"
+        case ach10LevelsTitle           = "ach.10levels.title"
+        case ach10LevelsDesc            = "ach.10levels.desc"
+        case ach7StreakTitle            = "ach.7streak.title"
+        case ach7StreakDesc             = "ach.7streak.desc"
+        case ach1000XPTitle             = "ach.1000xp.title"
+        case ach1000XPDesc              = "ach.1000xp.desc"
+        case ach100CorrectTitle         = "ach.100correct.title"
+        case ach100CorrectDesc          = "ach.100correct.desc"
+        // Achievements - Epic
+        case ach25LevelsTitle           = "ach.25levels.title"
+        case ach25LevelsDesc            = "ach.25levels.desc"
+        case ach30StreakTitle           = "ach.30streak.title"
+        case ach30StreakDesc            = "ach.30streak.desc"
+        case achPerfectionistTitle      = "ach.perfectionist.title"
+        case achPerfectionistDesc       = "ach.perfectionist.desc"
+        case ach5000XPTitle             = "ach.5000xp.title"
+        case ach5000XPDesc              = "ach.5000xp.desc"
+        case ach500CorrectTitle         = "ach.500correct.title"
+        case ach500CorrectDesc          = "ach.500correct.desc"
+        // Achievements - Legendary
+        case ach50LevelsTitle           = "ach.50levels.title"
+        case ach50LevelsDesc            = "ach.50levels.desc"
+        case ach100StreakTitle          = "ach.100streak.title"
+        case ach100StreakDesc           = "ach.100streak.desc"
+        case ach10000XPTitle            = "ach.10000xp.title"
+        case ach10000XPDesc             = "ach.10000xp.desc"
+        case achWordGodTitle            = "ach.word_god.title"
+        case achWordGodDesc             = "ach.word_god.desc"
+
+        // Streak Celebration Screen
+        case streakStartedTitle         = "streak.started_title"
+        case streakContinuedTitle       = "streak.continued_title"
+        case streakSubtitle             = "streak.subtitle"
+        case streakContinue             = "streak.continue"
+    }
+
+    // MARK: - Haftanın günleri kısaltmaları (Mon→Sun, ISO order)
+    static var weekDayAbbreviations: [String] {
+        switch phoneCode {
+        case "tr": return ["Pzt", "Sal", "Çrş", "Prş", "Cum", "Cts", "Paz"]
+        case "de": return ["Mo",  "Di",  "Mi",  "Do",  "Fr",  "Sa",  "So"]
+        case "fr": return ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+        case "es": return ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+        case "it": return ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
+        case "ru": return ["Пн",  "Вт",  "Ср",  "Чт",  "Пт",  "Сб",  "Вс"]
+        case "zh": return ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+        default:   return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        }
     }
 
     // MARK: - Çeviriler
@@ -439,6 +532,78 @@ struct AL {
             .pathStatusCompleted:       "Tamamlandı",
             .pathStatusInProgress:      "Devam Ediyor",
             .pathStatusLocked:          "Kilitli",
+            // Home - Loading
+            .homeLoadingDecks:          "Desteleriniz yükleniyor, az sabır! 🐾",
+            // Game - Hint popup
+            .gameHintTitle:             "İpucu",
+            .gameHintRemainingFormat:   "%d ipucu kaldı",
+            .gameHintGotIt:             "Anladım, Devam Et",
+            // Game - Quiz labels
+            .gameFillBlank:             "Boşluğu doldur",
+            .gameTranslateLabel:        "Çevir:",
+            .gameLoadingAudio:          "Yükleniyor...",
+            .gameWordQuestionFormat:    "%@ kelimesi nedir?",
+            // Achievement - Rarity
+            .achievementRarityCommon:    "Yaygın",
+            .achievementRarityRare:      "Nadir",
+            .achievementRarityEpic:      "Epik",
+            .achievementRarityLegendary: "Efsanevi",
+            // Achievement - UI
+            .achievementViewMore:        "Tümünü Gör",
+            .achievementAllTitle:        "Tüm Başarımlar",
+            .achievementUnlockedBadge:   "Kazanıldı",
+            .achievementLockedBadge:     "Kilitli",
+            .achievementNewUnlocked:     "Yeni Başarım! 🏆",
+            .achievementTapToDismiss:    "Kapatmak için dokun",
+            // Achievements - Common
+            .achFirstStepsTitle:    "İlk Adım",
+            .achFirstStepsDesc:     "İlk quizini tamamladın. Yolculuk başlıyor!",
+            .achFirstStreakTitle:   "İlk Seri",
+            .achFirstStreakDesc:    "Bir günlük serini korudun. Devam et!",
+            .ach100XPTitle:        "100 XP",
+            .ach100XPDesc:         "100 XP kazandın. Hızlı başladın!",
+            .ach5LevelsTitle:      "5 Seviye",
+            .ach5LevelsDesc:       "5 seviyeyi tamamladın. Harika ilerliyorsun!",
+            .ach50CorrectTitle:    "50 Doğru",
+            .ach50CorrectDesc:     "50 soruyu doğru yanıtladın. Süpersin!",
+            // Achievements - Rare
+            .ach500XPTitle:        "500 XP",
+            .ach500XPDesc:         "500 XP'ye ulaştın. Gerçek bir öğrenci!",
+            .achSharpEyeTitle:     "Keskin Göz",
+            .achSharpEyeDesc:      "En az 20 soruda %90+ doğruluk oranı. İnanılmaz!",
+            .ach10LevelsTitle:     "10 Seviye",
+            .ach10LevelsDesc:      "10 seviyeyi geçtin. Yolun açık!",
+            .ach7StreakTitle:      "Haftalık Seri",
+            .ach7StreakDesc:       "7 gün üst üste çalıştın. Alışkanlık oldu!",
+            .ach1000XPTitle:       "1000 XP",
+            .ach1000XPDesc:        "1000 XP kazandın. Çok azı bu noktaya ulaşır!",
+            .ach100CorrectTitle:   "100 Doğru",
+            .ach100CorrectDesc:    "100 soruyu doğru yanıtladın. Sana güveniyoruz!",
+            // Achievements - Epic
+            .ach25LevelsTitle:     "25 Seviye",
+            .ach25LevelsDesc:      "25 seviye tamamlandı. Sen bir efsanesin!",
+            .ach30StreakTitle:     "Aylık Seri",
+            .ach30StreakDesc:      "30 gün boyunca her gün çalıştın. Müthiş!",
+            .achPerfectionistTitle:"Mükemmeliyetçi",
+            .achPerfectionistDesc: "En az 50 soruda %95+ doğruluk. Mükemmel!",
+            .ach5000XPTitle:       "5000 XP",
+            .ach5000XPDesc:        "5000 XP! Artık uçuyorsun!",
+            .ach500CorrectTitle:   "500 Doğru",
+            .ach500CorrectDesc:    "500 doğru cevap. Kelime canavarısın!",
+            // Achievements - Legendary
+            .ach50LevelsTitle:     "50 Seviye",
+            .ach50LevelsDesc:      "50 seviye! Efsaneler buraya ulaşır.",
+            .ach100StreakTitle:    "100 Günlük Seri",
+            .ach100StreakDesc:     "100 gün boyunca kesintisiz! Demir iradelisin.",
+            .ach10000XPTitle:      "10.000 XP",
+            .ach10000XPDesc:       "10.000 XP'ye ulaştın. Sen bir efsanesin!",
+            .achWordGodTitle:      "Kelime Tanrısı",
+            .achWordGodDesc:       "1000 quiz sorusu tamamlandı. Kelime tanrısısın!",
+            // Streak
+            .streakStartedTitle:   "Bir seri başlattınız! 🔥",
+            .streakContinuedTitle: "%d Günlük Seri! 🔥",
+            .streakSubtitle:       "Dil yolculuğunuz bugün başlıyor! Devam edin ve hedeflerinize ulaşın.",
+            .streakContinue:       "Devam",
         ],
 
         // ─────────────────────────────────────────
@@ -603,6 +768,75 @@ struct AL {
             .pathStatusCompleted:       "Completed",
             .pathStatusInProgress:      "In Progress",
             .pathStatusLocked:          "Locked",
+            .homeLoadingDecks:          "Loading your decks, hang tight! 🐾",
+            .gameHintTitle:             "Hint",
+            .gameHintRemainingFormat:   "%d hints left",
+            .gameHintGotIt:             "Got It, Continue",
+            .gameFillBlank:             "Fill in the blank",
+            .gameTranslateLabel:        "Translate:",
+            .gameLoadingAudio:          "Loading...",
+            .gameWordQuestionFormat:    "What is the %@ word?",
+            // Achievement - Rarity
+            .achievementRarityCommon:    "Common",
+            .achievementRarityRare:      "Rare",
+            .achievementRarityEpic:      "Epic",
+            .achievementRarityLegendary: "Legendary",
+            // Achievement - UI
+            .achievementViewMore:        "View All",
+            .achievementAllTitle:        "All Achievements",
+            .achievementUnlockedBadge:   "Unlocked",
+            .achievementLockedBadge:     "Locked",
+            .achievementNewUnlocked:     "New Achievement! 🏆",
+            .achievementTapToDismiss:    "Tap to dismiss",
+            // Common
+            .achFirstStepsTitle:    "First Steps",
+            .achFirstStepsDesc:     "You completed your first quiz. The journey begins!",
+            .achFirstStreakTitle:   "First Streak",
+            .achFirstStreakDesc:    "You kept a 1-day streak. Keep going!",
+            .ach100XPTitle:        "100 XP",
+            .ach100XPDesc:         "You earned 100 XP. Off to a great start!",
+            .ach5LevelsTitle:      "5 Levels",
+            .ach5LevelsDesc:       "You completed 5 levels. Great progress!",
+            .ach50CorrectTitle:    "50 Correct",
+            .ach50CorrectDesc:     "You answered 50 questions correctly. You're amazing!",
+            // Rare
+            .ach500XPTitle:        "500 XP",
+            .ach500XPDesc:         "You reached 500 XP. You're a real learner!",
+            .achSharpEyeTitle:     "Sharp Eye",
+            .achSharpEyeDesc:      "90%+ accuracy over 20+ questions. Incredible!",
+            .ach10LevelsTitle:     "10 Levels",
+            .ach10LevelsDesc:      "You completed 10 levels. The path is clear!",
+            .ach7StreakTitle:      "Week Streak",
+            .ach7StreakDesc:       "7 days in a row! It's becoming a habit!",
+            .ach1000XPTitle:       "1000 XP",
+            .ach1000XPDesc:        "You earned 1000 XP. Few ever reach this point!",
+            .ach100CorrectTitle:   "100 Correct",
+            .ach100CorrectDesc:    "100 correct answers. We believe in you!",
+            // Epic
+            .ach25LevelsTitle:     "25 Levels",
+            .ach25LevelsDesc:      "25 levels done. You're a legend in the making!",
+            .ach30StreakTitle:     "Month Streak",
+            .ach30StreakDesc:      "30 consecutive days of studying. Extraordinary!",
+            .achPerfectionistTitle:"Perfectionist",
+            .achPerfectionistDesc: "95%+ accuracy over 50+ questions. Perfect!",
+            .ach5000XPTitle:       "5000 XP",
+            .ach5000XPDesc:        "5000 XP! You're flying now!",
+            .ach500CorrectTitle:   "500 Correct",
+            .ach500CorrectDesc:    "500 correct answers. You're a word monster!",
+            // Legendary
+            .ach50LevelsTitle:     "50 Levels",
+            .ach50LevelsDesc:      "50 levels! Only legends reach this far.",
+            .ach100StreakTitle:    "100-Day Streak",
+            .ach100StreakDesc:     "100 days without stopping! Iron will.",
+            .ach10000XPTitle:      "10,000 XP",
+            .ach10000XPDesc:       "You reached 10,000 XP. You're a true legend!",
+            .achWordGodTitle:      "Word God",
+            .achWordGodDesc:       "1000 quiz questions completed. You are the Word God!",
+            // Streak
+            .streakStartedTitle:   "You started a streak! 🔥",
+            .streakContinuedTitle: "%d Day Streak! 🔥",
+            .streakSubtitle:       "Your language journey starts today! Keep going and reach your goals.",
+            .streakContinue:       "Continue",
         ],
 
         // ─────────────────────────────────────────
@@ -767,6 +1001,18 @@ struct AL {
             .pathStatusCompleted:       "Abgeschlossen",
             .pathStatusInProgress:      "In Bearbeitung",
             .pathStatusLocked:          "Gesperrt",
+            .homeLoadingDecks:          "Deine Decks werden geladen, kurz warten! 🐾",
+            .gameHintTitle:             "Hinweis",
+            .gameHintRemainingFormat:   "%d Hinweise übrig",
+            .gameHintGotIt:             "Verstanden, Weiter",
+            .gameFillBlank:             "Lücke ausfüllen",
+            .gameTranslateLabel:        "Übersetzen:",
+            .gameLoadingAudio:          "Lädt...",
+            .gameWordQuestionFormat:    "Was ist das %@ Wort?",
+            .streakStartedTitle:   "Du hast eine Serie gestartet! 🔥",
+            .streakContinuedTitle: "%d Tage Serie! 🔥",
+            .streakSubtitle:       "Deine Sprachreise beginnt heute! Mach weiter und erreiche deine Ziele.",
+            .streakContinue:       "Weiter",
         ],
 
         // ─────────────────────────────────────────
@@ -931,6 +1177,18 @@ struct AL {
             .pathStatusCompleted:       "Terminé",
             .pathStatusInProgress:      "En cours",
             .pathStatusLocked:          "Verrouillé",
+            .homeLoadingDecks:          "Chargement de vos decks, encore un instant ! 🐾",
+            .gameHintTitle:             "Indice",
+            .gameHintRemainingFormat:   "%d indices restants",
+            .gameHintGotIt:             "Compris, Continuer",
+            .gameFillBlank:             "Remplir le blanc",
+            .gameTranslateLabel:        "Traduire :",
+            .gameLoadingAudio:          "Chargement...",
+            .gameWordQuestionFormat:    "Quel est le mot %@ ?",
+            .streakStartedTitle:   "Vous avez démarré une série ! 🔥",
+            .streakContinuedTitle: "Série de %d jours ! 🔥",
+            .streakSubtitle:       "Votre voyage linguistique commence aujourd'hui ! Continuez à atteindre vos objectifs.",
+            .streakContinue:       "Continuer",
         ],
 
         // ─────────────────────────────────────────
@@ -1095,6 +1353,18 @@ struct AL {
             .pathStatusCompleted:       "Completado",
             .pathStatusInProgress:      "En progreso",
             .pathStatusLocked:          "Bloqueado",
+            .homeLoadingDecks:          "Cargando tus mazos, ¡un momento! 🐾",
+            .gameHintTitle:             "Pista",
+            .gameHintRemainingFormat:   "%d pistas restantes",
+            .gameHintGotIt:             "Entendido, Continuar",
+            .gameFillBlank:             "Rellena el espacio",
+            .gameTranslateLabel:        "Traducir:",
+            .gameLoadingAudio:          "Cargando...",
+            .gameWordQuestionFormat:    "¿Cuál es la palabra en %@?",
+            .streakStartedTitle:   "¡Has iniciado una racha! 🔥",
+            .streakContinuedTitle: "¡Racha de %d días! 🔥",
+            .streakSubtitle:       "¡Tu viaje lingüístico empieza hoy! Sigue adelante y alcanza tus metas.",
+            .streakContinue:       "Continuar",
         ],
 
         // ─────────────────────────────────────────
@@ -1259,6 +1529,18 @@ struct AL {
             .pathStatusCompleted:       "Completato",
             .pathStatusInProgress:      "In corso",
             .pathStatusLocked:          "Bloccato",
+            .homeLoadingDecks:          "Caricamento dei tuoi mazzi, un attimo! 🐾",
+            .gameHintTitle:             "Suggerimento",
+            .gameHintRemainingFormat:   "%d suggerimenti rimasti",
+            .gameHintGotIt:             "Capito, Continua",
+            .gameFillBlank:             "Riempi lo spazio",
+            .gameTranslateLabel:        "Traduci:",
+            .gameLoadingAudio:          "Caricamento...",
+            .gameWordQuestionFormat:    "Qual è la parola %@?",
+            .streakStartedTitle:   "Hai iniziato una serie! 🔥",
+            .streakContinuedTitle: "Serie di %d giorni! 🔥",
+            .streakSubtitle:       "Il tuo viaggio linguistico inizia oggi! Continua e raggiungi i tuoi obiettivi.",
+            .streakContinue:       "Continua",
         ],
 
         // ─────────────────────────────────────────
@@ -1423,6 +1705,18 @@ struct AL {
             .pathStatusCompleted:       "Завершено",
             .pathStatusInProgress:      "В процессе",
             .pathStatusLocked:          "Заблокировано",
+            .homeLoadingDecks:          "Загружаем ваши колоды, подождите! 🐾",
+            .gameHintTitle:             "Подсказка",
+            .gameHintRemainingFormat:   "Осталось %d подсказок",
+            .gameHintGotIt:             "Понял, Продолжить",
+            .gameFillBlank:             "Заполните пропуск",
+            .gameTranslateLabel:        "Перевести:",
+            .gameLoadingAudio:          "Загрузка...",
+            .gameWordQuestionFormat:    "Какое слово на %@?",
+            .streakStartedTitle:   "Вы начали серию! 🔥",
+            .streakContinuedTitle: "Серия %d дней! 🔥",
+            .streakSubtitle:       "Ваш языковой путь начинается сегодня! Продолжайте и достигайте целей.",
+            .streakContinue:       "Продолжить",
         ],
 
         // ─────────────────────────────────────────
@@ -1587,6 +1881,18 @@ struct AL {
             .pathStatusCompleted:       "已完成",
             .pathStatusInProgress:      "进行中",
             .pathStatusLocked:          "已锁定",
+            .homeLoadingDecks:          "正在加载你的卡组，请稍候！🐾",
+            .gameHintTitle:             "提示",
+            .gameHintRemainingFormat:   "剩余 %d 个提示",
+            .gameHintGotIt:             "明白了，继续",
+            .gameFillBlank:             "填写空白",
+            .gameTranslateLabel:        "翻译：",
+            .gameLoadingAudio:          "加载中...",
+            .gameWordQuestionFormat:    "%@ 这个词是什么？",
+            .streakStartedTitle:   "你开启了连续学习！🔥",
+            .streakContinuedTitle: "连续 %d 天！🔥",
+            .streakSubtitle:       "你的语言之旅今天开始！继续前进，实现你的目标。",
+            .streakContinue:       "继续",
         ],
     ]
     // swiftlint:enable line_length

@@ -161,7 +161,7 @@ struct GameQuizView: View {
         VStack(spacing: 16) {
             ProgressView().scaleEffect(1.3)
             Text(AL.s(.gameLoading))
-                .font(.custom("Feather-Bold", size: 15))
+                .font(.custom("Poppins-SemiBold", size: 15))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
     }
@@ -197,7 +197,7 @@ struct GameQuizView: View {
             Text(question.questionDirection == .targetToNative
                  ? AL.s(.gameWhatIsMeaning)
                  : "What is the \(languageDisplayName(targetLang)) word for this?")
-                .font(.custom("Feather-Bold", size: 16))
+                .font(.custom("Poppins-SemiBold", size: 16))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
@@ -238,7 +238,7 @@ struct GameQuizView: View {
             Divider().opacity(0.15)
             Button(action: onCheck) {
                 Text(label)
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.custom("Poppins-SemiBold", size: 16))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 15)
@@ -304,27 +304,27 @@ struct GameQuizView: View {
             VStack(spacing: 10) {
                 // 🗣 Say this word label
                 Text(AL.s(.gameSpeakPrompt))
-                    .font(.custom("Feather-Bold", size: 12))
+                    .font(.custom("Poppins-Regular", size: 12))
                     .foregroundStyle(AppTheme.Colors.primaryOrange)
                     .padding(.horizontal, 12).padding(.vertical, 4)
                     .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Capsule())
 
                 // Target word – large & prominent (this is the word to say!)
                 Text(question.word.term)
-                    .font(.custom("Feather-Bold", size: 42))
+                    .font(.custom("Poppins-Bold", size: 42))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
 
                 if let phonetic = question.word.phonetic {
                     Text("/\(phonetic)/")
-                        .font(.custom("Feather-Bold", size: 15))
+                        .font(.custom("Poppins-SemiBold", size: 15))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
 
                 HStack(spacing: 10) {
                     // Language badge
                     Text("🗣 \(languageDisplayName(targetLang))")
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.custom("Poppins-Regular", size: 12))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
@@ -392,8 +392,8 @@ struct GameQuizView: View {
             // Gap sentence card + hint button
             ZStack(alignment: .topTrailing) {
                 VStack(spacing: 12) {
-                    Text("Fill in the blank")
-                        .font(.custom("Feather-Bold", size: 13))
+                    Text(AL.s(.gameFillBlank))
+                        .font(.custom("Poppins-Regular", size: 13))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
 
                     // Path format: "_____ → Good morning" → show "Translate: Good morning"
@@ -402,18 +402,18 @@ struct GameQuizView: View {
                     if parts.count == 2 && question.gapSentence.hasPrefix("_") {
                         // Path word question
                         VStack(spacing: 4) {
-                            Text("Translate:")
-                                .font(.custom("Feather-Bold", size: 13))
+                            Text(AL.s(.gameTranslateLabel))
+                                .font(.custom("Poppins-Regular", size: 13))
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                             Text(parts[1])
-                                .font(.custom("Feather-Bold", size: 30))
+                                .font(.custom("Poppins-Bold", size: 30))
                                 .foregroundStyle(AppTheme.Colors.textPrimary)
                                 .multilineTextAlignment(.center)
                         }
                     } else {
                         // AI sentence with gap
                         Text(question.gapSentence)
-                            .font(.custom("Feather-Bold", size: 22))
+                            .font(.custom("Poppins-Bold", size: 22))
                             .foregroundStyle(AppTheme.Colors.textPrimary)
                             .multilineTextAlignment(.center)
                     }
@@ -472,7 +472,7 @@ struct GameQuizView: View {
                             }
                         } label: {
                             Text(wordOption)
-                                .font(.custom("Feather-Bold", size: 14))
+                                .font(.custom("Poppins-Regular", size: 14))
                                 .foregroundStyle(
                                     answered
                                         ? (wordOption == question.correctAnswer ? Color.green : Color.red)
@@ -585,7 +585,7 @@ struct GameQuizView: View {
                         Image(systemName: "bolt.fill")
                             .font(.system(size: 11))
                         Text("\(remaining)")
-                            .font(.custom("Feather-Bold", size: 13))
+                            .font(.custom("Poppins-Regular", size: 13))
                     }
                     .foregroundStyle(remaining <= 5 ? Color.red : AppTheme.Colors.primaryOrange)
                     .padding(.horizontal, 8)
@@ -603,7 +603,7 @@ struct GameQuizView: View {
             .padding(.horizontal, 20)
 
             Text(String(format: AL.s(.gameQuestionFormat), vm.currentIndex + 1, vm.totalCount))
-                .font(.custom("Feather-Bold", size: 12))
+                .font(.custom("Poppins-Regular", size: 12))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
         .padding(.top, 16)
@@ -618,8 +618,8 @@ struct GameQuizView: View {
             VStack(spacing: 8) {
                 // For nativeToTarget, also show a small target-lang label so user knows what to find
                 if question.questionDirection == .nativeToTarget {
-                    Text(languageDisplayName(targetLangCode) + " word?")
-                        .font(.custom("Feather-Bold", size: 12))
+                    Text(AL.f(.gameWordQuestionFormat, languageDisplayName(targetLangCode)))
+                        .font(.custom("Poppins-Regular", size: 12))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 3)
@@ -627,7 +627,7 @@ struct GameQuizView: View {
                 }
 
                 Text(question.promptText)
-                    .font(.custom("Feather-Bold", size: 32))
+                    .font(.custom("Poppins-Bold", size: 32))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
 
@@ -635,7 +635,7 @@ struct GameQuizView: View {
                 if question.questionDirection == .targetToNative,
                    let phonetic = question.word.phonetic {
                     Text("/\(phonetic)/")
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
             }
@@ -748,14 +748,14 @@ struct GameQuizView: View {
     private var writingField: some View {
         VStack(spacing: 12) {
             TextField(AL.s(.gameTypeTranslation), text: $vm.writingAnswer)
-                .font(.custom("Feather-Bold", size: 16))
+                .font(.custom("Poppins-SemiBold", size: 16))
                 .padding()
                 .background(AppTheme.Colors.inputBackground, in: RoundedRectangle(cornerRadius: 14))
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(AppTheme.Colors.inputBorder))
                 .padding(.horizontal, 24)
             Button { vm.submitWriting() } label: {
                 Text(AL.s(.gameCheck))
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.custom("Poppins-SemiBold", size: 16))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -866,7 +866,7 @@ private struct FeedbackPanel: View {
                     }
 
                     Text(titleText)
-                        .font(.custom("Feather-Bold", size: 18))
+                        .font(.custom("Poppins-SemiBold", size: 18))
                         .foregroundStyle(isCorrect ? Color.green : Color(hex: "#ef4444"))
 
                     Spacer()
@@ -875,7 +875,7 @@ private struct FeedbackPanel: View {
                 // Continue button
                 Button(action: onContinue) {
                     Text(continueText)
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.custom("Poppins-SemiBold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -931,7 +931,7 @@ private struct ListeningCardContent: View {
             }
 
             Text(AL.s(.gameListenPrompt))
-                .font(.custom("Feather-Bold", size: 16))
+                .font(.custom("Poppins-SemiBold", size: 16))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
@@ -945,11 +945,11 @@ private struct ListeningCardContent: View {
                         if isLoading {
                             HStack(spacing: 8) {
                                 ProgressView().tint(.white).scaleEffect(0.8)
-                                Text("Yükleniyor...").font(.custom("Feather-Bold", size: 14))
+                                Text(AL.s(.gameLoadingAudio)).font(.custom("Poppins-Regular", size: 14))
                             }
                         } else {
                             Label(AL.s(.gameListenNormal), systemImage: "play.fill")
-                                .font(.custom("Feather-Bold", size: 14))
+                                .font(.custom("Poppins-Regular", size: 14))
                         }
                     }
                     .foregroundStyle(.white)
@@ -971,7 +971,7 @@ private struct ListeningCardContent: View {
                     TTSManager.shared.speakSlow(term, langCode: langCode)
                 } label: {
                     Label(AL.s(.gameListenSlow), systemImage: "tortoise.fill")
-                        .font(.custom("Feather-Bold", size: 13))
+                        .font(.custom("Poppins-Regular", size: 13))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
@@ -1008,7 +1008,7 @@ private struct OptionButton: View {
     var body: some View {
         Button(action: action) {
             Text(text)
-                .font(.custom("Feather-Bold", size: 14))
+                .font(.custom("Poppins-Regular", size: 14))
                 .foregroundStyle(textColor)
                 .multilineTextAlignment(.center)
                 .padding(.vertical, 14)
@@ -1071,7 +1071,7 @@ private struct XPToastView: View {
                         .foregroundStyle(.white)
                 }
                 Text("+\(amount) XP")
-                    .font(.custom("Feather-Bold", size: 17))
+                    .font(.custom("Poppins-SemiBold", size: 17))
                     .foregroundStyle(.white)
             }
             .padding(.horizontal, 18)
@@ -1178,12 +1178,12 @@ private struct HintSheetView: View {
                     }
                     .padding(.top, 16)
 
-                    Text("İpucu")
-                        .font(.custom("Feather-Bold", size: 22))
+                    Text(AL.s(.gameHintTitle))
+                        .font(.custom("Poppins-Bold", size: 22))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
 
                     Text(hintText)
-                        .font(.custom("Feather-Bold", size: 15))
+                        .font(.custom("Poppins-SemiBold", size: 15))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
@@ -1203,16 +1203,16 @@ private struct HintSheetView: View {
                         Image(systemName: "lightbulb.fill")
                             .font(.system(size: 12))
                             .foregroundStyle(Color(hex: "#f59e0b"))
-                        Text("\(hintsRemaining) ipucu kaldı")
-                            .font(.custom("Feather-Bold", size: 13))
+                        Text(AL.f(.gameHintRemainingFormat, hintsRemaining))
+                            .font(.custom("Poppins-Regular", size: 13))
                             .foregroundStyle(AppTheme.Colors.textSecondary)
                     }
 
                     Button {
                         dismiss()
                     } label: {
-                        Text("Anladım, Devam Et")
-                            .font(.custom("Feather-Bold", size: 16))
+                        Text(AL.s(.gameHintGotIt))
+                            .font(.custom("Poppins-SemiBold", size: 16))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -1276,30 +1276,30 @@ private struct SpeakingMicButton: View {
             // Status / recognized text
             if srm.isRecording {
                 Text(AL.s(.gameSpeakListening))
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.custom("Poppins-Regular", size: 14))
                     .foregroundStyle(Color.red)
             } else if srm.isProcessing {
                 HStack(spacing: 8) {
                     ProgressView().scaleEffect(0.8).tint(AppTheme.Colors.primaryOrange)
                     Text("Analiz ediliyor...")
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                 }
             } else if !srm.recognizedText.isEmpty {
                 Text(srm.recognizedText)
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.custom("Poppins-SemiBold", size: 15))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(AppTheme.Colors.inputBackground, in: RoundedRectangle(cornerRadius: 10))
             } else if permissionDenied {
                 Text(AL.s(.gameSpeakNoPermission))
-                    .font(.custom("Feather-Bold", size: 13))
+                    .font(.custom("Poppins-Regular", size: 13))
                     .foregroundStyle(Color.red)
                     .multilineTextAlignment(.center)
             } else {
                 Text(AL.s(.gameSpeakMicHint))
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.custom("Poppins-Regular", size: 14))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
 
@@ -1309,7 +1309,7 @@ private struct SpeakingMicButton: View {
                     onResult(srm.recognizedText)
                 } label: {
                     Text(AL.s(.gameCheck))
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.custom("Poppins-SemiBold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1331,7 +1331,7 @@ private struct SpeakingMicButton: View {
                     Image(systemName: "mic.slash")
                         .font(.system(size: 12))
                     Text(AL.s(.gameSpeakCantSpeak))
-                        .font(.custom("Feather-Bold", size: 13))
+                        .font(.custom("Poppins-Regular", size: 13))
                 }
                 .foregroundStyle(AppTheme.Colors.textSecondary)
             }
@@ -1401,11 +1401,11 @@ private struct DailyLimitOverlay: View {
                     }
 
                     Text(AL.s(.dailyLimitTitle))
-                        .font(.custom("Feather-Bold", size: 22))
+                        .font(.custom("Poppins-Bold", size: 22))
                         .foregroundStyle(.white)
 
                     Text(AL.s(.dailyLimitSubtitle))
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(.white.opacity(0.75))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 8)
@@ -1416,11 +1416,11 @@ private struct DailyLimitOverlay: View {
                 // ── Geri sayım ─────────────────────────────────────────
                 VStack(spacing: 6) {
                     Text(AL.s(.dailyLimitResetsIn))
-                        .font(.custom("Feather-Bold", size: 13))
+                        .font(.custom("Poppins-Regular", size: 13))
                         .foregroundStyle(.white.opacity(0.6))
 
                     Text(countdown)
-                        .font(.custom("Feather-Bold", size: 36))
+                        .font(.custom("Poppins-Bold", size: 36))
                         .foregroundStyle(.white)
                         .monospacedDigit()
                 }
@@ -1438,7 +1438,7 @@ private struct DailyLimitOverlay: View {
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 15))
                             Text(AL.s(.dailyLimitGetPro))
-                                .font(.custom("Feather-Bold", size: 16))
+                                .font(.custom("Poppins-SemiBold", size: 16))
                         }
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -1454,7 +1454,7 @@ private struct DailyLimitOverlay: View {
                     // Kapat
                     Button(action: onQuit) {
                         Text(AL.s(.dailyLimitClose))
-                            .font(.custom("Feather-Bold", size: 15))
+                            .font(.custom("Poppins-SemiBold", size: 15))
                             .foregroundStyle(.white.opacity(0.6))
                     }
                 }
@@ -1518,13 +1518,13 @@ private struct SentenceBuilderContent: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("YENİ KELİME")
-                        .font(.custom("Feather-Bold", size: 11))
+                        .font(.custom("Poppins-Regular", size: 11))
                         .foregroundStyle(Color(hex: "#8b5cf6"))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(Color(hex: "#8b5cf6").opacity(0.1), in: Capsule())
                     Text("Aşağıdaki cümleyi çevir")
-                        .font(.custom("Feather-Bold", size: 22))
+                        .font(.custom("Poppins-Bold", size: 22))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                 }
                 Spacer()
@@ -1643,7 +1643,7 @@ private struct SentenceBuilderContent: View {
             if let answer = selectedChip, !isAnswered {
                 Button { onSubmit(answer) } label: {
                     Text(AL.s(.gameCheck))
-                        .font(.custom("Feather-Bold", size: 17))
+                        .font(.custom("Poppins-SemiBold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -1689,7 +1689,7 @@ private struct SentenceTappableWords: View {
                     let isKey = clean.contains(keyWord.lowercased()) || keyWord.lowercased().contains(clean)
 
                     Text(word)
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.custom("Poppins-SemiBold", size: 16))
                         .foregroundStyle(isKey ? AppTheme.Colors.primaryOrange : Color(hex: "#1e293b"))
                         .padding(.horizontal, isKey ? 6 : 2)
                         .padding(.vertical, isKey ? 3 : 0)
@@ -1724,15 +1724,15 @@ private struct SentenceTappableWords: View {
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
 
                     Text(keyWord)
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
 
                     Text("=")
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
 
                     Text(keyMeaning)
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.custom("Poppins-Regular", size: 14))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
 
                     Spacer()
@@ -1767,7 +1767,7 @@ private struct SentenceChipBubble: View {
 
     var body: some View {
         Text(word)
-            .font(.custom("Feather-Bold", size: 16))
+            .font(.custom("Poppins-SemiBold", size: 16))
             .foregroundStyle(style == .selected
                 ? AppTheme.Colors.primaryOrange
                 : Color(hex: "#1e293b"))

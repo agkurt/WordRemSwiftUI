@@ -289,6 +289,7 @@ final class GameQuizViewModel: ObservableObject {
                     stars: max(earnedStars, response.stars ?? 0),
                     xpEarned: response.xpEarned ?? max(score * 10, 0)
                 )
+                await triggerAchievementCheck()
             } catch {
                 print("⚠️ completeLevel error: \(error)")
                 // Hata durumunda bile %50+ ise geçti say
@@ -297,6 +298,7 @@ final class GameQuizViewModel: ObservableObject {
                 }
                 let fallbackStars = scorePercent >= 90 ? 3 : scorePercent >= 70 ? 2 : scorePercent >= 50 ? 1 : 0
                 state = .completed(score: scorePercent, stars: fallbackStars, xpEarned: score * 10)
+                await triggerAchievementCheck()
             }
 
         case .mistakes:
@@ -309,12 +311,14 @@ final class GameQuizViewModel: ObservableObject {
             let mistakesXP = score * 5
             await SupabaseDataService.shared.awardXP(mistakesXP)
             state = .completed(score: scorePercent, stars: 3, xpEarned: mistakesXP)
+            await triggerAchievementCheck()
 
         case .aiGenerated(let title):
             let stars  = scorePercent >= 80 ? 3 : scorePercent >= 60 ? 2 : scorePercent >= 40 ? 1 : 0
             let aiXP   = score * 8
             await SupabaseDataService.shared.awardXP(aiXP)
             state = .completed(score: scorePercent, stars: stars, xpEarned: aiXP)
+            await triggerAchievementCheck()
 
             // Yanlış yapılan soruları Decks'e kaydet
             if !sessionMistakes.isEmpty {
@@ -332,6 +336,20 @@ final class GameQuizViewModel: ObservableObject {
         }
 
         isSaving = false
+    }
+
+    // MARK: - Achievement Check
+    /// Fetches fresh user profile + stats and runs achievement unlock logic.
+    private func triggerAchievementCheck() async {
+        do {
+            let user  = try await SupabaseDataService.shared.fetchUserProfile()
+            let stats = try await SupabaseDataService.shared.fetchUserStats()
+            if let user {
+                await AchievementService.shared.checkAndUnlock(user: user, stats: stats)
+            }
+        } catch {
+            print("⚠️ Achievement check failed: \(error)")
+        }
     }
 }
 

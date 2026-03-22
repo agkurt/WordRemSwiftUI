@@ -387,3 +387,29 @@ CREATE POLICY "courses: authenticated read"   ON courses                FOR SELE
 CREATE POLICY "levels: authenticated read"    ON levels                 FOR SELECT TO authenticated USING (true);
 CREATE POLICY "words: authenticated read"     ON words                  FOR SELECT TO authenticated USING (true);
 CREATE POLICY "wla: authenticated read"       ON word_level_assignments FOR SELECT TO authenticated USING (true);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- user_achievements table
+-- Run this in Supabase SQL Editor to enable achievement persistence.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS user_achievements (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    achievement_id  TEXT NOT NULL,
+    unlocked_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE(user_id, achievement_id)
+);
+
+ALTER TABLE user_achievements ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "achievements: own read"   ON user_achievements;
+DROP POLICY IF EXISTS "achievements: own insert" ON user_achievements;
+
+CREATE POLICY "achievements: own read"
+    ON user_achievements FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "achievements: own insert"
+    ON user_achievements FOR INSERT
+    WITH CHECK (auth.uid() = user_id);

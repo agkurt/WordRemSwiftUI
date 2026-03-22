@@ -17,7 +17,7 @@ struct WelcomeView: View {
             ZStack {
                 // Background
                 LinearGradient(
-                    colors: [Color(hex: "#fef3c7"), Color(hex: "#fff7ed"), Color.white],
+                    colors: [Color(hex: "#fdf4f4"), Color(hex: "#fff9f9"), Color.white],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -28,18 +28,8 @@ struct WelcomeView: View {
                     
                     // Logo Space
                     VStack(spacing: 16) {
-                        // Uygulama Logosu - Corner Radius ile
-                        Image("appLogo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 140, height: 140)
-                            .clipShape(RoundedRectangle(cornerRadius: 35))
-                            .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.3), radius: 20, y: 10)
-                        
-                        Text("WordRem AI")
-                            .font(.custom("Feather-Bold", size: 42))
-                            .foregroundStyle(AppTheme.Colors.primaryOrange)
-                        
+                        WordRemLogoText(size: 42)
+
                         Text(AL.s(.welcomeTagline))
                             .font(.custom("Feather-Bold", size: 18))
                             .foregroundStyle(Color(hex: "#64748b"))

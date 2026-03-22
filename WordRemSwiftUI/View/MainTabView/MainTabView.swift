@@ -34,34 +34,57 @@ struct MainTabView: View {
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @StateObject private var homeVM = HomeScreenViewModel()
     @StateObject private var pathVM = PathMapViewModel()
+    @ObservedObject private var achievementService = AchievementService.shared
+    @ObservedObject private var streakManager = StreakManager.shared
     @State private var selectedTab: AppTab = .path
     @State private var showCreateDeck = false
 
     var body: some View {
-        Group {
-            switch selectedTab {
-            case .home:
-                HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
-            case .path:
-                PathMapView(vm: pathVM)
-            case .leaderboard:
-                LeaderboardView()
-            case .profile:
-                NavigationStack { ProfileView() }
+        ZStack {
+            Group {
+                switch selectedTab {
+                case .home:
+                    HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
+                case .path:
+                    PathMapView(vm: pathVM)
+                case .leaderboard:
+                    LeaderboardView(selectedTab: $selectedTab)
+                case .profile:
+                    NavigationStack { ProfileView() }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                floatingBottomBar
+                    .ignoresSafeArea(.keyboard)
+            }
+            .sheet(isPresented: $showCreateDeck) {
+                PlusView(completion: {
+                    Task { await homeVM.fetchCardName() }
+                })
+                .presentationDetents([.large])
+                .presentationCornerRadius(28)
+            }
+
+            // ── Global Achievement Unlock Popup ──────────────────────
+            if let achievement = achievementService.pendingUnlocks.first {
+                AchievementUnlockPopup(achievement: achievement) {
+                    achievementService.dismissCurrentUnlock()
+                }
+                .transition(.opacity)
+                .zIndex(999)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea(.keyboard, edges: .bottom)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            floatingBottomBar
-                .ignoresSafeArea(.keyboard)
+        .animation(.easeInOut(duration: 0.25), value: achievementService.pendingUnlocks.first?.id)
+        .fullScreenCover(isPresented: $streakManager.shouldShowStreak) {
+            StreakCelebrationView(streakDays: streakManager.currentStreak) {
+                streakManager.markShown()
+            }
         }
-        .sheet(isPresented: $showCreateDeck) {
-            PlusView(completion: {
-                Task { await homeVM.fetchCardName() }
-            })
-            .presentationDetents([.large])
-            .presentationCornerRadius(28)
+        .task {
+            // Update server streak + show celebration if first open today
+            await StreakManager.shared.handleAppLaunch()
         }
     }
 
@@ -142,7 +165,7 @@ private struct TabBarItem: View {
                     .scaleEffect(isSelected ? 1.12 : 1.0)
 
                 Text(tab.label)
-                    .font(.custom("Feather-Bold", size: 10))
+                    .font(.custom("Poppins-Bold", size: 10))
                     .foregroundStyle(
                         isSelected
                         ? Color(hex: "#f97316")

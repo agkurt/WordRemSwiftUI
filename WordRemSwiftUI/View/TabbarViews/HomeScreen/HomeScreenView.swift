@@ -26,80 +26,82 @@ struct HomeScreenView: View {
                 LinearBackgroundView()
 
                 VStack(spacing: 0) {
-                    // MARK: Header
-                    HomeHeaderView(isEditing: $isEditing, onAdd: { showCreateDeck = true })
-                        .padding(.top, 4)
-
-                    // MARK: Search
-                    HStack(spacing: 12) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundStyle(AppTheme.Colors.textSecondary)
-                        TextField(AL.s(.homeSearchPlaceholder), text: $searchText)
-                            .font(.custom("Feather-Bold", size: 15))
-                            .autocorrectionDisabled()
-                            .foregroundStyle(AppTheme.Colors.textPrimary)
-                            .tint(AppTheme.Colors.primaryOrange)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(AppTheme.Colors.inputBackground)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(AppTheme.Colors.inputBorder, lineWidth: 1)
-                            )
-                            .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
-                    )
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 12)
-
                     // MARK: Content
                     if viewModel.isLoading {
-                        AppLoadingView()
+                        AppLoadingView(message: AL.s(.homeLoadingDecks))
                     } else if viewModel.cardNames.isEmpty {
                         EmptyDecksView(onAdd: { showCreateDeck = true })
-                    } else if filteredIndices.isEmpty {
-                        Spacer()
-                        VStack(spacing: 8) {
-                            Image(systemName: "magnifyingglass")
-                                .font(.system(size: 36))
-                                .foregroundStyle(.secondary)
-                            Text(AL.f(.homeNoResultsFormat, searchText))
-                                .font(.custom("Feather-Bold", size: 15))
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
                     } else {
-                        ScrollView(showsIndicators: false) {
-                            LazyVStack(spacing: 12) {
-                                ForEach(filteredIndices, id: \.self) { index in
-                                    NavigationLink(
-                                        destination: CardDetailView(
-                                            viewModel: CardDetailViewModel(),
-                                            cardName: viewModel.cardNames[index],
-                                            cardId: viewModel.cardIds[index]
-                                        )
-                                    ) {
-                                        CardView(
-                                            isEditing: $isEditing,
-                                            title: viewModel.cardNames[index],
-                                            image: viewModel.selectedFlag[index],
-                                            wordCount: index < viewModel.cardWordCounts.count ? viewModel.cardWordCounts[index] : 0,
-                                            onDelete: {
-                                                if isEditing {
-                                                    withAnimation { viewModel.deleteCard(at: index) }
-                                                }
-                                            }
-                                        )
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                }
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 120)
+                        // Header — sadece deste varken göster
+                        HomeHeaderView(isEditing: $isEditing)
+                            .padding(.top, 4)
+
+                        // Search bar
+                        HStack(spacing: 12) {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundStyle(AppTheme.Colors.textSecondary)
+                            TextField(AL.s(.homeSearchPlaceholder), text: $searchText)
+                                .font(.custom("Feather-Bold", size: 15))
+                                .autocorrectionDisabled()
+                                .foregroundStyle(AppTheme.Colors.textPrimary)
+                                .tint(AppTheme.Colors.primaryOrange)
                         }
-                    }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(AppTheme.Colors.inputBackground)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(AppTheme.Colors.inputBorder, lineWidth: 1)
+                                )
+                                .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
+                        )
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 12)
+
+                        if filteredIndices.isEmpty {
+                            Spacer()
+                            VStack(spacing: 8) {
+                                Image(systemName: "magnifyingglass")
+                                    .font(.system(size: 36))
+                                    .foregroundStyle(.secondary)
+                                Text(AL.f(.homeNoResultsFormat, searchText))
+                                    .font(.custom("Feather-Bold", size: 15))
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        } else {
+                            ScrollView(showsIndicators: false) {
+                                LazyVStack(spacing: 12) {
+                                    ForEach(filteredIndices, id: \.self) { index in
+                                        NavigationLink(
+                                            destination: CardDetailView(
+                                                viewModel: CardDetailViewModel(),
+                                                cardName: viewModel.cardNames[index],
+                                                cardId: viewModel.cardIds[index]
+                                            )
+                                        ) {
+                                            CardView(
+                                                isEditing: $isEditing,
+                                                title: viewModel.cardNames[index],
+                                                image: viewModel.selectedFlag[index],
+                                                wordCount: index < viewModel.cardWordCounts.count ? viewModel.cardWordCounts[index] : 0,
+                                                onDelete: {
+                                                    if isEditing {
+                                                        withAnimation { viewModel.deleteCard(at: index) }
+                                                    }
+                                                }
+                                            )
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                    }
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.bottom, 120)
+                            }
+                        }
+                    } // end else (has decks)
                 }
             }
             .navigationBarHidden(true)
@@ -117,7 +119,6 @@ struct HomeScreenView: View {
 // MARK: - Header
 private struct HomeHeaderView: View {
     @Binding var isEditing: Bool
-    let onAdd: () -> Void
 
     var body: some View {
         HStack(alignment: .center) {

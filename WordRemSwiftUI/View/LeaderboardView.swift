@@ -8,6 +8,7 @@ import Lottie
 
 struct LeaderboardView: View {
 
+    @Binding var selectedTab: AppTab
     @StateObject private var vm = LeaderboardViewModel()
     @EnvironmentObject var authManager: AuthManager
 
@@ -152,7 +153,9 @@ struct LeaderboardView: View {
                     .padding(.horizontal, 32)
             }
 
-            NavigationLink(destination: LoginScreenView()) {
+            Button {
+                selectedTab = .profile
+            } label: {
                 Text(AL.s(.leaderboardSignIn))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(.white)
@@ -423,5 +426,5 @@ private struct RankRow: View {
 }
 
 #Preview {
-    LeaderboardView()
+    LeaderboardView(selectedTab: .constant(.leaderboard))
 }

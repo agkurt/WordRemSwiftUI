@@ -305,6 +305,49 @@ final class SupabaseDataService {
         return users.first
     }
 
+    // MARK: - Daily login streak
+    /// Call once per app launch when the user is authenticated.
+    /// - Compares today with `last_activity_at` to decide: same day (skip),
+    ///   consecutive day (increment), or gap (reset to 1).
+    /// - Updates `streak_days` + `last_activity_at` in Supabase.
+    /// - Returns the resulting streak so the caller can show the celebration screen.
+    @discardableResult
+    func updateDailyLoginStreak() async throws -> Int {
+        guard let uid = SupabaseService.shared.currentUserId else { return 0 }
+        guard let user = try await fetchUserProfile() else { return 0 }
+
+        let cal   = Calendar.current
+        let today = cal.startOfDay(for: Date())
+
+        // Already counted today — nothing to update
+        if let last = user.lastActivityAt, cal.startOfDay(for: last) == today {
+            return user.streakDays
+        }
+
+        // Calculate new streak
+        let newStreak: Int
+        if let last = user.lastActivityAt {
+            let lastDay   = cal.startOfDay(for: last)
+            let yesterday = cal.date(byAdding: .day, value: -1, to: today)!
+            newStreak = (lastDay == yesterday) ? user.streakDays + 1 : 1
+        } else {
+            newStreak = 1  // first ever login
+        }
+
+        // Persist (the DB trigger also updates streak_days, values agree)
+        struct LoginUpdate: Encodable {
+            let streak_days: Int
+            let last_activity_at: Date
+        }
+        try await db
+            .from("users")
+            .update(LoginUpdate(streak_days: newStreak, last_activity_at: Date()))
+            .eq("id", value: uid.uuidString)
+            .execute()
+
+        return newStreak
+    }
+
     // MARK: - Leaderboard (top users by XP)
     func fetchLeaderboard(limit: Int = 50) async throws -> [SBUser] {
         try await db
@@ -375,7 +418,31 @@ final class SupabaseDataService {
             correctAnswers: attempts.filter { $0.is_correct }.count
         )
     }
+
+    // MARK: - User Achievements (used by AchievementService)
+    struct AchievementRow: Decodable { let achievement_id: String }
+
+    func fetchAchievementIds() async throws -> [String] {
+        guard let uid = SupabaseService.shared.currentUserId else { return [] }
+        let rows: [AchievementRow] = try await db
+            .from("user_achievements")
+            .select("achievement_id")
+            .eq("user_id", value: uid.uuidString)
+            .execute()
+            .value
+        return rows.map { $0.achievement_id }
+    }
+
+    func saveAchievement(id: String) async throws {
+        guard let uid = SupabaseService.shared.currentUserId else { return }
+        struct Row: Encodable { let user_id: String; let achievement_id: String }
+        try await db
+            .from("user_achievements")
+            .insert(Row(user_id: uid.uuidString, achievement_id: id))
+            .execute()
+    }
 }
+
 
 // MARK: - User Stats Model
 struct UserStats {
