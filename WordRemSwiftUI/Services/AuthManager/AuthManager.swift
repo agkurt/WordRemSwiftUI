@@ -2,206 +2,307 @@
 //  AuthManager.swift
 //  WordRemSwiftUI
 //
-//  Created by Ahmet Göktürk Kurt on 26.02.2024.
+//  Migrated to Supabase Auth. Still publishes the same userIsLoggedIn /
+//  authState surface so all existing SwiftUI views continue to work
+//  without changes.
 //
 
 import SwiftUI
-import Firebase
-import FirebaseFirestore
-import FirebaseAuth
 import AuthenticationServices
-import GoogleSignIn
 import CryptoKit
+import GoogleSignIn
 
-class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate{
-    
-    @Published var user: User?
+class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
+
     @Published var authState = AuthState.signedOut
     @Published var userIsLoggedIn = false
+    @Published var loginError: String?
+    @Published var isAnonymous: Bool = true
+
+    // Nonce for Apple Sign-In
     var currentNonce: String?
-    
-    var authStateHandle: AuthStateDidChangeListenerHandle!
-    
-    override init () {
+
+    override init() {
         super.init()
-        userIsLoggedIn = Auth.auth().currentUser != nil
-        configureAuthStateChanges()
+        // Reflect current session immediately
+        userIsLoggedIn = SupabaseAuthService.shared.isSignedIn
+        isAnonymous = SupabaseAuthService.shared.isCurrentUserAnonymous
+        if userIsLoggedIn { authState = .signedIn }
+
+        // Start listening for auth state changes
+        Task { await listenToAuthChanges() }
     }
-    
-    func signOut() {
+
+    // MARK: - Auth State Listener
+    private func listenToAuthChanges() async {
+        for await (event, session) in SupabaseAuthService.shared.authStateStream() {
+            await MainActor.run {
+                switch event {
+                case .initialSession:
+                    // Uygulama açılışında Keychain'den session restore edilirse navigate et.
+                    // session nil ise (no stored session) — hiçbir şey yapma, userIsLoggedIn false kalır.
+                    guard let session = session else { break }
+                    self.userIsLoggedIn = true
+                    self.authState = .signedIn
+                    self.isAnonymous = session.user.isAnonymous
+                    EventManager.shared.setAnalyticsUserID(session.user.id.uuidString)
+                    if !session.user.isAnonymous {
+                        Task { await self.checkAndRestoreOnboardingState(userId: session.user.id) }
+                    }
+                    if let token = UserDefaults.standard.string(forKey: "pendingFCMToken") {
+                        Task {
+                            try? await SupabaseAuthService.shared.updateFCMToken(token)
+                            UserDefaults.standard.removeObject(forKey: "pendingFCMToken")
+                        }
+                    }
+
+                case .signedIn:
+                    // Navigation, explicit sign-in fonksiyonları tarafından yönetiliyor.
+                    // Stream sadece isAnonymous + analytics günceller.
+                    // signedOut → signedIn geçişleri (OAuth flow) burada userIsLoggedIn'i
+                    // sıfırlamaz; explicit çağrılar zaten true yaptı.
+                    self.isAnonymous = session?.user.isAnonymous ?? false
+                    if let uid = session?.user.id.uuidString {
+                        EventManager.shared.setAnalyticsUserID(uid)
+                    }
+                    if let token = UserDefaults.standard.string(forKey: "pendingFCMToken") {
+                        Task {
+                            try? await SupabaseAuthService.shared.updateFCMToken(token)
+                            UserDefaults.standard.removeObject(forKey: "pendingFCMToken")
+                        }
+                    }
+
+                case .signedOut:
+                    // Sadece analytics temizle. userIsLoggedIn = false SADECE explicit
+                    // signOut() çağrısından gelir. OAuth flow'ları sırasında da bu event
+                    // tetiklenebilir; navigation'ı bozmamak için burada false yapma.
+                    self.isAnonymous = true
+                    EventManager.shared.setAnalyticsUserID(nil)
+
+                default:
+                    break
+                }
+            }
+        }
+    }
+
+    // Returning user'da target_lang_id varsa onboarding'i atla
+    private func checkAndRestoreOnboardingState(userId: UUID) async {
         do {
-            try Auth.auth().signOut()
-            self.userIsLoggedIn = false
-            
+            struct LangCheck: Decodable { let target_lang_id: Int? }
+            let result = try await SupabaseService.shared.client
+                .from("users")
+                .select("target_lang_id")
+                .eq("id", value: userId.uuidString)
+                .limit(1)
+                .execute()
+            let rows = try JSONDecoder().decode([LangCheck].self, from: result.data)
+            if let first = rows.first, first.target_lang_id != nil {
+                await MainActor.run {
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                }
+            }
         } catch {
-            print("Error signing out: \(error)")
+            print("⚠️ checkAndRestoreOnboardingState: \(error)")
         }
     }
-    
-    func configureAuthStateChanges() {
-        authStateHandle = Auth.auth().addStateDidChangeListener { auth, user in
-            print("Auth changed: \(user != nil)")
-            self.updateState(user: user)
+
+    // MARK: - Sign Out
+    func signOut() {
+        let uid = SupabaseAuthService.shared.currentUserId?.uuidString
+        Task {
+            do {
+                try await SupabaseAuthService.shared.signOut()
+                await MainActor.run {
+                    self.userIsLoggedIn = false
+                    self.authState = .signedOut
+                    self.isAnonymous = true
+                    UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+                }
+                EventManager.shared.logLogoutEvent()
+                if let uid = uid {
+                    await NotificationService.shared.scheduleLogoutNotification(uid: uid)
+                }
+            } catch {
+                print("❌ Sign-out error: \(error)")
+            }
         }
     }
-    
-    func removeAuthStateListener() {
-        Auth.auth().removeStateDidChangeListener(authStateHandle)
-    }
-    
-    private func updateState(user: User?) {
-        self.user = user
-        let isAuthenticatedUser = user != nil
-        let isAnonymous = user?.isAnonymous ?? false
-        
-        if isAuthenticatedUser {
-            self.authState = isAnonymous ? .authenticated : .signedIn
-            self.userIsLoggedIn = true
-        } else {
-            self.authState = .signedOut
-        }
-    }
-    
-    func signInAnonymously() async throws -> AuthDataResult? {
-        do {
-            let result = try await Auth.auth().signInAnonymously()
-            print("FirebaseAuthSuccess: Sign in anonymously, UID:(\(String(describing: result.user.uid)))")
-            return result
-        }
-        catch {
-            print("FirebaseAuthError: failed to sign in anonymously: \(error.localizedDescription)")
-            throw error
-        }
-    }
-    
-    func handleGoogleSignIn(with viewController: UIViewController)  {
-        guard let clientID = FirebaseApp.app()?.options.clientID else {
-            print("Error: Firebase client ID is not configured.")
+
+    // MARK: - Anonymous Sign-In
+    func signInAnonymously() async throws {
+        if SupabaseAuthService.shared.isSignedIn {
+            await MainActor.run {
+                self.userIsLoggedIn = true
+                self.authState = .signedIn
+                self.isAnonymous = SupabaseAuthService.shared.isCurrentUserAnonymous
+                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+            }
+            print("ℹ️ Session restored → navigating to app")
             return
         }
-        
-        let config = GIDConfiguration(clientID: clientID)
-        GIDSignIn.sharedInstance.configuration = config
-        
-        GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { signResult, error in
-            if let error = error {
-                print("Error signing in with Google: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let user = signResult?.user, let idToken = user.idToken else {
-                print("Error: Unable to retrieve user information from Google sign-in.")
-                return
-            }
-            
-            let credential = GoogleAuthProvider.credential(withIDToken: idToken.tokenString, accessToken: user.accessToken.tokenString)
-            
-            Auth.auth().signIn(with: credential) { authResult, error in
-                if let error = error {
-                    print("Error authenticating with Firebase: \(error.localizedDescription)")
-                    return
-                }
-                print("Successful login with Google")
-                
-            }
+        try await SupabaseAuthService.shared.signInAnonymously()
+        let randomNum = Int.random(in: 1000...9999)
+        try await SupabaseAuthService.shared.ensureUserRow(username: "Guest-\(randomNum)")
+        await MainActor.run {
+            self.userIsLoggedIn = true
+            self.authState = .signedIn
+            self.isAnonymous = true
+            UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
         }
+        EventManager.shared.logLoginEvent(method: "anonymous")
     }
-    
+
+    // MARK: - Apple Sign-In (ASAuthorizationControllerDelegate)
     func handleAppleLogin() {
         let nonce = randomNonceString()
         currentNonce = nonce
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
         request.requestedScopes = [.fullName, .email]
         request.nonce = sha256(nonce)
-        
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.performRequests()
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.performRequests()
     }
-    
-    private func randomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        let charset: [Character] =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        var result = ""
-        var remainingLength = length
-        
-        while remainingLength > 0 {
-            let randoms: [UInt8] = (0 ..< 16).map { _ in
-                var random: UInt8 = 0
-                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
-                if errorCode != errSecSuccess {
-                    fatalError(
-                        "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
-                    )
+
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        guard
+            let appleCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+            let nonce = currentNonce,
+            let tokenData = appleCredential.identityToken,
+            let idToken = String(data: tokenData, encoding: .utf8)
+        else { return }
+
+        Task {
+            do {
+                try await SupabaseAuthService.shared.signInWithApple(
+                    idToken: idToken, nonce: nonce
+                )
+                let name = [
+                    appleCredential.fullName?.givenName,
+                    appleCredential.fullName?.familyName
+                ].compactMap { $0 }.joined(separator: " ")
+                try await SupabaseAuthService.shared.ensureUserRow(
+                    username: name.isEmpty ? "Apple User" : name
+                )
+                await MainActor.run {
+                    self.userIsLoggedIn = true
+                    self.authState = .signedIn
+                    self.isAnonymous = false
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
                 }
-                return random
+                EventManager.shared.logLoginEvent(method: "apple")
+            } catch {
+                await MainActor.run { self.loginError = error.localizedDescription }
+                print("❌ Apple sign-in error: \(error)")
             }
-            
-            randoms.forEach { random in
-                if remainingLength == 0 {
-                    return
+        }
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        // Kullanıcı iptal ettiyse sessiz çık, gerçek hatalarda UI'ı bilgilendir
+        let code = (error as? ASAuthorizationError)?.code
+        guard code != .canceled else { return }
+        loginError = error.localizedDescription
+        print("❌ Apple sign-in error: \(error)")
+    }
+
+    // MARK: - Google Sign-In (call from UIViewController)
+    func handleGoogleSignIn(with viewController: UIViewController) {
+        guard let clientID = Bundle.main.object(forInfoDictionaryKey: "CLIENT_ID") as? String
+                ?? (Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist")
+                    .flatMap { NSDictionary(contentsOfFile: $0)?["CLIENT_ID"] as? String})
+        else {
+            print("❌ Google client ID not found")
+            return
+        }
+
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        GIDSignIn.sharedInstance.signIn(withPresenting: viewController) { [weak self] signResult, error in
+            if let error {
+                let code = (error as NSError).code
+                // Kullanıcı iptal ettiyse (code -5) sessiz çık
+                if code != -5 {
+                    DispatchQueue.main.async { self?.loginError = error.localizedDescription }
                 }
-                
-                if random < charset.count {
-                    result.append(charset[Int(random)])
-                    remainingLength -= 1
+                print("❌ Google sign-in error: \(error)")
+                return
+            }
+            guard let user = signResult?.user, let idToken = user.idToken else { return }
+
+            Task {
+                do {
+                    try await SupabaseAuthService.shared.signInWithGoogle(
+                        idToken: idToken.tokenString,
+                        accessToken: user.accessToken.tokenString
+                    )
+                    let name = user.profile?.name
+                        ?? user.profile?.email.split(separator: "@").first.map(String.init)
+                        ?? "Google User"
+                    try await SupabaseAuthService.shared.ensureUserRow(username: name)
+                    await MainActor.run {
+                        self?.userIsLoggedIn = true
+                        self?.authState = .signedIn
+                        self?.isAnonymous = false
+                        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                    }
+                    EventManager.shared.logLoginEvent(method: "google")
+                } catch {
+                    await MainActor.run { self?.loginError = error.localizedDescription }
+                    print("❌ Supabase Google sign-in error: \(error)")
                 }
             }
         }
-        
+    }
+
+    func handleGoogleSignIn(idToken: String, accessToken: String) {
+        Task {
+            do {
+                try await SupabaseAuthService.shared.signInWithGoogle(
+                    idToken: idToken, accessToken: accessToken
+                )
+                try await SupabaseAuthService.shared.ensureUserRow(username: "Google User")
+                await MainActor.run {
+                    self.userIsLoggedIn = true
+                    self.authState = .signedIn
+                    self.isAnonymous = false
+                }
+                EventManager.shared.logLoginEvent(method: "google")
+            } catch {
+                await MainActor.run { self.loginError = error.localizedDescription }
+                print("❌ Google sign-in error: \(error)")
+            }
+        }
+    }
+
+    // MARK: - Crypto helpers
+    private func randomNonceString(length: Int = 32) -> String {
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remaining = length
+        while remaining > 0 {
+            let randoms: [UInt8] = (0..<16).map { _ in
+                var r: UInt8 = 0
+                SecRandomCopyBytes(kSecRandomDefault, 1, &r)
+                return r
+            }
+            randoms.forEach { r in
+                guard remaining > 0 else { return }
+                if r < charset.count { result.append(charset[Int(r)]); remaining -= 1 }
+            }
+        }
         return result
     }
-    
+
     private func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            String(format: "%02x", $0)
-        }.joined()
-        
-        return hashString
-    }
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-            guard let nonce = currentNonce else {
-                fatalError("Invalid state: A login callback was received, but no login request was sent.")
-            }
-            guard let appleIDToken = appleIDCredential.identityToken else {
-                print("Unable to fetch identity token")
-                return
-            }
-            guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-                print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
-                return
-            }
-            // Initialize a Firebase credential.
-            let credential = OAuthProvider.credential(withProviderID: "apple.com",
-                                                      idToken: idTokenString,
-                                                      rawNonce: nonce)
-            
-            // Sign in with Firebase.
-            Auth.auth().signIn(with: credential) { (authResult, error) in
-                if (error != nil) {
-                    // Error. If error.code == .MissingOrInvalidNonce, make sure
-                    // you're sending the SHA256-hashed nonce as a hex string with
-                    // your request to Apple.
-                    print(error?.localizedDescription)
-                    return
-                }
-                // User is signed in to Firebase with Apple.
-                // ...
-                print("Apple sign in!")
-                
-                // Allow proceed to next screen
-            }
-        }
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        // Handle error.
-        print("Sign in with Apple errored: \(error)")
+        let data = Data(input.utf8)
+        let hash = SHA256.hash(data: data)
+        return hash.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
-

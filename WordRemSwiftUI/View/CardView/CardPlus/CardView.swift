@@ -2,69 +2,92 @@
 //  CardView.swift
 //  WordRemSwiftUI
 //
-//  Created by Ahmet Göktürk Kurt on 24.02.2024.
-//
 
 import SwiftUI
 
 struct CardView: View {
     @Binding var isEditing: Bool
-    @StateObject var viewModel = PlusViewModel()
     var title: String
-    var image:String
-    var onDelete: () -> Void  
+    var image: String
+    var wordCount: Int = 0
+    var onDelete: () -> Void
+
+    @State private var isPressed = false
+
     var body: some View {
-        
-        ZStack {
-            RoundedRectangle(cornerRadius: 30)
-                .fill(LinearGradient(gradient: Gradient(colors: [Color.init(hex:"#313a45")]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                .shadow(radius: 20)
-                .overlay(alignment: .bottomTrailing) {
-                    RoundedRectangle(cornerRadius: 20)
-                        .trim(from:0,to: 0.20)
-                        .frame(width: 220,height: 200)
-                        .foregroundStyle(.orange)
-                }
-            VStack(spacing: 15) {
-                Spacer()
-                HStack {
+        ZStack(alignment: .topTrailing) {
+            RoundedRectangle(cornerRadius: AppTheme.Shadows.cardRadius)
+                .fill(AppTheme.Colors.cardBackground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.Shadows.cardRadius)
+                        .stroke(AppTheme.Colors.inputBorder, lineWidth: 1)
+                )
+
+            // Orange glow blob (subdued for light theme)
+            Circle()
+                .fill(AppTheme.Colors.primaryOrange.opacity(0.08))
+                .frame(width: 140, height: 140)
+                .blur(radius: 25)
+                .offset(x: 60, y: -20)
+
+            // Row content
+            HStack(spacing: 16) {
+                // Flag circle
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 68, height: 68)
                     Image(image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: 100,maxHeight: 100)
+                        .frame(width: 52, height: 52)
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
                 }
-                
-                Text(title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                Spacer()
-            }
-            
-            if isEditing {
-                VStack {
-                    HStack {
-                        Spacer()
-                        Button(action: onDelete) {
-                            Image(systemName: "xmark.circle")
-                                .foregroundColor(.white)
-                        }
-                        .padding()
+
+                // Texts
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(title)
+                        .font(.custom("Feather-Bold", size: 17))
+                        .foregroundStyle(AppTheme.Colors.textPrimary)
+                        .lineLimit(1)
+
+                    HStack(spacing: 5) {
+                        Image(systemName: "rectangle.stack.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(AppTheme.Colors.primaryOrange)
+                        Text(wordCount == 0 ? "No words yet" : "\(wordCount) word\(wordCount == 1 ? "" : "s")")
+                            .font(.custom("Feather-Bold", size: 12))
+                            .foregroundStyle(AppTheme.Colors.textSecondary)
                     }
-                    Spacer()
                 }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#f97316").opacity(0.7))
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 18)
+
+            // Delete badge
+            if isEditing {
+                Button(action: onDelete) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.red.opacity(0.9))
+                            .frame(width: 26, height: 26)
+                        Image(systemName: "xmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .offset(x: 10, y: -10)
+                .transition(.scale.combined(with: .opacity))
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color(hex: "#1c2127"))
-        .cornerRadius(20)
-        .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
-        .padding()
-    }
-}
-
-struct CardView_Previews: PreviewProvider {
-    static var previews: some View {
-        CardView(isEditing: .constant(false), title: "Title", image: "imageName", onDelete: {})
+        .shadow(color: AppTheme.Shadows.cardColor, radius: AppTheme.Shadows.cardRadius, x: 0, y: AppTheme.Shadows.cardY)
     }
 }

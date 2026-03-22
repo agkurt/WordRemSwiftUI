@@ -7,28 +7,66 @@
 
 import SwiftUI
 import Firebase
+import UserNotifications
+import AppTrackingTransparency
 
 @main
 struct WordRemSwiftUIApp: App {
-    
-    @StateObject private var sentenceViewModel = SentenceViewModel()
+
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     @StateObject private var authManager = AuthManager()
-    
+    @StateObject private var sentenceViewModel = SentenceViewModel()
+    @StateObject private var tabBarModifier = TabBarModifier()
+    @StateObject private var motherTongueViewModel = MotherTongueViewModel()
+
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var startupDone = false
+
     init () {
-        FirebaseApp.configure()
+        // Firebase is now configured in AppDelegate
     }
-    
+
     var body: some Scene {
         WindowGroup {
-            ContentView(sentenceViewModel: sentenceViewModel)
-                .environmentObject(authManager)
-                .environmentObject(sentenceViewModel)
+            Group {
+                if !startupDone {
+                    LaunchScreenView(onReady: {
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            startupDone = true
+                        }
+                    })
+                } else if !hasCompletedOnboarding {
+                    WelcomeView()
+                } else if authManager.userIsLoggedIn {
+                    MainTabView()
+                } else {
+                    LoginScreenView()
+                }
+            }
+            .environmentObject(authManager)
+            .environmentObject(sentenceViewModel)
+            .environmentObject(tabBarModifier)
+            .environmentObject(motherTongueViewModel)
+            .preferredColorScheme(.light)
+            .onAppear {
+                Task {
+                    // 1) ATT — kısa gecikme: UI tam oturmuş olsun
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    if #available(iOS 14, *) {
+                        await ATTrackingManager.requestTrackingAuthorization()
+                    }
+
+                    // 2) Bildirim izni
+                    let center = UNUserNotificationCenter.current()
+                    if let success = try? await center.requestAuthorization(options: [.alert, .badge, .sound]),
+                       success {
+                        await MainActor.run {
+                            UIApplication.shared.registerForRemoteNotifications()
+                        }
+                    }
+                }
+            }
         }
     }
 }
-
-
-
-
-
-

@@ -19,7 +19,7 @@ struct SecureFieldView: View {
         ZStack {
             if isSecureTextEntry {
                 SecureField("", text:$text)
-                    .font(.custom("Poppins-Light", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .padding()
                     .autocorrectionDisabled(true)
                     .foregroundColor(.primary)
@@ -30,7 +30,7 @@ struct SecureFieldView: View {
                     .textInputAutocapitalization(.never)
             } else {
                 TextField("", text: $text)
-                    .font(.custom("Poppins-Light", size: 15))
+                    .font(.custom("Feather-Bold", size: 15))
                     .padding()
                     .autocorrectionDisabled(true)
                     .foregroundColor(.primary)

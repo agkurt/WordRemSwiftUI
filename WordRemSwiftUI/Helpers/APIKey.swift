@@ -63,16 +63,17 @@ enum APIKey {
     static var translateApi: String {
         guard let filePath = Bundle.main.path(forResource: "ApiKey-Info", ofType: "plist")
         else {
-            fatalError("Couldn't find file 'GenerativeAI-Info.plist'.")
+            print("Couldn't find file 'ApiKey-Info.plist'.")
+            return ""
         }
         let plist = NSDictionary(contentsOfFile: filePath)
         guard let value = plist?.object(forKey: "TranslateApi") as? String else {
-            fatalError("Couldn't find key 'API_KEY' in 'ApiKey-Info.plist'.")
+            print("Couldn't find key 'TranslateApi' in 'ApiKey-Info.plist'.")
+            return ""
         }
         if value.starts(with: "_") || value.isEmpty {
-            fatalError(
-                "Follow the instructions at https://ai.google.dev/tutorials/setup to get an API key."
-            )
+            print("Please add TranslateApi in ApiKey-Info.plist.")
+            return ""
         }
         return value
     }

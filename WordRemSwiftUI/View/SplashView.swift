@@ -23,11 +23,11 @@ struct SplashView: View {
         }
     }
 
-    func startRoute() {
+    func startRoute() -> some View {
         if authManager.userIsLoggedIn {
-            HomeScreenView(viewModel: homeScreenViewModel)
+            return AnyView(MainTabView())
         } else {
-            LoginScreenView()
+            return AnyView(LoginScreenView())
         }
     }
 }

@@ -6,12 +6,6 @@
 //
 
 import SwiftUI
-import Firebase
-import FirebaseFirestore
-import FirebaseAuth
-import AuthenticationServices
-import GoogleSignIn
-import FirebaseStorage
 
 struct ProfileImageCam: View {
     

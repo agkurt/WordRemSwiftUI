@@ -13,5 +13,6 @@ struct Card: Identifiable {
     var selectedFlag: FlagModel?
     var targetLang:String?
     var sourceLang:String?
+    var wordCount: Int = 0
 }
     

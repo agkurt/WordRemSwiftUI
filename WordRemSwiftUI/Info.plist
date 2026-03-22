@@ -15,11 +15,23 @@
 	</array>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>WordRem uses your microphone for the Speaking quiz mode so you can practice pronunciation aloud.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>WordRem uses speech recognition to evaluate your pronunciation during the Speaking quiz mode.</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>feather_bold.ttf</string>
 		<string>Poppins-Light.ttf</string>
 		<string>Poppins-Bold.ttf</string>
 		<string>Poppins-Medium.ttf</string>
 	</array>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Sana özel içerikler ve daha iyi bir deneyim sunmak için bu izni kullanıyoruz.</string>
 </dict>
 </plist>

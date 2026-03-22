@@ -73,6 +73,76 @@ enum Language: String, CaseIterable {
         case .chinese: return "ZH"
         }
     }
+    
+    var flag: String {
+        switch self {
+        case .arabic: return "🇸🇦"
+        case .bulgarian: return "🇧🇬"
+        case .czech: return "🇨🇿"
+        case .danish: return "🇩🇰"
+        case .german: return "🇩🇪"
+        case .greek: return "🇬🇷"
+        case .english: return "🇬🇧"
+        case .spanish: return "🇪🇸"
+        case .estonian: return "🇪🇪"
+        case .finnish: return "🇫🇮"
+        case .french: return "🇫🇷"
+        case .hungarian: return "🇭🇺"
+        case .indonesian: return "🇮🇩"
+        case .italian: return "🇮🇹"
+        case .japanese: return "🇯🇵"
+        case .korean: return "🇰🇷"
+        case .lithuanian: return "🇱🇹"
+        case .latvian: return "🇱🇻"
+        case .norwegian: return "🇳🇴"
+        case .dutch: return "🇳🇱"
+        case .polish: return "🇵🇱"
+        case .portuguese: return "🇵🇹"
+        case .romanian: return "🇷🇴"
+        case .russian: return "🇷🇺"
+        case .slovak: return "🇸🇰"
+        case .slovenian: return "🇸🇮"
+        case .swedish: return "🇸🇪"
+        case .turkish: return "🇹🇷"
+        case .ukrainian: return "🇺🇦"
+        case .chinese: return "🇨🇳"
+        }
+    }
+    
+    var shortName: String {
+        switch self {
+        case .arabic: return "AR"
+        case .bulgarian: return "BG"
+        case .czech: return "CS"
+        case .danish: return "DA"
+        case .german: return "DE"
+        case .greek: return "EL"
+        case .english: return "EN"
+        case .spanish: return "ES"
+        case .estonian: return "ET"
+        case .finnish: return "FI"
+        case .french: return "FR"
+        case .hungarian: return "HU"
+        case .indonesian: return "ID"
+        case .italian: return "IT"
+        case .japanese: return "JA"
+        case .korean: return "KO"
+        case .lithuanian: return "LT"
+        case .latvian: return "LV"
+        case .norwegian: return "NO"
+        case .dutch: return "NL"
+        case .polish: return "PL"
+        case .portuguese: return "PT"
+        case .romanian: return "RO"
+        case .russian: return "RU"
+        case .slovak: return "SK"
+        case .slovenian: return "SL"
+        case .swedish: return "SV"
+        case .turkish: return "TR"
+        case .ukrainian: return "UK"
+        case .chinese: return "ZH"
+        }
+    }
 }
 
 

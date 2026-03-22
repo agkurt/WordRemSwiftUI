@@ -21,16 +21,18 @@ final class ReminderViewModel: ObservableObject {
     }
     
     func sendNotifications(title: String, body: String) async {
-        Task {
-            notificationManager.sendNotifications(title: title, body: body, repeatOption: repeatOption, repeatValue: repeatValue)
-        }
-       
+        // Update the notification manager's date before sending
+        notificationManager.date = self.date
+        // Use the notification manager synchronously since it updates on main thread
+        notificationManager.sendNotifications(title: title, body: body, repeatOption: repeatOption, repeatValue: repeatValue)
     }
     
-    func deleteNotification() {
-        Task {
-            await notificationManager.removeNotification(notificationManager.notificationIDs.first ?? "")
-        }
+    func deleteNotification() async {
+        await notificationManager.removeNotification(notificationManager.notificationIDs.first ?? "")
+    }
+    
+    func deleteAllNotifications() async {
+        await notificationManager.removeAllNotifications()
     }
 }
 
