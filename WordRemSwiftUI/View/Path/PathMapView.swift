@@ -383,6 +383,7 @@ struct PathMapView: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 private struct UnitSectionView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let unitNumber: Int
     let levels: [SBLevelWithProgress]
     let onTap: (SBLevelWithProgress) -> Void
@@ -435,6 +436,7 @@ private struct UnitSectionView: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 private struct UnitDividerView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let unitNumber: Int
     let status: SBLevelStatus
     let completed: Int
@@ -533,6 +535,7 @@ private struct UnitDividerView: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 private struct UnitHeaderView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let unitNumber: Int
     let status: SBLevelStatus
     let totalLevels: Int
@@ -628,6 +631,7 @@ private struct UnitHeaderView: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 private struct PathHeaderView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let course: SBCourse?
     let progress: Double
     let xp: Int
@@ -741,6 +745,7 @@ private struct StatPill: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 struct PathNodeView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let item: SBLevelWithProgress
     let index: Int
     let totalCount: Int
@@ -1087,6 +1092,7 @@ private struct DecoElement: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 struct LevelCompletePopupView: View {
+    @EnvironmentObject var langManager: LanguageManager
     @Binding var isPresented: Bool
     @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0.0
@@ -1166,6 +1172,7 @@ struct LevelCompletePopupView: View {
 // MARK: - Mistakes Popups
 
 struct MistakesSavedPopupView: View {
+    @EnvironmentObject var langManager: LanguageManager
     @Binding var isPresented: Bool
     @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0.0
@@ -1219,6 +1226,7 @@ struct MistakesSavedPopupView: View {
 }
 
 struct MistakesClearedPopupView: View {
+    @EnvironmentObject var langManager: LanguageManager
     @Binding var isPresented: Bool
     @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0.0
@@ -1273,6 +1281,7 @@ struct MistakesClearedPopupView: View {
 
 // MARK: - Mistakes Urgent Banner
 private struct MistakesUrgentBanner: View {
+    @EnvironmentObject var langManager: LanguageManager
     @State private var bouncing = false
 
     var body: some View {
