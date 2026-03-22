@@ -70,7 +70,8 @@ final class GameQuizViewModel: ObservableObject {
         self.sessionType    = sessionType
         self.levelTitle     = levelTitle
         self.targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
-        self.questions      = GameQuestion.generate(from: words, sentences: sentences)
+        let proficiency     = UserDefaults.standard.integer(forKey: "selectedProficiencyLevel")
+        self.questions      = GameQuestion.generate(from: words, sentences: sentences, proficiency: proficiency)
         self.currentIndex   = 0
         self.score          = 0
         self.writingAnswer  = ""
@@ -278,15 +279,23 @@ final class GameQuizViewModel: ObservableObject {
                 let isLevelPassed = response.success || scorePercent >= 50
                 if isLevelPassed {
                     UserDefaults.standard.set(true, forKey: "justCompletedLevel")
+                    // If server didn't unlock next level (e.g. old RPC / score below server threshold),
+                    // apply client-side fallback so the path map always reflects the result.
+                    if !response.success {
+                        await SupabaseDataService.shared.unlockNextLevelFallback(afterLevelId: levelId, score: scorePercent)
+                    }
                 }
                 let earnedStars: Int
                 if scorePercent >= 90 { earnedStars = 3 }
                 else if scorePercent >= 70 { earnedStars = 2 }
                 else if scorePercent >= 50 { earnedStars = 1 }
                 else { earnedStars = response.stars ?? 0 }
+                let finalStars = max(earnedStars, response.stars ?? 0)
+                UserDefaults.standard.set(scorePercent, forKey: "lastCompletedScore")
+                UserDefaults.standard.set(finalStars,   forKey: "lastCompletedStars")
                 state = .completed(
                     score: scorePercent,
-                    stars: max(earnedStars, response.stars ?? 0),
+                    stars: finalStars,
                     xpEarned: response.xpEarned ?? max(score * 10, 0)
                 )
                 await triggerAchievementCheck()
@@ -295,8 +304,12 @@ final class GameQuizViewModel: ObservableObject {
                 // Hata durumunda bile %50+ ise geçti say
                 if scorePercent >= 50 {
                     UserDefaults.standard.set(true, forKey: "justCompletedLevel")
+                    // RPC tamamen başarısız — doğrudan DB'ye yaz
+                    await SupabaseDataService.shared.unlockNextLevelFallback(afterLevelId: levelId, score: scorePercent)
                 }
                 let fallbackStars = scorePercent >= 90 ? 3 : scorePercent >= 70 ? 2 : scorePercent >= 50 ? 1 : 0
+                UserDefaults.standard.set(scorePercent,   forKey: "lastCompletedScore")
+                UserDefaults.standard.set(fallbackStars,  forKey: "lastCompletedStars")
                 state = .completed(score: scorePercent, stars: fallbackStars, xpEarned: score * 10)
                 await triggerAchievementCheck()
             }
@@ -376,11 +389,24 @@ struct GameQuestion: Identifiable {
     /// Set when this is a DB sentence question (sentenceBuilder from sentences table)
     var sentence: SBSentence?   = nil
 
-    static func generate(from words: [SBWord], sentences: [SBSentence] = []) -> [GameQuestion] {
+    /// proficiency → soru tipleri zorluğu:
+    ///   0 beginner:           Sadece MultipleChoice + TrueFalse
+    ///   1 elementary:         + Listening
+    ///   2 intermediate:       + Writing + FillInBlank
+    ///   3 upper-intermediate: + SentenceBuilder
+    ///   4 advanced:           + Speaking (tüm modlar aktif)
+    static func generate(from words: [SBWord], sentences: [SBSentence] = [], proficiency: Int = 2) -> [GameQuestion] {
         let phoneCode   = OL.nativeLangCode
         let shuffled    = words.shuffled()
-        let canMulti    = words.count >= 4
-        let canListen   = canMulti
+        let enoughWords = words.count >= 4
+
+        // Proficiency-based mode flags
+        let canMulti    = enoughWords                               // MC: her zaman
+        let canListen   = enoughWords && proficiency >= 1           // Listening: elementary+
+        let canWrite    = proficiency >= 2                          // Writing: intermediate+
+        let canFill     = enoughWords && proficiency >= 2           // FillInBlank: intermediate+
+        let canSentence = words.count >= 2 && proficiency >= 3      // SentenceBuilder: upper+
+
         // Speaking is disabled when user has activated the 15-minute mute
         let isSpeakingMuted: Bool = {
             if let muteUntil = UserDefaults.standard.object(forKey: "speakingMutedUntil") as? Date {
@@ -388,9 +414,7 @@ struct GameQuestion: Identifiable {
             }
             return false
         }()
-        let canSpeak    = words.count >= 1 && !isSpeakingMuted
-        let canFill     = words.count >= 4
-        let canSentence = words.count >= 2
+        let canSpeak    = words.count >= 1 && !isSpeakingMuted && proficiency >= 4  // Speaking: advanced only
 
         let wordQuestions: [GameQuestion] = shuffled.enumerated().map { index, word in
             let nativeMeaning = word.displayTranslation(phoneCode: phoneCode)
@@ -416,8 +440,10 @@ struct GameQuestion: Identifiable {
                 finalMode = .sentenceBuilder
             } else if canMulti {
                 finalMode = .multipleChoice
-            } else {
+            } else if canWrite {
                 finalMode = .writing
+            } else {
+                finalMode = .multipleChoice   // fallback: her zaman MC
             }
             // ─────────────────────────────────────────────────────────────
 
@@ -449,9 +475,17 @@ struct GameQuestion: Identifiable {
                     : []
             }
 
-            // fillInTheBlank: user always fills in the target-lang term (from fillBlankChips)
-            // Override correctAnswer so visual coloring matches submission logic
-            let adjustedCorrect = (finalMode == .fillInTheBlank) ? word.term : finalCorrect
+            // Correct answer rules:
+            // • fillInTheBlank → user types/picks the target term  (word.term)
+            // • speaking        → user pronounces the target term   (word.term)
+            // • all others      → user picks the native meaning     (finalCorrect = nativeMeaning)
+            let adjustedCorrect: String
+            switch finalMode {
+            case .fillInTheBlank, .speaking:
+                adjustedCorrect = word.term   // target-language word
+            default:
+                adjustedCorrect = finalCorrect
+            }
             // ─────────────────────────────────────────────────────────────
 
             // trueFalse display pair (always targetToNative logic)

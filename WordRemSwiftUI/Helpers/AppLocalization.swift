@@ -371,6 +371,13 @@ struct AL {
         case welcomeBackMotivation      = "welcome.back_motivation"
         case welcomeBackCTA             = "welcome.back_cta"
 
+        // Daily Goal Break Popup
+        case dailyBreakTitle         = "daily_break.title"
+        case dailyBreakBodyFormat    = "daily_break.body_format"
+        case dailyBreakSubtitle      = "daily_break.subtitle"
+        case dailyBreakRest          = "daily_break.rest"
+        case dailyBreakContinue      = "daily_break.continue"
+
         // Streak Celebration Screen
         case streakStartedTitle         = "streak.started_title"
         case streakContinuedTitle       = "streak.continued_title"
@@ -642,6 +649,11 @@ struct AL {
             .welcomeBackMessageFormat: "Seni çok özledik, %@!",
             .welcomeBackMotivation:    "Hedeflerine devam etme zamanı 💪",
             .welcomeBackCTA:       "Devam Et",
+            .dailyBreakTitle:        "Günlük Hedefe Ulaştın! ☕",
+            .dailyBreakBodyFormat:   "Bugün %d dakika boyunca pratik yaptın. Aferin!",
+            .dailyBreakSubtitle:     "Bir mola verebilirsin — ama devam etmek tamamen senin kararın.",
+            .dailyBreakRest:         "Mola Ver",
+            .dailyBreakContinue:     "Devam Et",
         ],
 
         // ─────────────────────────────────────────
@@ -887,6 +899,11 @@ struct AL {
             .welcomeBackMessageFormat: "We missed you so much, %@!",
             .welcomeBackMotivation:    "Time to keep up with your goals 💪",
             .welcomeBackCTA:       "Continue",
+            .dailyBreakTitle:        "Daily Goal Reached! ☕",
+            .dailyBreakBodyFormat:   "You've practiced for %d minutes today. Well done!",
+            .dailyBreakSubtitle:     "You can take a break — but continuing is entirely your call.",
+            .dailyBreakRest:         "Take a Break",
+            .dailyBreakContinue:     "Keep Going",
         ],
 
         // ─────────────────────────────────────────
@@ -1075,6 +1092,11 @@ struct AL {
             .welcomeBackMessageFormat: "Wir haben dich so vermisst, %@!",
             .welcomeBackMotivation:    "Zeit, deine Ziele weiterzuverfolgen 💪",
             .welcomeBackCTA:       "Weiter",
+            .dailyBreakTitle:        "Tagesziel erreicht! ☕",
+            .dailyBreakBodyFormat:   "Du hast heute %d Minuten geübt. Prima!",
+            .dailyBreakSubtitle:     "Du kannst eine Pause machen — aber weiterzumachen liegt bei dir.",
+            .dailyBreakRest:         "Pause machen",
+            .dailyBreakContinue:     "Weitermachen",
         ],
 
         // ─────────────────────────────────────────
@@ -1263,6 +1285,11 @@ struct AL {
             .welcomeBackMessageFormat: "Tu nous as tellement manqué, %@ !",
             .welcomeBackMotivation:    "Il est temps de continuer vers tes objectifs 💪",
             .welcomeBackCTA:       "Continuer",
+            .dailyBreakTitle:        "Objectif du jour atteint ! ☕",
+            .dailyBreakBodyFormat:   "Tu as pratiqué pendant %d minutes aujourd'hui. Bravo !",
+            .dailyBreakSubtitle:     "Tu peux faire une pause — mais continuer est ton choix.",
+            .dailyBreakRest:         "Faire une pause",
+            .dailyBreakContinue:     "Continuer",
         ],
 
         // ─────────────────────────────────────────
@@ -1451,6 +1478,11 @@ struct AL {
             .welcomeBackMessageFormat: "¡Te echamos tanto de menos, %@!",
             .welcomeBackMotivation:    "Es hora de seguir con tus metas 💪",
             .welcomeBackCTA:       "Continuar",
+            .dailyBreakTitle:        "¡Meta diaria alcanzada! ☕",
+            .dailyBreakBodyFormat:   "Has practicado %d minutos hoy. ¡Bien hecho!",
+            .dailyBreakSubtitle:     "Puedes tomar un descanso — pero continuar es tu decisión.",
+            .dailyBreakRest:         "Tomar un descanso",
+            .dailyBreakContinue:     "Seguir",
         ],
 
         // ─────────────────────────────────────────
@@ -1639,6 +1671,11 @@ struct AL {
             .welcomeBackMessageFormat: "Ci sei mancato tanto, %@!",
             .welcomeBackMotivation:    "È ora di continuare verso i tuoi obiettivi 💪",
             .welcomeBackCTA:       "Continua",
+            .dailyBreakTitle:        "Obiettivo giornaliero raggiunto! ☕",
+            .dailyBreakBodyFormat:   "Hai praticato per %d minuti oggi. Ottimo lavoro!",
+            .dailyBreakSubtitle:     "Puoi fare una pausa — ma continuare è una tua scelta.",
+            .dailyBreakRest:         "Fai una pausa",
+            .dailyBreakContinue:     "Continua",
         ],
 
         // ─────────────────────────────────────────
@@ -1827,6 +1864,11 @@ struct AL {
             .welcomeBackMessageFormat: "Мы так скучали по тебе, %@!",
             .welcomeBackMotivation:    "Время продолжить к своим целям 💪",
             .welcomeBackCTA:       "Продолжить",
+            .dailyBreakTitle:        "Дневная цель достигнута! ☕",
+            .dailyBreakBodyFormat:   "Сегодня ты занимался(ась) %d минут. Отлично!",
+            .dailyBreakSubtitle:     "Ты можешь сделать перерыв — но продолжать — это твой выбор.",
+            .dailyBreakRest:         "Сделать перерыв",
+            .dailyBreakContinue:     "Продолжить",
         ],
 
         // ─────────────────────────────────────────
@@ -2015,6 +2057,11 @@ struct AL {
             .welcomeBackMessageFormat: "我们太想念你了，%@！",
             .welcomeBackMotivation:    "是时候继续实现你的目标了 💪",
             .welcomeBackCTA:       "继续",
+            .dailyBreakTitle:        "达成每日目标！☕",
+            .dailyBreakBodyFormat:   "你今天已练习了 %d 分钟，干得好！",
+            .dailyBreakSubtitle:     "你可以休息一下——但是否继续完全取决于你。",
+            .dailyBreakRest:         "休息一下",
+            .dailyBreakContinue:     "继续学习",
         ],
     ]
     // swiftlint:enable line_length

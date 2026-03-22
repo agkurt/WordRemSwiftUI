@@ -125,9 +125,21 @@ struct GameQuizView: View {
                 var sentences: [SBSentence] = []
                 switch sessionType {
                 case .level(let lId):
-                    words = try await SupabaseDataService.shared.fetchWords(levelId: lId)
+                    // Proficiency → max difficulty (kelimeler + cümleler)
+                    // 0/1 beginner/elementary  → difficulty 1 (A1/A2)
+                    // 2   intermediate          → difficulty 2 (B1)
+                    // 3+  upper/advanced        → difficulty 3 (B2/C1)
+                    let proficiency = UserDefaults.standard.integer(forKey: "selectedProficiencyLevel")
+                    let maxDiff: Int
+                    switch proficiency {
+                    case 0, 1: maxDiff = 1
+                    case 2:    maxDiff = 2
+                    default:   maxDiff = 3
+                    }
+
+                    words = try await SupabaseDataService.shared.fetchWords(levelId: lId, maxDifficulty: maxDiff)
                     if let courseId = words.isEmpty ? nil : (try? await SupabaseDataService.shared.fetchCourseId(forLevel: lId)) {
-                        sentences = (try? await SupabaseDataService.shared.fetchSentences(courseId: courseId)) ?? []
+                        sentences = (try? await SupabaseDataService.shared.fetchSentences(courseId: courseId, maxDifficulty: maxDiff)) ?? []
                     }
                 case .mistakes:
                     let ids = MistakesManager.shared.mistakeUUIDs
@@ -285,45 +297,67 @@ struct GameQuizView: View {
     // MARK: - Speaking View
     @ViewBuilder
     private func speakingView(_ question: GameQuestion) -> some View {
-        let targetLang = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+        let targetLang  = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+        // word.term = target-language word (the word to say)
+        // word.translation = native-language hint (what it means in user's language)
+        let wordToSay   = question.word.term
+        let nativeHint  = question.word.translation
 
         VStack(spacing: 0) {
             quizHeader
             Spacer(minLength: 24)
 
-            // Word card – shows the target-language word the user needs to say
-            VStack(spacing: 10) {
-                // 🗣 Say this word label
-                Text(AL.s(.gameSpeakPrompt))
-                    .font(.custom("Poppins-Regular", size: 12))
-                    .foregroundStyle(AppTheme.Colors.primaryOrange)
-                    .padding(.horizontal, 12).padding(.vertical, 4)
-                    .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Capsule())
+            // Word card
+            VStack(spacing: 14) {
 
-                // Target word – large & prominent (this is the word to say!)
-                Text(question.word.term)
-                    .font(.custom("Poppins-Bold", size: 42))
+                // ── Instruction banner ────────────────────────────
+                HStack(spacing: 6) {
+                    Image(systemName: "mic.fill")
+                        .font(.system(size: 11, weight: .semibold))
+                    Text(AL.s(.gameSpeakPrompt))
+                        .font(.custom("Poppins-SemiBold", size: 12))
+                }
+                .foregroundStyle(AppTheme.Colors.primaryOrange)
+                .padding(.horizontal, 14).padding(.vertical, 5)
+                .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Capsule())
+
+                // ── Word to say (TARGET language) ─────────────────
+                Text(wordToSay)
+                    .font(.custom("Poppins-Bold", size: 44))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
 
+                // ── Phonetic ──────────────────────────────────────
                 if let phonetic = question.word.phonetic {
                     Text("/\(phonetic)/")
                         .font(.custom("Poppins-SemiBold", size: 15))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
 
+                // ── Native hint (meaning in user's language) ──────
+                if !nativeHint.isEmpty {
+                    HStack(spacing: 5) {
+                        Image(systemName: "text.bubble.fill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(AppTheme.Colors.textSecondary.opacity(0.7))
+                        Text(nativeHint)
+                            .font(.custom("Poppins-Regular", size: 14))
+                            .foregroundStyle(AppTheme.Colors.textSecondary)
+                    }
+                    .padding(.horizontal, 12).padding(.vertical, 4)
+                    .background(Color(.systemGray6), in: Capsule())
+                }
+
+                // ── Language badge + audio replay ─────────────────
                 HStack(spacing: 10) {
-                    // Language badge
                     Text("🗣 \(languageDisplayName(targetLang))")
                         .font(.custom("Poppins-Regular", size: 12))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
+                        .padding(.horizontal, 12).padding(.vertical, 4)
                         .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Capsule())
 
-                    // Audio replay
                     Button {
-                        TTSManager.shared.speak(question.word.term, langCode: targetLang)
+                        TTSManager.shared.speak(wordToSay, langCode: targetLang)
                     } label: {
                         Image(systemName: "speaker.wave.2.fill")
                             .font(.system(size: 16))
@@ -343,8 +377,6 @@ struct GameQuizView: View {
             )
             .padding(.horizontal, 24)
             .onAppear {
-                // Önceki sorunun TTS'ini durdur (doğru cevap seslendirmesi bitmemiş olabilir)
-                // Kullanıcı play butonuna basana kadar TTS başlamaz
                 TTSManager.shared.stop()
             }
 

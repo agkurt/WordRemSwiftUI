@@ -101,9 +101,7 @@ struct WelcomePopupView: View {
                 .frame(height: 160)
                 .clipShape(UnevenRoundedRectangle(
                     topLeadingRadius: 28,
-                    topTrailingRadius: 28,
-                    bottomLeadingRadius: 0,
-                    bottomTrailingRadius: 0
+                    bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 28
                 ))
 
                 // ── Content ──────────────────────────────────────

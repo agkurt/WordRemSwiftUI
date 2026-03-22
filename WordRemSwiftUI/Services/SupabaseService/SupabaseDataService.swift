@@ -153,50 +153,57 @@ final class SupabaseDataService {
         try await enrollWithProficiency(courseId: courseId, proficiencyLevel: 0)
     }
 
-    /// Kursa ilk kayıtta her zaman 1 level açar. Sonraki levellar quiz tamamlandıkça açılır.
+    /// Kursa ilk kayıtta her zaman Level 1'i açar.
+    /// Proficiency seviyesi soru zorluğunu etkiler, başlangıç levelını değil.
     func enrollWithProficiency(courseId: UUID, proficiencyLevel: Int) async throws {
         guard let uid = SupabaseService.shared.currentUserId else {
             throw NSError(domain: "Auth", code: 401,
                           userInfo: [NSLocalizedDescriptionKey: "No active user session for enrollment"])
         }
 
-        let levelsToUnlock = 1
-
+        // Her zaman sadece ilk level açılır (order_index = 1)
         let levels: [SBLevel] = try await db
             .from("levels")
             .select()
             .eq("course_id", value: courseId.uuidString)
             .order("order_index")
-            .limit(levelsToUnlock)
+            .limit(1)
             .execute()
             .value
 
-        guard !levels.isEmpty else { return }
+        guard let firstLevel = levels.first else { return }
 
         struct ProgressInsert: Encodable {
             let user_id: String
             let level_id: String
             let status: String
+            let best_score: Int
+            let stars: Int
+            let attempts: Int
         }
 
-        for level in levels {
-            try await db
-                .from("user_progress")
-                .upsert(
-                    ProgressInsert(
-                        user_id: uid.uuidString,
-                        level_id: level.id.uuidString,
-                        status: "unlocked"
-                    ),
-                    onConflict: "user_id,level_id"
-                )
-                .execute()
-        }
+        try await db
+            .from("user_progress")
+            .upsert(
+                ProgressInsert(
+                    user_id:    uid.uuidString,
+                    level_id:   firstLevel.id.uuidString,
+                    status:     "unlocked",
+                    best_score: 0,
+                    stars:      0,
+                    attempts:   0
+                ),
+                onConflict: "user_id,level_id"
+            )
+            .execute()
     }
 
     // MARK: - Words for a level
-    func fetchWords(levelId: UUID) async throws -> [SBWord] {
-        // words joined through word_level_assignments
+    /// maxDifficulty: proficiency seviyesinden türetilen kelime zorluk üst sınırı.
+    ///   0/1 (beginner/elementary)  → 1  (yalnızca kolay kelimeler)
+    ///   2   (intermediate)         → 2
+    ///   3+  (upper/advanced)       → 3  (tüm kelimeler)
+    func fetchWords(levelId: UUID, maxDifficulty: Int = 3) async throws -> [SBWord] {
         struct WordWithOrder: Decodable {
             let display_order: Int
             let words: SBWord
@@ -210,7 +217,11 @@ final class SupabaseDataService {
             .execute()
             .value
 
-        return rows.map { $0.words }
+        // İstemci tarafında difficulty filtresi (PostgREST nested filter yerine güvenli yaklaşım)
+        let all = rows.map { $0.words }
+        let filtered = all.filter { $0.difficulty <= maxDifficulty }
+        // Filtreleme sonucu boş kalırsa tüm kelimeler döner (hata önleme)
+        return filtered.isEmpty ? all : filtered
     }
 
     // MARK: - Find course_id for a level (needed to fetch sentences)
@@ -226,12 +237,18 @@ final class SupabaseDataService {
     }
 
     // MARK: - Sentences for a course (sentenceBuilder questions)
-    func fetchSentences(courseId: UUID) async throws -> [SBSentence] {
+    /// maxDifficulty maps from the user's onboarding proficiency level:
+    ///   0 (beginner)          → 1   A1/A2 only
+    ///   1 (elementary)        → 1   A1/A2 only
+    ///   2 (intermediate)      → 2   up to B1
+    ///   3+ (upper/advanced)   → 3   all sentences
+    func fetchSentences(courseId: UUID, maxDifficulty: Int = 3) async throws -> [SBSentence] {
         try await db
             .from("sentences")
             .select()
             .eq("course_id", value: courseId.uuidString)
             .eq("is_active", value: true)
+            .lte("difficulty", value: maxDifficulty)
             .order("order_index")
             .execute()
             .value
@@ -268,6 +285,102 @@ final class SupabaseDataService {
             .rpc("complete_level", params: payload)
             .execute()
             .value
+    }
+
+    // MARK: - Fallback: directly unlock next level (used when complete_level RPC fails)
+    /// Marks `levelId` as completed and unlocks the following level in the same course.
+    /// Safe to call even if the level is already completed/unlocked.
+    func unlockNextLevelFallback(afterLevelId: UUID, score: Int) async {
+        guard let uid = SupabaseService.shared.currentUserId else { return }
+
+        do {
+            // 1. Fetch current level metadata
+            struct LevelMeta: Decodable {
+                let courseId: UUID
+                let orderIndex: Int
+                enum CodingKeys: String, CodingKey {
+                    case courseId    = "course_id"
+                    case orderIndex  = "order_index"
+                }
+            }
+            let metas: [LevelMeta] = try await db
+                .from("levels")
+                .select("course_id, order_index")
+                .eq("id", value: afterLevelId.uuidString)
+                .limit(1)
+                .execute()
+                .value
+            guard let meta = metas.first else { return }
+
+            // 2. Find next level
+            struct LevelID: Decodable { let id: UUID }
+            let nextLevels: [LevelID] = try await db
+                .from("levels")
+                .select("id")
+                .eq("course_id", value: meta.courseId.uuidString)
+                .eq("order_index", value: meta.orderIndex + 1)
+                .limit(1)
+                .execute()
+                .value
+
+            let stars: Int = score == 100 ? 3 : score >= 50 ? 2 : score >= 25 ? 1 : 0
+            let now = ISO8601DateFormatter().string(from: Date())
+
+            // 3. Mark current level as completed
+            struct CompletedUpdate: Encodable {
+                let status: String
+                let best_score: Int
+                let stars: Int
+                let completed_at: String
+                let updated_at: String
+            }
+            try await db
+                .from("user_progress")
+                .update(CompletedUpdate(
+                    status: "completed",
+                    best_score: score,
+                    stars: stars,
+                    completed_at: now,
+                    updated_at: now
+                ))
+                .eq("user_id", value: uid.uuidString)
+                .eq("level_id", value: afterLevelId.uuidString)
+                .execute()
+
+            // 4. Unlock next level (if exists and currently locked / missing)
+            guard let nextLevel = nextLevels.first else { return }
+
+            struct ProgressRow: Decodable { let status: String }
+            let existing: [ProgressRow] = try await db
+                .from("user_progress")
+                .select("status")
+                .eq("user_id", value: uid.uuidString)
+                .eq("level_id", value: nextLevel.id.uuidString)
+                .limit(1)
+                .execute()
+                .value
+
+            let existingStatus = existing.first?.status ?? "locked"
+            guard existingStatus == "locked" || existing.isEmpty else {
+                print("ℹ️ Next level already \(existingStatus), skipping unlock")
+                return
+            }
+
+            struct ProgressInsert: Encodable {
+                let user_id: String; let level_id: String; let status: String
+            }
+            try await db
+                .from("user_progress")
+                .upsert(
+                    ProgressInsert(user_id: uid.uuidString, level_id: nextLevel.id.uuidString, status: "unlocked"),
+                    onConflict: "user_id,level_id"
+                )
+                .execute()
+
+            print("✅ Fallback unlock: next level \(nextLevel.id) set to unlocked")
+        } catch {
+            print("⚠️ unlockNextLevelFallback error: \(error)")
+        }
     }
 
     // MARK: - Award XP (mistakes & AI quiz)

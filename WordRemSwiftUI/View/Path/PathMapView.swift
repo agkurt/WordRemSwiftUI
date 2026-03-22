@@ -28,6 +28,7 @@ struct PathMapView: View {
     @State private var showMistakesSavedPopup = false
     @State private var showMistakesClearedPopup = false
     @State private var isRefreshingAfterQuiz = false
+    @State private var pendingMistakesPopup = false
 
     @State private var showMistakesQuiz = false
     @State private var showAIQuiz = false
@@ -193,11 +194,8 @@ struct PathMapView: View {
                 
                 // ── Overlays: Loading & Completion Popup ─────────────────
                 if isRefreshingAfterQuiz {
-                    ZStack {
-                        Color.black.opacity(0.55).ignoresSafeArea()
-                        AppLoadingView(message: langManager.s(.pathUpdating))
-                    }
-                    .zIndex(10)
+                    PathRefreshOverlay()
+                        .zIndex(10)
                 }
                 
                 if showCompletionPopup {
@@ -235,11 +233,11 @@ struct PathMapView: View {
 
                         withAnimation {
                             isRefreshingAfterQuiz = false
+                            // Always show level-complete popup; mistakes popup follows after
+                            showCompletionPopup = true
                             if justSavedMistakes {
-                                showMistakesSavedPopup = true
+                                pendingMistakesPopup = true
                                 justSavedMistakes = false
-                            } else {
-                                showCompletionPopup = true
                             }
                             justCompletedLevel = false
                         }
@@ -273,6 +271,13 @@ struct PathMapView: View {
             // ── AI Quiz Navigation ────────────────────────────────
             .fullScreenCover(isPresented: $showAIQuiz) {
                 AIQuizView()
+            }
+            // Show mistakes-saved popup after level-complete popup is dismissed
+            .onChange(of: showCompletionPopup) { _, isShowing in
+                if !isShowing && pendingMistakesPopup {
+                    pendingMistakesPopup = false
+                    withAnimation { showMistakesSavedPopup = true }
+                }
             }
         }
     }
@@ -1088,6 +1093,140 @@ private struct DecoElement: View {
 }
 
 // MARK: ═══════════════════════════════════════════════════════════
+// MARK: - Path Refresh Overlay (after quiz completion)
+// MARK: ═══════════════════════════════════════════════════════════
+
+private struct PathRefreshOverlay: View {
+
+    @AppStorage("lastCompletedStars") private var stars: Int  = 0
+    @AppStorage("lastCompletedScore") private var score: Int  = 0
+    @EnvironmentObject var langManager: LanguageManager
+
+    @State private var starScales: [CGFloat]   = [0.1, 0.1, 0.1]
+    @State private var barProgress: CGFloat    = 0
+    @State private var cardScale: CGFloat      = 0.85
+    @State private var cardOpacity: Double     = 0
+    @State private var dotOpacities: [Double]  = [1.0, 0.3, 0.3]
+
+    private let starColor = Color(hex: "#f59e0b")
+    private let gradColors: [Color] = [Color(hex: "#f97316"), Color(hex: "#ec4899"), Color(hex: "#8b5cf6")]
+
+    var body: some View {
+        ZStack {
+            // ── Backdrop ──────────────────────────────────────────
+            Color.black.opacity(0.60)
+                .ignoresSafeArea()
+
+            // ── Card ──────────────────────────────────────────────
+            VStack(spacing: 20) {
+
+                // Mascot
+                LottieView(animation: .named("reeny_waving"))
+                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
+                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: 100, height: 100)
+
+                // Stars row
+                HStack(spacing: 10) {
+                    ForEach(0..<3) { i in
+                        Image(systemName: i < stars ? "star.fill" : "star")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(i < stars ? starColor : Color.white.opacity(0.25))
+                            .scaleEffect(starScales[i])
+                            .shadow(color: i < stars ? starColor.opacity(0.6) : .clear, radius: 6)
+                    }
+                }
+
+                // Score
+                Text("\(score)%")
+                    .font(.custom("Feather-Bold", size: 26))
+                    .foregroundStyle(.white)
+
+                // Progress bar + label
+                VStack(spacing: 8) {
+                    // Animated dots label
+                    HStack(spacing: 4) {
+                        Text(langManager.s(.pathUpdating)
+                            .replacingOccurrences(of: "...", with: ""))
+                            .font(.custom("Feather-Bold", size: 13))
+                            .foregroundStyle(Color.white.opacity(0.7))
+                        ForEach(0..<3) { i in
+                            Circle()
+                                .fill(Color.white.opacity(dotOpacities[i]))
+                                .frame(width: 5, height: 5)
+                        }
+                    }
+
+                    // Gradient progress bar
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(Color.white.opacity(0.15))
+                            .frame(height: 7)
+                        Capsule()
+                            .fill(
+                                LinearGradient(colors: gradColors,
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .frame(width: barProgress * 200, height: 7)
+                    }
+                    .frame(width: 200)
+                }
+            }
+            .padding(.horizontal, 36)
+            .padding(.vertical, 30)
+            .background(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 28, style: .continuous)
+                            .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                    )
+            )
+            .scaleEffect(cardScale)
+            .opacity(cardOpacity)
+        }
+        .onAppear { animateEntrance() }
+        .task { await animateDots() }
+    }
+
+    private func animateEntrance() {
+        // Card entrance
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.72)) {
+            cardScale   = 1.0
+            cardOpacity = 1.0
+        }
+        // Stars pop in one by one
+        for i in 0..<3 {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.55)
+                .delay(0.2 + Double(i) * 0.18)) {
+                starScales[i] = i < stars ? 1.15 : 1.0
+            }
+            // Settle
+            withAnimation(.spring(response: 0.3).delay(0.5 + Double(i) * 0.18)) {
+                starScales[i] = 1.0
+            }
+        }
+        // Progress bar sweep
+        withAnimation(.easeInOut(duration: 0.9).delay(0.3)) {
+            barProgress = 1.0
+        }
+    }
+
+    // Bouncing dots animation — runs for the overlay's lifetime via .task
+    private func animateDots() async {
+        var phase = 0
+        while !Task.isCancelled {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                dotOpacities = [0.3, 0.3, 0.3]
+                dotOpacities[phase] = 1.0
+            }
+            phase = (phase + 1) % 3
+            try? await Task.sleep(nanoseconds: 380_000_000)
+        }
+    }
+}
+
+// MARK: ═══════════════════════════════════════════════════════════
 // MARK: - Level Complete Popup Component
 // MARK: ═══════════════════════════════════════════════════════════
 
@@ -1096,6 +1235,12 @@ struct LevelCompletePopupView: View {
     @Binding var isPresented: Bool
     @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0.0
+    @State private var starsScale: CGFloat = 0.3
+
+    @AppStorage("lastCompletedScore") private var lastScore: Int = 0
+    @AppStorage("lastCompletedStars") private var lastStars: Int = 0
+
+    private let starColor = Color(hex: "#f59e0b")
 
     var body: some View {
         ZStack {
@@ -1103,22 +1248,42 @@ struct LevelCompletePopupView: View {
                 .ignoresSafeArea()
                 .onTapGesture { dismiss() }
 
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
                 // Mascot celebrating
                 LottieView(animation: .named("reeny_waving"))
                     .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                     .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 120, height: 120)
+                    .frame(width: 110, height: 110)
                     .padding(.top, 10)
 
+                // Stars row
+                HStack(spacing: 8) {
+                    ForEach(1...3, id: \.self) { i in
+                        Image(systemName: i <= lastStars ? "star.fill" : "star")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundStyle(i <= lastStars ? starColor : Color.gray.opacity(0.3))
+                            .scaleEffect(starsScale)
+                    }
+                }
+                .onAppear {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.5).delay(0.25)) {
+                        starsScale = 1.0
+                    }
+                }
+
+                // Score badge
+                Text("\(lastScore)%")
+                    .font(.custom("Feather-Bold", size: 22))
+                    .foregroundStyle(AppTheme.Colors.primaryOrange)
+
                 // Text Content
-                VStack(spacing: 8) {
+                VStack(spacing: 6) {
                     Text(langManager.s(.pathWellDone))
-                        .font(.custom("Feather-Bold", size: 28))
+                        .font(.custom("Feather-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
                     Text(langManager.s(.pathWellDoneDesc))
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.custom("Feather-Bold", size: 13))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
@@ -1146,7 +1311,7 @@ struct LevelCompletePopupView: View {
                     .fill(Color.white)
                     .shadow(color: .black.opacity(0.1), radius: 20, y: 10)
             )
-            .padding(.horizontal, 40)
+            .padding(.horizontal, 32)
             .scaleEffect(scale)
             .opacity(opacity)
             .onAppear {

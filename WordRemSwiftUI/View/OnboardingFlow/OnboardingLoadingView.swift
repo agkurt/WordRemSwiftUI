@@ -60,6 +60,14 @@ struct OnboardingLoadingView: View {
             // Yükleme animasyonu için kısa bekleme
             try? await Task.sleep(nanoseconds: 2_500_000_000)
 
+            // Uygulama yeniden kurulduğunda Keychain'de eski session kalabilir.
+            // Yeni misafir başlatmadan önce mutlaka mevcut oturumu kapat.
+            if SupabaseAuthService.shared.isSignedIn {
+                try? await SupabaseAuthService.shared.signOut()
+                // Sign-out'un Supabase tarafında işlenmesi için kısa bekleme
+                try? await Task.sleep(nanoseconds: 300_000_000)
+            }
+
             // Supabase anonim giriş — hata olsa bile ilerle
             do {
                 try await SupabaseAuthService.shared.signInAnonymously()

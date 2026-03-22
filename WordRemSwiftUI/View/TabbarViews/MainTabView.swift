@@ -42,6 +42,8 @@ struct MainTabView: View {
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @StateObject private var homeVM = HomeScreenViewModel()
     @StateObject private var pathVM = PathMapViewModel()
+    @StateObject private var sessionTracker = SessionTimeTracker.shared
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: AppTab = .path
     @State private var showCreateDeck = false
     @State private var showWelcomePopup = false
@@ -86,6 +88,15 @@ struct MainTabView: View {
                 .transition(.opacity)
                 .zIndex(999)
             }
+
+            // MARK: Daily Goal Break Popup
+            if sessionTracker.shouldShowBreakPrompt {
+                DailyGoalBreakPopupView(minutesStudied: sessionTracker.minutesTodayForDisplay) {
+                    withAnimation { sessionTracker.shouldShowBreakPrompt = false }
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                .zIndex(998)
+            }
         }
         .sheet(isPresented: $showCreateDeck) {
             PlusView(completion: {
@@ -94,9 +105,19 @@ struct MainTabView: View {
             .presentationDetents([.large])
             .presentationCornerRadius(28)
         }
-        .onAppear { checkPendingWelcome() }
+        .onAppear {
+            checkPendingWelcome()
+            sessionTracker.appBecameActive()
+        }
         .onChange(of: authManager.pendingWelcome != nil) { _, hasPending in
             if hasPending { checkPendingWelcome() }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .active:     sessionTracker.appBecameActive()
+            case .background: sessionTracker.appWentBackground()
+            default:          break
+            }
         }
     }
 

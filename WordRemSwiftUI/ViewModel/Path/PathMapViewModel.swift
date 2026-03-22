@@ -47,10 +47,15 @@ final class PathMapViewModel: ObservableObject {
             if let course = selectedCourse {
                 try await loadPath(courseId: course.id)
             }
+
+            // Enrollment başarılıysa kilitle — hata olursa bir sonraki ziyarette tekrar dene
+            let successfullyEnrolled = levelsWithProgress.contains { $0.progress != nil }
+            hasInitiallyLoaded = successfullyEnrolled
+
         } catch {
             errorMessage = error.localizedDescription
+            // hasInitiallyLoaded false kalıyor → bir sonraki tab ziyaretinde yeniden dener
         }
-        hasInitiallyLoaded = true
         isLoading = false
     }
 
@@ -70,8 +75,9 @@ final class PathMapViewModel: ObservableObject {
         // Check if user is enrolled (has any unlocked level)
         let loaded = try await SupabaseDataService.shared.fetchLevelsWithProgress(courseId: courseId)
 
-        // Hiç user_progress satırı yoksa → yeni kayıt, ilk leveli aç
         let hasAnyProgress = loaded.contains { $0.progress != nil }
+
+        // Hiç progress yoksa → yeni kullanıcı, her zaman Level 1'den başla
         if !hasAnyProgress {
             let proficiency = UserDefaults.standard.integer(forKey: "selectedProficiencyLevel")
             try await SupabaseDataService.shared.enrollWithProficiency(
@@ -79,9 +85,10 @@ final class PathMapViewModel: ObservableObject {
                 proficiencyLevel: proficiency
             )
             levelsWithProgress = try await SupabaseDataService.shared.fetchLevelsWithProgress(courseId: courseId)
-        } else {
-            levelsWithProgress = loaded
+            return
         }
+
+        levelsWithProgress = loaded
     }
 
     // MARK: - Switch course

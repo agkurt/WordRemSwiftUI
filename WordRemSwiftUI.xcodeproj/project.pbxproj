@@ -33,6 +33,8 @@
 		ACH000000000000000001A2 /* AchievementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACH000000000000000001F2 /* AchievementService.swift */; };
 		ACH000000000000000001A3 /* AchievementUnlockPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACH000000000000000001F3 /* AchievementUnlockPopup.swift */; };
 		WEL000000000000000001A3 /* WelcomePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WEL000000000000000001F3 /* WelcomePopupView.swift */; };
+		STT000000000000000001A2 /* SessionTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = STT000000000000000001F2 /* SessionTimeTracker.swift */; };
+		DGB000000000000000001A3 /* DailyGoalBreakPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DGB000000000000000001F3 /* DailyGoalBreakPopupView.swift */; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* LoadingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F7A8B9C0D1E2F3 /* LoadingAnimationView.swift */; };
 		B3C4D5E6F7A8B9C0D1E2F3A4 /* InterestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D6E7F8A9B0C1D2E3F4A5B6 /* InterestView.swift */; };
 		BB11CC22DD33EE4400BB0011 /* PathMistakesDeckService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */; };
@@ -259,6 +261,8 @@
 		ACH000000000000000001F2 /* AchievementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AchievementService.swift; path = WordRemSwiftUI/Services/AchievementService.swift; sourceTree = SOURCE_ROOT; };
 		ACH000000000000000001F3 /* AchievementUnlockPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AchievementUnlockPopup.swift; path = WordRemSwiftUI/View/Components/AchievementUnlockPopup.swift; sourceTree = SOURCE_ROOT; };
 		WEL000000000000000001F3 /* WelcomePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WelcomePopupView.swift; path = WordRemSwiftUI/View/Components/WelcomePopupView.swift; sourceTree = SOURCE_ROOT; };
+		STT000000000000000001F2 /* SessionTimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SessionTimeTracker.swift; path = WordRemSwiftUI/Services/SessionTimeTracker.swift; sourceTree = SOURCE_ROOT; };
+		DGB000000000000000001F3 /* DailyGoalBreakPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DailyGoalBreakPopupView.swift; path = WordRemSwiftUI/View/Components/DailyGoalBreakPopupView.swift; sourceTree = SOURCE_ROOT; };
 		B5E048FBBDC848E09A36A35A /* GameQuizViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GameQuizViewModel.swift; path = WordRemSwiftUI/ViewModel/Quiz/GameQuizViewModel.swift; sourceTree = SOURCE_ROOT; };
 		BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PathMistakesDeckService.swift; sourceTree = "<group>"; };
 		BB11CC22DD33EE44FF550022 /* OnboardingLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingLocalization.swift; sourceTree = "<group>"; };
@@ -680,6 +684,7 @@
 				DD11EE22FF33AA4400DD0022 /* DailyLimitManager.swift */,
 				EE11FF22AA33BB4400EE0022 /* HintManager.swift */,
 				AA99BB88CC77DD6600AA0022 /* LanguageManager.swift */,
+				STT000000000000000001F2 /* SessionTimeTracker.swift */,
 				AA11BB22CC33DD4400AA0022 /* TTSManager.swift */,
 				CC11DD22EE33FF4400CC0022 /* SpeechRecognitionManager.swift */,
 				643BBD08DC60454CAA07AF5E /* InAppPurchaseManager.swift */,
@@ -796,6 +801,7 @@
 				ACH000000000000000001F2 /* AchievementService.swift */,
 				ACH000000000000000001F3 /* AchievementUnlockPopup.swift */,
 				WEL000000000000000001F3 /* WelcomePopupView.swift */,
+				DGB000000000000000001F3 /* DailyGoalBreakPopupView.swift */,
 				17C6D36AE6254ED6858D40B9 /* PathMapViewModel.swift */,
 				B5E048FBBDC848E09A36A35A /* GameQuizViewModel.swift */,
 				5DC57B33BBA14562B2198F54 /* LeaderboardViewModel.swift */,
@@ -1373,6 +1379,8 @@
 				ACH000000000000000001A2 /* AchievementService.swift in Sources */,
 				ACH000000000000000001A3 /* AchievementUnlockPopup.swift in Sources */,
 				WEL000000000000000001A3 /* WelcomePopupView.swift in Sources */,
+				STT000000000000000001A2 /* SessionTimeTracker.swift in Sources */,
+				DGB000000000000000001A3 /* DailyGoalBreakPopupView.swift in Sources */,
 				7D8E12C1C88C4B0EBFB03D4C /* PathMapViewModel.swift in Sources */,
 				EFD9ABA718A3443CA1BB7658 /* GameQuizViewModel.swift in Sources */,
 				84B165A388014E249829A647 /* PathMapView.swift in Sources */,
