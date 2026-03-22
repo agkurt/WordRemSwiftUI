@@ -9,12 +9,13 @@
 import SwiftUI
 
 struct OnboardingLoadingView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let languageName: String
     let languageCode: String
     let proficiencyLevel: Int
     var learningInterest: String = ""
     var dailyGoalMinutes: Int = 10
-    var nativeLangCode: String = OL.phoneCode
+    var nativeLangCode: String = OL.nativeLangCode
 
     @EnvironmentObject var authManager: AuthManager
 
@@ -26,10 +27,10 @@ struct OnboardingLoadingView: View {
                 Spacer()
                 LoadingAnimationView(width: 160, height: 160)
                 VStack(spacing: 16) {
-                    Text(OL.s(.loadingText))
+                    Text(langManager.s(.loadingText))
                         .font(.custom("Feather-Bold", size: 18))
                         .foregroundStyle(Color(hex: "#94a3b8"))
-                    Text(OL.s(.loadingMessage))
+                    Text(langManager.s(.loadingMessage))
                         .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
@@ -50,7 +51,8 @@ struct OnboardingLoadingView: View {
             UserDefaults.standard.set(languageName, forKey: "selectedTargetLanguageName")
             UserDefaults.standard.set(proficiencyLevel, forKey: "selectedProficiencyLevel")
             UserDefaults.standard.set(dailyGoalMinutes, forKey: "dailyGoalMinutes")
-            UserDefaults.standard.set(nativeLangCode, forKey: "userNativeLangCode")   // ← anadil
+            // Anadil: hem UserDefaults'a hem LanguageManager'a yaz
+            langManager.setLanguage(nativeLangCode)
             if !learningInterest.isEmpty {
                 UserDefaults.standard.set(learningInterest, forKey: "learningInterest")
             }

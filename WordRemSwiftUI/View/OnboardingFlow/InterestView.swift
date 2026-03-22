@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct InterestView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let proficiencyLevel: Int
@@ -112,7 +113,7 @@ struct InterestView: View {
                 Button {
                     navigateToGoal = true
                 } label: {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedInterest == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)

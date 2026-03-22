@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LanguageSelectionView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let nativeLangCode: String          // NativeLanguageSelectionView'dan gelir
 
     @State private var selectedLanguage: String?
@@ -48,7 +49,7 @@ struct LanguageSelectionView: View {
             HStack(alignment: .top, spacing: 16) {
                 MascotAnimationView(width: 70, height: 70)
 
-                Text(OL.s(.whatToLearn))
+                Text(langManager.s(.whatToLearn))
                     .font(.custom("Feather-Bold", size: 18))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -72,7 +73,7 @@ struct LanguageSelectionView: View {
 
             // Subtitle — seçilen anadile göre dinamik ("Türkçe bilenler için" vs.)
             HStack {
-                Text(OL.forSpeakersSubtitle(nativeLangCode: nativeLangCode))
+                Text(langManager.forSpeakersSubtitle(nativeLangCode: nativeLangCode))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -96,7 +97,7 @@ struct LanguageSelectionView: View {
                                     .font(.system(size: 28))
                                     .frame(width: 40)
 
-                                Text(OL.languageName(for: lang.code))
+                                Text(langManager.languageName(for: lang.code))
                                     .font(.custom("Feather-Bold", size: 15))
                                     .foregroundStyle(Color(hex: "#1e293b"))
                                     .multilineTextAlignment(.leading)
@@ -126,7 +127,7 @@ struct LanguageSelectionView: View {
                 Button(action: {
                     navigateToProficiency = true
                 }) {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedLanguage == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)

@@ -10,12 +10,13 @@ import SwiftUI
 import AVFoundation
 
 struct OnboardingQuizView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let languageName: String
     let languageCode: String
     let proficiencyLevel: Int
     var learningInterest: String = ""
     var dailyGoalMinutes: Int = 10
-    var nativeLangCode: String = OL.phoneCode   // NativeLanguageSelectionView'dan gelir
+    var nativeLangCode: String = OL.nativeLangCode   // NativeLanguageSelectionView'dan gelir
     @State private var navigateToPlan = false
     @State private var isSpeaking = false
     private let synthesizer = AVSpeechSynthesizer()
@@ -38,7 +39,7 @@ struct OnboardingQuizView: View {
     }
 
     // Telefon diline göre doğru cevap
-    var correctWords: [String] { OL.quizCorrectWords }
+    var correctWords: [String] { langManager.quizCorrectWords }
 
     // Ses için dil kodu — seçilen dil kodu üzerinden
     var voiceLanguageCode: String {
@@ -58,7 +59,7 @@ struct OnboardingQuizView: View {
     @State private var selectedWords: [String] = []
 
     init(languageName: String, languageCode: String = "en", proficiencyLevel: Int = 0,
-         learningInterest: String = "", dailyGoalMinutes: Int = 10, nativeLangCode: String = OL.phoneCode) {
+         learningInterest: String = "", dailyGoalMinutes: Int = 10, nativeLangCode: String = OL.nativeLangCode) {
         self.languageName = languageName
         self.languageCode = languageCode
         self.proficiencyLevel = proficiencyLevel
@@ -129,7 +130,7 @@ struct OnboardingQuizView: View {
             
             // Question Section
             VStack(alignment: .leading, spacing: 24) {
-                Text(OL.s(.quizInstruction))
+                Text(langManager.s(.quizInstruction))
                     .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1e293b"))
                 
@@ -291,7 +292,7 @@ struct OnboardingQuizView: View {
                 if checkStatus == .correct {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(OL.s(.quizCorrect))
+                            Text(langManager.s(.quizCorrect))
                                 .font(.custom("Feather-Bold", size: 20))
                                 .foregroundStyle(Color.green)
                         }
@@ -303,10 +304,10 @@ struct OnboardingQuizView: View {
                 } else if checkStatus == .wrong {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(OL.s(.quizWrong))
+                            Text(langManager.s(.quizWrong))
                                 .font(.custom("Feather-Bold", size: 20))
                                 .foregroundStyle(Color.red)
-                            Text(OL.f(.quizCorrectAnswer, correctWords.joined(separator: " ")))
+                            Text(langManager.f(.quizCorrectAnswer, correctWords.joined(separator: " ")))
                                 .font(.custom("Feather-Bold", size: 16))
                                 .foregroundStyle(Color.red.opacity(0.8))
                         }
@@ -326,7 +327,7 @@ struct OnboardingQuizView: View {
                         validateAnswer()
                     }
                 }) {
-                    Text(checkStatus == .idle ? OL.s(.quizCheck) : OL.s(.continueButton))
+                    Text(checkStatus == .idle ? langManager.s(.quizCheck) : langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedWords.isEmpty && checkStatus == .idle ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)

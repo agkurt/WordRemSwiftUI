@@ -13,6 +13,7 @@ import StoreKit
 
 struct PathMapView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     @ObservedObject var vm: PathMapViewModel
     @ObservedObject private var mistakes = MistakesManager.shared
     @State private var selectedLevel: SBLevelWithProgress?
@@ -49,7 +50,7 @@ struct PathMapView: View {
                 pathBackground
 
                 if vm.isLoading && vm.levelsWithProgress.isEmpty {
-                    AppLoadingView(message: AL.s(.gameLoading))
+                    AppLoadingView(message: langManager.s(.gameLoading))
 
                 } else if let err = vm.errorMessage {
                     errorState(err)
@@ -86,7 +87,7 @@ struct PathMapView: View {
                                     HStack(spacing: 8) {
                                         Image(systemName: "exclamationmark.triangle.fill")
                                             .foregroundStyle(.white)
-                                        Text(AL.f(.pathMistakesFormat, mistakes.count))
+                                        Text(langManager.f(.pathMistakesFormat, mistakes.count))
                                             .font(.custom("Feather-Bold", size: 14))
                                             .foregroundStyle(.white)
                                     }
@@ -194,7 +195,7 @@ struct PathMapView: View {
                 if isRefreshingAfterQuiz {
                     ZStack {
                         Color.black.opacity(0.55).ignoresSafeArea()
-                        AppLoadingView(message: AL.s(.pathUpdating))
+                        AppLoadingView(message: langManager.s(.pathUpdating))
                     }
                     .zIndex(10)
                 }
@@ -267,7 +268,7 @@ struct PathMapView: View {
                     justClearedMistakes = false
                 }
             }) {
-                GameQuizView(sessionType: .mistakes, title: AL.s(.pathMistakesReview))
+                GameQuizView(sessionType: .mistakes, title: langManager.s(.pathMistakesReview))
             }
             // ── AI Quiz Navigation ────────────────────────────────
             .fullScreenCover(isPresented: $showAIQuiz) {
@@ -310,7 +311,7 @@ struct PathMapView: View {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 48))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
-            Text(AL.s(.pathSomethingWrong))
+            Text(langManager.s(.pathSomethingWrong))
                 .font(.custom("Feather-Bold", size: 17))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(err)
@@ -321,7 +322,7 @@ struct PathMapView: View {
             Button {
                 Task { await vm.loadCourses() }
             } label: {
-                Text(AL.s(.pathTryAgain))
+                Text(langManager.s(.pathTryAgain))
                     .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
@@ -337,11 +338,11 @@ struct PathMapView: View {
             Image(systemName: "globe.slash")
                 .font(.system(size: 64))
                 .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
-            Text(AL.s(.pathNoCourseForLang))
+            Text(langManager.s(.pathNoCourseForLang))
                 .font(.custom("Feather-Bold", size: 20))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
-            Text(AL.s(.pathNoCourseForLangHint))
+            Text(langManager.s(.pathNoCourseForLangHint))
                 .font(.custom("Feather-Bold", size: 14))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -355,17 +356,17 @@ struct PathMapView: View {
             Image(systemName: "map")
                 .font(.system(size: 64))
                 .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
-            Text(AL.s(.pathNoCourses))
+            Text(langManager.s(.pathNoCourses))
                 .font(.custom("Feather-Bold", size: 20))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
-            Text(AL.s(.pathNoCoursesHint))
+            Text(langManager.s(.pathNoCoursesHint))
                 .font(.custom("Feather-Bold", size: 14))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
             Button {
                 Task { await vm.loadCourses() }
             } label: {
-                Label(AL.s(.pathRefresh), systemImage: "arrow.clockwise")
+                Label(langManager.s(.pathRefresh), systemImage: "arrow.clockwise")
                     .font(.custom("Feather-Bold", size: 15))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 28)
@@ -476,7 +477,7 @@ private struct UnitDividerView: View {
                             .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(accentColor)
                     }
-                    Text(AL.f(.pathUnitFormat, unitNumber))
+                    Text(langManager.f(.pathUnitFormat, unitNumber))
                         .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(status == .locked ? Color(hex: "#94a3b8") : Color(hex: "#1a1a2e"))
                 }
@@ -516,7 +517,7 @@ private struct UnitDividerView: View {
                 .frame(height: 3)
                 .padding(.horizontal, 48)
 
-                Text(AL.f(.pathLevelProgressFormat, completed, total))
+                Text(langManager.f(.pathLevelProgressFormat, completed, total))
                     .font(.custom("Feather-Bold", size: 10))
                     .foregroundStyle(Color(hex: "#94a3b8"))
             }
@@ -551,7 +552,7 @@ private struct UnitHeaderView: View {
 
             // Orta: başlık + progress
             VStack(alignment: .leading, spacing: 4) {
-                Text(AL.f(.pathUnitFormat, unitNumber))
+                Text(langManager.f(.pathUnitFormat, unitNumber))
                     .font(.custom("Feather-Bold", size: 17))
                     .foregroundStyle(status == .locked ? Color(hex: "#9ca3af") : Color(hex: "#1a1a2e"))
 
@@ -569,7 +570,7 @@ private struct UnitHeaderView: View {
                 }
                 .frame(height: 6)
 
-                Text(AL.f(.pathLevelProgressFormat, completedLevels, totalLevels))
+                Text(langManager.f(.pathLevelProgressFormat, completedLevels, totalLevels))
                     .font(.custom("Feather-Bold", size: 11))
                     .foregroundStyle(Color(hex: "#9ca3af"))
             }
@@ -615,9 +616,9 @@ private struct UnitHeaderView: View {
 
     private var statusText: String {
         switch status {
-        case .completed:            return AL.s(.pathStatusCompleted)
-        case .inProgress, .unlocked: return AL.s(.pathStatusInProgress)
-        case .locked:               return AL.s(.pathStatusLocked)
+        case .completed:            return langManager.s(.pathStatusCompleted)
+        case .inProgress, .unlocked: return langManager.s(.pathStatusInProgress)
+        case .locked:               return langManager.s(.pathStatusLocked)
         }
     }
 }
@@ -640,7 +641,7 @@ private struct PathHeaderView: View {
                 // Sol: Ünite bilgisi (scroll ile güncellenir)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
-                        Text(AL.f(.pathUnitFormat, currentUnit))
+                        Text(langManager.f(.pathUnitFormat, currentUnit))
                             .font(.custom("Feather-Bold", size: 20))
                             .foregroundStyle(Color(hex: "#1a1a2e"))
                             .contentTransition(.numericText())
@@ -653,7 +654,7 @@ private struct PathHeaderView: View {
                         }
                     }
 
-                    Text(course?.title ?? AL.s(.pathSelectCourse))
+                    Text(course?.title ?? langManager.s(.pathSelectCourse))
                         .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(.secondary)
                 }
@@ -758,7 +759,7 @@ struct PathNodeView: View {
         VStack(spacing: 8) {
             // Level label above node
             if item.status == .unlocked || item.status == .inProgress {
-                Text(AL.s(.pathStart))
+                Text(langManager.s(.pathStart))
                     .font(.custom("Feather-Bold", size: 11))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 14)
@@ -1106,11 +1107,11 @@ struct LevelCompletePopupView: View {
 
                 // Text Content
                 VStack(spacing: 8) {
-                    Text(AL.s(.pathWellDone))
+                    Text(langManager.s(.pathWellDone))
                         .font(.custom("Feather-Bold", size: 28))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                    Text(AL.s(.pathWellDoneDesc))
+                    Text(langManager.s(.pathWellDoneDesc))
                         .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -1119,7 +1120,7 @@ struct LevelCompletePopupView: View {
 
                 // Action Button
                 Button(action: dismiss) {
-                    Text(AL.s(.pathContinue))
+                    Text(langManager.s(.pathContinue))
                         .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -1181,11 +1182,11 @@ struct MistakesSavedPopupView: View {
                     .padding(.top, 10)
 
                 VStack(spacing: 8) {
-                    Text(AL.s(.pathDontBeSad))
+                    Text(langManager.s(.pathDontBeSad))
                         .font(.custom("Feather-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                    Text(AL.s(.pathDontBeSadDesc))
+                    Text(langManager.s(.pathDontBeSadDesc))
                         .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -1193,7 +1194,7 @@ struct MistakesSavedPopupView: View {
                 }
 
                 Button(action: dismiss) {
-                    Text(AL.s(.pathGotIt))
+                    Text(langManager.s(.pathGotIt))
                         .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -1234,11 +1235,11 @@ struct MistakesClearedPopupView: View {
                     .padding(.top, 10)
 
                 VStack(spacing: 8) {
-                    Text(AL.s(.pathGreatWork))
+                    Text(langManager.s(.pathGreatWork))
                         .font(.custom("Feather-Bold", size: 24))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                    Text(AL.s(.pathGreatWorkDesc))
+                    Text(langManager.s(.pathGreatWorkDesc))
                         .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -1246,7 +1247,7 @@ struct MistakesClearedPopupView: View {
                 }
 
                 Button(action: dismiss) {
-                    Text(AL.s(.pathHooray))
+                    Text(langManager.s(.pathHooray))
                         .font(.custom("Feather-Bold", size: 16))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -1286,7 +1287,7 @@ private struct MistakesUrgentBanner: View {
                     value: bouncing
                 )
 
-            Text(AL.s(.pathMistakesUrgent))
+            Text(langManager.s(.pathMistakesUrgent))
                 .font(.custom("Feather-Bold", size: 13))
                 .foregroundStyle(Color(hex: "#ff3b30"))
                 .multilineTextAlignment(.leading)

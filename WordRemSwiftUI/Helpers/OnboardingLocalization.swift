@@ -10,52 +10,40 @@ import Foundation
 
 struct OL {
 
-    // MARK: - Telefon Dili (UI metinleri için)
-    static var phoneCode: String {
-        let code = Locale.current.language.languageCode?.identifier ?? "en"
-        return supported.contains(code) ? code : "en"
-    }
+    // MARK: - Desteklenen Diller
+    static let supported = ["tr","en","de","fr","es","it","ru","zh"]
 
-    private static let supported = ["tr","en","de","fr","es","it","ru","zh"]
-
-    // MARK: - Kullanıcının Seçtiği Anadil (öğrenme içeriği için)
-    /// Onboarding'de seçilen anadil kodu. Bulunamazsa telefon diline döner.
+    // MARK: - Kullanıcının Seçtiği Anadil (UserDefaults'tan, fallback: "en")
+    /// Cihaz diline hiçbir bağımlılık yoktur.
     static var nativeLangCode: String {
-        UserDefaults.standard.string(forKey: "userNativeLangCode") ?? phoneCode
+        let saved = UserDefaults.standard.string(forKey: "userNativeLangCode") ?? "en"
+        return supported.contains(saved.lowercased()) ? saved.lowercased() : "en"
     }
 
-    // MARK: - String Çekme
+    // MARK: - String Çekme (code tabanlı — LanguageManager tarafından çağrılır)
+    static func s(_ key: Key, for code: String) -> String {
+        translations[code]?[key] ?? translations["en"]?[key] ?? key.rawValue
+    }
+
+    /// Geriye dönük uyumluluk — UserDefaults'taki dili kullanır.
     static func s(_ key: Key) -> String {
-        translations[phoneCode]?[key] ?? translations["en"]?[key] ?? key.rawValue
+        s(key, for: nativeLangCode)
     }
 
     static func f(_ key: Key, _ arg: String) -> String {
         String(format: s(key), arg)
     }
 
-    // MARK: - "For X speakers" subtitle — seçilen anadile göre
-    /// Kullanıcının seçtiği anadili kendi dilinde yazar: "Türkçe bilenler için" vs.
-    static func forSpeakersSubtitle(nativeLangCode: String) -> String {
-        let langName = Locale.current.localizedString(forLanguageCode: nativeLangCode)
-                       ?? Locale(identifier: "en").localizedString(forLanguageCode: nativeLangCode)
-                       ?? nativeLangCode.uppercased()
-        return f(.forSpeakersFormat, langName)
+    // MARK: - Dil İsmi (belirtilen locale'de)
+    static func languageName(for isoCode: String, in langCode: String = "") -> String {
+        let resolvedCode = langCode.isEmpty ? nativeLangCode : langCode
+        let locale = Locale(identifier: resolvedCode)
+        return locale.localizedString(forLanguageCode: isoCode) ?? isoCode.uppercased()
     }
 
-    /// Geriye dönük uyumluluk (telefon diline göre)
-    static var forSpeakersSubtitle: String {
-        forSpeakersSubtitle(nativeLangCode: phoneCode)
-    }
-
-    // MARK: - Dil İsimlerini Telefon Diline Göre Döndür
-    /// "İngilizce" yerine telefon İngilizce'yse "English" döner
-    static func languageName(for isoCode: String) -> String {
-        Locale.current.localizedString(forLanguageCode: isoCode) ?? isoCode
-    }
-
-    // MARK: - Quiz Kelime Bankası — telefon diline göre
-    static var quizCorrectWords: [String] {
-        switch phoneCode {
+    // MARK: - Quiz Kelime Bankası (code tabanlı)
+    static func quizCorrectWords(for code: String) -> [String] {
+        switch code {
         case "tr": return ["Dil", "öğrenmeyi", "seviyorum"]
         case "en": return ["I", "love", "learning", "languages"]
         case "de": return ["Ich", "liebe", "Sprachen", "lernen"]
@@ -67,8 +55,8 @@ struct OL {
         }
     }
 
-    static var quizDecoyWords: [String] {
-        switch phoneCode {
+    static func quizDecoyWords(for code: String) -> [String] {
+        switch code {
         case "tr": return ["olmak", "Nasılsın", "zaman", "Harika"]
         case "en": return ["she", "hates", "cooking", "music"]
         case "de": return ["bin", "nicht", "gut", "heute"]
@@ -79,6 +67,10 @@ struct OL {
         default:   return ["she", "hates", "cooking", "music"]
         }
     }
+
+    /// Geriye dönük uyumluluk
+    static var quizCorrectWords: [String] { quizCorrectWords(for: nativeLangCode) }
+    static var quizDecoyWords: [String] { quizDecoyWords(for: nativeLangCode) }
 
     // MARK: - Keys
     enum Key: String {

@@ -37,6 +37,7 @@ enum AppTab: Int, CaseIterable {
 }
 
 struct MainTabView: View {
+    @EnvironmentObject var langManager: LanguageManager
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @StateObject private var homeVM = HomeScreenViewModel()
     @StateObject private var pathVM = PathMapViewModel()

@@ -19,6 +19,7 @@ struct WordRemSwiftUIApp: App {
     @StateObject private var sentenceViewModel = SentenceViewModel()
     @StateObject private var tabBarModifier = TabBarModifier()
     @StateObject private var motherTongueViewModel = MotherTongueViewModel()
+    @StateObject private var languageManager = LanguageManager.shared
 
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var startupDone = false
@@ -48,6 +49,8 @@ struct WordRemSwiftUIApp: App {
             .environmentObject(sentenceViewModel)
             .environmentObject(tabBarModifier)
             .environmentObject(motherTongueViewModel)
+            .environmentObject(languageManager)
+            .environment(\.layoutDirection, languageManager.layoutDirection)
             .preferredColorScheme(.light)
             .onAppear {
                 Task {
@@ -65,6 +68,9 @@ struct WordRemSwiftUIApp: App {
                             UIApplication.shared.registerForRemoteNotifications()
                         }
                     }
+
+                    // 3) Supabase'den kullanıcı dilini senkronize et (fallback: UserDefaults değeri korunur)
+                    await languageManager.syncFromSupabase()
                 }
             }
         }

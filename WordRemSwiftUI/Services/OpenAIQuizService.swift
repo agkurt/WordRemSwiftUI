@@ -173,7 +173,7 @@ final class OpenAIQuizService {
 
     func fullLangName(for code: String) -> String {
         Self.langNames[code.lowercased()]
-            ?? Locale.current.localizedString(forLanguageCode: code)
+            ?? Locale(identifier: OL.nativeLangCode).localizedString(forLanguageCode: code)
             ?? code.uppercased()
     }
 

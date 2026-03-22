@@ -8,6 +8,7 @@ import Lottie
 
 struct LeaderboardView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     @Binding var selectedTab: AppTab
     @StateObject private var vm = LeaderboardViewModel()
     @EnvironmentObject var authManager: AuthManager
@@ -38,7 +39,7 @@ struct LeaderboardView: View {
                             .font(.custom("Feather-Bold", size: 13))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
-                        Button(AL.s(.leaderboardTryAgain)) {
+                        Button(langManager.s(.leaderboardTryAgain)) {
                             Task { await vm.loadLeaderboard() }
                         }
                         .font(.custom("Feather-Bold", size: 14))
@@ -52,9 +53,9 @@ struct LeaderboardView: View {
                     Spacer()
                     VStack(spacing: 12) {
                         Text("🏆").font(.system(size: 60))
-                        Text(AL.s(.leaderboardNoPlayers))
+                        Text(langManager.s(.leaderboardNoPlayers))
                             .font(.custom("Feather-Bold", size: 17))
-                        Text(AL.s(.leaderboardNoPlayersHint))
+                        Text(langManager.s(.leaderboardNoPlayersHint))
                             .font(.custom("Feather-Bold", size: 13))
                             .foregroundStyle(.secondary)
                     }
@@ -142,11 +143,11 @@ struct LeaderboardView: View {
             MascotAnimationView(width: 130, height: 130)
 
             VStack(spacing: 6) {
-                Text(AL.s(.leaderboardJoinTitle))
+                Text(langManager.s(.leaderboardJoinTitle))
                     .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                Text(AL.s(.leaderboardJoinDesc))
+                Text(langManager.s(.leaderboardJoinDesc))
                     .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -156,7 +157,7 @@ struct LeaderboardView: View {
             Button {
                 selectedTab = .profile
             } label: {
-                Text(AL.s(.leaderboardSignIn))
+                Text(langManager.s(.leaderboardSignIn))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -177,10 +178,10 @@ struct LeaderboardView: View {
     private var leaderboardHeader: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
-                Text(AL.s(.leaderboardTitle))
+                Text(langManager.s(.leaderboardTitle))
                     .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
-                Text(AL.s(.leaderboardSubtitle))
+                Text(langManager.s(.leaderboardSubtitle))
                     .font(.custom("Feather-Bold", size: 12))
                     .foregroundStyle(.secondary)
             }
@@ -336,6 +337,7 @@ private struct PodiumSlot: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 private struct RankRow: View {
+    @EnvironmentObject var langManager: LanguageManager
     let rank: Int
     let user: SBUser
     let isCurrentUser: Bool
@@ -377,7 +379,7 @@ private struct RankRow: View {
                     Image(systemName: "flame.fill")
                         .font(.system(size: 10))
                         .foregroundStyle(.orange)
-                    Text(AL.f(.leaderboardDayStreak, user.streakDays))
+                    Text(langManager.f(.leaderboardDayStreak, user.streakDays))
                         .font(.custom("Feather-Bold", size: 11))
                         .foregroundStyle(.secondary)
                 }

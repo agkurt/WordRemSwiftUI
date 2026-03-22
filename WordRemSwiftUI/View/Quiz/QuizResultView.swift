@@ -10,6 +10,7 @@ import Lottie
 
 struct QuizResultView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     let score: Int       // 0–100
     let stars: Int       // 0–3
     let xpEarned: Int
@@ -43,7 +44,7 @@ struct QuizResultView: View {
                     .frame(width: 160, height: 160)
 
                 // Title
-                Text(passed ? AL.s(.resultLevelComplete) : AL.s(.resultKeepPracticing))
+                Text(passed ? langManager.s(.resultLevelComplete) : langManager.s(.resultKeepPracticing))
                     .font(.custom("Feather-Bold", size: 28))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
 
@@ -80,13 +81,13 @@ struct QuizResultView: View {
                     HStack(spacing: 16) {
                         ResultChip(
                             icon: "percent",
-                            label: AL.s(.resultScore),
+                            label: langManager.s(.resultScore),
                             value: "\(score)%",
                             color: scoreColor
                         )
                         ResultChip(
                             icon: "bolt.fill",
-                            label: AL.s(.resultXPEarned),
+                            label: langManager.s(.resultXPEarned),
                             value: "+\(xpEarned)",
                             color: .orange
                         )
@@ -98,7 +99,7 @@ struct QuizResultView: View {
 
                 // Action button
                 Button(action: onDone) {
-                    Text(passed ? AL.s(.resultContinue) : AL.s(.resultTryAgain))
+                    Text(passed ? langManager.s(.resultContinue) : langManager.s(.resultTryAgain))
                         .font(.custom("Feather-Bold", size: 18))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

@@ -9,12 +9,13 @@
 import SwiftUI
 
 struct PlanSelectionView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let languageName: String
     let languageCode: String
     let proficiencyLevel: Int
     var learningInterest: String = ""
     var dailyGoalMinutes: Int = 10
-    var nativeLangCode: String = OL.phoneCode
+    var nativeLangCode: String = OL.nativeLangCode
 
     // 0 = Pro, 1 = Free. Default Pro (recommended)
     @State private var selectedPlan: Int = 0
@@ -38,7 +39,7 @@ struct PlanSelectionView: View {
             HStack(alignment: .top, spacing: 16) {
                 MascotAnimationView(width: 70, height: 70)
 
-                Text(OL.s(.planSpeechBubble))
+                Text(langManager.s(.planSpeechBubble))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -72,7 +73,7 @@ struct PlanSelectionView: View {
                         Text("WordRem Pro")
                             .font(.custom("Feather-Bold", size: 18))
                             .foregroundStyle(Color.white)
-                        Text(OL.s(.planProSubtitle))
+                        Text(langManager.s(.planProSubtitle))
                             .font(.custom("Feather-Bold", size: 15))
                             .foregroundStyle(Color.white.opacity(0.9))
                     }
@@ -100,7 +101,7 @@ struct PlanSelectionView: View {
                         y: 5
                     )
                     .overlay(alignment: .topTrailing) {
-                        Text(OL.s(.planRecommended))
+                        Text(langManager.s(.planRecommended))
                             .font(.custom("Feather-Bold", size: 12))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 10)
@@ -127,10 +128,10 @@ struct PlanSelectionView: View {
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text(OL.s(.planFreeTitle))
+                            Text(langManager.s(.planFreeTitle))
                                 .font(.custom("Feather-Bold", size: 18))
                                 .foregroundStyle(Color(hex: "#1e293b"))
-                            Text(OL.s(.planFreeSubtitle))
+                            Text(langManager.s(.planFreeSubtitle))
                                 .font(.custom("Feather-Bold", size: 15))
                                 .foregroundStyle(Color(hex: "#64748b"))
                         }
@@ -178,7 +179,7 @@ struct PlanSelectionView: View {
                         navigateToLoading = true
                     }
                 } label: {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

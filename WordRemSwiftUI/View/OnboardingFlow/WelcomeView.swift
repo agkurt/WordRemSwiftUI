@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    
+
+    @EnvironmentObject var langManager: LanguageManager
     @State private var navigateToLanguage = false
     @State private var navigateToLogin = false
     
@@ -30,7 +31,7 @@ struct WelcomeView: View {
                     VStack(spacing: 16) {
                         WordRemLogoText(size: 42)
 
-                        Text(AL.s(.welcomeTagline))
+                        Text(langManager.s(.welcomeTagline))
                             .font(.custom("Feather-Bold", size: 18))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .multilineTextAlignment(.center)
@@ -44,7 +45,7 @@ struct WelcomeView: View {
                         Button(action: {
                             navigateToLanguage = true
                         }) {
-                            Text(AL.s(.welcomeStart))
+                            Text(langManager.s(.welcomeStart))
                                 .font(.custom("Feather-Bold", size: 17))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
@@ -58,7 +59,7 @@ struct WelcomeView: View {
                         Button(action: {
                             navigateToLogin = true
                         }) {
-                            Text(AL.s(.welcomeHaveAccount))
+                            Text(langManager.s(.welcomeHaveAccount))
                                 .font(.custom("Feather-Bold", size: 17))
                                 .foregroundStyle(AppTheme.Colors.primaryOrange)
                                 .frame(maxWidth: .infinity)
