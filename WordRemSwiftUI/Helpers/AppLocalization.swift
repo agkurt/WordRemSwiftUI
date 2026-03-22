@@ -357,6 +357,20 @@ struct AL {
         case navSettings                = "nav.settings"
         case navExampleSentences        = "nav.example_sentences"
 
+        // Welcome Popup — New User
+        case welcomeNewTitle            = "welcome.new_title"
+        case welcomeNewSubtitle         = "welcome.new_subtitle"
+        case welcomeNewFeature1         = "welcome.new_feature1"
+        case welcomeNewFeature2         = "welcome.new_feature2"
+        case welcomeNewFeature3         = "welcome.new_feature3"
+        case welcomeNewCTA              = "welcome.new_cta"
+
+        // Welcome Popup — Returning User
+        case welcomeBackTitle           = "welcome.back_title"
+        case welcomeBackMessageFormat   = "welcome.back_message_format"
+        case welcomeBackMotivation      = "welcome.back_motivation"
+        case welcomeBackCTA             = "welcome.back_cta"
+
         // Streak Celebration Screen
         case streakStartedTitle         = "streak.started_title"
         case streakContinuedTitle       = "streak.continued_title"
@@ -618,6 +632,16 @@ struct AL {
             .streakContinue:       "Devam",
             .navSettings:          "Ayarlar",
             .navExampleSentences:  "Örnek Cümleler",
+            .welcomeNewTitle:      "WordRem'e Hoşgeldin! 🎉",
+            .welcomeNewSubtitle:   "Dil öğreniminin en akıllı yolu",
+            .welcomeNewFeature1:   "⚡ Hızlı & eğlenceli quizler",
+            .welcomeNewFeature2:   "🔥 Streak sistemi ile motivasyonunu koru",
+            .welcomeNewFeature3:   "🏆 Liderlik tablosunda yüksel",
+            .welcomeNewCTA:        "Hadi Başlayalım!",
+            .welcomeBackTitle:     "Tekrar Hoşgeldin! 👋",
+            .welcomeBackMessageFormat: "Seni çok özledik, %@!",
+            .welcomeBackMotivation:    "Hedeflerine devam etme zamanı 💪",
+            .welcomeBackCTA:       "Devam Et",
         ],
 
         // ─────────────────────────────────────────
@@ -853,6 +877,16 @@ struct AL {
             .streakContinue:       "Continue",
             .navSettings:          "Settings",
             .navExampleSentences:  "Example Sentences",
+            .welcomeNewTitle:      "Welcome to WordRem! 🎉",
+            .welcomeNewSubtitle:   "The smartest way to learn languages",
+            .welcomeNewFeature1:   "⚡ Fast & fun quizzes",
+            .welcomeNewFeature2:   "🔥 Stay motivated with streaks",
+            .welcomeNewFeature3:   "🏆 Climb the leaderboard",
+            .welcomeNewCTA:        "Let's Get Started!",
+            .welcomeBackTitle:     "Welcome Back! 👋",
+            .welcomeBackMessageFormat: "We missed you so much, %@!",
+            .welcomeBackMotivation:    "Time to keep up with your goals 💪",
+            .welcomeBackCTA:       "Continue",
         ],
 
         // ─────────────────────────────────────────
@@ -1031,6 +1065,16 @@ struct AL {
             .navSettings:          "Einstellungen",
             .navExampleSentences:  "Beispielsätze",
             .streakContinue:       "Weiter",
+            .welcomeNewTitle:      "Willkommen bei WordRem! 🎉",
+            .welcomeNewSubtitle:   "Der cleverste Weg, Sprachen zu lernen",
+            .welcomeNewFeature1:   "⚡ Schnelle & spaßige Quizze",
+            .welcomeNewFeature2:   "🔥 Bleib motiviert mit Serien",
+            .welcomeNewFeature3:   "🏆 Erklimm die Bestenliste",
+            .welcomeNewCTA:        "Jetzt Starten!",
+            .welcomeBackTitle:     "Willkommen zurück! 👋",
+            .welcomeBackMessageFormat: "Wir haben dich so vermisst, %@!",
+            .welcomeBackMotivation:    "Zeit, deine Ziele weiterzuverfolgen 💪",
+            .welcomeBackCTA:       "Weiter",
         ],
 
         // ─────────────────────────────────────────
@@ -1209,6 +1253,16 @@ struct AL {
             .navSettings:          "Paramètres",
             .navExampleSentences:  "Exemples de phrases",
             .streakContinue:       "Continuer",
+            .welcomeNewTitle:      "Bienvenue sur WordRem ! 🎉",
+            .welcomeNewSubtitle:   "La façon la plus intelligente d'apprendre les langues",
+            .welcomeNewFeature1:   "⚡ Quiz rapides & amusants",
+            .welcomeNewFeature2:   "🔥 Reste motivé avec les séries",
+            .welcomeNewFeature3:   "🏆 Grimpe dans le classement",
+            .welcomeNewCTA:        "C'est parti !",
+            .welcomeBackTitle:     "Bon retour ! 👋",
+            .welcomeBackMessageFormat: "Tu nous as tellement manqué, %@ !",
+            .welcomeBackMotivation:    "Il est temps de continuer vers tes objectifs 💪",
+            .welcomeBackCTA:       "Continuer",
         ],
 
         // ─────────────────────────────────────────
@@ -1387,6 +1441,16 @@ struct AL {
             .navSettings:          "Ajustes",
             .navExampleSentences:  "Frases de ejemplo",
             .streakContinue:       "Continuar",
+            .welcomeNewTitle:      "¡Bienvenido a WordRem! 🎉",
+            .welcomeNewSubtitle:   "La forma más inteligente de aprender idiomas",
+            .welcomeNewFeature1:   "⚡ Quizzes rápidos y divertidos",
+            .welcomeNewFeature2:   "🔥 Mantente motivado con rachas",
+            .welcomeNewFeature3:   "🏆 Escala en el marcador",
+            .welcomeNewCTA:        "¡Comencemos!",
+            .welcomeBackTitle:     "¡Bienvenido de vuelta! 👋",
+            .welcomeBackMessageFormat: "¡Te echamos tanto de menos, %@!",
+            .welcomeBackMotivation:    "Es hora de seguir con tus metas 💪",
+            .welcomeBackCTA:       "Continuar",
         ],
 
         // ─────────────────────────────────────────
@@ -1565,6 +1629,16 @@ struct AL {
             .navSettings:          "Impostazioni",
             .navExampleSentences:  "Frasi di esempio",
             .streakContinue:       "Continua",
+            .welcomeNewTitle:      "Benvenuto su WordRem! 🎉",
+            .welcomeNewSubtitle:   "Il modo più intelligente per imparare le lingue",
+            .welcomeNewFeature1:   "⚡ Quiz veloci e divertenti",
+            .welcomeNewFeature2:   "🔥 Rimani motivato con le serie",
+            .welcomeNewFeature3:   "🏆 Scala la classifica",
+            .welcomeNewCTA:        "Iniziamo!",
+            .welcomeBackTitle:     "Bentornato! 👋",
+            .welcomeBackMessageFormat: "Ci sei mancato tanto, %@!",
+            .welcomeBackMotivation:    "È ora di continuare verso i tuoi obiettivi 💪",
+            .welcomeBackCTA:       "Continua",
         ],
 
         // ─────────────────────────────────────────
@@ -1743,6 +1817,16 @@ struct AL {
             .navSettings:          "Настройки",
             .navExampleSentences:  "Примеры предложений",
             .streakContinue:       "Продолжить",
+            .welcomeNewTitle:      "Добро пожаловать в WordRem! 🎉",
+            .welcomeNewSubtitle:   "Самый умный способ учить языки",
+            .welcomeNewFeature1:   "⚡ Быстрые и весёлые тесты",
+            .welcomeNewFeature2:   "🔥 Оставайся мотивированным с сериями",
+            .welcomeNewFeature3:   "🏆 Поднимайся в таблице лидеров",
+            .welcomeNewCTA:        "Начнём!",
+            .welcomeBackTitle:     "С возвращением! 👋",
+            .welcomeBackMessageFormat: "Мы так скучали по тебе, %@!",
+            .welcomeBackMotivation:    "Время продолжить к своим целям 💪",
+            .welcomeBackCTA:       "Продолжить",
         ],
 
         // ─────────────────────────────────────────
@@ -1921,6 +2005,16 @@ struct AL {
             .navSettings:          "设置",
             .navExampleSentences:  "例句",
             .streakContinue:       "继续",
+            .welcomeNewTitle:      "欢迎来到 WordRem！🎉",
+            .welcomeNewSubtitle:   "学习语言最聪明的方式",
+            .welcomeNewFeature1:   "⚡ 快速有趣的测验",
+            .welcomeNewFeature2:   "🔥 用连续学习保持动力",
+            .welcomeNewFeature3:   "🏆 登上排行榜",
+            .welcomeNewCTA:        "开始吧！",
+            .welcomeBackTitle:     "欢迎回来！👋",
+            .welcomeBackMessageFormat: "我们太想念你了，%@！",
+            .welcomeBackMotivation:    "是时候继续实现你的目标了 💪",
+            .welcomeBackCTA:       "继续",
         ],
     ]
     // swiftlint:enable line_length

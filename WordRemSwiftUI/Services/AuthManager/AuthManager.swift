@@ -19,6 +19,10 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
     @Published var loginError: String?
     @Published var isAnonymous: Bool = true
 
+    /// Login sonrası MainTabView'da gösterilecek popup türü.
+    /// MainTabView bunu consume edip nil'e çeker.
+    @Published var pendingWelcome: WelcomePopupType? = nil
+
     // Nonce for Apple Sign-In
     var currentNonce: String?
 
@@ -143,8 +147,11 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         }
         try await SupabaseAuthService.shared.signInAnonymously()
         let randomNum = Int.random(in: 1000...9999)
-        try await SupabaseAuthService.shared.ensureUserRow(username: "Guest-\(randomNum)")
+        let guestName = "Guest-\(randomNum)"
+        try await SupabaseAuthService.shared.ensureUserRow(username: guestName)
+        let anonId = SupabaseAuthService.shared.currentUserId?.uuidString ?? ""
         await MainActor.run {
+            self.pendingWelcome = self.resolveWelcomeType(userId: anonId, name: guestName)
             self.userIsLoggedIn = true
             self.authState = .signedIn
             self.isAnonymous = true
@@ -186,10 +193,11 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                     appleCredential.fullName?.givenName,
                     appleCredential.fullName?.familyName
                 ].compactMap { $0 }.joined(separator: " ")
-                try await SupabaseAuthService.shared.ensureUserRow(
-                    username: name.isEmpty ? "Apple User" : name
-                )
+                let resolvedName = name.isEmpty ? "Apple User" : name
+                try await SupabaseAuthService.shared.ensureUserRow(username: resolvedName)
+                let appleId = SupabaseAuthService.shared.currentUserId?.uuidString ?? ""
                 await MainActor.run {
+                    self.pendingWelcome = self.resolveWelcomeType(userId: appleId, name: resolvedName)
                     self.userIsLoggedIn = true
                     self.authState = .signedIn
                     self.isAnonymous = false
@@ -246,7 +254,9 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                         ?? user.profile?.email.split(separator: "@").first.map(String.init)
                         ?? "Google User"
                     try await SupabaseAuthService.shared.ensureUserRow(username: name)
+                    let googleId = SupabaseAuthService.shared.currentUserId?.uuidString ?? ""
                     await MainActor.run {
+                        self?.pendingWelcome = self?.resolveWelcomeType(userId: googleId, name: name)
                         self?.userIsLoggedIn = true
                         self?.authState = .signedIn
                         self?.isAnonymous = false
@@ -278,6 +288,20 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                 await MainActor.run { self.loginError = error.localizedDescription }
                 print("❌ Google sign-in error: \(error)")
             }
+        }
+    }
+
+    // MARK: - Welcome Popup Helpers
+
+    /// Kullanıcı ID'sine göre yeni/geri dönen kullanıcı tipini belirler.
+    /// Her hesap için UserDefaults'ta ayrı key tutar.
+    private func resolveWelcomeType(userId: String, name: String) -> WelcomePopupType {
+        let key = "hasSeenWelcome_\(userId)"
+        if UserDefaults.standard.bool(forKey: key) {
+            return .returning(name: name)
+        } else {
+            UserDefaults.standard.set(true, forKey: key)
+            return .newUser(name: name)
         }
     }
 

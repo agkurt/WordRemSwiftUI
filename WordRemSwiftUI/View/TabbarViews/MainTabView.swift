@@ -38,39 +38,54 @@ enum AppTab: Int, CaseIterable {
 
 struct MainTabView: View {
     @EnvironmentObject var langManager: LanguageManager
+    @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @StateObject private var homeVM = HomeScreenViewModel()
     @StateObject private var pathVM = PathMapViewModel()
     @State private var selectedTab: AppTab = .path
     @State private var showCreateDeck = false
+    @State private var showWelcomePopup = false
+    @State private var welcomeType: WelcomePopupType?
 
     var body: some View {
-        VStack(spacing: 0) {
-            // MARK: Page Content
-            Group {
-                switch selectedTab {
-                case .home:
-                    HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
-                case .path:
-                    PathMapView(vm: pathVM)
-                case .translate:
-                    NavigationStack { TranslationView() }
-                case .leaderboard:
-                    LeaderboardView(selectedTab: $selectedTab)
-                case .profile:
-                    NavigationStack { ProfileView() }
+        ZStack {
+            VStack(spacing: 0) {
+                // MARK: Page Content
+                Group {
+                    switch selectedTab {
+                    case .home:
+                        HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
+                    case .path:
+                        PathMapView(vm: pathVM)
+                    case .translate:
+                        NavigationStack { TranslationView() }
+                    case .leaderboard:
+                        LeaderboardView(selectedTab: $selectedTab)
+                    case .profile:
+                        NavigationStack { ProfileView() }
+                    }
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // MARK: Tab Bar
-            CustomTabBar(selected: $selectedTab, onAddTap: {
-                if let action = tabBarModifier.customAddAction {
-                    action()
-                } else {
-                    showCreateDeck = true
+                // MARK: Tab Bar
+                CustomTabBar(selected: $selectedTab, onAddTap: {
+                    if let action = tabBarModifier.customAddAction {
+                        action()
+                    } else {
+                        showCreateDeck = true
+                    }
+                })
+            }
+
+            // MARK: Welcome Popup
+            if showWelcomePopup, let wt = welcomeType {
+                WelcomePopupView(type: wt) {
+                    withAnimation { showWelcomePopup = false }
+                    authManager.pendingWelcome = nil
                 }
-            })
+                .transition(.opacity)
+                .zIndex(999)
+            }
         }
         .sheet(isPresented: $showCreateDeck) {
             PlusView(completion: {
@@ -78,6 +93,20 @@ struct MainTabView: View {
             })
             .presentationDetents([.large])
             .presentationCornerRadius(28)
+        }
+        .onAppear { checkPendingWelcome() }
+        .onChange(of: authManager.pendingWelcome != nil) { _, hasPending in
+            if hasPending { checkPendingWelcome() }
+        }
+    }
+
+    private func checkPendingWelcome() {
+        guard let pending = authManager.pendingWelcome, !showWelcomePopup else { return }
+        welcomeType = pending
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            withAnimation(.easeOut(duration: 0.2)) {
+                showWelcomePopup = true
+            }
         }
     }
 }
