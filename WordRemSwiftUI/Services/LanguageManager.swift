@@ -65,11 +65,6 @@ final class LanguageManager: ObservableObject {
         rtlCodes.contains(currentLanguageCode) ? .rightToLeft : .leftToRight
     }
 
-    /// SwiftUI `environment(\.layoutDirection, ...)` için kullanılır.
-    var userInterfaceLayoutDirection: UserInterfaceLayoutDirection {
-        rtlCodes.contains(currentLanguageCode) ? .rightToLeft : .leftToRight
-    }
-
     // MARK: - OL (Onboarding) String'leri
     func s(_ key: OL.Key) -> String {
         OL.s(key, for: currentLanguageCode)

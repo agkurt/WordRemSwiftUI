@@ -362,7 +362,7 @@ struct AL {
 
     // MARK: - Haftanın günleri kısaltmaları (Mon→Sun, ISO order)
     static var weekDayAbbreviations: [String] {
-        switch phoneCode {
+        switch LanguageManager.shared.currentLanguageCode {
         case "tr": return ["Pzt", "Sal", "Çrş", "Prş", "Cum", "Cts", "Paz"]
         case "de": return ["Mo",  "Di",  "Mi",  "Do",  "Fr",  "Sa",  "So"]
         case "fr": return ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
