@@ -54,7 +54,7 @@ final class AIQuizViewModel: ObservableObject {
         let rawCode    = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en"
         let targetLang = OpenAIQuizService.shared.fullLangName(for: rawCode)
         let nativeCode = OL.nativeLangCode
-        let nativeLang = Locale.current.localizedString(forLanguageCode: nativeCode) ?? "English"
+        let nativeLang = LanguageManager.shared.languageName(for: nativeCode)
 
         Task {
             do {

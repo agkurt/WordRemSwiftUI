@@ -8,6 +8,7 @@ import Lottie
 
 struct HomeScreenView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     @ObservedObject var viewModel: HomeScreenViewModel
     @EnvironmentObject var authManager: AuthManager
     @Binding var showCreateDeck: Bool
@@ -28,7 +29,7 @@ struct HomeScreenView: View {
                 VStack(spacing: 0) {
                     // MARK: Content
                     if viewModel.isLoading {
-                        AppLoadingView(message: AL.s(.homeLoadingDecks))
+                        AppLoadingView(message: langManager.s(.homeLoadingDecks))
                     } else if viewModel.cardNames.isEmpty {
                         EmptyDecksView(onAdd: { showCreateDeck = true })
                     } else {
@@ -40,7 +41,7 @@ struct HomeScreenView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "magnifyingglass")
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
-                            TextField(AL.s(.homeSearchPlaceholder), text: $searchText)
+                            TextField(langManager.s(.homeSearchPlaceholder), text: $searchText)
                                 .font(.custom("Feather-Bold", size: 15))
                                 .autocorrectionDisabled()
                                 .foregroundStyle(AppTheme.Colors.textPrimary)
@@ -66,7 +67,7 @@ struct HomeScreenView: View {
                                 Image(systemName: "magnifyingglass")
                                     .font(.system(size: 36))
                                     .foregroundStyle(.secondary)
-                                Text(AL.f(.homeNoResultsFormat, searchText))
+                                Text(langManager.f(.homeNoResultsFormat, searchText))
                                     .font(.custom("Feather-Bold", size: 15))
                                     .foregroundStyle(.secondary)
                             }
@@ -118,15 +119,16 @@ struct HomeScreenView: View {
 
 // MARK: - Header
 private struct HomeHeaderView: View {
+    @EnvironmentObject var langManager: LanguageManager
     @Binding var isEditing: Bool
 
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(AL.s(.homeMyDecks))
+                Text(langManager.s(.homeMyDecks))
                     .font(.custom("Feather-Bold", size: 28))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
-                Text(AL.s(.homeTapToStudy))
+                Text(langManager.s(.homeTapToStudy))
                     .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
@@ -153,6 +155,7 @@ private struct HomeHeaderView: View {
 
 // MARK: - Empty State
 private struct EmptyDecksView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let onAdd: () -> Void
 
     var body: some View {
@@ -163,10 +166,10 @@ private struct EmptyDecksView: View {
                 .frame(width: 160, height: 160)
 
             VStack(spacing: 8) {
-                Text(AL.s(.homeCreateFirstDeck))
+                Text(langManager.s(.homeCreateFirstDeck))
                     .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
-                Text(AL.s(.homeCreateFirstDeckHint))
+                Text(langManager.s(.homeCreateFirstDeckHint))
                     .font(.custom("Feather-Bold", size: 14))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -177,7 +180,7 @@ private struct EmptyDecksView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 16, weight: .semibold))
-                    Text(AL.s(.homeCreateDeck))
+                    Text(langManager.s(.homeCreateDeck))
                         .font(.custom("Feather-Bold", size: 15))
                 }
                 .foregroundStyle(.white)

@@ -7,6 +7,7 @@ import SwiftUI
 
 struct ProfileView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var vm = ProfileScreenViewModel()
     @ObservedObject private var achievementService = AchievementService.shared
@@ -108,10 +109,10 @@ struct ProfileView: View {
                         .foregroundStyle(Color(hex: "#f97316"))
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(AL.s(.profileSaveProgress))
+                    Text(langManager.s(.profileSaveProgress))
                         .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(Color(hex: "#1a1a2e"))
-                    Text(AL.s(.profileSaveProgressHint))
+                    Text(langManager.s(.profileSaveProgressHint))
                         .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(.secondary)
                 }
@@ -141,7 +142,7 @@ struct ProfileView: View {
                 Text(vm.username)
                     .font(.custom("Feather-Bold", size: 22))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
-                Text(AL.f(.profileLevelFormat, vm.userLevel))
+                Text(langManager.f(.profileLevelFormat, vm.userLevel))
                     .font(.custom("Feather-Bold", size: 12))
                     .foregroundStyle(.secondary)
             }
@@ -224,7 +225,7 @@ struct ProfileView: View {
 
                     // Level + XP + Streak inline
                     HStack(spacing: 8) {
-                        Label(AL.f(.profileLevelFormat, vm.userLevel), systemImage: "star.fill")
+                        Label(langManager.f(.profileLevelFormat, vm.userLevel), systemImage: "star.fill")
                             .font(.custom("Feather-Bold", size: 11))
                             .foregroundStyle(Color(hex: "#f59e0b"))
                         Label("\(vm.user?.totalXp ?? 0) XP", systemImage: "bolt.fill")
@@ -251,7 +252,7 @@ struct ProfileView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "crown.fill")
                         .font(.system(size: 14, weight: .semibold))
-                    Text(AL.s(.profileUpgradePro))
+                    Text(langManager.s(.profileUpgradePro))
                         .font(.custom("Feather-Bold", size: 14))
                 }
                 .foregroundStyle(.white)
@@ -277,13 +278,13 @@ struct ProfileView: View {
     private var compactStatsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
             CompactStatTile(icon: "bolt.fill",              color: Color(hex: "#f59e0b"),
-                            label: AL.s(.profileTotalXP),   value: "\(vm.user?.totalXp ?? 0)")
+                            label: langManager.s(.profileTotalXP),   value: "\(vm.user?.totalXp ?? 0)")
             CompactStatTile(icon: "flame.fill",             color: .orange,
-                            label: AL.s(.profileStreak),    value: AL.f(.profileDaysFormat, vm.user?.streakDays ?? 0))
+                            label: langManager.s(.profileStreak),    value: langManager.f(.profileDaysFormat, vm.user?.streakDays ?? 0))
             CompactStatTile(icon: "checkmark.circle.fill",  color: .green,
-                            label: AL.s(.profileCompleted), value: "\(vm.stats.completedLevels)")
+                            label: langManager.s(.profileCompleted), value: "\(vm.stats.completedLevels)")
             CompactStatTile(icon: "target",                 color: Color(hex: "#E8409C"),
-                            label: AL.s(.profileAccuracy),  value: String(format: "%.0f%%", vm.stats.accuracy))
+                            label: langManager.s(.profileAccuracy),  value: String(format: "%.0f%%", vm.stats.accuracy))
         }
     }
 
@@ -292,7 +293,7 @@ struct ProfileView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Header row
             HStack {
-                Text(AL.s(.profileAchievements))
+                Text(langManager.s(.profileAchievements))
                     .font(.custom("Poppins-Bold", size: 17))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
 
@@ -310,7 +311,7 @@ struct ProfileView: View {
                 Button {
                     showAllAchievements = true
                 } label: {
-                    Text(AL.s(.achievementViewMore))
+                    Text(langManager.s(.achievementViewMore))
                         .font(.custom("Poppins-SemiBold", size: 12))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                 }
@@ -349,7 +350,7 @@ struct ProfileView: View {
             HStack(spacing: 8) {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 14, weight: .semibold))
-                Text(AL.s(.profileSignOut))
+                Text(langManager.s(.profileSignOut))
                     .font(.custom("Feather-Bold", size: 14))
             }
             .foregroundStyle(.red)
@@ -595,6 +596,7 @@ private struct AchievementBadge: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 struct AllAchievementsSheet: View {
+    @EnvironmentObject var langManager: LanguageManager
     let achievements: [Achievement]
     @Environment(\.dismiss) private var dismiss
 
@@ -648,7 +650,7 @@ struct AllAchievementsSheet: View {
                     .padding(.bottom, 32)
                 }
             }
-            .navigationTitle(AL.s(.achievementAllTitle))
+            .navigationTitle(langManager.s(.achievementAllTitle))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -664,6 +666,7 @@ struct AllAchievementsSheet: View {
 }
 
 private struct AchievementGridCell: View {
+    @EnvironmentObject var langManager: LanguageManager
     let achievement: Achievement
 
     var body: some View {
@@ -708,7 +711,7 @@ private struct AchievementGridCell: View {
                 .lineLimit(2)
 
             if achievement.isUnlocked {
-                Text(AL.s(.achievementUnlockedBadge))
+                Text(langManager.s(.achievementUnlockedBadge))
                     .font(.custom("Poppins-Regular", size: 10))
                     .foregroundStyle(achievement.rarity.color)
                     .padding(.horizontal, 8)
@@ -737,6 +740,7 @@ private struct AchievementGridCell: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 struct CharacterPickerSheet: View {
+    @EnvironmentObject var langManager: LanguageManager
     @Binding var selected: String?
     @Environment(\.dismiss) private var dismiss
 
@@ -815,7 +819,7 @@ struct CharacterPickerSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(AL.s(.profileClose)) { dismiss() }
+                    Button(langManager.s(.profileClose)) { dismiss() }
                         .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(Color(hex: "#E8409C"))
                 }
@@ -833,6 +837,7 @@ struct CharacterPickerSheet: View {
 // MARK: ═══════════════════════════════════════════════════════════
 
 struct GuestLoginSheet: View {
+    @EnvironmentObject var langManager: LanguageManager
     var onEmailSelected: (() -> Void)? = nil
 
     @EnvironmentObject var authManager: AuthManager
@@ -857,11 +862,11 @@ struct GuestLoginSheet: View {
                             )
                             .padding(.top, 8)
 
-                        Text(AL.s(.profileSaveProgress))
+                        Text(langManager.s(.profileSaveProgress))
                             .font(.custom("Feather-Bold", size: 22))
                             .foregroundStyle(Color(hex: "#1a1a2e"))
 
-                        Text(AL.s(.profileSaveProgressDesc))
+                        Text(langManager.s(.profileSaveProgressDesc))
                             .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -873,7 +878,7 @@ struct GuestLoginSheet: View {
                         // Apple
                         GuestLoginButton(
                             icon: "apple.logo",
-                            label: AL.s(.profileLoginApple),
+                            label: langManager.s(.profileLoginApple),
                             background: Color.black,
                             foreground: .white
                         ) {
@@ -886,7 +891,7 @@ struct GuestLoginSheet: View {
                         // Google
                         GuestLoginButton(
                             icon: "g.circle.fill",
-                            label: AL.s(.profileLoginGoogle),
+                            label: langManager.s(.profileLoginGoogle),
                             background: Color(hex: "#f1f5f9"),
                             foreground: Color(hex: "#1a1a2e")
                         ) {
@@ -901,7 +906,7 @@ struct GuestLoginSheet: View {
                         // E-posta
                         GuestLoginButton(
                             icon: "envelope.fill",
-                            label: AL.s(.profileLoginEmail),
+                            label: langManager.s(.profileLoginEmail),
                             background: Color(hex: "#f97316"),
                             foreground: .white
                         ) {
@@ -921,7 +926,7 @@ struct GuestLoginSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(AL.s(.profileClose)) { dismiss() }
+                    Button(langManager.s(.profileClose)) { dismiss() }
                         .font(.custom("Feather-Bold", size: 14))
                         .foregroundStyle(.secondary)
                 }
@@ -963,6 +968,7 @@ private struct GuestLoginButton: View {
 
 // MARK: - Username Setup Popup (mandatory, kapatılamaz)
 private struct UsernameSetupPopup: View {
+    @EnvironmentObject var langManager: LanguageManager
     let initialUsername: String
     let isFirstSetup: Bool   // true → zorunlu (ilk login), false → profil butonu (1 kez hak)
     let onDismiss: () -> Void
@@ -1006,21 +1012,21 @@ private struct UsernameSetupPopup: View {
 
                 MascotAnimationView(width: 110, height: 110)
 
-                Text(isFirstSetup ? AL.s(.profileSetUsername) : AL.s(.profileChangeUsername))
+                Text(isFirstSetup ? langManager.s(.profileSetUsername) : langManager.s(.profileChangeUsername))
                     .font(.custom("Feather-Bold", size: 20))
                     .foregroundStyle(Color(hex: "#1a1a2e"))
                     .padding(.top, 6)
 
                 Text(isFirstSetup
-                     ? AL.s(.profileUsernameLeaderboard)
-                     : AL.s(.profileUsernameOneChange))
+                     ? langManager.s(.profileUsernameLeaderboard)
+                     : langManager.s(.profileUsernameOneChange))
                     .font(.custom("Feather-Bold", size: 13))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .padding(.top, 4)
 
-                TextField(AL.s(.profileUsernamePlaceholder), text: $username)
+                TextField(langManager.s(.profileUsernamePlaceholder), text: $username)
                     .font(.custom("Feather-Bold", size: 15))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
@@ -1041,7 +1047,7 @@ private struct UsernameSetupPopup: View {
                         if isSaving {
                             ProgressView().tint(.white)
                         } else {
-                            Text(AL.s(.profileSave))
+                            Text(langManager.s(.profileSave))
                                 .font(.custom("Feather-Bold", size: 16))
                                 .foregroundStyle(.white)
                         }

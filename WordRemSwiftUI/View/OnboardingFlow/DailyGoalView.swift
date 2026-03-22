@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DailyGoalView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let proficiencyLevel: Int
@@ -135,7 +136,7 @@ struct DailyGoalView: View {
                     }
                     navigateToQuiz = true
                 } label: {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedGoal == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)

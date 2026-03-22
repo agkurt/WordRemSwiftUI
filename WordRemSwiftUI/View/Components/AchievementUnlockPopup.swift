@@ -12,6 +12,7 @@ import Lottie
 
 struct AchievementUnlockPopup: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     let achievement: Achievement
     let onDismiss: () -> Void
 
@@ -85,7 +86,7 @@ struct AchievementUnlockPopup: View {
 
                     // "New Achievement!" header
                     VStack(spacing: 4) {
-                        Text(AL.s(.achievementNewUnlocked))
+                        Text(langManager.s(.achievementNewUnlocked))
                             .font(.custom("Poppins-Bold", size: 13))
                             .foregroundStyle(achievement.rarity.color)
 
@@ -103,7 +104,7 @@ struct AchievementUnlockPopup: View {
                         .padding(.horizontal, 8)
 
                     // Dismiss hint
-                    Text(AL.s(.achievementTapToDismiss))
+                    Text(langManager.s(.achievementTapToDismiss))
                         .font(.custom("Poppins-Regular", size: 12))
                         .foregroundStyle(Color(hex: "#94a3b8"))
                         .padding(.bottom, 4)

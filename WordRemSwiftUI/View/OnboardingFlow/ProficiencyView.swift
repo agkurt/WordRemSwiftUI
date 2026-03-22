@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProficiencyView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let nativeLangCode: String
@@ -16,10 +17,10 @@ struct ProficiencyView: View {
     
     var proficiencyLevels: [String] {
         [
-            OL.s(.level1),
-            OL.s(.level2),
-            OL.s(.level3),
-            OL.s(.level4)
+            langManager.s(.level1),
+            langManager.s(.level2),
+            langManager.s(.level3),
+            langManager.s(.level4)
         ]
     }
 
@@ -43,7 +44,7 @@ struct ProficiencyView: View {
                 MascotAnimationView(width: 70, height: 70)
                 
                 // Speech Bubble
-                Text(OL.f(.howMuchFormat, selectedLanguageName))
+                Text(langManager.f(.howMuchFormat, selectedLanguageName))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -110,7 +111,7 @@ struct ProficiencyView: View {
                 Button(action: {
                     navigateToResult = true
                 }) {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(selectedLevel == nil ? Color(hex: "#94a3b8") : .white)
                         .frame(maxWidth: .infinity)

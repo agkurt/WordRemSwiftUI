@@ -15,6 +15,7 @@ struct GameQuizView: View {
     let title: String
     var preloadedQuestions: [GameQuestion] = []
 
+    @EnvironmentObject var langManager: LanguageManager
     @StateObject private var vm = GameQuizViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var wordsLoaded = false
@@ -222,17 +223,7 @@ struct GameQuizView: View {
     }
 
     private func bottomCheckBar(onCheck: @escaping () -> Void) -> some View {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
-        let label: String
-        switch lang {
-        case "tr": label = "Kontrol Et"
-        case "de": label = "Überprüfen"
-        case "fr": label = "Vérifier"
-        case "es": label = "Comprobar"
-        case "it": label = "Controlla"
-        case "ru": label = "Проверить"
-        default:   label = "Check"
-        }
+        let label = langManager.s(.gameCheck)
         let hasSelection = pendingAnswer != nil
         return VStack(spacing: 0) {
             Divider().opacity(0.15)
@@ -793,9 +784,10 @@ private struct FeedbackPanel: View {
     let correctAnswer: String
     let onContinue: () -> Void
 
-    // Telefon diline göre tebrik / üzgün mesajları
+    @EnvironmentObject var langManager: LanguageManager
+
     private var titleText: String {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        let lang = langManager.currentLanguageCode
         if isCorrect {
             switch lang {
             case "tr": return ["Mükemmel! 🎉", "Harika! ✨", "Bravo! 🔥", "Süper! 🌟"].randomElement()!
@@ -807,22 +799,13 @@ private struct FeedbackPanel: View {
             default:   return ["Well done! 🎉", "Excellent! ✨", "Perfect! 🔥", "Amazing! 🌟"].randomElement()!
             }
         } else {
-            switch lang {
-            case "tr": return "Neredeyse! 💪"
-            case "de": return "Fast richtig! 💪"
-            case "fr": return "Presque ! 💪"
-            case "es": return "¡Casi! 💪"
-            case "it": return "Quasi! 💪"
-            case "ru": return "Почти! 💪"
-            default:   return "Not quite! 💪"
-            }
+            return langManager.s(.gameNotQuite)
         }
     }
 
     private var subtitleText: String {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
-        if isCorrect { return "" }
-        switch lang {
+        guard !isCorrect else { return "" }
+        switch langManager.currentLanguageCode {
         case "tr": return "Doğru cevap:"
         case "de": return "Richtige Antwort:"
         case "fr": return "Bonne réponse :"
@@ -834,16 +817,7 @@ private struct FeedbackPanel: View {
     }
 
     private var continueText: String {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
-        switch lang {
-        case "tr": return "Devam Et"
-        case "de": return "Weiter"
-        case "fr": return "Continuer"
-        case "es": return "Continuar"
-        case "it": return "Continua"
-        case "ru": return "Продолжить"
-        default:   return "Continue"
-        }
+        langManager.s(.gameContinue)
     }
 
     var body: some View {

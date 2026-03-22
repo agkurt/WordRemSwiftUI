@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BenefitsView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let proficiencyLevel: Int
@@ -33,7 +34,7 @@ struct BenefitsView: View {
                 MascotAnimationView(width: 70, height: 70)
                 
                 // Speech Bubble
-                Text(OL.s(.benefitsTitle))
+                Text(langManager.s(.benefitsTitle))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -68,10 +69,10 @@ struct BenefitsView: View {
                         .frame(width: 40)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(OL.s(.benefit1Title))
+                        Text(langManager.s(.benefit1Title))
                             .font(.custom("Feather-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
-                        Text(OL.s(.benefit1Desc))
+                        Text(langManager.s(.benefit1Desc))
                             .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
@@ -86,10 +87,10 @@ struct BenefitsView: View {
                         .frame(width: 40)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(OL.s(.benefit2Title))
+                        Text(langManager.s(.benefit2Title))
                             .font(.custom("Feather-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
-                        Text(OL.s(.benefit2Desc))
+                        Text(langManager.s(.benefit2Desc))
                             .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
@@ -104,10 +105,10 @@ struct BenefitsView: View {
                         .frame(width: 40)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(OL.s(.benefit3Title))
+                        Text(langManager.s(.benefit3Title))
                             .font(.custom("Feather-Bold", size: 16))
                             .foregroundStyle(Color(hex: "#1e293b"))
-                        Text(OL.s(.benefit3Desc))
+                        Text(langManager.s(.benefit3Desc))
                             .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .fixedSize(horizontal: false, vertical: true)
@@ -124,7 +125,7 @@ struct BenefitsView: View {
                 Button(action: {
                     navigateToQuiz = true
                 }) {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

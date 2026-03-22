@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProficiencyResultView: View {
+    @EnvironmentObject var langManager: LanguageManager
     let selectedLanguageName: String
     let selectedLanguageCode: String
     let proficiencyLevel: Int
@@ -77,7 +78,7 @@ struct ProficiencyResultView: View {
                 Button(action: {
                     navigateToBenefits = true
                 }) {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)

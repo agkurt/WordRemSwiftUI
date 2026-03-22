@@ -10,12 +10,17 @@ import Foundation
 
 struct AL {
 
-    // MARK: - Telefon Dili (OL ile aynı)
-    static var phoneCode: String { OL.phoneCode }
+    // MARK: - Kullanıcı Dili (UserDefaults'tan, cihaz diline bağımlılık yok)
+    static var currentCode: String { OL.nativeLangCode }
 
-    // MARK: - String Çekme
+    // MARK: - String Çekme (code tabanlı — LanguageManager tarafından çağrılır)
+    static func s(_ key: Key, for code: String) -> String {
+        translations[code]?[key] ?? translations["en"]?[key] ?? key.rawValue
+    }
+
+    /// Geriye dönük uyumluluk — UserDefaults'taki dili kullanır.
     static func s(_ key: Key) -> String {
-        translations[phoneCode]?[key] ?? translations["en"]?[key] ?? key.rawValue
+        s(key, for: currentCode)
     }
 
     static func f(_ key: Key, _ arg: String) -> String {
@@ -30,9 +35,9 @@ struct AL {
         String(format: s(key), arg1, arg2)
     }
 
-    // MARK: - Paywall Reviews (per language)
-    static var paywallReviews: [(String, String)] {
-        switch phoneCode {
+    // MARK: - Paywall Reviews (code tabanlı)
+    static func paywallReviews(for code: String) -> [(String, String)] {
+        switch code {
         case "tr": return [
             ("3 ayda geçtiğimi düşündüğüm kelimeleri 3 haftada öğrendim!", "Mehmet K."),
             ("Reklamsız deneyim inanılmaz fark yaratıyor.", "Ayşe T."),
@@ -91,6 +96,9 @@ struct AL {
         ]
         }
     }
+
+    /// Geriye dönük uyumluluk
+    static var paywallReviews: [(String, String)] { paywallReviews(for: currentCode) }
 
     // MARK: - Keys
     enum Key: String {

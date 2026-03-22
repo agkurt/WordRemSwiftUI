@@ -9,6 +9,7 @@ import SafariServices
 
 struct OnboardingPaywallView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     var onContinue: () -> Void
 
     @Environment(\.presentationMode) var presentationMode
@@ -26,10 +27,10 @@ struct OnboardingPaywallView: View {
 
     // (asset, title, subtitle)
     private var features: [(String, String, String)] {[
-        ("paywall1", AL.s(.paywallFeature1), AL.s(.paywallFeature1Sub)),
-        ("paywall2", AL.s(.paywallFeature2), AL.s(.paywallFeature2Sub)),
-        ("paywall3", AL.s(.paywallFeature3), AL.s(.paywallFeature3Sub)),
-        ("paywall4", AL.s(.paywallFeature4), AL.s(.paywallFeature4Sub)),
+        ("paywall1", langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
+        ("paywall2", langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
+        ("paywall3", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
+        ("paywall4", langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
     ]}
 
     var body: some View {
@@ -61,7 +62,7 @@ struct OnboardingPaywallView: View {
                                 LinearGradient(colors: [proColor, proColorDark],
                                                startPoint: .leading, endPoint: .trailing)
                             )
-                        Text(AL.s(.paywallSubtitle))
+                        Text(langManager.s(.paywallSubtitle))
                             .font(.custom("Feather-Bold", size: 14))
                             .foregroundStyle(Color(hex: "#64748b"))
                             .multilineTextAlignment(.center)
@@ -105,10 +106,10 @@ struct OnboardingPaywallView: View {
                         if let pkg = weeklyPackage {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(AL.s(.paywallWeeklyPro))
+                                    Text(langManager.s(.paywallWeeklyPro))
                                         .font(.custom("Feather-Bold", size: 17))
                                         .foregroundStyle(.white)
-                                    Text(AL.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
+                                    Text(langManager.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
                                         .font(.custom("Feather-Bold", size: 14))
                                         .foregroundStyle(.white.opacity(0.88))
                                 }
@@ -126,7 +127,7 @@ struct OnboardingPaywallView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .shadow(color: proColor.opacity(0.35), radius: 10, y: 5)
                             .overlay(alignment: .topTrailing) {
-                                Text(AL.s(.paywallRecommended))
+                                Text(langManager.s(.paywallRecommended))
                                     .font(.custom("Feather-Bold", size: 10))
                                     .foregroundStyle(.white)
                                     .padding(.horizontal, 10)
@@ -137,11 +138,11 @@ struct OnboardingPaywallView: View {
                             }
                         } else if fetchFailed {
                             VStack(spacing: 8) {
-                                Text(AL.s(.paywallPriceFailed))
+                                Text(langManager.s(.paywallPriceFailed))
                                     .font(.custom("Feather-Bold", size: 14))
                                     .foregroundStyle(Color(hex: "#64748b"))
                                 Button { fetchPackage() } label: {
-                                    Text(AL.s(.paywallRetry))
+                                    Text(langManager.s(.paywallRetry))
                                         .font(.custom("Feather-Bold", size: 13))
                                         .foregroundStyle(proColor)
                                 }
@@ -162,7 +163,7 @@ struct OnboardingPaywallView: View {
 
                     // ── Purchase Button ────────────────────────────────
                     Button(action: purchaseWeekly) {
-                        Text(AL.s(.paywallContinue))
+                        Text(langManager.s(.paywallContinue))
                             .font(.custom("Feather-Bold", size: 17))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
@@ -181,9 +182,9 @@ struct OnboardingPaywallView: View {
 
                     // ── Legal ──────────────────────────────────────────
                     HStack(spacing: 20) {
-                        legalButton(AL.s(.paywallPrivacy)) { showPrivacy = true }
-                        legalButton(AL.s(.paywallTerms))   { showTerms = true }
-                        legalButton(AL.s(.paywallRestore)) { restorePurchases() }
+                        legalButton(langManager.s(.paywallPrivacy)) { showPrivacy = true }
+                        legalButton(langManager.s(.paywallTerms))   { showTerms = true }
+                        legalButton(langManager.s(.paywallRestore)) { restorePurchases() }
                     }
                     .padding(.bottom, 8)
                 }
@@ -212,10 +213,10 @@ struct OnboardingPaywallView: View {
         .onAppear {
             fetchPackage()
         }
-        .alert(AL.s(.paywallPurchaseFailed), isPresented: $showPurchaseErrorAlert) {
-            Button(AL.s(.paywallOk), role: .cancel) {}
+        .alert(langManager.s(.paywallPurchaseFailed), isPresented: $showPurchaseErrorAlert) {
+            Button(langManager.s(.paywallOk), role: .cancel) {}
         } message: {
-            Text(AL.s(.paywallPurchaseError))
+            Text(langManager.s(.paywallPurchaseError))
         }
         .sheet(isPresented: $showPrivacy) {
             SafariWebView(url: URL(string: "https://sites.google.com/view/wordremprivacy/home")!)

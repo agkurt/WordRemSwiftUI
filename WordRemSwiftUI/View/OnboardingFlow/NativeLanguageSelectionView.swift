@@ -11,6 +11,8 @@ import SwiftUI
 
 struct NativeLanguageSelectionView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
+
     // Tüm desteklenen diller — burada filtreleme YOK
     private let allNativeLanguages: [(flag: String, code: String)] = [
         ("🇹🇷", "tr"),
@@ -24,7 +26,7 @@ struct NativeLanguageSelectionView: View {
     ]
 
     // Telefon dilini varsayılan olarak seç — kullanıcı değiştirebilir
-    @State private var selectedCode: String = OL.phoneCode
+    @State private var selectedCode: String = OL.nativeLangCode
     @State private var navigateToLanguage = false
 
     var body: some View {
@@ -47,10 +49,10 @@ struct NativeLanguageSelectionView: View {
                 MascotAnimationView(width: 70, height: 70)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(OL.s(.nativeLangTitle))
+                    Text(langManager.s(.nativeLangTitle))
                         .font(.custom("Feather-Bold", size: 18))
                         .foregroundStyle(Color(hex: "#1e293b"))
-                    Text(OL.s(.nativeLangHint))
+                    Text(langManager.s(.nativeLangHint))
                         .font(.custom("Feather-Bold", size: 13))
                         .foregroundStyle(Color(hex: "#64748b"))
                 }
@@ -80,6 +82,8 @@ struct NativeLanguageSelectionView: View {
                         Button {
                             withAnimation(.easeInOut(duration: 0.15)) {
                                 selectedCode = lang.code
+                                // Seçilen dili anlık uygula — onboarding metinleri de bu dile geçer
+                                langManager.setLanguage(lang.code)
                             }
                         } label: {
                             HStack(spacing: 16) {
@@ -87,7 +91,7 @@ struct NativeLanguageSelectionView: View {
                                     .font(.system(size: 28))
                                     .frame(width: 40)
 
-                                Text(OL.languageName(for: lang.code))
+                                Text(langManager.languageName(for: lang.code))
                                     .font(.custom("Feather-Bold", size: 15))
                                     .foregroundStyle(Color(hex: "#1e293b"))
 
@@ -128,7 +132,7 @@ struct NativeLanguageSelectionView: View {
                 Button {
                     navigateToLanguage = true
                 } label: {
-                    Text(OL.s(.continueButton))
+                    Text(langManager.s(.continueButton))
                         .font(.custom("Feather-Bold", size: 17))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

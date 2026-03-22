@@ -11,6 +11,7 @@ import SwiftUI
 // MARK: - View
 struct StreakCelebrationView: View {
 
+    @EnvironmentObject var langManager: LanguageManager
     let streakDays: Int
     let onContinue: () -> Void
 
@@ -28,7 +29,7 @@ struct StreakCelebrationView: View {
         return (wd + 5) % 7
     }
 
-    private var days: [String] { AL.weekDayAbbreviations }
+    private var days: [String] { langManager.weekDayAbbreviations }
 
     private enum DayState { case today, streaked, missed, future }
 
@@ -97,14 +98,14 @@ struct StreakCelebrationView: View {
     private var headerTexts: some View {
         VStack(spacing: 10) {
             Text(streakDays == 1
-                 ? AL.s(.streakStartedTitle)
-                 : AL.f(.streakContinuedTitle, streakDays))
+                 ? langManager.s(.streakStartedTitle)
+                 : langManager.f(.streakContinuedTitle, streakDays))
                 .font(.custom("Poppins-Bold", size: 30))
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
 
-            Text(AL.s(.streakSubtitle))
+            Text(langManager.s(.streakSubtitle))
                 .font(.custom("Poppins-Regular", size: 15))
                 .foregroundStyle(.white.opacity(0.75))
                 .multilineTextAlignment(.center)
@@ -208,7 +209,7 @@ struct StreakCelebrationView: View {
     // MARK: - Continue button
     private var continueButton: some View {
         Button(action: onContinue) {
-            Text(AL.s(.streakContinue))
+            Text(langManager.s(.streakContinue))
                 .font(.custom("Poppins-Bold", size: 18))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
