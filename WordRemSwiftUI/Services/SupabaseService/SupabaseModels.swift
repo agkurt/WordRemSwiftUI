@@ -83,6 +83,132 @@ struct SBLevel: Codable, Identifiable {
         case iconName      = "icon_name"
         case isCheckpoint  = "is_checkpoint"
     }
+
+    /// Kullanıcının native diline göre lokalize edilmiş seviye başlığı.
+    /// Supabase'de `titles` sütunu eklenene kadar yerel sözlük kullanılır.
+    func localizedTitle(langCode: String) -> String {
+        let lang = langCode.lowercased()
+        return SBLevel.titleTranslations[title.lowercased()]?[lang]
+            ?? SBLevel.titleTranslations[title.lowercased()]?["en"]
+            ?? title
+    }
+
+    // MARK: - Yerel Seviye Başlığı Sözlüğü
+    // key: İngilizce başlık (lowercase), value: [langCode: çeviri]
+    private static let titleTranslations: [String: [String: String]] = [
+        "greetings": [
+            "tr": "Selamlaşmalar", "de": "Begrüßungen", "fr": "Salutations",
+            "es": "Saludos", "it": "Saluti", "ru": "Приветствия", "zh": "问候语"
+        ],
+        "numbers": [
+            "tr": "Sayılar", "de": "Zahlen", "fr": "Chiffres",
+            "es": "Números", "it": "Numeri", "ru": "Числа", "zh": "数字"
+        ],
+        "colors": [
+            "tr": "Renkler", "de": "Farben", "fr": "Couleurs",
+            "es": "Colores", "it": "Colori", "ru": "Цвета", "zh": "颜色"
+        ],
+        "animals": [
+            "tr": "Hayvanlar", "de": "Tiere", "fr": "Animaux",
+            "es": "Animales", "it": "Animali", "ru": "Животные", "zh": "动物"
+        ],
+        "food": [
+            "tr": "Yiyecekler", "de": "Essen", "fr": "Nourriture",
+            "es": "Comida", "it": "Cibo", "ru": "Еда", "zh": "食物"
+        ],
+        "family": [
+            "tr": "Aile", "de": "Familie", "fr": "Famille",
+            "es": "Familia", "it": "Famiglia", "ru": "Семья", "zh": "家庭"
+        ],
+        "travel": [
+            "tr": "Seyahat", "de": "Reise", "fr": "Voyage",
+            "es": "Viaje", "it": "Viaggio", "ru": "Путешествие", "zh": "旅行"
+        ],
+        "shopping": [
+            "tr": "Alışveriş", "de": "Einkaufen", "fr": "Shopping",
+            "es": "Compras", "it": "Shopping", "ru": "Покупки", "zh": "购物"
+        ],
+        "weather": [
+            "tr": "Hava Durumu", "de": "Wetter", "fr": "Météo",
+            "es": "Clima", "it": "Meteo", "ru": "Погода", "zh": "天气"
+        ],
+        "time": [
+            "tr": "Zaman", "de": "Zeit", "fr": "Temps",
+            "es": "Tiempo", "it": "Tempo", "ru": "Время", "zh": "时间"
+        ],
+        "body": [
+            "tr": "Vücut", "de": "Körper", "fr": "Corps",
+            "es": "Cuerpo", "it": "Corpo", "ru": "Тело", "zh": "身体"
+        ],
+        "health": [
+            "tr": "Sağlık", "de": "Gesundheit", "fr": "Santé",
+            "es": "Salud", "it": "Salute", "ru": "Здоровье", "zh": "健康"
+        ],
+        "work": [
+            "tr": "İş", "de": "Arbeit", "fr": "Travail",
+            "es": "Trabajo", "it": "Lavoro", "ru": "Работа", "zh": "工作"
+        ],
+        "home": [
+            "tr": "Ev", "de": "Zuhause", "fr": "Maison",
+            "es": "Casa", "it": "Casa", "ru": "Дом", "zh": "家"
+        ],
+        "school": [
+            "tr": "Okul", "de": "Schule", "fr": "École",
+            "es": "Escuela", "it": "Scuola", "ru": "Школа", "zh": "学校"
+        ],
+        "sports": [
+            "tr": "Spor", "de": "Sport", "fr": "Sport",
+            "es": "Deportes", "it": "Sport", "ru": "Спорт", "zh": "运动"
+        ],
+        "technology": [
+            "tr": "Teknoloji", "de": "Technologie", "fr": "Technologie",
+            "es": "Tecnología", "it": "Tecnologia", "ru": "Технологии", "zh": "科技"
+        ],
+        "hobbies": [
+            "tr": "Hobiler", "de": "Hobbys", "fr": "Loisirs",
+            "es": "Pasatiempos", "it": "Hobby", "ru": "Хобби", "zh": "爱好"
+        ],
+        "emotions": [
+            "tr": "Duygular", "de": "Gefühle", "fr": "Émotions",
+            "es": "Emociones", "it": "Emozioni", "ru": "Эмоции", "zh": "情感"
+        ],
+        "nature": [
+            "tr": "Doğa", "de": "Natur", "fr": "Nature",
+            "es": "Naturaleza", "it": "Natura", "ru": "Природа", "zh": "自然"
+        ],
+        "city": [
+            "tr": "Şehir", "de": "Stadt", "fr": "Ville",
+            "es": "Ciudad", "it": "Città", "ru": "Город", "zh": "城市"
+        ],
+        "transportation": [
+            "tr": "Ulaşım", "de": "Transport", "fr": "Transport",
+            "es": "Transporte", "it": "Trasporti", "ru": "Транспорт", "zh": "交通"
+        ],
+        "clothing": [
+            "tr": "Giyim", "de": "Kleidung", "fr": "Vêtements",
+            "es": "Ropa", "it": "Abbigliamento", "ru": "Одежда", "zh": "服装"
+        ],
+        "directions": [
+            "tr": "Yönler", "de": "Richtungen", "fr": "Directions",
+            "es": "Direcciones", "it": "Direzioni", "ru": "Направления", "zh": "方向"
+        ],
+        "at the restaurant": [
+            "tr": "Restoranda", "de": "Im Restaurant", "fr": "Au restaurant",
+            "es": "En el restaurante", "it": "Al ristorante", "ru": "В ресторане", "zh": "在餐厅"
+        ],
+        "at the airport": [
+            "tr": "Havalimanında", "de": "Am Flughafen", "fr": "À l'aéroport",
+            "es": "En el aeropuerto", "it": "All'aeroporto", "ru": "В аэропорту", "zh": "在机场"
+        ],
+        "daily routines": [
+            "tr": "Günlük Rutinler", "de": "Tagesroutinen", "fr": "Routines quotidiennes",
+            "es": "Rutinas diarias", "it": "Routine quotidiane", "ru": "Ежедневные рутины", "zh": "日常惯例"
+        ],
+        "introductions": [
+            "tr": "Tanışma", "de": "Vorstellungen", "fr": "Présentations",
+            "es": "Presentaciones", "it": "Presentazioni", "ru": "Знакомство", "zh": "介绍"
+        ],
+    ]
 }
 
 // MARK: - User Progress

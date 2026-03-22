@@ -85,6 +85,7 @@ struct MainTabView: View {
 // MARK: - Custom Tab Bar
 
 private struct CustomTabBar: View {
+    @EnvironmentObject var langManager: LanguageManager
     @Binding var selected: AppTab
     let onAddTap: () -> Void
 

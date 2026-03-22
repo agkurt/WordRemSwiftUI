@@ -25,16 +25,18 @@ struct DailyGoalView: View {
         let barHeights: [CGFloat]   // 4 bars, increasing height
     }
 
-    private let goals: [GoalOption] = [
-        GoalOption(minutes: 5,  label: "Casual",       barColor: Color(hex: "#4ade80"),
-                   barHeights: [8, 13, 18, 18]),
-        GoalOption(minutes: 10, label: "Regular",      barColor: Color(hex: "#60a5fa"),
-                   barHeights: [8, 13, 18, 24]),
-        GoalOption(minutes: 15, label: "Accelerated",  barColor: Color(hex: "#c084fc"),
-                   barHeights: [8, 13, 20, 28]),
-        GoalOption(minutes: 20, label: "Intense",      barColor: Color(hex: "#f472b6"),
-                   barHeights: [8, 14, 22, 30]),
-    ]
+    private var goals: [GoalOption] {
+        [
+            GoalOption(minutes: 5,  label: langManager.s(.dailyGoalCasual),
+                       barColor: Color(hex: "#4ade80"), barHeights: [8, 13, 18, 18]),
+            GoalOption(minutes: 10, label: langManager.s(.dailyGoalRegular),
+                       barColor: Color(hex: "#60a5fa"), barHeights: [8, 13, 18, 24]),
+            GoalOption(minutes: 15, label: langManager.s(.dailyGoalAccel),
+                       barColor: Color(hex: "#c084fc"), barHeights: [8, 13, 20, 28]),
+            GoalOption(minutes: 20, label: langManager.s(.dailyGoalIntense),
+                       barColor: Color(hex: "#f472b6"), barHeights: [8, 14, 22, 30]),
+        ]
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -54,7 +56,7 @@ struct DailyGoalView: View {
             HStack(alignment: .top, spacing: 16) {
                 MascotAnimationView(width: 70, height: 70)
 
-                Text("What is your daily goal\nfor practicing?")
+                Text(langManager.s(.dailyGoalQuestion))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)
@@ -96,7 +98,7 @@ struct DailyGoalView: View {
                             }
                             .frame(width: 34, height: 32, alignment: .bottom)
 
-                            Text("\(goal.minutes) min")
+                            Text(String(format: langManager.s(.dailyGoalMinFormat), goal.minutes))
                                 .font(.custom("Feather-Bold", size: 16))
                                 .foregroundStyle(Color(hex: "#1e293b"))
 

@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct SettingsView: View {
-    
+
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var langManager: LanguageManager
     
     let settings: Array<Setting> = [
         Setting(title: "Theme", color: .red, imageName: "heart.square.fill"),
@@ -33,7 +34,7 @@ struct SettingsView: View {
                 }
               
             }
-            .navigationTitle("Settings")
+            .navigationTitle(langManager.s(.navSettings))
         }
     }
 }

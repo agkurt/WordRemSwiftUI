@@ -259,7 +259,7 @@ struct PathMapView: View {
                     }
                 }
             }) { level in
-                GameQuizView(sessionType: .level(level.id), title: level.level.title)
+                GameQuizView(sessionType: .level(level.id), title: level.level.localizedTitle(langCode: langManager.currentLanguageCode))
             }
             // ── Mistakes Quiz Navigation ─────────────────────────
             .fullScreenCover(isPresented: $showMistakesQuiz, onDismiss: {
@@ -871,7 +871,7 @@ struct PathNodeView: View {
             .opacity(appeared ? 1.0 : 0)
 
             // Level title
-            Text(item.level.title)
+            Text(item.level.localizedTitle(langCode: langManager.currentLanguageCode))
                 .font(.custom("Feather-Bold", size: 13))
                 .foregroundStyle(item.status == .locked
                     ? AppTheme.Colors.textSecondary.opacity(0.5)

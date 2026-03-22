@@ -120,6 +120,32 @@ struct OL {
         // OnboardingLoadingView
         case loadingText        = "loading.text"
         case loadingMessage     = "loading.message"
+
+        // ProficiencyResultView
+        case profResultItsOkay      = "prof_result.its_okay"
+        case profResultPeopleAre    = "prof_result.people_are_format"
+        case profResultBeginner     = "prof_result.beginner"
+        case profResultElementary   = "prof_result.elementary"
+        case profResultIntermediate = "prof_result.intermediate"
+        case profResultUpperInter   = "prof_result.upper_intermediate"
+        case profResultAdvanced     = "prof_result.advanced"
+
+        // InterestView
+        case interestQuestion   = "interest.question_format"
+        case interestCareer     = "interest.career"
+        case interestEducation  = "interest.education"
+        case interestFunCulture = "interest.fun_culture"
+        case interestDaily      = "interest.daily"
+        case interestTravel     = "interest.travel"
+        case interestFamily     = "interest.friends_family"
+
+        // DailyGoalView
+        case dailyGoalQuestion  = "daily_goal.question"
+        case dailyGoalCasual    = "daily_goal.casual"
+        case dailyGoalRegular   = "daily_goal.regular"
+        case dailyGoalAccel     = "daily_goal.accelerated"
+        case dailyGoalIntense   = "daily_goal.intense"
+        case dailyGoalMinFormat = "daily_goal.min_format"
     }
 
     // MARK: - Çeviriler
@@ -159,6 +185,26 @@ struct OL {
             .planRecommended:   "TAVSİYE EDİLEN",
             .loadingText:       "YÜKLENİYOR...",
             .loadingMessage:    "İnsanlar WordRem'de, aynı süre boyunca bir sınıfta ders alan öğrencilerden daha fazla şey öğreniyor. Hem de evden çıkmalarına gerek kalmadan!",
+            .profResultItsOkay:      "Sorun değil! ",
+            .profResultPeopleAre:    " kişi\n%@ seviyesinde",
+            .profResultBeginner:     "başlangıç",
+            .profResultElementary:   "temel",
+            .profResultIntermediate: "orta",
+            .profResultUpperInter:   "üst-orta",
+            .profResultAdvanced:     "ileri",
+            .interestQuestion:   "Neden %@ öğrenmek istiyorsun?",
+            .interestCareer:     "Kariyer",
+            .interestEducation:  "Eğitim",
+            .interestFunCulture: "Eğlence ve kültür",
+            .interestDaily:      "Günlük hayat",
+            .interestTravel:     "Seyahat",
+            .interestFamily:     "Arkadaşlar ve aile",
+            .dailyGoalQuestion:  "Günlük pratik hedefiniz\nnedir?",
+            .dailyGoalCasual:    "Rahat",
+            .dailyGoalRegular:   "Düzenli",
+            .dailyGoalAccel:     "Hızlandırılmış",
+            .dailyGoalIntense:   "Yoğun",
+            .dailyGoalMinFormat: "%d dk",
         ],
 
         // ─────────────────────────────────────────
@@ -194,6 +240,26 @@ struct OL {
             .planRecommended:   "RECOMMENDED",
             .loadingText:       "LOADING...",
             .loadingMessage:    "People learn more on WordRem than students who spend the same time in a classroom — without even leaving home!",
+            .profResultItsOkay:      "It's okay! ",
+            .profResultPeopleAre:    " people\nare %@",
+            .profResultBeginner:     "beginner",
+            .profResultElementary:   "elementary",
+            .profResultIntermediate: "intermediate",
+            .profResultUpperInter:   "upper-intermediate",
+            .profResultAdvanced:     "advanced",
+            .interestQuestion:   "Why do you want to learn %@?",
+            .interestCareer:     "Career",
+            .interestEducation:  "Education",
+            .interestFunCulture: "Fun and culture",
+            .interestDaily:      "Daily life",
+            .interestTravel:     "Travel",
+            .interestFamily:     "Friends and family",
+            .dailyGoalQuestion:  "What is your daily goal\nfor practicing?",
+            .dailyGoalCasual:    "Casual",
+            .dailyGoalRegular:   "Regular",
+            .dailyGoalAccel:     "Accelerated",
+            .dailyGoalIntense:   "Intense",
+            .dailyGoalMinFormat: "%d min",
         ],
 
         // ─────────────────────────────────────────
@@ -229,6 +295,26 @@ struct OL {
             .planRecommended:   "EMPFOHLEN",
             .loadingText:       "WIRD GELADEN...",
             .loadingMessage:    "Menschen lernen mit WordRem mehr als Schüler, die die gleiche Zeit im Unterricht verbringen – und das ohne das Haus zu verlassen!",
+            .profResultItsOkay:      "Kein Problem! ",
+            .profResultPeopleAre:    " der Menschen\nsind %@",
+            .profResultBeginner:     "Anfänger",
+            .profResultElementary:   "Grundkenntnisse",
+            .profResultIntermediate: "Mittelstufe",
+            .profResultUpperInter:   "Obere Mittelstufe",
+            .profResultAdvanced:     "Fortgeschritten",
+            .interestQuestion:   "Warum möchtest du %@ lernen?",
+            .interestCareer:     "Karriere",
+            .interestEducation:  "Bildung",
+            .interestFunCulture: "Spaß und Kultur",
+            .interestDaily:      "Alltag",
+            .interestTravel:     "Reisen",
+            .interestFamily:     "Freunde und Familie",
+            .dailyGoalQuestion:  "Was ist dein tägliches\nLernziel?",
+            .dailyGoalCasual:    "Locker",
+            .dailyGoalRegular:   "Regelmäßig",
+            .dailyGoalAccel:     "Intensiviert",
+            .dailyGoalIntense:   "Intensiv",
+            .dailyGoalMinFormat: "%d Min",
         ],
 
         // ─────────────────────────────────────────
@@ -264,6 +350,26 @@ struct OL {
             .planRecommended:   "RECOMMANDÉ",
             .loadingText:       "CHARGEMENT...",
             .loadingMessage:    "Les gens apprennent plus avec WordRem que les élèves qui passent le même temps en classe — sans même quitter la maison !",
+            .profResultItsOkay:      "Pas de souci ! ",
+            .profResultPeopleAre:    " personnes\nsont %@",
+            .profResultBeginner:     "débutant",
+            .profResultElementary:   "élémentaire",
+            .profResultIntermediate: "intermédiaire",
+            .profResultUpperInter:   "intermédiaire avancé",
+            .profResultAdvanced:     "avancé",
+            .interestQuestion:   "Pourquoi veux-tu apprendre le %@ ?",
+            .interestCareer:     "Carrière",
+            .interestEducation:  "Éducation",
+            .interestFunCulture: "Loisirs et culture",
+            .interestDaily:      "Vie quotidienne",
+            .interestTravel:     "Voyage",
+            .interestFamily:     "Amis et famille",
+            .dailyGoalQuestion:  "Quel est ton objectif\nquotidien d'entraînement ?",
+            .dailyGoalCasual:    "Décontracté",
+            .dailyGoalRegular:   "Régulier",
+            .dailyGoalAccel:     "Accéléré",
+            .dailyGoalIntense:   "Intensif",
+            .dailyGoalMinFormat: "%d min",
         ],
 
         // ─────────────────────────────────────────
@@ -299,6 +405,26 @@ struct OL {
             .planRecommended:   "RECOMENDADO",
             .loadingText:       "CARGANDO...",
             .loadingMessage:    "¡Las personas aprenden más con WordRem que los estudiantes que pasan el mismo tiempo en clase, y sin salir de casa!",
+            .profResultItsOkay:      "¡No pasa nada! ",
+            .profResultPeopleAre:    " personas\nson %@",
+            .profResultBeginner:     "principiante",
+            .profResultElementary:   "elemental",
+            .profResultIntermediate: "intermedio",
+            .profResultUpperInter:   "intermedio avanzado",
+            .profResultAdvanced:     "avanzado",
+            .interestQuestion:   "¿Por qué quieres aprender %@?",
+            .interestCareer:     "Carrera",
+            .interestEducation:  "Educación",
+            .interestFunCulture: "Diversión y cultura",
+            .interestDaily:      "Vida cotidiana",
+            .interestTravel:     "Viajes",
+            .interestFamily:     "Amigos y familia",
+            .dailyGoalQuestion:  "¿Cuál es tu objetivo\ndiario de práctica?",
+            .dailyGoalCasual:    "Casual",
+            .dailyGoalRegular:   "Regular",
+            .dailyGoalAccel:     "Acelerado",
+            .dailyGoalIntense:   "Intenso",
+            .dailyGoalMinFormat: "%d min",
         ],
 
         // ─────────────────────────────────────────
@@ -334,6 +460,26 @@ struct OL {
             .planRecommended:   "CONSIGLIATO",
             .loadingText:       "CARICAMENTO...",
             .loadingMessage:    "Le persone imparano di più con WordRem rispetto agli studenti che trascorrono lo stesso tempo in classe, senza neanche uscire di casa!",
+            .profResultItsOkay:      "Non preoccuparti! ",
+            .profResultPeopleAre:    " persone\nsono %@",
+            .profResultBeginner:     "principiante",
+            .profResultElementary:   "elementare",
+            .profResultIntermediate: "intermedio",
+            .profResultUpperInter:   "intermedio avanzato",
+            .profResultAdvanced:     "avanzato",
+            .interestQuestion:   "Perché vuoi imparare il %@?",
+            .interestCareer:     "Carriera",
+            .interestEducation:  "Istruzione",
+            .interestFunCulture: "Divertimento e cultura",
+            .interestDaily:      "Vita quotidiana",
+            .interestTravel:     "Viaggio",
+            .interestFamily:     "Amici e famiglia",
+            .dailyGoalQuestion:  "Qual è il tuo obiettivo\ngiornaliero di pratica?",
+            .dailyGoalCasual:    "Casual",
+            .dailyGoalRegular:   "Regolare",
+            .dailyGoalAccel:     "Accelerato",
+            .dailyGoalIntense:   "Intenso",
+            .dailyGoalMinFormat: "%d min",
         ],
 
         // ─────────────────────────────────────────
@@ -369,6 +515,26 @@ struct OL {
             .planRecommended:   "РЕКОМЕНДУЕТСЯ",
             .loadingText:       "ЗАГРУЗКА...",
             .loadingMessage:    "Люди учатся с WordRem больше, чем студенты, проводящие столько же времени в классе — и даже не выходя из дома!",
+            .profResultItsOkay:      "Всё нормально! ",
+            .profResultPeopleAre:    " людей\n%@",
+            .profResultBeginner:     "начинающих",
+            .profResultElementary:   "на элементарном уровне",
+            .profResultIntermediate: "на среднем уровне",
+            .profResultUpperInter:   "выше среднего",
+            .profResultAdvanced:     "продвинутых",
+            .interestQuestion:   "Почему ты хочешь учить %@?",
+            .interestCareer:     "Карьера",
+            .interestEducation:  "Образование",
+            .interestFunCulture: "Развлечения и культура",
+            .interestDaily:      "Повседневная жизнь",
+            .interestTravel:     "Путешествия",
+            .interestFamily:     "Друзья и семья",
+            .dailyGoalQuestion:  "Какова твоя ежедневная\nцель практики?",
+            .dailyGoalCasual:    "Лёгкий",
+            .dailyGoalRegular:   "Обычный",
+            .dailyGoalAccel:     "Ускоренный",
+            .dailyGoalIntense:   "Интенсивный",
+            .dailyGoalMinFormat: "%d мин",
         ],
 
         // ─────────────────────────────────────────
@@ -404,6 +570,26 @@ struct OL {
             .planRecommended:   "推荐",
             .loadingText:       "加载中...",
             .loadingMessage:    "使用WordRem的人比在课堂上花同样时间的学生学得更多——甚至不需要出门！",
+            .profResultItsOkay:      "没关系！",
+            .profResultPeopleAre:    " 的人\n处于%@水平",
+            .profResultBeginner:     "初级",
+            .profResultElementary:   "基础",
+            .profResultIntermediate: "中级",
+            .profResultUpperInter:   "中高级",
+            .profResultAdvanced:     "高级",
+            .interestQuestion:   "你为什么想学%@？",
+            .interestCareer:     "职业",
+            .interestEducation:  "教育",
+            .interestFunCulture: "娱乐与文化",
+            .interestDaily:      "日常生活",
+            .interestTravel:     "旅行",
+            .interestFamily:     "朋友和家人",
+            .dailyGoalQuestion:  "你的每日练习目标\n是什么？",
+            .dailyGoalCasual:    "轻松",
+            .dailyGoalRegular:   "常规",
+            .dailyGoalAccel:     "加速",
+            .dailyGoalIntense:   "强化",
+            .dailyGoalMinFormat: "%d分钟",
         ],
     ]
     // swiftlint:enable line_length

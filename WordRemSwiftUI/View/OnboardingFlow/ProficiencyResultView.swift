@@ -24,9 +24,12 @@ struct ProficiencyResultView: View {
     }
 
     private var levelLabel: String {
-        let labels = ["beginner", "elementary", "intermediate", "upper-intermediate", "advanced"]
-        let index = min(proficiencyLevel, labels.count - 1)
-        return labels[index]
+        let keys: [OL.Key] = [
+            .profResultBeginner, .profResultElementary, .profResultIntermediate,
+            .profResultUpperInter, .profResultAdvanced
+        ]
+        let index = min(proficiencyLevel, keys.count - 1)
+        return langManager.s(keys[index])
     }
 
     // MARK: - Body
@@ -44,13 +47,13 @@ struct ProficiencyResultView: View {
                         .fill(Color(hex: "#f1f5f9"))
                         .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
 
-                    (Text("It's okay! ")
+                    (Text(langManager.s(.profResultItsOkay))
                         .font(.custom("Feather-Bold", size: 20))
                         .foregroundColor(Color(hex: "#1e293b"))
                     + Text(percentage)
                         .font(.custom("Feather-Bold", size: 20))
                         .foregroundColor(AppTheme.Colors.primaryOrange)
-                    + Text(" people\nare \(levelLabel)")
+                    + Text(langManager.f(.profResultPeopleAre, levelLabel))
                         .font(.custom("Feather-Bold", size: 20))
                         .foregroundColor(Color(hex: "#1e293b")))
                     .multilineTextAlignment(.center)

@@ -353,6 +353,10 @@ struct AL {
         case achWordGodTitle            = "ach.word_god.title"
         case achWordGodDesc             = "ach.word_god.desc"
 
+        // Navigation titles
+        case navSettings                = "nav.settings"
+        case navExampleSentences        = "nav.example_sentences"
+
         // Streak Celebration Screen
         case streakStartedTitle         = "streak.started_title"
         case streakContinuedTitle       = "streak.continued_title"
@@ -612,6 +616,8 @@ struct AL {
             .streakContinuedTitle: "%d Günlük Seri! 🔥",
             .streakSubtitle:       "Dil yolculuğunuz bugün başlıyor! Devam edin ve hedeflerinize ulaşın.",
             .streakContinue:       "Devam",
+            .navSettings:          "Ayarlar",
+            .navExampleSentences:  "Örnek Cümleler",
         ],
 
         // ─────────────────────────────────────────
@@ -845,6 +851,8 @@ struct AL {
             .streakContinuedTitle: "%d Day Streak! 🔥",
             .streakSubtitle:       "Your language journey starts today! Keep going and reach your goals.",
             .streakContinue:       "Continue",
+            .navSettings:          "Settings",
+            .navExampleSentences:  "Example Sentences",
         ],
 
         // ─────────────────────────────────────────
@@ -1020,6 +1028,8 @@ struct AL {
             .streakStartedTitle:   "Du hast eine Serie gestartet! 🔥",
             .streakContinuedTitle: "%d Tage Serie! 🔥",
             .streakSubtitle:       "Deine Sprachreise beginnt heute! Mach weiter und erreiche deine Ziele.",
+            .navSettings:          "Einstellungen",
+            .navExampleSentences:  "Beispielsätze",
             .streakContinue:       "Weiter",
         ],
 
@@ -1196,6 +1206,8 @@ struct AL {
             .streakStartedTitle:   "Vous avez démarré une série ! 🔥",
             .streakContinuedTitle: "Série de %d jours ! 🔥",
             .streakSubtitle:       "Votre voyage linguistique commence aujourd'hui ! Continuez à atteindre vos objectifs.",
+            .navSettings:          "Paramètres",
+            .navExampleSentences:  "Exemples de phrases",
             .streakContinue:       "Continuer",
         ],
 
@@ -1372,6 +1384,8 @@ struct AL {
             .streakStartedTitle:   "¡Has iniciado una racha! 🔥",
             .streakContinuedTitle: "¡Racha de %d días! 🔥",
             .streakSubtitle:       "¡Tu viaje lingüístico empieza hoy! Sigue adelante y alcanza tus metas.",
+            .navSettings:          "Ajustes",
+            .navExampleSentences:  "Frases de ejemplo",
             .streakContinue:       "Continuar",
         ],
 
@@ -1548,6 +1562,8 @@ struct AL {
             .streakStartedTitle:   "Hai iniziato una serie! 🔥",
             .streakContinuedTitle: "Serie di %d giorni! 🔥",
             .streakSubtitle:       "Il tuo viaggio linguistico inizia oggi! Continua e raggiungi i tuoi obiettivi.",
+            .navSettings:          "Impostazioni",
+            .navExampleSentences:  "Frasi di esempio",
             .streakContinue:       "Continua",
         ],
 
@@ -1724,6 +1740,8 @@ struct AL {
             .streakStartedTitle:   "Вы начали серию! 🔥",
             .streakContinuedTitle: "Серия %d дней! 🔥",
             .streakSubtitle:       "Ваш языковой путь начинается сегодня! Продолжайте и достигайте целей.",
+            .navSettings:          "Настройки",
+            .navExampleSentences:  "Примеры предложений",
             .streakContinue:       "Продолжить",
         ],
 
@@ -1900,6 +1918,8 @@ struct AL {
             .streakStartedTitle:   "你开启了连续学习！🔥",
             .streakContinuedTitle: "连续 %d 天！🔥",
             .streakSubtitle:       "你的语言之旅今天开始！继续前进，实现你的目标。",
+            .navSettings:          "设置",
+            .navExampleSentences:  "例句",
             .streakContinue:       "继续",
         ],
     ]

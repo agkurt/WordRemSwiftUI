@@ -17,14 +17,16 @@ struct InterestView: View {
     @State private var selectedInterest: Int?
     @State private var navigateToGoal = false
 
-    private let interests: [(label: String, asset: String)] = [
-        ("Career",            "career"),
-        ("Education",         "education"),
-        ("Fun and culture",   "funandculture"),
-        ("Daily",             "daily"),
-        ("Travel",            "travel"),
-        ("Friends and family","friendsandfamily"),
-    ]
+    private var interests: [(label: String, asset: String)] {
+        [
+            (langManager.s(.interestCareer),     "career"),
+            (langManager.s(.interestEducation),  "education"),
+            (langManager.s(.interestFunCulture), "funandculture"),
+            (langManager.s(.interestDaily),      "daily"),
+            (langManager.s(.interestTravel),     "travel"),
+            (langManager.s(.interestFamily),     "friendsandfamily"),
+        ]
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,7 +46,7 @@ struct InterestView: View {
             HStack(alignment: .top, spacing: 16) {
                 MascotAnimationView(width: 70, height: 70)
 
-                Text("Why do you want to learn \(selectedLanguageName)?")
+                Text(langManager.f(.interestQuestion, selectedLanguageName))
                     .font(.custom("Feather-Bold", size: 16))
                     .foregroundStyle(Color(hex: "#1e293b"))
                     .padding(16)

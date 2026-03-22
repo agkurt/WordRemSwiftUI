@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SentenceScreenView: View {
     @EnvironmentObject var sentenceViewModel: SentenceViewModel
+    @EnvironmentObject var langManager: LanguageManager
     @State private var showAlert = false
     @State private var selectedExample: String?
     @FocusState private var isInputFocused: Bool
@@ -144,7 +145,7 @@ struct SentenceScreenView: View {
             .onTapGesture {
                 UIApplication.shared.hideKeyboard()
             }
-            .navigationTitle("Example Sentences")
+            .navigationTitle(langManager.s(.navExampleSentences))
             .navigationBarTitleDisplayMode(.inline)
             .alert("Error", isPresented: $showAlert) {
                 Button("OK", role: .cancel) { }
