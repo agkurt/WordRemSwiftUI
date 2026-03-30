@@ -78,6 +78,49 @@ final class TTSManager {
         cache["\(text)|\(langCode)|normal"] != nil
     }
 
+    // MARK: - Sync TTS (fetch → duration → play)
+
+    /// Fetches (and caches) audio data, returns the actual audio duration in seconds.
+    /// Use this before `playAndAwait` so you know the duration for word-sync animations.
+    /// Falls back to a word-count estimate if network fails.
+    func fetchForSync(_ text: String, langCode: String) async -> TimeInterval {
+        let key = "\(text)|\(langCode)|normal"
+        if cache[key] == nil {
+            if let data = await fetchAudio(text: text, speed: 1.0) {
+                evictIfNeeded()
+                cache[key] = data
+            }
+        }
+        guard let data = cache[key] else {
+            // ~3.5 words/sec is the approximate rate for OpenAI nova voice
+            return Double(text.split(separator: " ").count) / 3.5
+        }
+        return await MainActor.run {
+            (try? AVAudioPlayer(data: data, fileTypeHint: AVFileType.mp3.rawValue))?.duration
+                ?? Double(text.split(separator: " ").count) / 3.5
+        }
+    }
+
+    /// Plays already-cached audio (call `fetchForSync` first) and awaits until playback finishes.
+    func playAndAwait(_ text: String, langCode: String) async {
+        let key = "\(text)|\(langCode)|normal"
+        guard let data = cache[key] else { return }
+        let duration = await MainActor.run { () -> TimeInterval in
+            configureAudioSession()
+            do {
+                audioPlayer = try AVAudioPlayer(data: data, fileTypeHint: AVFileType.mp3.rawValue)
+                audioPlayer?.prepareToPlay()
+                audioPlayer?.play()
+                return audioPlayer?.duration ?? 0
+            } catch {
+                print("⚠️ TTSManager playAndAwait error: \(error)")
+                return 0
+            }
+        }
+        guard duration > 0 else { return }
+        try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+    }
+
     // MARK: - OpenAI TTS
 
     private func playWithOpenAI(_ text: String, langCode: String, speed: Double, speedTag: String) async {

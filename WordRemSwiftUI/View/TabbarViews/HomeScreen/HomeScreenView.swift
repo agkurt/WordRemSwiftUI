@@ -186,15 +186,8 @@ private struct EmptyDecksView: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 28)
                 .padding(.vertical, 13)
-                .background(
-                    LinearGradient(
-                        colors: [Color(hex: "#f97316"), Color(hex: "#E8409C")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ),
-                    in: Capsule()
-                )
-                .shadow(color: Color(hex: "#f97316").opacity(0.35), radius: 12, y: 5)
+                .background(AppTheme.Colors.primaryOrange, in: Capsule())
+                .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.35), radius: 12, y: 5)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

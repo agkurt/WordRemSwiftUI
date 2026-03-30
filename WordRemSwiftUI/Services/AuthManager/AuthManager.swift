@@ -11,8 +11,9 @@ import SwiftUI
 import AuthenticationServices
 import CryptoKit
 import GoogleSignIn
+import RevenueCat
 
-class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
+class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
 
     @Published var authState = AuthState.signedOut
     @Published var userIsLoggedIn = false
@@ -117,10 +118,12 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         Task {
             do {
                 try await SupabaseAuthService.shared.signOut()
+                try? await Purchases.shared.logOut()
                 await MainActor.run {
                     self.userIsLoggedIn = false
                     self.authState = .signedOut
                     self.isAnonymous = true
+                    InAppPurchaseManager.shared.isPremium = false  // didSet → UserDefaults + DailyLimitManager
                     UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
                 }
                 EventManager.shared.logLogoutEvent()
@@ -170,6 +173,7 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         request.nonce = sha256(nonce)
         let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self
+        controller.presentationContextProvider = self
         controller.performRequests()
     }
 
@@ -203,6 +207,9 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                     self.isAnonymous = false
                     UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
                 }
+                // RevenueCat: giriş yapan kullanıcıyı tanımla → cross-device purchase sync
+                let _ = try? await Purchases.shared.logIn(appleId)
+                await InAppPurchaseManager.shared.syncPremiumStatus()
                 EventManager.shared.logLoginEvent(method: "apple")
             } catch {
                 await MainActor.run { self.loginError = error.localizedDescription }
@@ -262,6 +269,9 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                         self?.isAnonymous = false
                         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
                     }
+                    // RevenueCat: giriş yapan kullanıcıyı tanımla → cross-device purchase sync
+                    let _ = try? await Purchases.shared.logIn(googleId)
+                    await InAppPurchaseManager.shared.syncPremiumStatus()
                     EventManager.shared.logLoginEvent(method: "google")
                 } catch {
                     await MainActor.run { self?.loginError = error.localizedDescription }
@@ -302,6 +312,58 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         } else {
             UserDefaults.standard.set(true, forKey: key)
             return .newUser(name: name)
+        }
+    }
+
+    // MARK: - ASAuthorizationControllerPresentationContextProviding
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow } ?? UIWindow()
+    }
+
+    // MARK: - Delete Account
+    @Published var isDeleting: Bool = false
+    @Published var deleteError: String?
+
+    func deleteAccount() {
+        isDeleting = true
+        deleteError = nil
+        Task {
+            do {
+                let session = try await SupabaseService.shared.client.auth.session
+                let accessToken = session.accessToken
+
+                let baseURL = SupabaseService.shared.supabaseURLString
+                let url = URL(string: "\(baseURL)/functions/v1/delete-user")!
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+                let (_, response) = try await URLSession.shared.data(for: request)
+                guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                    throw URLError(.badServerResponse)
+                }
+
+                try? await Purchases.shared.logOut()
+                await MainActor.run {
+                    self.isDeleting = false
+                    self.userIsLoggedIn = false
+                    self.authState = .signedOut
+                    self.isAnonymous = true
+                    InAppPurchaseManager.shared.isPremium = false
+                    UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+                }
+                EventManager.shared.logLogoutEvent()
+            } catch {
+                await MainActor.run {
+                    self.deleteError = error.localizedDescription
+                    self.isDeleting = false
+                }
+                print("❌ Delete account error: \(error)")
+            }
         }
     }
 

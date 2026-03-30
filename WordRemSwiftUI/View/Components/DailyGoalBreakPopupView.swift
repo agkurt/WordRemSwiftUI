@@ -41,8 +41,8 @@ struct DailyGoalBreakPopupView: View {
                 ZStack {
                     // Background
                     UnevenRoundedRectangle(
-                        topLeadingRadius: 28, topTrailingRadius: 28,
-                        bottomLeadingRadius: 0, bottomTrailingRadius: 0
+                        topLeadingRadius: 28, bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 0, topTrailingRadius: 28
                     )
                     .fill(
                         LinearGradient(colors: [gradStart, gradEnd],
@@ -140,8 +140,8 @@ struct DailyGoalBreakPopupView: View {
                 .background(Color.white)
                 .clipShape(
                     UnevenRoundedRectangle(
-                        topLeadingRadius: 0, topTrailingRadius: 0,
-                        bottomLeadingRadius: 28, bottomTrailingRadius: 28
+                        topLeadingRadius: 0, bottomLeadingRadius: 28,
+                        bottomTrailingRadius: 28, topTrailingRadius: 0
                     )
                 )
             }

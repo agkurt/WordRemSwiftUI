@@ -21,6 +21,7 @@ struct OnboardingPaywallView: View {
     @State private var showPrivacy: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPurchaseErrorAlert: Bool = false
+    @State private var showWelcomePro: Bool = false
 
     private let proColor     = Color(hex: "#8b5cf6")
     private let proColorDark = Color(hex: "#7c3aed")
@@ -112,6 +113,9 @@ struct OnboardingPaywallView: View {
                                     Text(langManager.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
                                         .font(.custom("Feather-Bold", size: 14))
                                         .foregroundStyle(.white.opacity(0.88))
+                                    Text("1 week · auto-renewing")
+                                        .font(.custom("Feather-Bold", size: 11))
+                                        .foregroundStyle(.white.opacity(0.7))
                                 }
                                 Spacer()
                                 Image(systemName: "checkmark.circle.fill")
@@ -187,6 +191,14 @@ struct OnboardingPaywallView: View {
                         legalButton(langManager.s(.paywallRestore)) { restorePurchases() }
                     }
                     .padding(.bottom, 8)
+
+                    // ── Auto-renewal Disclosure (Apple requirement) ─────
+                    Text(langManager.s(.paywallDisclosure))
+                        .font(.system(size: 10))
+                        .foregroundStyle(Color(hex: "#94a3b8"))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 16)
                 }
                 .padding(.top, 4)
             }
@@ -224,6 +236,14 @@ struct OnboardingPaywallView: View {
         .sheet(isPresented: $showTerms) {
             SafariWebView(url: URL(string: "https://sites.google.com/view/wordremterms/home")!)
         }
+        .fullScreenCover(isPresented: $showWelcomePro) {
+            WelcomeProView {
+                showWelcomePro = false
+                presentationMode.wrappedValue.dismiss()
+                onContinue()
+            }
+            .environmentObject(langManager)
+        }
     }
 
     // MARK: - Legal Button
@@ -252,8 +272,7 @@ struct OnboardingPaywallView: View {
             if isSuccessful {
                 EventManager.shared.logPaywallEvent("purchase_success_weekly")
                 DispatchQueue.main.async {
-                    self.presentationMode.wrappedValue.dismiss()
-                    self.onContinue()
+                    self.showWelcomePro = true
                 }
             } else {
                 EventManager.shared.logPaywallEvent("purchase_failed_weekly")
@@ -271,8 +290,7 @@ struct OnboardingPaywallView: View {
             case .success:
                 EventManager.shared.logPaywallEvent("restore_success")
                 DispatchQueue.main.async {
-                    self.presentationMode.wrappedValue.dismiss()
-                    self.onContinue()
+                    self.showWelcomePro = true
                 }
             case .failure:
                 EventManager.shared.logPaywallEvent("restore_failed")

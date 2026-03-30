@@ -264,14 +264,7 @@ private struct AddButton: View {
                     .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
                     .overlay(
                         Circle()
-                            .stroke(
-                                LinearGradient(
-                                    colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C"), Color(hex: "#6B22E0")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 2
-                            )
+                            .stroke(AppTheme.Colors.primaryOrange, lineWidth: 2)
                     )
 
                 Image("plusicon")

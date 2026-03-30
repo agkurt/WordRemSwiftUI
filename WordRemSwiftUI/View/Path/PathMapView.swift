@@ -271,6 +271,7 @@ struct PathMapView: View {
             // ── AI Quiz Navigation ────────────────────────────────
             .fullScreenCover(isPresented: $showAIQuiz) {
                 AIQuizView()
+                    .environmentObject(langManager)
             }
             // Show mistakes-saved popup after level-complete popup is dismissed
             .onChange(of: showCompletionPopup) { _, isShowing in

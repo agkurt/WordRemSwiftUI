@@ -72,12 +72,9 @@ struct CardDetailView: View {
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
-                                .background(
-                                    LinearGradient(colors: [Color(hex: "#f97316"), Color(hex: "#ea580c")],
-                                                   startPoint: .leading, endPoint: .trailing)
-                                )
+                                .background(Color(hex: "#3B5BDB"))
                                 .clipShape(Capsule())
-                                .shadow(color: Color(hex: "#f97316").opacity(0.4), radius: 12, y: 6)
+                                .shadow(color: Color(hex: "#3B5BDB").opacity(0.28), radius: 12, y: 6)
                             }
                             .padding(.trailing, 20)
                             .padding(.bottom, 24)

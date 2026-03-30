@@ -17,10 +17,15 @@ private struct AIQuizPayload: Identifiable {
 
 struct AIQuizView: View {
     @StateObject private var vm = AIQuizViewModel()
+    @EnvironmentObject var langManager: LanguageManager
     @Environment(\.dismiss) private var dismiss
     @State private var quizPayload: AIQuizPayload? = nil
     @AppStorage("aiQuizOnboardingShown") private var onboardingShown = false
     @State private var showOnboarding = false
+    @State private var showPaywall = false
+
+    /// Konu seçildiğinde sesli intro için set edilir — intro bitince quize geçilir.
+    @State private var introTopic: AIQuizTopic? = nil
 
     var body: some View {
         ZStack {
@@ -70,12 +75,32 @@ struct AIQuizView: View {
                 }
             }
         }
+        // ── Sesli Konu Anlatımı ────────────────────────────────────────
+        .fullScreenCover(item: $introTopic) { topic in
+            AIGrammarVoiceIntroView(
+                topic: topic,
+                targetLangCode: UserDefaults.standard.string(
+                    forKey: "selectedTargetLanguageCode") ?? "en",
+                nativeLangCode: OL.nativeLangCode,
+                onProceed: { selectedTopic in
+                    introTopic = nil          // intro'yu kapat
+                    vm.selectTopic(selectedTopic)   // count picker'a geç
+                }
+            )
+            .environmentObject(langManager)
+        }
+        // ── Quiz ──────────────────────────────────────────────────────
         .fullScreenCover(item: $quizPayload, onDismiss: { vm.reset() }) { payload in
             GameQuizView(
                 sessionType: .aiGenerated(title: payload.title),
                 title: payload.title,
                 preloadedQuestions: payload.questions
             )
+        }
+        // ── Paywall ───────────────────────────────────────────────────
+        .fullScreenCover(isPresented: $showPaywall) {
+            OnboardingPaywallView(onContinue: { showPaywall = false })
+                .environmentObject(langManager)
         }
     }
 
@@ -134,7 +159,7 @@ struct AIQuizView: View {
             VStack(alignment: .leading, spacing: 28) {
                 // Featured topic (Simple Present)
                 FeaturedTopicCard(topic: .simplePresent) {
-                    vm.selectTopic(.simplePresent)
+                    introTopic = .simplePresent   // önce sesli intro
                 }
                 .padding(.horizontal, 16)
 
@@ -142,7 +167,7 @@ struct AIQuizView: View {
                 ForEach(AIQuizTopicCategory.allCases, id: \.self) { cat in
                     let topics = AIQuizTopic.allCases.filter { $0.category == cat && $0 != .simplePresent }
                     CategorySection(category: cat, topics: topics) { topic in
-                        vm.selectTopic(topic)
+                        introTopic = topic        // önce sesli intro
                     }
                 }
             }
@@ -184,19 +209,27 @@ struct AIQuizView: View {
     private func countPickerButtons(topic: AIQuizTopic) -> some View {
         HStack(spacing: 12) {
             ForEach(Array(vm.questionCounts.enumerated()), id: \.offset) { idx, count in
+                let isLocked = !vm.isPremium && count >= 15
                 CountButton(
                     count: count,
                     isSelected: vm.selectedCountIndex == idx,
+                    isLocked: isLocked,
                     gradientColors: topic.gradientColors
                 ) {
-                    withAnimation(.spring(response: 0.3)) { vm.selectedCountIndex = idx }
+                    if isLocked {
+                        showPaywall = true
+                    } else {
+                        withAnimation(.spring(response: 0.3)) { vm.selectedCountIndex = idx }
+                    }
                 }
             }
         }
     }
 
     private func generateButton(topic: AIQuizTopic) -> some View {
-        Button { vm.startGeneration(topic: topic) } label: {
+        Button {
+            if vm.hasReachedFreeLimit { showPaywall = true } else { vm.startGeneration(topic: topic) }
+        } label: {
             HStack(spacing: 8) {
                 Image(systemName: "sparkles").font(.system(size: 15, weight: .semibold))
                 Text("Generate Quiz").font(.custom("Feather-Bold", size: 16))
@@ -217,10 +250,10 @@ struct AIQuizView: View {
     private func loadingView(topic: AIQuizTopic, count: Int) -> some View {
         VStack(spacing: 24) {
             Spacer()
-            LottieView(animation: .named("StartAnimation"))
+            LottieView(animation: .named("reeny_waving"))
                 .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
                 .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                .frame(width: 120, height: 120)
+                .frame(width: 140, height: 140)
             VStack(spacing: 8) {
                 Text("Preparing your quiz...")
                     .font(.custom("Feather-Bold", size: 20))
@@ -386,30 +419,51 @@ private struct CategorySection: View {
 private struct CountButton: View {
     let count: Int
     let isSelected: Bool
+    let isLocked: Bool
     let gradientColors: [Color]
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                Text("\(count)").font(.custom("Feather-Bold", size: 24))
-                Text("soru").font(.custom("Feather-Bold", size: 11))
+            ZStack {
+                VStack(spacing: 4) {
+                    Text("\(count)").font(.custom("Feather-Bold", size: 24))
+                    Text("soru").font(.custom("Feather-Bold", size: 11))
+                }
+                .foregroundStyle(isLocked ? Color.gray.opacity(0.4) : (isSelected ? .white : AppTheme.Colors.textPrimary))
+
+                if isLocked {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(Color(hex: "#8b5cf6"))
+                                .padding(4)
+                                .background(Color(hex: "#8b5cf6").opacity(0.12), in: Circle())
+                        }
+                        Spacer()
+                    }
+                    .padding(6)
+                }
             }
-            .foregroundStyle(isSelected ? .white : AppTheme.Colors.textPrimary)
             .frame(width: 72, height: 72)
             .background(
                 RoundedRectangle(cornerRadius: 18)
-                    .fill(isSelected
-                        ? AnyShapeStyle(LinearGradient(colors: gradientColors, startPoint: .topLeading, endPoint: .bottomTrailing))
-                        : AnyShapeStyle(Color.white)
+                    .fill(isLocked
+                        ? AnyShapeStyle(Color.gray.opacity(0.06))
+                        : (isSelected
+                            ? AnyShapeStyle(LinearGradient(colors: gradientColors, startPoint: .topLeading, endPoint: .bottomTrailing))
+                            : AnyShapeStyle(Color.white)
+                          )
                     )
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 18)
-                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.12), lineWidth: 1)
+                    .stroke(isLocked ? Color(hex: "#8b5cf6").opacity(0.3) : (isSelected ? Color.clear : Color.gray.opacity(0.12)), lineWidth: 1)
             )
             .shadow(
-                color: isSelected ? (gradientColors.first?.opacity(0.35) ?? .clear) : Color.black.opacity(0.06),
+                color: isLocked ? .clear : (isSelected ? (gradientColors.first?.opacity(0.35) ?? .clear) : Color.black.opacity(0.06)),
                 radius: 8, y: 4
             )
             .scaleEffect(isSelected ? 1.08 : 1.0)

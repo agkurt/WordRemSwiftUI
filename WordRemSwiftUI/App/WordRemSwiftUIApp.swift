@@ -71,6 +71,9 @@ struct WordRemSwiftUIApp: App {
 
                     // 3) Supabase'den kullanıcı dilini senkronize et (fallback: UserDefaults değeri korunur)
                     await languageManager.syncFromSupabase()
+
+                    // 4) RevenueCat'ten premium durumunu senkronize et
+                    await InAppPurchaseManager.shared.syncPremiumStatus()
                 }
             }
         }

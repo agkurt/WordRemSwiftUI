@@ -163,6 +163,163 @@ final class OpenAIQuizService {
         }
     }
 
+    // MARK: - Grammar Voice Intro
+
+    /// Topic için yapılandırılmış, sesli ders açılışı üretir.
+    /// Selamlama → kısa açıklama → örnek cümle → "şimdi sen söyle" pratiği ile biter.
+    func generateGrammarIntro(topic: AIQuizTopic, targetLang: String, nativeLang: String) async -> String? {
+        guard hasAPIKey else { return nil }
+
+        let body = OAIRequest(
+            model: "gpt-4o-mini",
+            messages: [
+                OAIMessage(role: "system", content: """
+                    You are a brilliant, warm and funny \(targetLang) teacher. \
+                    You're having a real spoken conversation — not a textbook lesson. \
+                    The student's native language is \(nativeLang). Speak ONLY in \(nativeLang).
+
+                    This is the very first message. Do this:
+                    1. Say a warm, energetic greeting (1 sentence).
+                    2. Introduce the topic '\(topic.rawValue)' — explain the core idea in simple, everyday language (2 sentences max).
+                    3. Give ONE short \(targetLang) example sentence. Say it naturally, DO NOT add a \(nativeLang) translation in parentheses after it — trust the student.
+                    4. Ask the student to try saying it back to you. Use a casual, friendly phrase — not "Haydi sen de söyle" every time. Vary it.
+
+                    STRICT RULES:
+                    - Max 5 sentences total.
+                    - Plain spoken text ONLY — no bullet points, no parentheses with translations, no markdown.
+                    - Sound like a real human teacher on a phone call, not a robot.
+                    """),
+                OAIMessage(role: "user",
+                           content: "Start the lesson on '\(topic.rawValue)' for a \(targetLang) learner.")
+            ],
+            response_format: OAIResponseFormat(type: "text"),
+            temperature: 0.7
+        )
+
+        var req = URLRequest(url: endpoint)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        req.timeoutInterval = 20
+        req.httpBody = try? JSONEncoder().encode(body)
+
+        guard let (data, resp) = try? await URLSession.shared.data(for: req),
+              let http = resp as? HTTPURLResponse, http.statusCode == 200 else { return nil }
+
+        let decoded = try? JSONDecoder().decode(OAIResponse.self, from: data)
+        return decoded?.choices.first?.message.content
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Kullanıcının sesli sorusuna kısa, doğal bir yanıt üretir.
+    /// history: [(role: "user"|"assistant", content: String)]
+    func continueGrammarChat(
+        topic: AIQuizTopic,
+        history: [(role: String, content: String)],
+        userText: String,
+        targetLang: String,
+        nativeLang: String
+    ) async -> String? {
+        guard hasAPIKey else { return nil }
+
+        var messages: [OAIMessage] = [
+            OAIMessage(role: "system", content: """
+                You are a brilliant, fun, human-like \(targetLang) teacher in a SPOKEN voice lesson about '\(topic.rawValue)'. \
+                The student's native language is \(nativeLang).
+
+                RESPONSE LANGUAGE:
+                - ALWAYS respond in \(nativeLang) — even if the student writes in \(targetLang) or mixes languages.
+                - The student's message may be in \(nativeLang), \(targetLang), or garbled (speech recognition errors). Understand their intent and respond in \(nativeLang).
+
+                DEPTH — go beyond surface-level. For each topic, cover:
+                - The core rule AND the common exceptions or edge cases
+                - When native speakers actually use this form in real life (not just textbook usage)
+                - Common mistakes learners make and why
+                - Subtle differences (e.g. "I go" vs "I am going") when relevant
+                - Real-world example sentences, not just "She eats an apple"
+
+                EVALUATION — be smart and generous:
+                - Speech recognition is IMPERFECT. If the student's text looks garbled, assume they tried.
+                - If the attempt is close to correct, praise warmly and move on.
+                - Only correct CLEAR and MEANINGFUL mistakes. Show the right form once — never lecture.
+                - NEVER say the student is wrong if their input is short or unclear.
+
+                VARIETY — CRITICAL: look at the FULL conversation history before every response.
+                - Track exactly what you've already asked. NEVER repeat the same question type twice in a row.
+                - Banned if used in the last 2 turns: asking to "create your own sentence", asking to "say this sentence", asking the same grammar point.
+                - Rotate through: deep grammar explanation → concept question (answer in \(nativeLang)) → spot-the-error (give 2 sentences, ask which is wrong) → translation challenge (\(nativeLang)→\(targetLang)) → real-life usage ("when would you say this?") → asking the student a follow-up question about something they said.
+                - If the student asks a question, answer it THOROUGHLY and with genuine enthusiasm, then pivot to a new exercise.
+
+                STYLE:
+                - Max 3–4 sentences. Spoken audio — tight, punchy, human.
+                - NO bullet points, NO parentheses with translations, NO markdown.
+                - Sound like a witty, warm real person. Use natural reactions: "Vay be!", "Tam yerine!", "Harika!", "Beklemiyordum bunu!"
+                - If the student seems stuck or frustrated, drop everything and explain from scratch very simply.
+                """)
+        ]
+        messages += history.map { OAIMessage(role: $0.role, content: $0.content) }
+        messages.append(OAIMessage(role: "user", content: userText))
+
+        let body = OAIRequest(
+            model: "gpt-4o-mini",
+            messages: messages,
+            response_format: OAIResponseFormat(type: "text"),
+            temperature: 0.7
+        )
+
+        var req = URLRequest(url: endpoint)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        req.timeoutInterval = 20
+        req.httpBody = try? JSONEncoder().encode(body)
+
+        guard let (data, resp) = try? await URLSession.shared.data(for: req),
+              let http = resp as? HTTPURLResponse, http.statusCode == 200 else { return nil }
+
+        let decoded = try? JSONDecoder().decode(OAIResponse.self, from: data)
+        return decoded?.choices.first?.message.content
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    // MARK: - Word Translation (single word, lightweight call)
+
+    /// Tapped kelimeyi native dile çevirir. Hata olursa nil döner.
+    func translateWord(_ word: String, targetLangCode: String, nativeLangCode: String) async -> String? {
+        guard hasAPIKey else { return nil }
+
+        let targetName = fullLangName(for: targetLangCode)
+        let nativeName = fullLangName(for: nativeLangCode)
+
+        let body = OAIRequest(
+            model: "gpt-4o-mini",
+            messages: [
+                OAIMessage(role: "system",
+                           content: "You are a translator. Translate the given \(targetName) word/phrase into \(nativeName). Reply with ONLY the translation — one word or short phrase, no extra text."),
+                OAIMessage(role: "user", content: word)
+            ],
+            response_format: OAIResponseFormat(type: "text"),
+            temperature: 0.2
+        )
+
+        guard let httpBody = try? JSONEncoder().encode(body) else { return nil }
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.timeoutInterval = 15
+        request.httpBody = httpBody
+
+        guard let (data, response) = try? await URLSession.shared.data(for: request),
+              let http = response as? HTTPURLResponse,
+              http.statusCode == 200 else { return nil }
+
+        let oaiResp = try? JSONDecoder().decode(OAIResponse.self, from: data)
+        return oaiResp?.choices.first?.message.content
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     // MARK: - Language Code → Full Name
     private static let langNames: [String: String] = [
         "en": "English", "tr": "Turkish", "de": "German", "fr": "French",

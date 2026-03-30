@@ -207,13 +207,18 @@ struct GameQuizView: View {
             Spacer(minLength: 24)
             wordCard(question)
             Spacer(minLength: 20)
-            Text(question.questionDirection == .targetToNative
-                 ? AL.s(.gameWhatIsMeaning)
-                 : "What is the \(languageDisplayName(targetLang)) word for this?")
-                .font(.custom("Poppins-SemiBold", size: 16))
-                .foregroundStyle(AppTheme.Colors.textPrimary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
+            // AI soruları kendi sorusunu taşıyor — altta ayrıca "anlamı nedir?" gerekmez
+            if case .aiGenerated = sessionType {
+                EmptyView()
+            } else {
+                Text(question.questionDirection == .targetToNative
+                     ? AL.s(.gameWhatIsMeaning)
+                     : "What is the \(languageDisplayName(targetLang)) word for this?")
+                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .foregroundStyle(AppTheme.Colors.textPrimary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+            }
             Spacer(minLength: 20)
             if isMulti {
                 multipleChoiceGrid(question)
@@ -434,11 +439,14 @@ struct GameQuizView: View {
                                 .multilineTextAlignment(.center)
                         }
                     } else {
-                        // AI sentence with gap
-                        Text(question.gapSentence)
-                            .font(.custom("Poppins-Bold", size: 22))
-                            .foregroundStyle(AppTheme.Colors.textPrimary)
-                            .multilineTextAlignment(.center)
+                        // AI sentence with gap — tappable words + TTS
+                        let tgtCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en"
+                        AITappableWordsView(
+                            sentence: question.gapSentence,
+                            targetLangCode: tgtCode,
+                            nativeLangCode: OL.nativeLangCode
+                        )
+                        .padding(.horizontal, 4)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -486,8 +494,9 @@ struct GameQuizView: View {
 
             // Word options — seç → Kontrol Et
             VStack(spacing: 12) {
+                // id: \.offset — aynı seçenek birden fazla kez gelirse crash olmaz
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    ForEach(question.sentenceWords, id: \.self) { wordOption in
+                    ForEach(Array(question.sentenceWords.enumerated()), id: \.offset) { _, wordOption in
                         let isSelected = !answered && pendingAnswer == wordOption
                         Button {
                             if !answered {
@@ -649,10 +658,27 @@ struct GameQuizView: View {
                         .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Capsule())
                 }
 
-                Text(question.promptText)
-                    .font(.custom("Poppins-Bold", size: 32))
-                    .foregroundStyle(AppTheme.Colors.textPrimary)
+                // AI fillInTheBlank → tıklanabilir kelimeler; diğer tüm modlar düz metin
+                let isAIFill: Bool = {
+                    if case .aiGenerated = sessionType { return question.mode == .fillInTheBlank }
+                    return false
+                }()
+
+                if isAIFill {
+                    let tgtCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en"
+                    AITappableWordsView(
+                        sentence: question.promptText,
+                        targetLangCode: tgtCode,
+                        nativeLangCode: OL.nativeLangCode
+                    )
                     .multilineTextAlignment(.center)
+                } else {
+                    Text(question.promptText)
+                        .font(.custom("Poppins-Bold", size: question.mode == .multipleChoice ? 22 : 32))
+                        .foregroundStyle(AppTheme.Colors.textPrimary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(3)
+                }
 
                 // Phonetic only makes sense when showing the target-language word
                 if question.questionDirection == .targetToNative,
@@ -1628,8 +1654,9 @@ private struct SentenceBuilderContent: View {
             Spacer(minLength: 16)
 
             // ── Word bank ──────────────────────────────────────────
+            // id: \.offset — aynı kelime (the, a, is…) birden fazla geçerse crash olmaz
             OBFlowLayout(spacing: 10) {
-                ForEach(availableChips, id: \.self) { chip in
+                ForEach(Array(availableChips.enumerated()), id: \.offset) { _, chip in
                     SentenceChipBubble(word: chip, style: .bank)
                         .opacity(isAnswered ? 0.5 : 1.0)
                         .onTapGesture {
@@ -1670,6 +1697,191 @@ private struct SentenceBuilderContent: View {
             }
         }
         .animation(.spring(response: 0.35), value: selectedChip)
+    }
+}
+
+// MARK: - AI Tappable Sentence Words (on-the-fly OpenAI translation + TTS)
+
+/// AI tarafından üretilen cümlelerdeki kelimelere tıklanınca
+/// OpenAI üzerinden çeviri alır ve TTS ile seslendiriri.
+private struct AITappableWordsView: View {
+    let sentence: String
+    let targetLangCode: String      // hedef dil kodu, ör. "en"
+    let nativeLangCode: String      // ana dil kodu, ör. "tr"
+
+    /// word (lowercase, punctuation stripped) → translation
+    @State private var translations: [String: String] = [:]
+    /// Şu an çevirisi yüklenen kelime
+    @State private var loadingWord: String? = nil
+    /// Tooltip gösterilen kelime (index üzerinden değil, clean key üzerinden)
+    @State private var activeWord: String? = nil
+
+    private var tokens: [String] {
+        sentence.components(separatedBy: " ").filter { !$0.isEmpty }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            OBFlowLayout(spacing: 6) {
+                ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
+                    let isGap = token == "___"
+                    let clean = token
+                        .trimmingCharacters(in: .punctuationCharacters)
+                        .lowercased()
+                    let isActive  = activeWord == clean
+
+                    if isGap {
+                        // boşluk chip'i — dokunulamaz
+                        Text("_____")
+                            .font(.custom("Poppins-Bold", size: 18))
+                            .foregroundStyle(AppTheme.Colors.primaryOrange)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(
+                                AppTheme.Colors.primaryOrange.opacity(0.12),
+                                in: RoundedRectangle(cornerRadius: 5)
+                            )
+                    } else {
+                        Text(token)
+                            .font(.custom("Poppins-SemiBold", size: 16))
+                            .foregroundStyle(isActive
+                                ? AppTheme.Colors.primaryOrange
+                                : Color(hex: "#1e293b"))
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                            .background(
+                                isActive
+                                ? AppTheme.Colors.primaryOrange.opacity(0.12)
+                                : Color.clear,
+                                in: RoundedRectangle(cornerRadius: 5)
+                            )
+                            // Her kelime daima altı çizili — kullanıcı tıklanabilir olduğunu anlar
+                            .underline(true, color: isActive
+                                ? AppTheme.Colors.primaryOrange
+                                : Color(hex: "#94a3b8"))
+                            .onTapGesture {
+                                handleTap(token: token, clean: clean)
+                            }
+                    }
+                }
+            }
+
+            // Tooltip strip
+            if let key = activeWord {
+                HStack(spacing: 10) {
+                    Image(systemName: "arrow.turn.down.right")
+                        .font(.system(size: 12))
+                        .foregroundStyle(AppTheme.Colors.primaryOrange)
+
+                    Text(key)
+                        .font(.custom("Poppins-Regular", size: 14))
+                        .foregroundStyle(AppTheme.Colors.primaryOrange)
+
+                    Text("=")
+                        .font(.custom("Poppins-Regular", size: 14))
+                        .foregroundStyle(AppTheme.Colors.textSecondary)
+
+                    if let meaning = translations[key] {
+                        Text(meaning)
+                            .font(.custom("Poppins-Regular", size: 14))
+                            .foregroundStyle(AppTheme.Colors.textPrimary)
+                    } else {
+                        ProgressView()
+                            .scaleEffect(0.6)
+                            .tint(AppTheme.Colors.primaryOrange)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        TTSManager.shared.speak(key, langCode: targetLangCode)
+                    } label: {
+                        Image(systemName: "speaker.wave.1.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.blue)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color(hex: "#f0f9ff"), in: RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(AppTheme.Colors.primaryOrange.opacity(0.3), lineWidth: 1)
+                )
+                .transition(.scale(scale: 0.95).combined(with: .opacity))
+            }
+        }
+        .task { await preTranslateAll() }
+    }
+
+    /// Ekran açıldığında tüm kelimeleri paralel olarak çevirir — tıklamada anında gelir.
+    private func preTranslateAll() async {
+        let code  = targetLangCode
+        let nCode = nativeLangCode
+        let uniqueCleans = Set(
+            tokens
+                .filter { $0 != "___" }
+                .map { $0.trimmingCharacters(in: .punctuationCharacters).lowercased() }
+        )
+        // uniquingKeysWith: aynı kelime cümlede birden fazla geçerse (the, a, is…) crash olmaz
+        let rawByClean: [String: String] = Dictionary(
+            tokens
+                .filter { $0 != "___" }
+                .map { ($0.trimmingCharacters(in: .punctuationCharacters).lowercased(),
+                        $0.trimmingCharacters(in: .punctuationCharacters)) },
+            uniquingKeysWith: { first, _ in first }
+        )
+        await withTaskGroup(of: (String, String?).self) { group in
+            for clean in uniqueCleans {
+                guard translations[clean] == nil else { continue }
+                let raw = rawByClean[clean] ?? clean
+                group.addTask {
+                    let t = await OpenAIQuizService.shared.translateWord(
+                        raw, targetLangCode: code, nativeLangCode: nCode
+                    )
+                    return (clean, t)
+                }
+            }
+            for await (clean, translation) in group {
+                if let t = translation {
+                    translations[clean] = t
+                }
+            }
+        }
+    }
+
+    private func handleTap(token: String, clean: String) {
+        // TTS — hemen çal
+        TTSManager.shared.speak(token.trimmingCharacters(in: .punctuationCharacters),
+                                langCode: targetLangCode)
+
+        // Aynı kelimeye tekrar basıldıysa tooltip'i kapat
+        if activeWord == clean {
+            withAnimation(.spring(response: 0.3)) { activeWord = nil }
+            return
+        }
+
+        withAnimation(.spring(response: 0.3)) { activeWord = clean }
+
+        // Zaten çevrilmişse tekrar fetch etme
+        guard translations[clean] == nil else { return }
+
+        loadingWord = clean
+        Task {
+            let result = await OpenAIQuizService.shared.translateWord(
+                token.trimmingCharacters(in: .punctuationCharacters),
+                targetLangCode: targetLangCode,
+                nativeLangCode: nativeLangCode
+            )
+            await MainActor.run {
+                loadingWord = nil
+                if let result {
+                    translations[clean] = result
+                } else {
+                    translations[clean] = "—"
+                }
+            }
+        }
     }
 }
 

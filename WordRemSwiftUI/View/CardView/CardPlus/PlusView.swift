@@ -138,13 +138,8 @@ struct PlusView: View {
                             .frame(height: 54)
                             .background(
                                 viewModel.cardName.isEmpty
-                                ? AnyShapeStyle(AppTheme.Colors.textSecondary.opacity(0.3)) // Disabled look
-                                : AnyShapeStyle(
-                                    LinearGradient(
-                                        colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
-                                        startPoint: .leading, endPoint: .trailing
-                                    )
-                                )
+                                    ? Color.gray.opacity(0.3)
+                                    : AppTheme.Colors.primaryOrange
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .shadow(

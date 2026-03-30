@@ -21,9 +21,8 @@ final class DailyLimitManager {
 
     // MARK: - Premium
 
-    // TODO: StoreKit entegrasyonu hazır olunca burası gerçek satın alma kontrolüne bağlanacak
     var isPremium: Bool {
-        get { true }
+        get { UserDefaults.standard.bool(forKey: premiumKey) }
         set { UserDefaults.standard.set(newValue, forKey: premiumKey) }
     }
 

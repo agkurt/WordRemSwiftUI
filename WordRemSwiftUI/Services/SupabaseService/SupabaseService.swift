@@ -17,6 +17,9 @@ final class SupabaseService {
     // MARK: - Client
     let client: SupabaseClient
 
+    // MARK: - Public URL (for Edge Functions etc.)
+    private(set) var supabaseURLString: String = ""
+
     // MARK: - Initx4
     private init() {
         // Read from Config.plist — same approach as existing APIKey.swift
@@ -37,6 +40,8 @@ final class SupabaseService {
             Get these from: Supabase Dashboard → Settings → API
             """)
         }
+
+        supabaseURLString = urlString
 
         client = SupabaseClient(
             supabaseURL: supabaseURL,

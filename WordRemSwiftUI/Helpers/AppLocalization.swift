@@ -131,6 +131,7 @@ struct AL {
         case paywallPrivacy         = "paywall.privacy"
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
+        case paywallDisclosure      = "paywall.disclosure"
 
         // HomeScreenView
         case homeSearchPlaceholder  = "home.search_placeholder"
@@ -159,6 +160,11 @@ struct AL {
         case profileUpgradePro      = "profile.upgrade_pro"
         case profileSignOut         = "profile.sign_out"
         case profileGuest           = "profile.guest"
+        case profileDeleteAccount   = "profile.delete_account"
+        case profileDeleteTitle     = "profile.delete_title"
+        case profileDeleteMessage   = "profile.delete_message"
+        case profileDeleteConfirm   = "profile.delete_confirm"
+        case profileDeleteCancel    = "profile.delete_cancel"
 
         // LeaderboardView
         case leaderboardTitle       = "leaderboard.title"
@@ -371,6 +377,14 @@ struct AL {
         case welcomeBackMotivation      = "welcome.back_motivation"
         case welcomeBackCTA             = "welcome.back_cta"
 
+        // Welcome Popup — Pro Purchase
+        case welcomeProTitle            = "welcome.pro_title"
+        case welcomeProSubtitle         = "welcome.pro_subtitle"
+        case welcomeProFeature1         = "welcome.pro_feature1"
+        case welcomeProFeature2         = "welcome.pro_feature2"
+        case welcomeProFeature3         = "welcome.pro_feature3"
+        case welcomeProCTA              = "welcome.pro_cta"
+
         // Daily Goal Break Popup
         case dailyBreakTitle         = "daily_break.title"
         case dailyBreakBodyFormat    = "daily_break.body_format"
@@ -432,6 +446,7 @@ struct AL {
             .paywallPrivacy:        "Gizlilik",
             .paywallTerms:          "Kullanım Şartları",
             .paywallRestore:        "Geri Yükle",
+            .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
             // Home
             .homeSearchPlaceholder: "Deste ara...",
             .homeMyDecks:           "Destelerim",
@@ -458,6 +473,11 @@ struct AL {
             .profileUpgradePro:     "Pro'ya Geç",
             .profileSignOut:        "Çıkış Yap",
             .profileGuest:          "Misafir",
+            .profileDeleteAccount:  "Hesabı Sil",
+            .profileDeleteTitle:    "Hesabı Kalıcı Olarak Sil",
+            .profileDeleteMessage:  "Bu işlem geri alınamaz. Tüm verileriniz (ilerleme, XP, desteler) kalıcı olarak silinecektir.",
+            .profileDeleteConfirm:  "Evet, Sil",
+            .profileDeleteCancel:   "Vazgeç",
             // Leaderboard
             .leaderboardTitle:      "Sıralamalar",
             .leaderboardSubtitle:   "Diğer öğrencilerle yarış! 🏆",
@@ -649,6 +669,12 @@ struct AL {
             .welcomeBackMessageFormat: "Seni çok özledik, %@!",
             .welcomeBackMotivation:    "Hedeflerine devam etme zamanı 💪",
             .welcomeBackCTA:       "Devam Et",
+            .welcomeProTitle:      "WordRem Pro'ya Hoşgeldin! 👑",
+            .welcomeProSubtitle:   "Tüm premium özellikler artık açık",
+            .welcomeProFeature1:   "Sınırsız günlük soru hakkı",
+            .welcomeProFeature2:   "Sınırsız ipucu kullanımı",
+            .welcomeProFeature3:   "Yapay zeka destekli öğrenme",
+            .welcomeProCTA:        "Öğrenmeye Başla!",
             .dailyBreakTitle:        "Günlük Hedefe Ulaştın! ☕",
             .dailyBreakBodyFormat:   "Bugün %d dakika boyunca pratik yaptın. Aferin!",
             .dailyBreakSubtitle:     "Bir mola verebilirsin — ama devam etmek tamamen senin kararın.",
@@ -685,6 +711,7 @@ struct AL {
             .paywallPrivacy:        "Privacy",
             .paywallTerms:          "Terms",
             .paywallRestore:        "Restore",
+            .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
             // Home
             .homeSearchPlaceholder: "Search decks...",
             .homeMyDecks:           "My Decks",
@@ -711,6 +738,11 @@ struct AL {
             .profileUpgradePro:     "Upgrade Pro",
             .profileSignOut:        "Sign Out",
             .profileGuest:          "Guest",
+            .profileDeleteAccount:  "Delete Account",
+            .profileDeleteTitle:    "Permanently Delete Account",
+            .profileDeleteMessage:  "This action cannot be undone. All your data (progress, XP, decks) will be permanently deleted.",
+            .profileDeleteConfirm:  "Yes, Delete",
+            .profileDeleteCancel:   "Cancel",
             // Leaderboard
             .leaderboardTitle:      "Leaderboard",
             .leaderboardSubtitle:   "Compete with other learners! 🏆",
@@ -899,6 +931,12 @@ struct AL {
             .welcomeBackMessageFormat: "We missed you so much, %@!",
             .welcomeBackMotivation:    "Time to keep up with your goals 💪",
             .welcomeBackCTA:       "Continue",
+            .welcomeProTitle:      "Welcome to WordRem Pro! 👑",
+            .welcomeProSubtitle:   "All premium features are now unlocked",
+            .welcomeProFeature1:   "Unlimited daily questions",
+            .welcomeProFeature2:   "Unlimited hint usage",
+            .welcomeProFeature3:   "AI-powered learning",
+            .welcomeProCTA:        "Start Learning!",
             .dailyBreakTitle:        "Daily Goal Reached! ☕",
             .dailyBreakBodyFormat:   "You've practiced for %d minutes today. Well done!",
             .dailyBreakSubtitle:     "You can take a break — but continuing is entirely your call.",
@@ -935,6 +973,7 @@ struct AL {
             .paywallPrivacy:        "Datenschutz",
             .paywallTerms:          "Nutzungsbedingungen",
             .paywallRestore:        "Wiederherstellen",
+            .paywallDisclosure:     "Die Zahlung wird bei Kaufbestätigung Ihrem Apple-Konto belastet. Das Abonnement verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ablauf der aktuellen Laufzeit gekündigt wird. Abonnements können in den App-Store-Kontoeinstellungen verwaltet werden.",
             // Home
             .homeSearchPlaceholder: "Stapel suchen...",
             .homeMyDecks:           "Meine Stapel",
@@ -961,6 +1000,11 @@ struct AL {
             .profileUpgradePro:     "Auf Pro upgraden",
             .profileSignOut:        "Abmelden",
             .profileGuest:          "Gast",
+            .profileDeleteAccount:  "Konto löschen",
+            .profileDeleteTitle:    "Konto dauerhaft löschen",
+            .profileDeleteMessage:  "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden dauerhaft gelöscht.",
+            .profileDeleteConfirm:  "Ja, löschen",
+            .profileDeleteCancel:   "Abbrechen",
             // Leaderboard
             .leaderboardTitle:      "Rangliste",
             .leaderboardSubtitle:   "Tritt gegen andere Lernende an! 🏆",
@@ -1092,6 +1136,12 @@ struct AL {
             .welcomeBackMessageFormat: "Wir haben dich so vermisst, %@!",
             .welcomeBackMotivation:    "Zeit, deine Ziele weiterzuverfolgen 💪",
             .welcomeBackCTA:       "Weiter",
+            .welcomeProTitle:      "Willkommen bei WordRem Pro! 👑",
+            .welcomeProSubtitle:   "Alle Premium-Funktionen sind jetzt freigeschaltet",
+            .welcomeProFeature1:   "Unbegrenzte tägliche Fragen",
+            .welcomeProFeature2:   "Unbegrenzte Hinweis-Nutzung",
+            .welcomeProFeature3:   "KI-gestütztes Lernen",
+            .welcomeProCTA:        "Jetzt Lernen!",
             .dailyBreakTitle:        "Tagesziel erreicht! ☕",
             .dailyBreakBodyFormat:   "Du hast heute %d Minuten geübt. Prima!",
             .dailyBreakSubtitle:     "Du kannst eine Pause machen — aber weiterzumachen liegt bei dir.",
@@ -1128,6 +1178,7 @@ struct AL {
             .paywallPrivacy:        "Confidentialité",
             .paywallTerms:          "Conditions d'utilisation",
             .paywallRestore:        "Restaurer",
+            .paywallDisclosure:     "Le paiement sera débité de votre compte Apple lors de la confirmation de l'achat. L'abonnement se renouvelle automatiquement, sauf s'il est annulé au moins 24 heures avant la fin de la période en cours. Gérez vos abonnements dans les réglages du compte App Store.",
             // Home
             .homeSearchPlaceholder: "Rechercher des decks...",
             .homeMyDecks:           "Mes Decks",
@@ -1154,6 +1205,11 @@ struct AL {
             .profileUpgradePro:     "Passer à Pro",
             .profileSignOut:        "Se déconnecter",
             .profileGuest:          "Invité",
+            .profileDeleteAccount:  "Supprimer le compte",
+            .profileDeleteTitle:    "Supprimer définitivement le compte",
+            .profileDeleteMessage:  "Cette action est irréversible. Toutes vos données seront définitivement supprimées.",
+            .profileDeleteConfirm:  "Oui, supprimer",
+            .profileDeleteCancel:   "Annuler",
             // Leaderboard
             .leaderboardTitle:      "Classement",
             .leaderboardSubtitle:   "Affronte d'autres apprenants ! 🏆",
@@ -1285,6 +1341,12 @@ struct AL {
             .welcomeBackMessageFormat: "Tu nous as tellement manqué, %@ !",
             .welcomeBackMotivation:    "Il est temps de continuer vers tes objectifs 💪",
             .welcomeBackCTA:       "Continuer",
+            .welcomeProTitle:      "Bienvenue dans WordRem Pro ! 👑",
+            .welcomeProSubtitle:   "Toutes les fonctionnalités premium sont débloquées",
+            .welcomeProFeature1:   "Questions quotidiennes illimitées",
+            .welcomeProFeature2:   "Utilisation illimitée des indices",
+            .welcomeProFeature3:   "Apprentissage avec l'IA",
+            .welcomeProCTA:        "Commencer à apprendre !",
             .dailyBreakTitle:        "Objectif du jour atteint ! ☕",
             .dailyBreakBodyFormat:   "Tu as pratiqué pendant %d minutes aujourd'hui. Bravo !",
             .dailyBreakSubtitle:     "Tu peux faire une pause — mais continuer est ton choix.",
@@ -1321,6 +1383,7 @@ struct AL {
             .paywallPrivacy:        "Privacidad",
             .paywallTerms:          "Términos de uso",
             .paywallRestore:        "Restaurar",
+            .paywallDisclosure:     "El pago se cargará a tu cuenta de Apple al confirmar la compra. La suscripción se renueva automáticamente a menos que se cancele al menos 24 horas antes del final del período actual. Administra las suscripciones en Configuración de cuenta de App Store.",
             // Home
             .homeSearchPlaceholder: "Buscar mazos...",
             .homeMyDecks:           "Mis Mazos",
@@ -1347,6 +1410,11 @@ struct AL {
             .profileUpgradePro:     "Mejorar a Pro",
             .profileSignOut:        "Cerrar sesión",
             .profileGuest:          "Invitado",
+            .profileDeleteAccount:  "Eliminar cuenta",
+            .profileDeleteTitle:    "Eliminar cuenta permanentemente",
+            .profileDeleteMessage:  "Esta acción no se puede deshacer. Todos tus datos serán eliminados permanentemente.",
+            .profileDeleteConfirm:  "Sí, eliminar",
+            .profileDeleteCancel:   "Cancelar",
             // Leaderboard
             .leaderboardTitle:      "Clasificación",
             .leaderboardSubtitle:   "¡Compite con otros estudiantes! 🏆",
@@ -1478,6 +1546,12 @@ struct AL {
             .welcomeBackMessageFormat: "¡Te echamos tanto de menos, %@!",
             .welcomeBackMotivation:    "Es hora de seguir con tus metas 💪",
             .welcomeBackCTA:       "Continuar",
+            .welcomeProTitle:      "¡Bienvenido a WordRem Pro! 👑",
+            .welcomeProSubtitle:   "Todas las funciones premium están desbloqueadas",
+            .welcomeProFeature1:   "Preguntas diarias ilimitadas",
+            .welcomeProFeature2:   "Uso ilimitado de pistas",
+            .welcomeProFeature3:   "Aprendizaje con IA",
+            .welcomeProCTA:        "¡Empezar a aprender!",
             .dailyBreakTitle:        "¡Meta diaria alcanzada! ☕",
             .dailyBreakBodyFormat:   "Has practicado %d minutos hoy. ¡Bien hecho!",
             .dailyBreakSubtitle:     "Puedes tomar un descanso — pero continuar es tu decisión.",
@@ -1514,6 +1588,7 @@ struct AL {
             .paywallPrivacy:        "Privacy",
             .paywallTerms:          "Termini di utilizzo",
             .paywallRestore:        "Ripristina",
+            .paywallDisclosure:     "Il pagamento verrà addebitato sul tuo account Apple alla conferma dell'acquisto. L'abbonamento si rinnova automaticamente a meno che non venga annullato almeno 24 ore prima della fine del periodo corrente. Gestisci gli abbonamenti nelle Impostazioni account dell'App Store.",
             // Home
             .homeSearchPlaceholder: "Cerca mazzi...",
             .homeMyDecks:           "I miei mazzi",
@@ -1540,6 +1615,11 @@ struct AL {
             .profileUpgradePro:     "Passa a Pro",
             .profileSignOut:        "Esci",
             .profileGuest:          "Ospite",
+            .profileDeleteAccount:  "Elimina account",
+            .profileDeleteTitle:    "Elimina account definitivamente",
+            .profileDeleteMessage:  "Questa azione non può essere annullata. Tutti i tuoi dati verranno eliminati definitivamente.",
+            .profileDeleteConfirm:  "Sì, elimina",
+            .profileDeleteCancel:   "Annulla",
             // Leaderboard
             .leaderboardTitle:      "Classifica",
             .leaderboardSubtitle:   "Sfida altri studenti! 🏆",
@@ -1671,6 +1751,12 @@ struct AL {
             .welcomeBackMessageFormat: "Ci sei mancato tanto, %@!",
             .welcomeBackMotivation:    "È ora di continuare verso i tuoi obiettivi 💪",
             .welcomeBackCTA:       "Continua",
+            .welcomeProTitle:      "Benvenuto in WordRem Pro! 👑",
+            .welcomeProSubtitle:   "Tutte le funzioni premium sono sbloccate",
+            .welcomeProFeature1:   "Domande giornaliere illimitate",
+            .welcomeProFeature2:   "Utilizzo illimitato dei suggerimenti",
+            .welcomeProFeature3:   "Apprendimento con intelligenza artificiale",
+            .welcomeProCTA:        "Inizia ad imparare!",
             .dailyBreakTitle:        "Obiettivo giornaliero raggiunto! ☕",
             .dailyBreakBodyFormat:   "Hai praticato per %d minuti oggi. Ottimo lavoro!",
             .dailyBreakSubtitle:     "Puoi fare una pausa — ma continuare è una tua scelta.",
@@ -1707,6 +1793,7 @@ struct AL {
             .paywallPrivacy:        "Конфиденциальность",
             .paywallTerms:          "Условия использования",
             .paywallRestore:        "Восстановить",
+            .paywallDisclosure:     "Оплата будет снята с вашего аккаунта Apple при подтверждении покупки. Подписка автоматически продлевается, если не будет отменена не менее чем за 24 часа до окончания текущего периода. Управляйте подписками в настройках аккаунта App Store.",
             // Home
             .homeSearchPlaceholder: "Поиск колод...",
             .homeMyDecks:           "Мои колоды",
@@ -1733,6 +1820,11 @@ struct AL {
             .profileUpgradePro:     "Перейти на Pro",
             .profileSignOut:        "Выйти",
             .profileGuest:          "Гость",
+            .profileDeleteAccount:  "Удалить аккаунт",
+            .profileDeleteTitle:    "Удалить аккаунт навсегда",
+            .profileDeleteMessage:  "Это действие невозможно отменить. Все ваши данные будут удалены навсегда.",
+            .profileDeleteConfirm:  "Да, удалить",
+            .profileDeleteCancel:   "Отмена",
             // Leaderboard
             .leaderboardTitle:      "Таблица лидеров",
             .leaderboardSubtitle:   "Соревнуйся с другими учениками! 🏆",
@@ -1864,6 +1956,12 @@ struct AL {
             .welcomeBackMessageFormat: "Мы так скучали по тебе, %@!",
             .welcomeBackMotivation:    "Время продолжить к своим целям 💪",
             .welcomeBackCTA:       "Продолжить",
+            .welcomeProTitle:      "Добро пожаловать в WordRem Pro! 👑",
+            .welcomeProSubtitle:   "Все премиум-функции разблокированы",
+            .welcomeProFeature1:   "Неограниченные ежедневные вопросы",
+            .welcomeProFeature2:   "Неограниченное использование подсказок",
+            .welcomeProFeature3:   "Обучение с ИИ",
+            .welcomeProCTA:        "Начать обучение!",
             .dailyBreakTitle:        "Дневная цель достигнута! ☕",
             .dailyBreakBodyFormat:   "Сегодня ты занимался(ась) %d минут. Отлично!",
             .dailyBreakSubtitle:     "Ты можешь сделать перерыв — но продолжать — это твой выбор.",
@@ -1900,6 +1998,7 @@ struct AL {
             .paywallPrivacy:        "隐私",
             .paywallTerms:          "使用条款",
             .paywallRestore:        "恢复购买",
+            .paywallDisclosure:     "购买确认后，将从您的Apple账户扣款。订阅将自动续订，除非在当前期限结束前至少24小时取消。可在App Store账户设置中管理订阅。",
             // Home
             .homeSearchPlaceholder: "搜索卡组...",
             .homeMyDecks:           "我的卡组",
@@ -1926,6 +2025,11 @@ struct AL {
             .profileUpgradePro:     "升级Pro",
             .profileSignOut:        "退出登录",
             .profileGuest:          "访客",
+            .profileDeleteAccount:  "删除账户",
+            .profileDeleteTitle:    "永久删除账户",
+            .profileDeleteMessage:  "此操作无法撤销。您的所有数据（进度、XP、卡组）将被永久删除。",
+            .profileDeleteConfirm:  "是，删除",
+            .profileDeleteCancel:   "取消",
             // Leaderboard
             .leaderboardTitle:      "排行榜",
             .leaderboardSubtitle:   "与其他学习者竞争！🏆",
@@ -2057,6 +2161,12 @@ struct AL {
             .welcomeBackMessageFormat: "我们太想念你了，%@！",
             .welcomeBackMotivation:    "是时候继续实现你的目标了 💪",
             .welcomeBackCTA:       "继续",
+            .welcomeProTitle:      "欢迎加入 WordRem Pro！👑",
+            .welcomeProSubtitle:   "所有高级功能现已解锁",
+            .welcomeProFeature1:   "无限每日问题",
+            .welcomeProFeature2:   "无限使用提示",
+            .welcomeProFeature3:   "AI 驱动学习",
+            .welcomeProCTA:        "开始学习！",
             .dailyBreakTitle:        "达成每日目标！☕",
             .dailyBreakBodyFormat:   "你今天已练习了 %d 分钟，干得好！",
             .dailyBreakSubtitle:     "你可以休息一下——但是否继续完全取决于你。",

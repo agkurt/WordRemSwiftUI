@@ -11,11 +11,13 @@ struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var vm = ProfileScreenViewModel()
     @ObservedObject private var achievementService = AchievementService.shared
+    @ObservedObject private var iap = InAppPurchaseManager.shared
     @State private var showPaywall = false
     @State private var showGuestLoginSheet = false
     @State private var showLoginScreen = false
     @State private var showUsernameSetup = false
     @State private var showAllAchievements = false
+    @State private var showDeleteConfirm = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -26,25 +28,16 @@ struct ProfileView: View {
                 profileHeader
 
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 16) {
-                        // Guest login banner
+                    VStack(spacing: 20) {
                         if authManager.isAnonymous { guestLoginBanner }
-
-                        // Avatar + isim + level + upgrade butonu
                         heroCard
-
-                        // Kompakt istatistikler (4 kutu küçük)
-                        compactStatsGrid
-
-                        // Başarımlar
+                        statsOverviewRow
+                        streakCard
+                        learningProgressCard
                         achievementsSection
-
-                        // Alt aksiyonlar
-                        VStack(spacing: 10) {
-                            signOutButton
-                        }
-
-                        Spacer(minLength: 24)
+                        signOutButton
+                        deleteAccountButton
+                        Spacer(minLength: 40)
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
@@ -244,48 +237,269 @@ struct ProfileView: View {
 
             Divider().padding(.horizontal, 16)
 
-            // Upgrade Pro butonu — hero card içinde, her zaman görünür
-            Button {
-                EventManager.shared.logPaywallEvent("upgrade_tapped_profile")
-                showPaywall = true
-            } label: {
+            if iap.isPremium {
+                // Premium badge
                 HStack(spacing: 8) {
                     Image(systemName: "crown.fill")
                         .font(.system(size: 14, weight: .semibold))
-                    Text(langManager.s(.profileUpgradePro))
+                        .foregroundStyle(Color(hex: "#8b5cf6"))
+                    Text("WordRem Pro")
                         .font(.custom("Feather-Bold", size: 14))
+                        .foregroundStyle(Color(hex: "#8b5cf6"))
+                    Spacer()
+                    Text("✓ Aktif")
+                        .font(.custom("Feather-Bold", size: 12))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color(hex: "#8b5cf6"), in: Capsule())
                 }
-                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(
-                    LinearGradient(
-                        colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C"), Color(hex: "#6B22E0")],
-                        startPoint: .leading, endPoint: .trailing
-                    ),
-                    in: RoundedRectangle(cornerRadius: 12)
-                )
-                .shadow(color: Color(hex: "#E8409C").opacity(0.35), radius: 8, y: 4)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+            } else {
+                // Upgrade Pro butonu
+                Button {
+                    EventManager.shared.logPaywallEvent("upgrade_tapped_profile")
+                    showPaywall = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                        Text(langManager.s(.profileUpgradePro))
+                            .font(.custom("Feather-Bold", size: 14))
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color(hex: "#3B5BDB"), in: RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: Color(hex: "#3B5BDB").opacity(0.28), radius: 8, y: 4)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
         }
         .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
         .shadow(color: .black.opacity(0.06), radius: 12, y: 5)
     }
 
-    // MARK: - Compact Stats Grid (4 kutu)
-    private var compactStatsGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-            CompactStatTile(icon: "bolt.fill",              color: Color(hex: "#f59e0b"),
-                            label: langManager.s(.profileTotalXP),   value: "\(vm.user?.totalXp ?? 0)")
-            CompactStatTile(icon: "flame.fill",             color: .orange,
-                            label: langManager.s(.profileStreak),    value: langManager.f(.profileDaysFormat, vm.user?.streakDays ?? 0))
-            CompactStatTile(icon: "checkmark.circle.fill",  color: .green,
-                            label: langManager.s(.profileCompleted), value: "\(vm.stats.completedLevels)")
-            CompactStatTile(icon: "target",                 color: Color(hex: "#E8409C"),
-                            label: langManager.s(.profileAccuracy),  value: String(format: "%.0f%%", vm.stats.accuracy))
+    // MARK: - Stats Overview Row
+    private var statsOverviewRow: some View {
+        HStack(spacing: 12) {
+            StatOverviewTile(
+                icon: "checkmark.seal.fill",
+                color: Color(hex: "#6366f1"),
+                value: "\(vm.stats.totalAttempts)",
+                label: "Toplam Soru"
+            )
+            StatOverviewTile(
+                icon: "target",
+                color: Color(hex: "#E8409C"),
+                value: String(format: "%.0f%%", vm.stats.accuracy),
+                label: "Doğruluk"
+            )
+            StatOverviewTile(
+                icon: "flag.checkered",
+                color: Color(hex: "#10b981"),
+                value: "\(vm.stats.completedLevels)",
+                label: "Tamamlanan"
+            )
         }
+    }
+
+    // MARK: - Streak Card
+    private var streakCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Seri")
+                .font(.custom("Feather-Bold", size: 18))
+                .foregroundStyle(Color(hex: "#1a1a2e"))
+
+            VStack(spacing: 10) {
+                // Günlük Seri
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(hex: "#fff7ed"))
+                            .frame(width: 38, height: 38)
+                        Text("🔥").font(.system(size: 20))
+                    }
+                    Text("Günlük Seri")
+                        .font(.custom("Feather-Bold", size: 15))
+                        .foregroundStyle(Color(hex: "#ea580c"))
+                    Spacer()
+                    Text("\(vm.user?.streakDays ?? 0)")
+                        .font(.custom("Feather-Bold", size: 20))
+                        .foregroundStyle(Color(hex: "#ea580c"))
+                        .frame(minWidth: 44, minHeight: 36)
+                        .background(Color(hex: "#fff7ed"), in: RoundedRectangle(cornerRadius: 10))
+                }
+                .padding(12)
+                .background(Color(hex: "#fff7ed").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
+
+                // En İyi Seri
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(hex: "#f0fdf4"))
+                            .frame(width: 38, height: 38)
+                        Text("🏆").font(.system(size: 20))
+                    }
+                    Text("En İyi Seri")
+                        .font(.custom("Feather-Bold", size: 15))
+                        .foregroundStyle(Color(hex: "#16a34a"))
+                    Spacer()
+                    Text("\(vm.bestStreak)")
+                        .font(.custom("Feather-Bold", size: 20))
+                        .foregroundStyle(Color(hex: "#16a34a"))
+                        .frame(minWidth: 44, minHeight: 36)
+                        .background(Color(hex: "#f0fdf4"), in: RoundedRectangle(cornerRadius: 10))
+                }
+                .padding(12)
+                .background(Color(hex: "#f0fdf4").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
+            }
+
+            // Haftalık Takvim
+            weeklyCalendarView
+        }
+        .padding(20)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
+        .shadow(color: .black.opacity(0.06), radius: 12, y: 4)
+    }
+
+    // MARK: - Weekly Calendar
+    private var weeklyCalendarView: some View {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let streak = vm.user?.streakDays ?? 0
+        let lastActive: Date
+        if let raw = vm.user?.lastActivityAt {
+            lastActive = calendar.startOfDay(for: raw)
+        } else {
+            lastActive = today
+        }
+
+        // Bugünden 6 gün geriye: 7 günlük pencere
+        let days = (0..<7).map { i -> Date in
+            calendar.date(byAdding: .day, value: -6 + i, to: today)!
+        }
+        let trNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cts", "Paz"]
+
+        return HStack(spacing: 0) {
+            ForEach(Array(days.enumerated()), id: \.offset) { i, day in
+                let weekdayIdx = (calendar.component(.weekday, from: day) + 5) % 7 // Mon=0
+                let daysSinceLastActive = calendar.dateComponents([.day], from: day, to: lastActive).day ?? 99
+                let isActive = daysSinceLastActive >= 0 && daysSinceLastActive < streak
+                let isToday = calendar.isDateInToday(day)
+
+                VStack(spacing: 6) {
+                    Text(trNames[weekdayIdx])
+                        .font(.custom("Feather-Bold", size: 10))
+                        .foregroundStyle(isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#94a3b8"))
+
+                    Circle()
+                        .fill(isActive
+                            ? (isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#fb923c").opacity(0.75))
+                            : Color(hex: "#e2e8f0")
+                        )
+                        .frame(width: 32, height: 32)
+                        .overlay {
+                            if isActive {
+                                Text("🔥").font(.system(size: 14))
+                            }
+                        }
+                        .shadow(color: isActive ? AppTheme.Colors.primaryOrange.opacity(0.3) : .clear, radius: 4, y: 2)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+    }
+
+    // MARK: - Learning Progress Card
+    private var learningProgressCard: some View {
+        let xp = vm.user?.totalXp ?? 0
+        let xpPerLevel = 50
+        let currentLevel = max(1, xp / xpPerLevel + 1)
+        let xpInLevel = xp % xpPerLevel
+        let xpProgress = Double(xpInLevel) / Double(xpPerLevel)
+
+        return VStack(alignment: .leading, spacing: 16) {
+            Text("İlerleme")
+                .font(.custom("Feather-Bold", size: 18))
+                .foregroundStyle(Color(hex: "#1a1a2e"))
+
+            // XP Level Progress
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    HStack(spacing: 6) {
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#f59e0b"))
+                        Text("Seviye \(currentLevel)")
+                            .font(.custom("Feather-Bold", size: 14))
+                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                    }
+                    Spacer()
+                    Text("\(xp) XP")
+                        .font(.custom("Feather-Bold", size: 13))
+                        .foregroundStyle(Color(hex: "#64748b"))
+                }
+
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color(hex: "#f1f5f9"))
+                            .frame(height: 10)
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(hex: "#f59e0b"), Color(hex: "#f97316")],
+                                    startPoint: .leading, endPoint: .trailing
+                                )
+                            )
+                            .frame(width: max(10, geo.size.width * xpProgress), height: 10)
+                            .shadow(color: Color(hex: "#f97316").opacity(0.4), radius: 4, y: 2)
+                    }
+                }
+                .frame(height: 10)
+
+                HStack {
+                    Text("\(xpInLevel)/\(xpPerLevel) XP")
+                        .font(.custom("Feather-Bold", size: 11))
+                        .foregroundStyle(Color(hex: "#94a3b8"))
+                    Spacer()
+                    Text("Sonraki seviye")
+                        .font(.custom("Feather-Bold", size: 11))
+                        .foregroundStyle(Color(hex: "#94a3b8"))
+                }
+            }
+            .padding(16)
+            .background(Color(hex: "#fffbeb").opacity(0.8), in: RoundedRectangle(cornerRadius: 14))
+
+            // 3 mini stat kutucukları
+            HStack(spacing: 10) {
+                MiniProgressTile(
+                    emoji: "⚡",
+                    value: "\(xp)",
+                    label: "Toplam XP",
+                    bg: Color(hex: "#fef9c3")
+                )
+                MiniProgressTile(
+                    emoji: "📚",
+                    value: "\(vm.stats.completedLevels)",
+                    label: "Seviye",
+                    bg: Color(hex: "#dbeafe")
+                )
+                MiniProgressTile(
+                    emoji: "🎯",
+                    value: String(format: "%.0f%%", vm.stats.accuracy),
+                    label: "Doğruluk",
+                    bg: Color(hex: "#fce7f3")
+                )
+            }
+        }
+        .padding(20)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
+        .shadow(color: .black.opacity(0.06), radius: 12, y: 4)
     }
 
     // MARK: - Achievements
@@ -363,6 +577,29 @@ struct ProfileView: View {
             )
         }
     }
+
+    // MARK: - Delete Account
+    private var deleteAccountButton: some View {
+        Button { showDeleteConfirm = true } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "trash")
+                    .font(.system(size: 14, weight: .semibold))
+                Text(langManager.s(.profileDeleteAccount))
+                    .font(.custom("Feather-Bold", size: 14))
+            }
+            .foregroundStyle(Color(hex: "#94a3b8"))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+        }
+        .alert(langManager.s(.profileDeleteTitle), isPresented: $showDeleteConfirm) {
+            Button(langManager.s(.profileDeleteConfirm), role: .destructive) {
+                authManager.deleteAccount()
+            }
+            Button(langManager.s(.profileDeleteCancel), role: .cancel) {}
+        } message: {
+            Text(langManager.s(.profileDeleteMessage))
+        }
+    }
 }
 
 // MARK: ═══════════════════════════════════════════════════════════
@@ -391,6 +628,17 @@ final class ProfileScreenViewModel: ObservableObject {
     var username: String  { user?.username ?? AL.s(.profileGuest) }
     var initials: String  { String((user?.username ?? "?").prefix(1)).uppercased() }
     var userLevel: Int    { max(1, (user?.totalXp ?? 0) / 50 + 1) }
+
+    /// En iyi seri: mevcut streak'ten büyükse UserDefaults'ta sakla
+    var bestStreak: Int {
+        let current = user?.streakDays ?? 0
+        let stored  = UserDefaults.standard.integer(forKey: "bestStreak")
+        if current > stored {
+            UserDefaults.standard.set(current, forKey: "bestStreak")
+            return current
+        }
+        return max(stored, current)
+    }
 
     func loadProfile() async {
         isLoading = true
@@ -445,6 +693,61 @@ final class ProfileScreenViewModel: ObservableObject {
 // MARK: ═══════════════════════════════════════════════════════════
 // MARK: - Subviews
 // MARK: ═══════════════════════════════════════════════════════════
+
+// MARK: - StatOverviewTile
+private struct StatOverviewTile: View {
+    let icon: String
+    let color: Color
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.12))
+                    .frame(width: 42, height: 42)
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(color)
+            }
+            Text(value)
+                .font(.custom("Feather-Bold", size: 18))
+                .foregroundStyle(Color(hex: "#1a1a2e"))
+            Text(label)
+                .font(.custom("Feather-Bold", size: 10))
+                .foregroundStyle(Color(hex: "#94a3b8"))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
+    }
+}
+
+// MARK: - MiniProgressTile
+private struct MiniProgressTile: View {
+    let emoji: String
+    let value: String
+    let label: String
+    let bg: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(emoji).font(.system(size: 22))
+            Text(value)
+                .font(.custom("Feather-Bold", size: 16))
+                .foregroundStyle(Color(hex: "#1a1a2e"))
+            Text(label)
+                .font(.custom("Feather-Bold", size: 10))
+                .foregroundStyle(Color(hex: "#64748b"))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .background(bg, in: RoundedRectangle(cornerRadius: 14))
+    }
+}
 
 private struct CompactStatTile: View {
     let icon: String

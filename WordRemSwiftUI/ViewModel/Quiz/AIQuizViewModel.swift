@@ -23,6 +23,21 @@ final class AIQuizViewModel: ObservableObject {
 
     let questionCounts = [5, 10, 15, 20]
 
+    // MARK: - Free Quiz Limit
+    private let freeQuizCountKey = "aiQuizFreeCount"
+    static let freeQuizLimit = 2
+
+    var freeQuizCount: Int {
+        get { UserDefaults.standard.integer(forKey: freeQuizCountKey) }
+        set { UserDefaults.standard.set(newValue, forKey: freeQuizCountKey) }
+    }
+
+    var hasReachedFreeLimit: Bool {
+        !DailyLimitManager.shared.isPremium && freeQuizCount >= Self.freeQuizLimit
+    }
+
+    var isPremium: Bool { DailyLimitManager.shared.isPremium }
+
     var selectedTopic: AIQuizTopic? {
         if case .selectCount(let t) = state { return t }
         if case .loading(let t, _) = state { return t }
@@ -65,6 +80,7 @@ final class AIQuizViewModel: ObservableObject {
                     nativeLang: nativeLang,
                     langCode: rawCode
                 )
+                if !DailyLimitManager.shared.isPremium { freeQuizCount += 1 }
                 state = .ready(questions: questions, title: topic.rawValue)
             } catch {
                 state = .error(error.localizedDescription)
