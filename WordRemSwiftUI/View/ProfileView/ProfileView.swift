@@ -13,27 +13,21 @@ struct ProfileView: View {
     @ObservedObject private var achievementService = AchievementService.shared
     @ObservedObject private var iap = InAppPurchaseManager.shared
     @State private var showPaywall = false
-    @State private var showGuestLoginSheet = false
-    @State private var showLoginScreen = false
     @State private var showUsernameSetup = false
     @State private var showAllAchievements = false
-    @State private var showDeleteConfirm = false
+    @State private var showResetConfirm = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 28) {
                 profileHeader
-                if authManager.isAnonymous { guestLoginBanner }
                 heroCard
                 statsOverviewRow
                 streakCard
                 learningProgressCard
                 achievementsSection
-                VStack(spacing: 14) {
-                    signOutButton
-                    deleteAccountButton
-                }
-                .padding(.top, 4)
+                accountSection
+                    .padding(.top, 4)
             }
             .padding(.horizontal, 24)
             .padding(.top, 12)
@@ -44,17 +38,6 @@ struct ProfileView: View {
         .paperBackground()
         .navigationBarHidden(true)
         .task { await vm.loadProfile() }
-        // Login sonrası profili yenile + Supabase'den username_changes kontrolü
-        .onChange(of: authManager.isAnonymous) { isAnon in
-            guard !isAnon else { return }
-            Task {
-                await vm.loadProfile()
-                // username_changes == 0 → henüz hiç set edilmemiş, zorunlu popup
-                if (vm.user?.usernameChanges ?? 0) == 0 {
-                    showUsernameSetup = true
-                }
-            }
-        }
         .fullScreenCover(isPresented: $showUsernameSetup) {
             UsernameSetupPopup(
                 initialUsername: vm.username,
@@ -71,40 +54,9 @@ struct ProfileView: View {
         .fullScreenCover(isPresented: $showPaywall) {
             OnboardingPaywallView(onContinue: { showPaywall = false })
         }
-        .sheet(isPresented: $showGuestLoginSheet) {
-            GuestLoginSheet(onEmailSelected: {
-                showGuestLoginSheet = false
-                // Kısa gecikme: sheet tamamen kapansın, sonra LoginScreen açılsın
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    showLoginScreen = true
-                }
-            })
-            .environmentObject(authManager)
-        }
-        .fullScreenCover(isPresented: $showLoginScreen) {
-            LoginScreenView(showsCloseButton: true)
-                .environmentObject(authManager)
-                .environmentObject(langManager)
-        }
-        // Guest → Apple/Google girişi: loading + hata geri bildirimi
-        .overlay {
-            if authManager.isAuthenticating || authManager.isDeleting {
-                DS.Colors.ink.opacity(0.3).ignoresSafeArea()
-                    .overlay(
-                        ProgressView()
-                            .tint(DS.Colors.ink)
-                            .frame(width: 64, height: 64)
-                            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
-                    )
-            }
-        }
-        .alert(langManager.s(.loginFailedTitle), isPresented: Binding(
-            get: { authManager.loginError != nil && !showLoginScreen && !showGuestLoginSheet },
-            set: { if !$0 { authManager.loginError = nil } }
-        )) {
-            Button(langManager.s(.paywallOk), role: .cancel) { authManager.loginError = nil }
-        } message: {
-            Text(authManager.loginError ?? "")
+        // Profil sekmesine her dönüşte (ör. quiz sonrası) güncel ilerlemeyi göster
+        .onReceive(NotificationCenter.default.publisher(for: UserStore.didChangeNotification)) { _ in
+            Task { await vm.loadProfile() }
         }
     }
 
@@ -113,24 +65,6 @@ struct ProfileView: View {
         Text(langManager.s(.tabProfile))
             .font(DS.Font.display(34, weight: .bold))
             .foregroundStyle(DS.Colors.ink)
-    }
-
-    // MARK: - Guest Login Banner
-    private var guestLoginBanner: some View {
-        PaperCard(padding: 24) {
-            VStack(alignment: .leading, spacing: 10) {
-                Text(langManager.s(.profileSaveProgress))
-                    .font(DS.Font.display(22))
-                    .foregroundStyle(DS.Colors.ink)
-                Text(langManager.s(.profileSaveProgressHint))
-                    .font(DS.Font.ui(15))
-                    .foregroundStyle(DS.Colors.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-                Button(langManager.s(.leaderboardSignIn)) { showGuestLoginSheet = true }
-                    .buttonStyle(InkButtonStyle())
-                    .padding(.top, 6)
-            }
-        }
     }
 
     // MARK: - Hero (kimlik + Pro durumu)
@@ -153,7 +87,7 @@ struct ProfileView: View {
                             .foregroundStyle(DS.Colors.ink)
                             .lineLimit(1)
 
-                        if !authManager.isAnonymous, (vm.user?.usernameChanges ?? 0) == 1 {
+                        if true {
                             Button { showUsernameSetup = true } label: {
                                 Image(systemName: "pencil")
                                     .font(.system(size: 13, weight: .medium))
@@ -369,40 +303,34 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Sign Out
-    private var signOutButton: some View {
-        Button { authManager.signOut() } label: {
-            Label(langManager.s(.profileSignOut), systemImage: "rectangle.portrait.and.arrow.right")
-        }
-        .buttonStyle(OutlineButtonStyle())
-    }
-
-    // MARK: - Delete Account
-    private var deleteAccountButton: some View {
-        Button { showDeleteConfirm = true } label: {
-            Text(langManager.s(.profileDeleteAccount))
-                .font(DS.Font.ui(13, weight: .medium))
-                .foregroundStyle(DS.Colors.danger)
-                .padding(.vertical, 8)
-                .frame(maxWidth: .infinity)
-        }
-        .alert(langManager.s(.profileDeleteTitle), isPresented: $showDeleteConfirm) {
-            Button(langManager.s(.profileDeleteConfirm), role: .destructive) {
-                authManager.deleteAccount()
+    // MARK: - Account (hesap yok: iCloud senkron notu + ilerlemeyi sıfırla)
+    private var accountSection: some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 10) {
+                Image(systemName: "icloud")
+                    .foregroundStyle(DS.Colors.muted)
+                Text(langManager.s(.profileSyncNote))
+                    .font(DS.Font.ui(13))
+                    .foregroundStyle(DS.Colors.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
             }
-            Button(langManager.s(.profileDeleteCancel), role: .cancel) {}
-        } message: {
-            Text(langManager.s(.profileDeleteMessage))
+            Button { showResetConfirm = true } label: {
+                Text(langManager.s(.profileResetProgress))
+                    .font(DS.Font.ui(13, weight: .medium))
+                    .foregroundStyle(DS.Colors.danger)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
+            }
+            .alert(langManager.s(.profileResetTitle), isPresented: $showResetConfirm) {
+                Button(langManager.s(.profileResetConfirm), role: .destructive) {
+                    authManager.resetAllProgress()
+                }
+                Button(langManager.s(.profileDeleteCancel), role: .cancel) {}
+            } message: {
+                Text(langManager.s(.profileResetMessage))
+            }
         }
-        .alert(langManager.s(.profileDeleteTitle), isPresented: Binding(
-            get: { authManager.deleteError != nil },
-            set: { if !$0 { authManager.deleteError = nil } }
-        )) {
-            Button(langManager.s(.paywallOk), role: .cancel) { authManager.deleteError = nil }
-        } message: {
-            Text(langManager.s(.profileDeleteFailed))
-        }
-        .disabled(authManager.isDeleting)
     }
 }
 
@@ -447,8 +375,8 @@ final class ProfileScreenViewModel: ObservableObject {
     func loadProfile() async {
         isLoading = true
         do {
-            user  = try await SupabaseDataService.shared.fetchUserProfile()
-            stats = try await SupabaseDataService.shared.fetchUserStats()
+            user  = try await DataService.shared.fetchUserProfile()
+            stats = try await DataService.shared.fetchUserStats()
             // Fetch already-saved achievements (no new unlock toast on profile open)
             await AchievementService.shared.fetchSaved()
         } catch {
@@ -458,39 +386,8 @@ final class ProfileScreenViewModel: ObservableObject {
     }
 
     func updateUsername(_ newUsername: String) async {
-        guard let uid = SupabaseService.shared.currentUserId else { return }
-        let currentChanges = user?.usernameChanges ?? 0
-        let uidStr = uid.uuidString
-
-        // 1) Username güncelle (her zaman çalışır)
-        do {
-            struct UsernameOnly: Encodable { let username: String }
-            try await SupabaseService.shared.client
-                .from("users")
-                .update(UsernameOnly(username: newUsername))
-                .eq("id", value: uidStr)
-                .execute()
-            print("✅ Username updated: \(newUsername)")
-        } catch {
-            print("❌ updateUsername error: \(error)")
-            return
-        }
-
-        // 2) username_changes sayacını artır — kolon yoksa sessizce geç
-        do {
-            struct ChangesOnly: Encodable { let username_changes: Int }
-            try await SupabaseService.shared.client
-                .from("users")
-                .update(ChangesOnly(username_changes: currentChanges + 1))
-                .eq("id", value: uidStr)
-                .execute()
-            print("✅ username_changes: \(currentChanges + 1)")
-        } catch {
-            print("⚠️ username_changes kolon yok (SQL çalıştırılmadı?): \(error)")
-        }
-
-        // Profili yenile
-        user = try? await SupabaseDataService.shared.fetchUserProfile()
+        DataService.shared.updateUsername(newUsername)
+        user = try? await DataService.shared.fetchUserProfile()
     }
 }
 
@@ -767,101 +664,6 @@ struct CharacterPickerSheet: View {
 }
 
 
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Guest Login Sheet
-// MARK: ═══════════════════════════════════════════════════════════
-
-struct GuestLoginSheet: View {
-    @EnvironmentObject var langManager: LanguageManager
-    var onEmailSelected: (() -> Void)? = nil
-
-    @EnvironmentObject var authManager: AuthManager
-    @Environment(\.dismiss) private var dismiss
-    @State private var isLoading = false
-    @State private var errorMessage: String?
-
-    var body: some View {
-        NavigationStack {
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 32) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(langManager.s(.profileSaveProgress))
-                            .font(DS.Font.display(30, weight: .bold))
-                            .foregroundStyle(DS.Colors.ink)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                        Text(langManager.s(.profileSaveProgressDesc))
-                            .font(DS.Font.ui(16))
-                            .foregroundStyle(DS.Colors.inkSoft)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(.top, 8)
-
-                    // Buttons
-                    VStack(spacing: 12) {
-                        // Apple
-                        Button {
-                            dismiss()
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                authManager.handleAppleLogin()
-                            }
-                        } label: {
-                            Label(langManager.s(.profileLoginApple), systemImage: "apple.logo")
-                        }
-                        .buttonStyle(InkButtonStyle())
-
-                        // Google
-                        Button {
-                            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                  let vc = windowScene.windows.first?.rootViewController else { return }
-                            dismiss()
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                authManager.handleGoogleSignIn(with: vc)
-                            }
-                        } label: {
-                            Label(langManager.s(.profileLoginGoogle), systemImage: "g.circle")
-                        }
-                        .buttonStyle(OutlineButtonStyle())
-
-                        // E-posta
-                        Button {
-                            onEmailSelected?()
-                        } label: {
-                            Label(langManager.s(.profileLoginEmail), systemImage: "envelope")
-                        }
-                        .buttonStyle(OutlineButtonStyle())
-                    }
-
-                    if let err = errorMessage {
-                        Text(err)
-                            .font(DS.Font.ui(13, weight: .medium))
-                            .foregroundStyle(DS.Colors.danger)
-                            .multilineTextAlignment(.leading)
-                    }
-                }
-                .padding(24)
-                .frame(maxWidth: 520)
-                .frame(maxWidth: .infinity)
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(langManager.s(.profileClose)) { dismiss() }
-                        .font(DS.Font.ui(15, weight: .semibold))
-                        .foregroundStyle(DS.Colors.inkSoft)
-                }
-            }
-            .paperBackground()
-        }
-        .presentationDetents([.large])
-        .presentationCornerRadius(28)
-        .onChange(of: authManager.isAnonymous) { anonymous in
-            if !anonymous { dismiss() }
-        }
-    }
-
-}
 
 // MARK: - Username Setup Popup (mandatory, kapatılamaz)
 private struct UsernameSetupPopup: View {

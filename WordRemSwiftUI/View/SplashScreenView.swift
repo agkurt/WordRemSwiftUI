@@ -92,7 +92,7 @@ struct LaunchScreenView: View {
 
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
-                    _ = try? await SupabaseDataService.shared.fetchUserProfile()
+                    _ = try? await DataService.shared.fetchUserProfile()
                 }
                 group.addTask {
                     try? await Task.sleep(nanoseconds: 2_500_000_000)

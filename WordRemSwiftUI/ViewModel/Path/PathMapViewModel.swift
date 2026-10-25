@@ -32,7 +32,7 @@ final class PathMapViewModel: ObservableObject {
 
             // Onboarding'de kaydedilen hedef dil kodunu oku
             let targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode")
-            courses = try await SupabaseDataService.shared.fetchCourses(targetLangCode: targetLangCode)
+            courses = try await DataService.shared.fetchCourses(targetLangCode: targetLangCode)
 
             if courses.isEmpty && targetLangCode != nil {
                 // Seçili dil için kurs yok — kullanıcıya bilgi ver
@@ -73,18 +73,18 @@ final class PathMapViewModel: ObservableObject {
         defer { isLoading = false }
 
         // Check if user is enrolled (has any unlocked level)
-        let loaded = try await SupabaseDataService.shared.fetchLevelsWithProgress(courseId: courseId)
+        let loaded = try await DataService.shared.fetchLevelsWithProgress(courseId: courseId)
 
         let hasAnyProgress = loaded.contains { $0.progress != nil }
 
         // Hiç progress yoksa → yeni kullanıcı, her zaman Level 1'den başla
         if !hasAnyProgress {
             let proficiency = UserDefaults.standard.integer(forKey: "selectedProficiencyLevel")
-            try await SupabaseDataService.shared.enrollWithProficiency(
+            try await DataService.shared.enrollWithProficiency(
                 courseId: courseId,
                 proficiencyLevel: proficiency
             )
-            levelsWithProgress = try await SupabaseDataService.shared.fetchLevelsWithProgress(courseId: courseId)
+            levelsWithProgress = try await DataService.shared.fetchLevelsWithProgress(courseId: courseId)
             return
         }
 
@@ -101,7 +101,7 @@ final class PathMapViewModel: ObservableObject {
 
     // MARK: - Load user profile (XP, streak)
     func loadUserProfile() async {
-        userProfile = try? await SupabaseDataService.shared.fetchUserProfile()
+        userProfile = try? await DataService.shared.fetchUserProfile()
     }
 
     // MARK: - Computed helpers

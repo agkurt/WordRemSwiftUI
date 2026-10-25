@@ -273,7 +273,7 @@ final class GameQuizViewModel: ObservableObject {
             }
 
             // quiz_attempts kaydet (arka planda)
-            if let uid = SupabaseService.shared.currentUserId {
+            if let uid = Optional(UserStore.shared.userId) {
                 let attempts: [SBQuizAttemptInsert] = questions.map { q in
                     let isCorrect = !sessionMistakes.contains(q.word.id.uuidString)
                     return SBQuizAttemptInsert(
@@ -288,12 +288,12 @@ final class GameQuizViewModel: ObservableObject {
                     )
                 }
                 Task.detached(priority: .background) {
-                    try? await SupabaseDataService.shared.saveQuizAttempts(attempts)
+                    try? await DataService.shared.saveQuizAttempts(attempts)
                 }
             }
 
             do {
-                let response = try await SupabaseDataService.shared.completeLevel(
+                let response = try await DataService.shared.completeLevel(
                     levelId: levelId,
                     score: scorePercent,
                     quizMode: "multipleChoice"
@@ -305,7 +305,7 @@ final class GameQuizViewModel: ObservableObject {
                     // If server didn't unlock next level (e.g. old RPC / score below server threshold),
                     // apply client-side fallback so the path map always reflects the result.
                     if !response.success {
-                        await SupabaseDataService.shared.unlockNextLevelFallback(afterLevelId: levelId, score: scorePercent)
+                        await DataService.shared.unlockNextLevelFallback(afterLevelId: levelId, score: scorePercent)
                     }
                 }
                 let earnedStars: Int
@@ -328,7 +328,7 @@ final class GameQuizViewModel: ObservableObject {
                 if scorePercent >= 50 {
                     UserDefaults.standard.set(true, forKey: "justCompletedLevel")
                     // RPC tamamen başarısız — doğrudan DB'ye yaz
-                    await SupabaseDataService.shared.unlockNextLevelFallback(afterLevelId: levelId, score: scorePercent)
+                    await DataService.shared.unlockNextLevelFallback(afterLevelId: levelId, score: scorePercent)
                 }
                 let fallbackStars = scorePercent >= 90 ? 3 : scorePercent >= 70 ? 2 : scorePercent >= 50 ? 1 : 0
                 UserDefaults.standard.set(scorePercent,   forKey: "lastCompletedScore")
@@ -345,14 +345,14 @@ final class GameQuizViewModel: ObservableObject {
                 UserDefaults.standard.set(true, forKey: "justClearedMistakes")
             }
             let mistakesXP = score * 5
-            await SupabaseDataService.shared.awardXP(mistakesXP)
+            await DataService.shared.awardXP(mistakesXP)
             state = .completed(score: scorePercent, stars: 3, xpEarned: mistakesXP)
             await triggerAchievementCheck()
 
         case .aiGenerated(let title):
             let stars  = scorePercent >= 80 ? 3 : scorePercent >= 60 ? 2 : scorePercent >= 40 ? 1 : 0
             let aiXP   = score * 8
-            await SupabaseDataService.shared.awardXP(aiXP)
+            await DataService.shared.awardXP(aiXP)
             state = .completed(score: scorePercent, stars: stars, xpEarned: aiXP)
             await triggerAchievementCheck()
 
@@ -378,8 +378,8 @@ final class GameQuizViewModel: ObservableObject {
     /// Fetches fresh user profile + stats and runs achievement unlock logic.
     private func triggerAchievementCheck() async {
         do {
-            let user  = try await SupabaseDataService.shared.fetchUserProfile()
-            let stats = try await SupabaseDataService.shared.fetchUserStats()
+            let user  = try await DataService.shared.fetchUserProfile()
+            let stats = try await DataService.shared.fetchUserStats()
             if let user {
                 await AchievementService.shared.checkAndUnlock(user: user, stats: stats)
             }

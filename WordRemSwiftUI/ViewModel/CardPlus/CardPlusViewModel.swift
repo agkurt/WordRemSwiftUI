@@ -27,7 +27,7 @@ final class CardPlusViewModel: ObservableObject {
         // SWAP: wordName ve wordMean yerlerini değiştir
         // ÖN YÜZ (cümlenin olduğu) = wordMean (Fransızca - "cousin")
         // ARKA YÜZ = wordName (Türkçe - "kuzen")
-        await FirebaseService.shared.addWordToCard(
+        await DeckService.shared.addWordToCard(
             cardId: cardId, 
             wordName: wordMean,        // ÖN YÜZ: Fransızca kelime
             wordMean: wordName,        // ARKA YÜZ: Türkçe anlam
@@ -37,7 +37,7 @@ final class CardPlusViewModel: ObservableObject {
     
     func updateWord(cardId: String, wordId: String) async {
         // Update existing word
-        await FirebaseService.shared.updateWordInCard(
+        await DeckService.shared.updateWordInCard(
             cardId: cardId,
             wordId: wordId,
             wordName: wordMean,        // ÖN YÜZ: Fransızca kelime
@@ -141,7 +141,7 @@ final class CardPlusViewModel: ObservableObject {
     
     func fetchLanguageInfo(cardId:String) async {
         do {
-            let fetch = try await FirebaseService.shared.fetchSourceAndTargetLang(cardId: cardId)
+            let fetch = try await DeckService.shared.fetchSourceAndTargetLang(cardId: cardId)
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.sourceLang = fetch.map { $0.sourceLang ?? ""}

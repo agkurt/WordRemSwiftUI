@@ -19,7 +19,7 @@ final class MistakesManager: ObservableObject {
 
     // Yalnızca o anki kullanıcı bazında benzersiz key
     private var key: String {
-        let uid = SupabaseAuthService.shared.currentUserId?.uuidString ?? "anonymous"
+        let uid = UserStore.shared.userId.uuidString
         return "userMistakesIds_\(uid)"
     }
 

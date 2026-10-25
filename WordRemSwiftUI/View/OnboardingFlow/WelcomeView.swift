@@ -11,7 +11,6 @@ struct WelcomeView: View {
 
     @EnvironmentObject var langManager: LanguageManager
     @State private var navigateToLanguage = false
-    @State private var navigateToLogin = false
 
     var body: some View {
         NavigationStack {
@@ -35,8 +34,6 @@ struct WelcomeView: View {
                 VStack(spacing: 12) {
                     Button(langManager.s(.welcomeStart)) { navigateToLanguage = true }
                         .buttonStyle(InkButtonStyle())
-                    Button(langManager.s(.welcomeHaveAccount)) { navigateToLogin = true }
-                        .buttonStyle(OutlineButtonStyle())
                 }
                 .padding(.bottom, 24)
             }
@@ -46,10 +43,6 @@ struct WelcomeView: View {
             .paperBackground()
             .navigationDestination(isPresented: $navigateToLanguage) {
                 NativeLanguageSelectionView()
-            }
-            .navigationDestination(isPresented: $navigateToLogin) {
-                LoginScreenView()
-                    .navigationBarBackButtonHidden(false)
             }
         }
     }

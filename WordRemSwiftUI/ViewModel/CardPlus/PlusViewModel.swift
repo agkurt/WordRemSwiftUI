@@ -21,7 +21,7 @@ final class PlusViewModel:ObservableObject {
     }
     
     func addCardNameInfo() async {
-        await FirebaseService.shared.addCardNameInfo(name: cardName, selectedFlag: selectedFlag,sourceLang: sourceLanguage.code,targetLang: targetLanguage.code)
+        await DeckService.shared.addCardNameInfo(name: cardName, selectedFlag: selectedFlag,sourceLang: sourceLanguage.code,targetLang: targetLanguage.code)
     }
     
     private func loadUserLanguages() {

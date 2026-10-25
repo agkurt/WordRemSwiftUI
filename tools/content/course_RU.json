@@ -1,0 +1,4743 @@
+{
+  "target": "RU",
+  "title": {
+    "TR": "Rusça",
+    "EN": "Russian",
+    "DE": "Russisch",
+    "FR": "Russe",
+    "ES": "Ruso",
+    "IT": "Russo",
+    "RU": "Русский язык",
+    "ZH": "俄语"
+  },
+  "description": {
+    "TR": "İlk kelimelerden B1 seviyesine günlük Rusça.",
+    "EN": "Everyday Russian from your first words to B1.",
+    "DE": "Alltagsrussisch von den ersten Wörtern bis B1.",
+    "FR": "Le russe du quotidien, des premiers mots au B1.",
+    "ES": "Ruso cotidiano desde las primeras palabras hasta el B1.",
+    "IT": "Il russo di tutti i giorni, dalle prime parole al B1.",
+    "RU": "Повседневный русский язык от первых слов до B1.",
+    "ZH": "从第一个单词到B1级的日常俄语。"
+  },
+  "units": [
+    {
+      "title": {
+        "TR": "İlk adımlar",
+        "EN": "First steps",
+        "DE": "Erste Schritte",
+        "FR": "Premiers pas",
+        "ES": "Primeros pasos",
+        "IT": "Primi passi",
+        "RU": "Первые шаги",
+        "ZH": "入门"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Selamlaşma",
+            "EN": "Greetings",
+            "DE": "Begrüßung",
+            "FR": "Salutations",
+            "ES": "Saludos",
+            "IT": "Saluti",
+            "RU": "Приветствия",
+            "ZH": "问候"
+          },
+          "description": {
+            "TR": "Selam ver ve kendini tanıt.",
+            "EN": "Say hello and introduce yourself.",
+            "DE": "Hallo sagen und sich vorstellen.",
+            "FR": "Dire bonjour et se présenter.",
+            "ES": "Saluda y preséntate.",
+            "IT": "Saluta e presentati.",
+            "RU": "Здоровайтесь и представляйтесь.",
+            "ZH": "打招呼和自我介绍。"
+          },
+          "icon": "hand.wave",
+          "words": [
+            {
+              "term": "привет",
+              "romanization": "privet",
+              "phonetic": "/prʲɪˈvʲet/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "merhaba",
+                "EN": "hello",
+                "DE": "hallo",
+                "FR": "bonjour",
+                "ES": "hola",
+                "IT": "ciao",
+                "ZH": "你好"
+              },
+              "example": "Привет! Как дела?"
+            },
+            {
+              "term": "доброе утро",
+              "romanization": "dobroye utro",
+              "phonetic": "/ˈdobrəjə ˈutrə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "günaydın",
+                "EN": "good morning",
+                "DE": "guten Morgen",
+                "FR": "bonjour",
+                "ES": "buenos días",
+                "IT": "buongiorno",
+                "ZH": "早上好"
+              },
+              "example": "Доброе утро, мама!"
+            },
+            {
+              "term": "добрый вечер",
+              "romanization": "dobryy vecher",
+              "phonetic": "/ˈdobrɨj ˈvʲet͡ɕɪr/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "iyi akşamlar",
+                "EN": "good evening",
+                "DE": "guten Abend",
+                "FR": "bonsoir",
+                "ES": "buenas tardes",
+                "IT": "buonasera",
+                "ZH": "晚上好"
+              },
+              "example": "Добрый вечер! Проходите."
+            },
+            {
+              "term": "до свидания",
+              "romanization": "do svidaniya",
+              "phonetic": "/də svʲɪˈdanʲɪjə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "hoşça kal",
+                "EN": "goodbye",
+                "DE": "auf Wiedersehen",
+                "FR": "au revoir",
+                "ES": "adiós",
+                "IT": "arrivederci",
+                "ZH": "再见"
+              },
+              "example": "До свидания, до завтра!"
+            },
+            {
+              "term": "спасибо",
+              "romanization": "spasibo",
+              "phonetic": "/spɐˈsʲibə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "teşekkürler",
+                "EN": "thank you",
+                "DE": "danke",
+                "FR": "merci",
+                "ES": "gracias",
+                "IT": "grazie",
+                "ZH": "谢谢"
+              },
+              "example": "Большое спасибо!"
+            },
+            {
+              "term": "пожалуйста",
+              "romanization": "pozhaluysta",
+              "phonetic": "/pɐˈʐaləstə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "lütfen",
+                "EN": "please",
+                "DE": "bitte",
+                "FR": "s'il vous plaît",
+                "ES": "por favor",
+                "IT": "per favore",
+                "ZH": "请"
+              },
+              "example": "Воды, пожалуйста."
+            },
+            {
+              "term": "да",
+              "romanization": "da",
+              "phonetic": "/da/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "evet",
+                "EN": "yes",
+                "DE": "ja",
+                "FR": "oui",
+                "ES": "sí",
+                "IT": "sì",
+                "ZH": "是的"
+              },
+              "example": "Да, я студент."
+            },
+            {
+              "term": "нет",
+              "romanization": "net",
+              "phonetic": "/nʲet/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "hayır",
+                "EN": "no",
+                "DE": "nein",
+                "FR": "non",
+                "ES": "no",
+                "IT": "no",
+                "ZH": "不"
+              },
+              "example": "Нет, спасибо."
+            },
+            {
+              "term": "как тебя зовут?",
+              "romanization": "kak tebya zovut?",
+              "phonetic": "/kak tʲɪˈbʲa zɐˈvut/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "adın ne?",
+                "EN": "what's your name?",
+                "DE": "wie heißt du?",
+                "FR": "comment tu t'appelles ?",
+                "ES": "¿cómo te llamas?",
+                "IT": "come ti chiami?",
+                "ZH": "你叫什么名字？"
+              },
+              "example": "Привет! Как тебя зовут?"
+            },
+            {
+              "term": "очень приятно",
+              "romanization": "ochen' priyatno",
+              "phonetic": "/ˈot͡ɕɪnʲ prʲɪˈjatnə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "memnun oldum",
+                "EN": "nice to meet you",
+                "DE": "freut mich",
+                "FR": "enchanté",
+                "ES": "encantado",
+                "IT": "piacere",
+                "ZH": "很高兴认识你"
+              },
+              "example": "Меня зовут Анна. Очень приятно!"
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Sayılar",
+            "EN": "Numbers",
+            "DE": "Zahlen",
+            "FR": "Les nombres",
+            "ES": "Números",
+            "IT": "Numeri",
+            "RU": "Числа",
+            "ZH": "数字"
+          },
+          "description": {
+            "TR": "Saymayı ve fiyat sormayı öğren.",
+            "EN": "Count and ask how much.",
+            "DE": "Zählen und nach dem Preis fragen.",
+            "FR": "Compter et demander combien.",
+            "ES": "Cuenta y pregunta cuánto.",
+            "IT": "Contare e chiedere quanto.",
+            "RU": "Считайте и спрашивайте цену.",
+            "ZH": "数数和问多少。"
+          },
+          "icon": "number",
+          "words": [
+            {
+              "term": "один",
+              "romanization": "odin",
+              "phonetic": "/ɐˈdʲin/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "bir",
+                "EN": "one",
+                "DE": "eins",
+                "FR": "un",
+                "ES": "uno",
+                "IT": "uno",
+                "ZH": "一"
+              },
+              "example": "У меня один брат."
+            },
+            {
+              "term": "два",
+              "romanization": "dva",
+              "phonetic": "/dva/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "iki",
+                "EN": "two",
+                "DE": "zwei",
+                "FR": "deux",
+                "ES": "dos",
+                "IT": "due",
+                "ZH": "二"
+              },
+              "example": "Два кофе, пожалуйста."
+            },
+            {
+              "term": "три",
+              "romanization": "tri",
+              "phonetic": "/trʲi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "üç",
+                "EN": "three",
+                "DE": "drei",
+                "FR": "trois",
+                "ES": "tres",
+                "IT": "tre",
+                "ZH": "三"
+              },
+              "example": "У нас три кошки."
+            },
+            {
+              "term": "четыре",
+              "romanization": "chetyre",
+              "phonetic": "/t͡ɕɪˈtɨrʲɪ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dört",
+                "EN": "four",
+                "DE": "vier",
+                "FR": "quatre",
+                "ES": "cuatro",
+                "IT": "quattro",
+                "ZH": "四"
+              },
+              "example": "В комнате четыре окна."
+            },
+            {
+              "term": "пять",
+              "romanization": "pyat'",
+              "phonetic": "/pʲætʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "beş",
+                "EN": "five",
+                "DE": "fünf",
+                "FR": "cinq",
+                "ES": "cinco",
+                "IT": "cinque",
+                "ZH": "五"
+              },
+              "example": "Сейчас пять часов."
+            },
+            {
+              "term": "десять",
+              "romanization": "desyat'",
+              "phonetic": "/ˈdʲesʲɪtʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "on",
+                "EN": "ten",
+                "DE": "zehn",
+                "FR": "dix",
+                "ES": "diez",
+                "IT": "dieci",
+                "ZH": "十"
+              },
+              "example": "Магазин открывается в десять."
+            },
+            {
+              "term": "двадцать",
+              "romanization": "dvadtsat'",
+              "phonetic": "/ˈdvat͡sətʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yirmi",
+                "EN": "twenty",
+                "DE": "zwanzig",
+                "FR": "vingt",
+                "ES": "veinte",
+                "IT": "venti",
+                "ZH": "二十"
+              },
+              "example": "В классе двадцать студентов."
+            },
+            {
+              "term": "сто",
+              "romanization": "sto",
+              "phonetic": "/sto/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yüz",
+                "EN": "one hundred",
+                "DE": "hundert",
+                "FR": "cent",
+                "ES": "cien",
+                "IT": "cento",
+                "ZH": "一百"
+              },
+              "example": "Это стоит сто рублей."
+            },
+            {
+              "term": "ноль",
+              "romanization": "nol'",
+              "phonetic": "/nolʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sıfır",
+                "EN": "zero",
+                "DE": "null",
+                "FR": "zéro",
+                "ES": "cero",
+                "IT": "zero",
+                "ZH": "零"
+              },
+              "example": "Сегодня ноль градусов."
+            },
+            {
+              "term": "сколько",
+              "romanization": "skol'ko",
+              "phonetic": "/ˈskolʲkə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ne kadar",
+                "EN": "how much",
+                "DE": "wie viel",
+                "FR": "combien",
+                "ES": "cuánto",
+                "IT": "quanto",
+                "ZH": "多少"
+              },
+              "example": "Сколько это стоит?"
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Aile",
+            "EN": "Family",
+            "DE": "Familie",
+            "FR": "La famille",
+            "ES": "Familia",
+            "IT": "Famiglia",
+            "RU": "Семья",
+            "ZH": "家庭"
+          },
+          "description": {
+            "TR": "Sevdiğin insanlardan bahset.",
+            "EN": "Talk about the people you love.",
+            "DE": "Über deine Liebsten sprechen.",
+            "FR": "Parler de ses proches.",
+            "ES": "Habla de tus seres queridos.",
+            "IT": "Parla delle persone care.",
+            "RU": "Расскажите о близких людях.",
+            "ZH": "谈谈你的家人。"
+          },
+          "icon": "person.3",
+          "words": [
+            {
+              "term": "мама",
+              "romanization": "mama",
+              "phonetic": "/ˈmamə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "anne",
+                "EN": "mom",
+                "DE": "Mama",
+                "FR": "maman",
+                "ES": "mamá",
+                "IT": "mamma",
+                "ZH": "妈妈"
+              },
+              "example": "Моя мама работает в школе."
+            },
+            {
+              "term": "папа",
+              "romanization": "papa",
+              "phonetic": "/ˈpapə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "baba",
+                "EN": "dad",
+                "DE": "Papa",
+                "FR": "papa",
+                "ES": "papá",
+                "IT": "papà",
+                "ZH": "爸爸"
+              },
+              "example": "Папа дома."
+            },
+            {
+              "term": "брат",
+              "romanization": "brat",
+              "phonetic": "/brat/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "erkek kardeş",
+                "EN": "brother",
+                "DE": "der Bruder",
+                "FR": "le frère",
+                "ES": "el hermano",
+                "IT": "il fratello",
+                "ZH": "兄弟"
+              },
+              "example": "У меня есть брат."
+            },
+            {
+              "term": "сестра",
+              "romanization": "sestra",
+              "phonetic": "/sʲɪˈstra/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kız kardeş",
+                "EN": "sister",
+                "DE": "die Schwester",
+                "FR": "la sœur",
+                "ES": "la hermana",
+                "IT": "la sorella",
+                "ZH": "姐妹"
+              },
+              "example": "Моя сестра — студентка."
+            },
+            {
+              "term": "сын",
+              "romanization": "syn",
+              "phonetic": "/sɨn/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "oğul",
+                "EN": "son",
+                "DE": "der Sohn",
+                "FR": "le fils",
+                "ES": "el hijo",
+                "IT": "il figlio",
+                "ZH": "儿子"
+              },
+              "example": "Их сын учится в школе."
+            },
+            {
+              "term": "дочь",
+              "romanization": "doch'",
+              "phonetic": "/dot͡ɕ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kız evlat",
+                "EN": "daughter",
+                "DE": "die Tochter",
+                "FR": "la fille",
+                "ES": "la hija",
+                "IT": "la figlia",
+                "ZH": "女儿"
+              },
+              "example": "У нас есть дочь."
+            },
+            {
+              "term": "семья",
+              "romanization": "sem'ya",
+              "phonetic": "/sʲɪˈmʲja/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "aile",
+                "EN": "family",
+                "DE": "die Familie",
+                "FR": "la famille",
+                "ES": "la familia",
+                "IT": "la famiglia",
+                "ZH": "家人"
+              },
+              "example": "У меня большая семья."
+            },
+            {
+              "term": "муж",
+              "romanization": "muzh",
+              "phonetic": "/muʂ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "koca",
+                "EN": "husband",
+                "DE": "der Ehemann",
+                "FR": "le mari",
+                "ES": "el marido",
+                "IT": "il marito",
+                "ZH": "丈夫"
+              },
+              "example": "Это мой муж."
+            },
+            {
+              "term": "жена",
+              "romanization": "zhena",
+              "phonetic": "/ʐɨˈna/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "eş",
+                "EN": "wife",
+                "DE": "die Ehefrau",
+                "FR": "la femme",
+                "ES": "la esposa",
+                "IT": "la moglie",
+                "ZH": "妻子"
+              },
+              "example": "Его жена из Италии."
+            },
+            {
+              "term": "бабушка",
+              "romanization": "babushka",
+              "phonetic": "/ˈbabʊʂkə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "büyükanne",
+                "EN": "grandma",
+                "DE": "die Oma",
+                "FR": "la grand-mère",
+                "ES": "la abuela",
+                "IT": "la nonna",
+                "ZH": "奶奶"
+              },
+              "example": "Моя бабушка очень добрая."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Yiyecek ve içecek",
+            "EN": "Food & drink",
+            "DE": "Essen und Trinken",
+            "FR": "Manger et boire",
+            "ES": "Comida y bebida",
+            "IT": "Cibo e bevande",
+            "RU": "Еда и напитки",
+            "ZH": "食物和饮料"
+          },
+          "description": {
+            "TR": "Temel yiyecekler ve içecekler.",
+            "EN": "Basic foods and drinks.",
+            "DE": "Grundlegende Lebensmittel und Getränke.",
+            "FR": "Aliments et boissons de base.",
+            "ES": "Alimentos y bebidas básicos.",
+            "IT": "Cibi e bevande di base.",
+            "RU": "Основные продукты и напитки.",
+            "ZH": "常见的食物和饮料。"
+          },
+          "icon": "fork.knife",
+          "words": [
+            {
+              "term": "вода",
+              "romanization": "voda",
+              "phonetic": "/vɐˈda/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "su",
+                "EN": "water",
+                "DE": "das Wasser",
+                "FR": "l'eau",
+                "ES": "el agua",
+                "IT": "l'acqua",
+                "ZH": "水"
+              },
+              "example": "Вода очень холодная."
+            },
+            {
+              "term": "хлеб",
+              "romanization": "khleb",
+              "phonetic": "/xlʲep/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ekmek",
+                "EN": "bread",
+                "DE": "das Brot",
+                "FR": "le pain",
+                "ES": "el pan",
+                "IT": "il pane",
+                "ZH": "面包"
+              },
+              "example": "Я покупаю хлеб."
+            },
+            {
+              "term": "молоко",
+              "romanization": "moloko",
+              "phonetic": "/məlɐˈko/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "süt",
+                "EN": "milk",
+                "DE": "die Milch",
+                "FR": "le lait",
+                "ES": "la leche",
+                "IT": "il latte",
+                "ZH": "牛奶"
+              },
+              "example": "Ребёнок пьёт молоко."
+            },
+            {
+              "term": "яблоко",
+              "romanization": "yabloko",
+              "phonetic": "/ˈjabləkə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "elma",
+                "EN": "apple",
+                "DE": "der Apfel",
+                "FR": "la pomme",
+                "ES": "la manzana",
+                "IT": "la mela",
+                "ZH": "苹果"
+              },
+              "example": "Это красное яблоко."
+            },
+            {
+              "term": "мясо",
+              "romanization": "myaso",
+              "phonetic": "/ˈmʲasə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "et",
+                "EN": "meat",
+                "DE": "das Fleisch",
+                "FR": "la viande",
+                "ES": "la carne",
+                "IT": "la carne",
+                "ZH": "肉"
+              },
+              "example": "Я не ем мясо."
+            },
+            {
+              "term": "рыба",
+              "romanization": "ryba",
+              "phonetic": "/ˈrɨbə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "balık",
+                "EN": "fish",
+                "DE": "der Fisch",
+                "FR": "le poisson",
+                "ES": "el pescado",
+                "IT": "il pesce",
+                "ZH": "鱼"
+              },
+              "example": "Мы едим рыбу по пятницам."
+            },
+            {
+              "term": "сыр",
+              "romanization": "syr",
+              "phonetic": "/sɨr/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "peynir",
+                "EN": "cheese",
+                "DE": "der Käse",
+                "FR": "le fromage",
+                "ES": "el queso",
+                "IT": "il formaggio",
+                "ZH": "奶酪"
+              },
+              "example": "Я люблю сыр."
+            },
+            {
+              "term": "яйцо",
+              "romanization": "yaytso",
+              "phonetic": "/jɪjˈt͡so/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yumurta",
+                "EN": "egg",
+                "DE": "das Ei",
+                "FR": "l'œuf",
+                "ES": "el huevo",
+                "IT": "l'uovo",
+                "ZH": "鸡蛋"
+              },
+              "example": "На завтрак я ем яйцо."
+            },
+            {
+              "term": "суп",
+              "romanization": "sup",
+              "phonetic": "/sup/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "çorba",
+                "EN": "soup",
+                "DE": "die Suppe",
+                "FR": "la soupe",
+                "ES": "la sopa",
+                "IT": "la zuppa",
+                "ZH": "汤"
+              },
+              "example": "Суп горячий."
+            },
+            {
+              "term": "сок",
+              "romanization": "sok",
+              "phonetic": "/sok/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "meyve suyu",
+                "EN": "juice",
+                "DE": "der Saft",
+                "FR": "le jus",
+                "ES": "el zumo",
+                "IT": "il succo",
+                "ZH": "果汁"
+              },
+              "example": "Апельсиновый сок, пожалуйста."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Kafede",
+            "EN": "At the café",
+            "DE": "Im Café",
+            "FR": "Au café",
+            "ES": "En la cafetería",
+            "IT": "Al bar",
+            "RU": "В кафе",
+            "ZH": "在咖啡馆"
+          },
+          "description": {
+            "TR": "Kahve, çay ve tatlı sipariş et.",
+            "EN": "Order coffee, tea and sweets.",
+            "DE": "Kaffee, Tee und Süßes bestellen.",
+            "FR": "Commander café, thé et douceurs.",
+            "ES": "Pide café, té y dulces.",
+            "IT": "Ordinare caffè, tè e dolci.",
+            "RU": "Закажите кофе, чай и сладкое.",
+            "ZH": "点咖啡、茶和甜点。"
+          },
+          "icon": "cup.and.saucer",
+          "words": [
+            {
+              "term": "кофе",
+              "romanization": "kofe",
+              "phonetic": "/ˈkofʲɪ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kahve",
+                "EN": "coffee",
+                "DE": "der Kaffee",
+                "FR": "le café",
+                "ES": "el café",
+                "IT": "il caffè",
+                "ZH": "咖啡"
+              },
+              "example": "Я пью кофе по утрам."
+            },
+            {
+              "term": "чай",
+              "romanization": "chay",
+              "phonetic": "/t͡ɕæj/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "çay",
+                "EN": "tea",
+                "DE": "der Tee",
+                "FR": "le thé",
+                "ES": "el té",
+                "IT": "il tè",
+                "ZH": "茶"
+              },
+              "example": "Я пью чай с лимоном."
+            },
+            {
+              "term": "сахар",
+              "romanization": "sakhar",
+              "phonetic": "/ˈsaxər/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "şeker",
+                "EN": "sugar",
+                "DE": "der Zucker",
+                "FR": "le sucre",
+                "ES": "el azúcar",
+                "IT": "lo zucchero",
+                "ZH": "糖"
+              },
+              "example": "Без сахара, пожалуйста."
+            },
+            {
+              "term": "чашка",
+              "romanization": "chashka",
+              "phonetic": "/ˈt͡ɕaʂkə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "fincan",
+                "EN": "cup",
+                "DE": "die Tasse",
+                "FR": "la tasse",
+                "ES": "la taza",
+                "IT": "la tazza",
+                "ZH": "杯子"
+              },
+              "example": "Это моя чашка."
+            },
+            {
+              "term": "торт",
+              "romanization": "tort",
+              "phonetic": "/tort/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pasta",
+                "EN": "cake",
+                "DE": "der Kuchen",
+                "FR": "le gâteau",
+                "ES": "la tarta",
+                "IT": "la torta",
+                "ZH": "蛋糕"
+              },
+              "example": "Мама испекла торт."
+            },
+            {
+              "term": "кафе",
+              "romanization": "kafe",
+              "phonetic": "/kɐˈfɛ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kafe",
+                "EN": "café",
+                "DE": "das Café",
+                "FR": "le café",
+                "ES": "la cafetería",
+                "IT": "il bar",
+                "ZH": "咖啡馆"
+              },
+              "example": "Пойдём в кафе!"
+            },
+            {
+              "term": "мороженое",
+              "romanization": "morozhenoye",
+              "phonetic": "/mɐˈroʐɨnəjə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dondurma",
+                "EN": "ice cream",
+                "DE": "das Eis",
+                "FR": "la glace",
+                "ES": "el helado",
+                "IT": "il gelato",
+                "ZH": "冰淇淋"
+              },
+              "example": "Дети любят мороженое."
+            },
+            {
+              "term": "горячий",
+              "romanization": "goryachiy",
+              "phonetic": "/ɡɐˈrʲat͡ɕɪj/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sıcak",
+                "EN": "hot",
+                "DE": "heiß",
+                "FR": "chaud",
+                "ES": "caliente",
+                "IT": "caldo",
+                "ZH": "热"
+              },
+              "example": "Осторожно, чай горячий!"
+            },
+            {
+              "term": "холодный",
+              "romanization": "kholodnyy",
+              "phonetic": "/xɐˈlodnɨj/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "soğuk",
+                "EN": "cold",
+                "DE": "kalt",
+                "FR": "froid",
+                "ES": "frío",
+                "IT": "freddo",
+                "ZH": "冷"
+              },
+              "example": "Я хочу холодный сок."
+            },
+            {
+              "term": "вкусный",
+              "romanization": "vkusnyy",
+              "phonetic": "/ˈfkusnɨj/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "lezzetli",
+                "EN": "tasty",
+                "DE": "lecker",
+                "FR": "délicieux",
+                "ES": "delicioso",
+                "IT": "buono",
+                "ZH": "好吃"
+              },
+              "example": "Какой вкусный суп!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Günlük hayat",
+        "EN": "Everyday life",
+        "DE": "Alltag",
+        "FR": "La vie quotidienne",
+        "ES": "La vida diaria",
+        "IT": "Vita quotidiana",
+        "RU": "Повседневная жизнь",
+        "ZH": "日常生活"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Ev",
+            "EN": "Home",
+            "DE": "Zuhause",
+            "FR": "La maison",
+            "ES": "La casa",
+            "IT": "La casa",
+            "RU": "Дом",
+            "ZH": "家居"
+          },
+          "description": {
+            "TR": "Odalar ve eşyalar.",
+            "EN": "Rooms and furniture.",
+            "DE": "Zimmer und Möbel.",
+            "FR": "Pièces et meubles.",
+            "ES": "Habitaciones y muebles.",
+            "IT": "Stanze e mobili.",
+            "RU": "Комнаты и мебель.",
+            "ZH": "房间和家具。"
+          },
+          "icon": "house",
+          "words": [
+            {
+              "term": "дом",
+              "romanization": "dom",
+              "phonetic": "/dom/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ev",
+                "EN": "house",
+                "DE": "das Haus",
+                "FR": "la maison",
+                "ES": "la casa",
+                "IT": "la casa",
+                "ZH": "房子"
+              },
+              "example": "Мой дом большой."
+            },
+            {
+              "term": "квартира",
+              "romanization": "kvartira",
+              "phonetic": "/kvɐrˈtʲirə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "daire",
+                "EN": "apartment",
+                "DE": "die Wohnung",
+                "FR": "l'appartement",
+                "ES": "el apartamento",
+                "IT": "l'appartamento",
+                "ZH": "公寓"
+              },
+              "example": "У нас новая квартира."
+            },
+            {
+              "term": "комната",
+              "romanization": "komnata",
+              "phonetic": "/ˈkomnətə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "oda",
+                "EN": "room",
+                "DE": "das Zimmer",
+                "FR": "la pièce",
+                "ES": "la habitación",
+                "IT": "la stanza",
+                "ZH": "房间"
+              },
+              "example": "Это моя комната."
+            },
+            {
+              "term": "кухня",
+              "romanization": "kukhnya",
+              "phonetic": "/ˈkuxnʲə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "mutfak",
+                "EN": "kitchen",
+                "DE": "die Küche",
+                "FR": "la cuisine",
+                "ES": "la cocina",
+                "IT": "la cucina",
+                "ZH": "厨房"
+              },
+              "example": "Мама на кухне."
+            },
+            {
+              "term": "окно",
+              "romanization": "okno",
+              "phonetic": "/ɐkˈno/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pencere",
+                "EN": "window",
+                "DE": "das Fenster",
+                "FR": "la fenêtre",
+                "ES": "la ventana",
+                "IT": "la finestra",
+                "ZH": "窗户"
+              },
+              "example": "Открой окно, пожалуйста."
+            },
+            {
+              "term": "дверь",
+              "romanization": "dver'",
+              "phonetic": "/dvʲerʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kapı",
+                "EN": "door",
+                "DE": "die Tür",
+                "FR": "la porte",
+                "ES": "la puerta",
+                "IT": "la porta",
+                "ZH": "门"
+              },
+              "example": "Закрой дверь!"
+            },
+            {
+              "term": "стол",
+              "romanization": "stol",
+              "phonetic": "/stol/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "masa",
+                "EN": "table",
+                "DE": "der Tisch",
+                "FR": "la table",
+                "ES": "la mesa",
+                "IT": "il tavolo",
+                "ZH": "桌子"
+              },
+              "example": "Книга на столе."
+            },
+            {
+              "term": "стул",
+              "romanization": "stul",
+              "phonetic": "/stul/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sandalye",
+                "EN": "chair",
+                "DE": "der Stuhl",
+                "FR": "la chaise",
+                "ES": "la silla",
+                "IT": "la sedia",
+                "ZH": "椅子"
+              },
+              "example": "Садись на стул."
+            },
+            {
+              "term": "кровать",
+              "romanization": "krovat'",
+              "phonetic": "/krɐˈvatʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yatak",
+                "EN": "bed",
+                "DE": "das Bett",
+                "FR": "le lit",
+                "ES": "la cama",
+                "IT": "il letto",
+                "ZH": "床"
+              },
+              "example": "Кровать очень удобная."
+            },
+            {
+              "term": "ванная",
+              "romanization": "vannaya",
+              "phonetic": "/ˈvannəjə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "banyo",
+                "EN": "bathroom",
+                "DE": "das Badezimmer",
+                "FR": "la salle de bains",
+                "ES": "el baño",
+                "IT": "il bagno",
+                "ZH": "浴室"
+              },
+              "example": "Где ванная?"
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Günlük rutin",
+            "EN": "Daily routine",
+            "DE": "Tagesablauf",
+            "FR": "La routine",
+            "ES": "Rutina diaria",
+            "IT": "Routine quotidiana",
+            "RU": "Распорядок дня",
+            "ZH": "日常作息"
+          },
+          "description": {
+            "TR": "Sıradan bir gününü anlat.",
+            "EN": "Describe your typical day.",
+            "DE": "Deinen typischen Tag beschreiben.",
+            "FR": "Décrire sa journée type.",
+            "ES": "Describe tu día típico.",
+            "IT": "Descrivi la tua giornata tipo.",
+            "RU": "Опишите свой обычный день.",
+            "ZH": "描述你的一天。"
+          },
+          "icon": "alarm",
+          "words": [
+            {
+              "term": "вставать",
+              "romanization": "vstavat'",
+              "phonetic": "/fstɐˈvatʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kalkmak",
+                "EN": "to get up",
+                "DE": "aufstehen",
+                "FR": "se lever",
+                "ES": "levantarse",
+                "IT": "alzarsi",
+                "ZH": "起床"
+              },
+              "example": "Во сколько ты встаёшь?"
+            },
+            {
+              "term": "завтракать",
+              "romanization": "zavtrakat'",
+              "phonetic": "/ˈzaftrəkətʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kahvaltı yapmak",
+                "EN": "to have breakfast",
+                "DE": "frühstücken",
+                "FR": "prendre le petit-déjeuner",
+                "ES": "desayunar",
+                "IT": "fare colazione",
+                "ZH": "吃早饭"
+              },
+              "example": "Мы завтракаем дома."
+            },
+            {
+              "term": "обедать",
+              "romanization": "obedat'",
+              "phonetic": "/ɐˈbʲedətʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "öğle yemeği yemek",
+                "EN": "to have lunch",
+                "DE": "zu Mittag essen",
+                "FR": "déjeuner",
+                "ES": "almorzar",
+                "IT": "pranzare",
+                "ZH": "吃午饭"
+              },
+              "example": "Где ты обедаешь?"
+            },
+            {
+              "term": "ужинать",
+              "romanization": "uzhinat'",
+              "phonetic": "/ˈuʐɨnətʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "akşam yemeği yemek",
+                "EN": "to have dinner",
+                "DE": "zu Abend essen",
+                "FR": "dîner",
+                "ES": "cenar",
+                "IT": "cenare",
+                "ZH": "吃晚饭"
+              },
+              "example": "Вечером мы ужинаем вместе."
+            },
+            {
+              "term": "работать",
+              "romanization": "rabotat'",
+              "phonetic": "/rɐˈbotətʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "çalışmak",
+                "EN": "to work",
+                "DE": "arbeiten",
+                "FR": "travailler",
+                "ES": "trabajar",
+                "IT": "lavorare",
+                "ZH": "工作"
+              },
+              "example": "Папа работает в банке."
+            },
+            {
+              "term": "учиться",
+              "romanization": "uchit'sya",
+              "phonetic": "/ʊˈt͡ɕit͡sə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ders çalışmak",
+                "EN": "to study",
+                "DE": "lernen",
+                "FR": "étudier",
+                "ES": "estudiar",
+                "IT": "studiare",
+                "ZH": "学习"
+              },
+              "example": "Моя сестра учится в школе."
+            },
+            {
+              "term": "спать",
+              "romanization": "spat'",
+              "phonetic": "/spatʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "uyumak",
+                "EN": "to sleep",
+                "DE": "schlafen",
+                "FR": "dormir",
+                "ES": "dormir",
+                "IT": "dormire",
+                "ZH": "睡觉"
+              },
+              "example": "Ребёнок спит."
+            },
+            {
+              "term": "читать",
+              "romanization": "chitat'",
+              "phonetic": "/t͡ɕɪˈtatʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "okumak",
+                "EN": "to read",
+                "DE": "lesen",
+                "FR": "lire",
+                "ES": "leer",
+                "IT": "leggere",
+                "ZH": "看书"
+              },
+              "example": "Я люблю читать."
+            },
+            {
+              "term": "отдыхать",
+              "romanization": "otdykhat'",
+              "phonetic": "/ɐddɨˈxatʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dinlenmek",
+                "EN": "to rest",
+                "DE": "sich ausruhen",
+                "FR": "se reposer",
+                "ES": "descansar",
+                "IT": "riposarsi",
+                "ZH": "休息"
+              },
+              "example": "В субботу мы отдыхаем."
+            },
+            {
+              "term": "каждый день",
+              "romanization": "kazhdyy den'",
+              "phonetic": "/ˈkaʐdɨj dʲenʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "her gün",
+                "EN": "every day",
+                "DE": "jeden Tag",
+                "FR": "tous les jours",
+                "ES": "todos los días",
+                "IT": "ogni giorno",
+                "ZH": "每天"
+              },
+              "example": "Я гуляю каждый день."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Zaman ve tarihler",
+            "EN": "Time & dates",
+            "DE": "Zeit und Datum",
+            "FR": "Le temps et les dates",
+            "ES": "Tiempo y fechas",
+            "IT": "Tempo e date",
+            "RU": "Время и даты",
+            "ZH": "时间和日期"
+          },
+          "description": {
+            "TR": "Günler, haftalar ve aylar.",
+            "EN": "Days, weeks and months.",
+            "DE": "Tage, Wochen und Monate.",
+            "FR": "Jours, semaines et mois.",
+            "ES": "Días, semanas y meses.",
+            "IT": "Giorni, settimane e mesi.",
+            "RU": "Дни, недели и месяцы.",
+            "ZH": "天、星期和月份。"
+          },
+          "icon": "calendar",
+          "words": [
+            {
+              "term": "время",
+              "romanization": "vremya",
+              "phonetic": "/ˈvrʲemʲə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "zaman",
+                "EN": "time",
+                "DE": "die Zeit",
+                "FR": "le temps",
+                "ES": "el tiempo",
+                "IT": "il tempo",
+                "ZH": "时间"
+              },
+              "example": "У меня нет времени."
+            },
+            {
+              "term": "час",
+              "romanization": "chas",
+              "phonetic": "/t͡ɕas/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "saat",
+                "EN": "hour",
+                "DE": "die Stunde",
+                "FR": "l'heure",
+                "ES": "la hora",
+                "IT": "l'ora",
+                "ZH": "小时"
+              },
+              "example": "Урок длится один час."
+            },
+            {
+              "term": "минута",
+              "romanization": "minuta",
+              "phonetic": "/mʲɪˈnutə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dakika",
+                "EN": "minute",
+                "DE": "die Minute",
+                "FR": "la minute",
+                "ES": "el minuto",
+                "IT": "il minuto",
+                "ZH": "分钟"
+              },
+              "example": "Подожди минуту!"
+            },
+            {
+              "term": "сегодня",
+              "romanization": "segodnya",
+              "phonetic": "/sʲɪˈvodnʲə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "bugün",
+                "EN": "today",
+                "DE": "heute",
+                "FR": "aujourd'hui",
+                "ES": "hoy",
+                "IT": "oggi",
+                "ZH": "今天"
+              },
+              "example": "Сегодня хорошая погода."
+            },
+            {
+              "term": "завтра",
+              "romanization": "zavtra",
+              "phonetic": "/ˈzaftrə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yarın",
+                "EN": "tomorrow",
+                "DE": "morgen",
+                "FR": "demain",
+                "ES": "mañana",
+                "IT": "domani",
+                "ZH": "明天"
+              },
+              "example": "Завтра я работаю."
+            },
+            {
+              "term": "вчера",
+              "romanization": "vchera",
+              "phonetic": "/ft͡ɕɪˈra/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dün",
+                "EN": "yesterday",
+                "DE": "gestern",
+                "FR": "hier",
+                "ES": "ayer",
+                "IT": "ieri",
+                "ZH": "昨天"
+              },
+              "example": "Вчера я был дома."
+            },
+            {
+              "term": "неделя",
+              "romanization": "nedelya",
+              "phonetic": "/nʲɪˈdʲelʲə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "hafta",
+                "EN": "week",
+                "DE": "die Woche",
+                "FR": "la semaine",
+                "ES": "la semana",
+                "IT": "la settimana",
+                "ZH": "星期"
+              },
+              "example": "Через неделю у меня отпуск."
+            },
+            {
+              "term": "месяц",
+              "romanization": "mesyats",
+              "phonetic": "/ˈmʲesʲɪt͡s/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ay",
+                "EN": "month",
+                "DE": "der Monat",
+                "FR": "le mois",
+                "ES": "el mes",
+                "IT": "il mese",
+                "ZH": "月"
+              },
+              "example": "В этом месяце я много работаю."
+            },
+            {
+              "term": "год",
+              "romanization": "god",
+              "phonetic": "/ɡot/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yıl",
+                "EN": "year",
+                "DE": "das Jahr",
+                "FR": "l'année",
+                "ES": "el año",
+                "IT": "l'anno",
+                "ZH": "年"
+              },
+              "example": "С Новым годом!"
+            },
+            {
+              "term": "понедельник",
+              "romanization": "ponedel'nik",
+              "phonetic": "/pənʲɪˈdʲelʲnʲɪk/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pazartesi",
+                "EN": "Monday",
+                "DE": "der Montag",
+                "FR": "lundi",
+                "ES": "el lunes",
+                "IT": "il lunedì",
+                "ZH": "星期一"
+              },
+              "example": "В понедельник я иду в школу."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Hava durumu",
+            "EN": "Weather",
+            "DE": "Wetter",
+            "FR": "La météo",
+            "ES": "El tiempo",
+            "IT": "Il meteo",
+            "RU": "Погода",
+            "ZH": "天气"
+          },
+          "description": {
+            "TR": "Hava hakkında konuş.",
+            "EN": "Talk about the weather.",
+            "DE": "Über das Wetter sprechen.",
+            "FR": "Parler du temps qu'il fait.",
+            "ES": "Habla del tiempo.",
+            "IT": "Parlare del tempo.",
+            "RU": "Говорите о погоде.",
+            "ZH": "谈论天气。"
+          },
+          "icon": "cloud.sun",
+          "words": [
+            {
+              "term": "погода",
+              "romanization": "pogoda",
+              "phonetic": "/pɐˈɡodə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "hava",
+                "EN": "weather",
+                "DE": "das Wetter",
+                "FR": "le temps",
+                "ES": "el tiempo",
+                "IT": "il tempo",
+                "ZH": "天气"
+              },
+              "example": "Какая сегодня погода?"
+            },
+            {
+              "term": "дождь",
+              "romanization": "dozhd'",
+              "phonetic": "/doʂtʲ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yağmur",
+                "EN": "rain",
+                "DE": "der Regen",
+                "FR": "la pluie",
+                "ES": "la lluvia",
+                "IT": "la pioggia",
+                "ZH": "雨"
+              },
+              "example": "Вчера был сильный дождь."
+            },
+            {
+              "term": "снег",
+              "romanization": "sneg",
+              "phonetic": "/sʲnʲek/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kar",
+                "EN": "snow",
+                "DE": "der Schnee",
+                "FR": "la neige",
+                "ES": "la nieve",
+                "IT": "la neve",
+                "ZH": "雪"
+              },
+              "example": "Зимой много снега."
+            },
+            {
+              "term": "солнце",
+              "romanization": "solntse",
+              "phonetic": "/ˈsont͡sə/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "güneş",
+                "EN": "sun",
+                "DE": "die Sonne",
+                "FR": "le soleil",
+                "ES": "el sol",
+                "IT": "il sole",
+                "ZH": "太阳"
+              },
+              "example": "Светит солнце."
+            },
+            {
+              "term": "ветер",
+              "romanization": "veter",
+              "phonetic": "/ˈvʲetʲɪr/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "rüzgâr",
+                "EN": "wind",
+                "DE": "der Wind",
+                "FR": "le vent",
+                "ES": "el viento",
+                "IT": "il vento",
+                "ZH": "风"
+              },
+              "example": "Сегодня сильный ветер."
+            },
+            {
+              "term": "облако",
+              "romanization": "oblako",
+              "phonetic": "/ˈobləkə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bulut",
+                "EN": "cloud",
+                "DE": "die Wolke",
+                "FR": "le nuage",
+                "ES": "la nube",
+                "IT": "la nuvola",
+                "ZH": "云"
+              },
+              "example": "На небе нет ни одного облака."
+            },
+            {
+              "term": "тепло",
+              "romanization": "teplo",
+              "phonetic": "/tʲɪˈplo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hava ılık",
+                "EN": "it's warm",
+                "DE": "es ist warm",
+                "FR": "il fait bon",
+                "ES": "hace calor",
+                "IT": "fa caldo",
+                "ZH": "暖和"
+              },
+              "example": "Сегодня тепло."
+            },
+            {
+              "term": "прохладно",
+              "romanization": "prokhladno",
+              "phonetic": "/prɐˈxladnə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hava serin",
+                "EN": "it's cool",
+                "DE": "es ist kühl",
+                "FR": "il fait frais",
+                "ES": "hace fresco",
+                "IT": "fa fresco",
+                "ZH": "凉快"
+              },
+              "example": "Утром прохладно."
+            },
+            {
+              "term": "зонт",
+              "romanization": "zont",
+              "phonetic": "/zont/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "şemsiye",
+                "EN": "umbrella",
+                "DE": "der Regenschirm",
+                "FR": "le parapluie",
+                "ES": "el paraguas",
+                "IT": "l'ombrello",
+                "ZH": "雨伞"
+              },
+              "example": "Возьми зонт!"
+            },
+            {
+              "term": "небо",
+              "romanization": "nebo",
+              "phonetic": "/ˈnʲebə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "gökyüzü",
+                "EN": "sky",
+                "DE": "der Himmel",
+                "FR": "le ciel",
+                "ES": "el cielo",
+                "IT": "il cielo",
+                "ZH": "天空"
+              },
+              "example": "Небо голубое."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Alışveriş",
+            "EN": "Shopping",
+            "DE": "Einkaufen",
+            "FR": "Les courses",
+            "ES": "De compras",
+            "IT": "Lo shopping",
+            "RU": "Покупки",
+            "ZH": "购物"
+          },
+          "description": {
+            "TR": "Fiyatlar, ödeme ve bedenler.",
+            "EN": "Prices, paying and sizes.",
+            "DE": "Preise, Bezahlen und Größen.",
+            "FR": "Prix, paiement et tailles.",
+            "ES": "Precios, pagos y tallas.",
+            "IT": "Prezzi, pagamenti e taglie.",
+            "RU": "Цены, оплата и размеры.",
+            "ZH": "价格、付款和尺码。"
+          },
+          "icon": "cart",
+          "words": [
+            {
+              "term": "магазин",
+              "romanization": "magazin",
+              "phonetic": "/məɡɐˈzʲin/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "mağaza",
+                "EN": "shop",
+                "DE": "der Laden",
+                "FR": "le magasin",
+                "ES": "la tienda",
+                "IT": "il negozio",
+                "ZH": "商店"
+              },
+              "example": "Магазин открыт до девяти."
+            },
+            {
+              "term": "рынок",
+              "romanization": "rynok",
+              "phonetic": "/ˈrɨnək/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "pazar",
+                "EN": "market",
+                "DE": "der Markt",
+                "FR": "le marché",
+                "ES": "el mercado",
+                "IT": "il mercato",
+                "ZH": "市场"
+              },
+              "example": "В субботу я хожу на рынок."
+            },
+            {
+              "term": "деньги",
+              "romanization": "den'gi",
+              "phonetic": "/ˈdʲenʲɡʲɪ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "para",
+                "EN": "money",
+                "DE": "das Geld",
+                "FR": "l'argent",
+                "ES": "el dinero",
+                "IT": "i soldi",
+                "ZH": "钱"
+              },
+              "example": "У меня нет денег."
+            },
+            {
+              "term": "цена",
+              "romanization": "tsena",
+              "phonetic": "/t͡sɨˈna/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "fiyat",
+                "EN": "price",
+                "DE": "der Preis",
+                "FR": "le prix",
+                "ES": "el precio",
+                "IT": "il prezzo",
+                "ZH": "价格"
+              },
+              "example": "Цена очень хорошая."
+            },
+            {
+              "term": "дорогой",
+              "romanization": "dorogoy",
+              "phonetic": "/dərɐˈɡoj/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "pahalı",
+                "EN": "expensive",
+                "DE": "teuer",
+                "FR": "cher",
+                "ES": "caro",
+                "IT": "caro",
+                "ZH": "贵"
+              },
+              "example": "Это дорогой телефон."
+            },
+            {
+              "term": "дешёвый",
+              "romanization": "deshyovyy",
+              "phonetic": "/dʲɪˈʂovɨj/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ucuz",
+                "EN": "cheap",
+                "DE": "billig",
+                "FR": "bon marché",
+                "ES": "barato",
+                "IT": "economico",
+                "ZH": "便宜"
+              },
+              "example": "Этот рюкзак дешёвый."
+            },
+            {
+              "term": "покупать",
+              "romanization": "pokupat'",
+              "phonetic": "/pəkʊˈpatʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "satın almak",
+                "EN": "to buy",
+                "DE": "kaufen",
+                "FR": "acheter",
+                "ES": "comprar",
+                "IT": "comprare",
+                "ZH": "买"
+              },
+              "example": "Я покупаю фрукты на рынке."
+            },
+            {
+              "term": "платить",
+              "romanization": "platit'",
+              "phonetic": "/plɐˈtʲitʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ödemek",
+                "EN": "to pay",
+                "DE": "bezahlen",
+                "FR": "payer",
+                "ES": "pagar",
+                "IT": "pagare",
+                "ZH": "付钱"
+              },
+              "example": "Кто будет платить?"
+            },
+            {
+              "term": "размер",
+              "romanization": "razmer",
+              "phonetic": "/rɐzˈmʲer/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "beden",
+                "EN": "size",
+                "DE": "die Größe",
+                "FR": "la taille",
+                "ES": "la talla",
+                "IT": "la taglia",
+                "ZH": "尺码"
+              },
+              "example": "Какой у вас размер?"
+            },
+            {
+              "term": "скидка",
+              "romanization": "skidka",
+              "phonetic": "/ˈskʲitkə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "indirim",
+                "EN": "discount",
+                "DE": "der Rabatt",
+                "FR": "la réduction",
+                "ES": "el descuento",
+                "IT": "lo sconto",
+                "ZH": "折扣"
+              },
+              "example": "У вас есть скидка?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Şehirde ve yolda",
+        "EN": "Out and about",
+        "DE": "Unterwegs",
+        "FR": "En ville et en voyage",
+        "ES": "De paseo y de viaje",
+        "IT": "In giro",
+        "RU": "В городе и в пути",
+        "ZH": "出行"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Şehirde",
+            "EN": "In the city",
+            "DE": "In der Stadt",
+            "FR": "En ville",
+            "ES": "En la ciudad",
+            "IT": "In città",
+            "RU": "В городе",
+            "ZH": "在城市里"
+          },
+          "description": {
+            "TR": "Şehirdeki yerler.",
+            "EN": "Places around town.",
+            "DE": "Orte in der Stadt.",
+            "FR": "Les lieux de la ville.",
+            "ES": "Lugares de la ciudad.",
+            "IT": "I luoghi della città.",
+            "RU": "Места в городе.",
+            "ZH": "城市里的地方。"
+          },
+          "icon": "building.2",
+          "words": [
+            {
+              "term": "город",
+              "romanization": "gorod",
+              "phonetic": "/ˈɡorət/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "şehir",
+                "EN": "city",
+                "DE": "die Stadt",
+                "FR": "la ville",
+                "ES": "la ciudad",
+                "IT": "la città",
+                "ZH": "城市"
+              },
+              "example": "Москва — большой город."
+            },
+            {
+              "term": "улица",
+              "romanization": "ulitsa",
+              "phonetic": "/ˈulʲɪt͡sə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sokak",
+                "EN": "street",
+                "DE": "die Straße",
+                "FR": "la rue",
+                "ES": "la calle",
+                "IT": "la strada",
+                "ZH": "街"
+              },
+              "example": "Я живу на этой улице."
+            },
+            {
+              "term": "площадь",
+              "romanization": "ploshchad'",
+              "phonetic": "/ˈploɕːɪtʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "meydan",
+                "EN": "square",
+                "DE": "der Platz",
+                "FR": "la place",
+                "ES": "la plaza",
+                "IT": "la piazza",
+                "ZH": "广场"
+              },
+              "example": "На площади много людей."
+            },
+            {
+              "term": "парк",
+              "romanization": "park",
+              "phonetic": "/park/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "park",
+                "EN": "park",
+                "DE": "der Park",
+                "FR": "le parc",
+                "ES": "el parque",
+                "IT": "il parco",
+                "ZH": "公园"
+              },
+              "example": "Пойдём гулять в парк."
+            },
+            {
+              "term": "музей",
+              "romanization": "muzey",
+              "phonetic": "/mʊˈzʲej/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "müze",
+                "EN": "museum",
+                "DE": "das Museum",
+                "FR": "le musée",
+                "ES": "el museo",
+                "IT": "il museo",
+                "ZH": "博物馆"
+              },
+              "example": "В воскресенье мы были в музее."
+            },
+            {
+              "term": "библиотека",
+              "romanization": "biblioteka",
+              "phonetic": "/bʲɪblʲɪɐˈtʲekə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kütüphane",
+                "EN": "library",
+                "DE": "die Bibliothek",
+                "FR": "la bibliothèque",
+                "ES": "la biblioteca",
+                "IT": "la biblioteca",
+                "ZH": "图书馆"
+              },
+              "example": "Я беру книги в библиотеке."
+            },
+            {
+              "term": "мост",
+              "romanization": "most",
+              "phonetic": "/most/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "köprü",
+                "EN": "bridge",
+                "DE": "die Brücke",
+                "FR": "le pont",
+                "ES": "el puente",
+                "IT": "il ponte",
+                "ZH": "桥"
+              },
+              "example": "Этот мост очень старый."
+            },
+            {
+              "term": "театр",
+              "romanization": "teatr",
+              "phonetic": "/tʲɪˈatr/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tiyatro",
+                "EN": "theater",
+                "DE": "das Theater",
+                "FR": "le théâtre",
+                "ES": "el teatro",
+                "IT": "il teatro",
+                "ZH": "剧院"
+              },
+              "example": "Вечером мы идём в театр."
+            },
+            {
+              "term": "центр",
+              "romanization": "tsentr",
+              "phonetic": "/t͡sɛntr/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "şehir merkezi",
+                "EN": "city center",
+                "DE": "die Innenstadt",
+                "FR": "le centre-ville",
+                "ES": "el centro",
+                "IT": "il centro",
+                "ZH": "市中心"
+              },
+              "example": "Как доехать до центра?"
+            },
+            {
+              "term": "здание",
+              "romanization": "zdaniye",
+              "phonetic": "/ˈzdanʲɪjə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bina",
+                "EN": "building",
+                "DE": "das Gebäude",
+                "FR": "le bâtiment",
+                "ES": "el edificio",
+                "IT": "l'edificio",
+                "ZH": "大楼"
+              },
+              "example": "Это самое высокое здание в городе."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Yol tarifi",
+            "EN": "Directions",
+            "DE": "Wegbeschreibung",
+            "FR": "L'itinéraire",
+            "ES": "Direcciones",
+            "IT": "Indicazioni",
+            "RU": "Как пройти",
+            "ZH": "问路"
+          },
+          "description": {
+            "TR": "Yol sor ve tarifi takip et.",
+            "EN": "Ask the way and follow it.",
+            "DE": "Nach dem Weg fragen und ihn finden.",
+            "FR": "Demander et suivre son chemin.",
+            "ES": "Pregunta y sigue el camino.",
+            "IT": "Chiedere e seguire la strada.",
+            "RU": "Спросите дорогу и найдите путь.",
+            "ZH": "问路和指路。"
+          },
+          "icon": "map",
+          "words": [
+            {
+              "term": "где",
+              "romanization": "gde",
+              "phonetic": "/ɡdʲe/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "nerede",
+                "EN": "where",
+                "DE": "wo",
+                "FR": "où",
+                "ES": "dónde",
+                "IT": "dove",
+                "ZH": "哪里"
+              },
+              "example": "Где метро?"
+            },
+            {
+              "term": "налево",
+              "romanization": "nalevo",
+              "phonetic": "/nɐˈlʲevə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sola",
+                "EN": "to the left",
+                "DE": "links",
+                "FR": "à gauche",
+                "ES": "a la izquierda",
+                "IT": "a sinistra",
+                "ZH": "往左"
+              },
+              "example": "Поверните налево."
+            },
+            {
+              "term": "направо",
+              "romanization": "napravo",
+              "phonetic": "/nɐˈpravə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sağa",
+                "EN": "to the right",
+                "DE": "rechts",
+                "FR": "à droite",
+                "ES": "a la derecha",
+                "IT": "a destra",
+                "ZH": "往右"
+              },
+              "example": "Потом идите направо."
+            },
+            {
+              "term": "прямо",
+              "romanization": "pryamo",
+              "phonetic": "/ˈprʲamə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "dümdüz",
+                "EN": "straight ahead",
+                "DE": "geradeaus",
+                "FR": "tout droit",
+                "ES": "todo recto",
+                "IT": "dritto",
+                "ZH": "一直走"
+              },
+              "example": "Идите прямо до светофора."
+            },
+            {
+              "term": "близко",
+              "romanization": "blizko",
+              "phonetic": "/ˈblʲiskə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yakın",
+                "EN": "near",
+                "DE": "nah",
+                "FR": "près",
+                "ES": "cerca",
+                "IT": "vicino",
+                "ZH": "近"
+              },
+              "example": "Вокзал совсем близко."
+            },
+            {
+              "term": "далеко",
+              "romanization": "daleko",
+              "phonetic": "/dəlʲɪˈko/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uzak",
+                "EN": "far",
+                "DE": "weit",
+                "FR": "loin",
+                "ES": "lejos",
+                "IT": "lontano",
+                "ZH": "远"
+              },
+              "example": "Аэропорт далеко отсюда."
+            },
+            {
+              "term": "рядом",
+              "romanization": "ryadom",
+              "phonetic": "/ˈrʲadəm/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yanında",
+                "EN": "next to",
+                "DE": "neben",
+                "FR": "à côté de",
+                "ES": "al lado de",
+                "IT": "accanto a",
+                "ZH": "旁边"
+              },
+              "example": "Аптека рядом с банком."
+            },
+            {
+              "term": "угол",
+              "romanization": "ugol",
+              "phonetic": "/ˈuɡəl/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "köşe",
+                "EN": "corner",
+                "DE": "die Ecke",
+                "FR": "le coin",
+                "ES": "la esquina",
+                "IT": "l'angolo",
+                "ZH": "拐角"
+              },
+              "example": "Кафе на углу."
+            },
+            {
+              "term": "светофор",
+              "romanization": "svetofor",
+              "phonetic": "/svʲɪtɐˈfor/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "trafik ışığı",
+                "EN": "traffic light",
+                "DE": "die Ampel",
+                "FR": "le feu",
+                "ES": "el semáforo",
+                "IT": "il semaforo",
+                "ZH": "红绿灯"
+              },
+              "example": "Остановитесь у светофора."
+            },
+            {
+              "term": "карта",
+              "romanization": "karta",
+              "phonetic": "/ˈkartə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "harita",
+                "EN": "map",
+                "DE": "die Karte",
+                "FR": "la carte",
+                "ES": "el mapa",
+                "IT": "la mappa",
+                "ZH": "地图"
+              },
+              "example": "Покажите, пожалуйста, на карте."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Seyahat",
+            "EN": "Travel",
+            "DE": "Reisen",
+            "FR": "Les voyages",
+            "ES": "Viajes",
+            "IT": "Viaggi",
+            "RU": "Путешествия",
+            "ZH": "旅行"
+          },
+          "description": {
+            "TR": "Trenler, uçaklar ve oteller.",
+            "EN": "Trains, planes and hotels.",
+            "DE": "Züge, Flugzeuge und Hotels.",
+            "FR": "Trains, avions et hôtels.",
+            "ES": "Trenes, aviones y hoteles.",
+            "IT": "Treni, aerei e hotel.",
+            "RU": "Поезда, самолёты и гостиницы.",
+            "ZH": "火车、飞机和酒店。"
+          },
+          "icon": "airplane",
+          "words": [
+            {
+              "term": "поезд",
+              "romanization": "poyezd",
+              "phonetic": "/ˈpojɪst/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tren",
+                "EN": "train",
+                "DE": "der Zug",
+                "FR": "le train",
+                "ES": "el tren",
+                "IT": "il treno",
+                "ZH": "火车"
+              },
+              "example": "Поезд опаздывает."
+            },
+            {
+              "term": "самолёт",
+              "romanization": "samolyot",
+              "phonetic": "/səmɐˈlʲot/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uçak",
+                "EN": "plane",
+                "DE": "das Flugzeug",
+                "FR": "l'avion",
+                "ES": "el avión",
+                "IT": "l'aereo",
+                "ZH": "飞机"
+              },
+              "example": "Мы летим на самолёте."
+            },
+            {
+              "term": "вокзал",
+              "romanization": "vokzal",
+              "phonetic": "/vɐɡˈzal/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tren istasyonu",
+                "EN": "train station",
+                "DE": "der Bahnhof",
+                "FR": "la gare",
+                "ES": "la estación de tren",
+                "IT": "la stazione",
+                "ZH": "火车站"
+              },
+              "example": "Я жду тебя на вокзале."
+            },
+            {
+              "term": "аэропорт",
+              "romanization": "aeroport",
+              "phonetic": "/ɐɛrɐˈport/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "havalimanı",
+                "EN": "airport",
+                "DE": "der Flughafen",
+                "FR": "l'aéroport",
+                "ES": "el aeropuerto",
+                "IT": "l'aeroporto",
+                "ZH": "机场"
+              },
+              "example": "Как доехать до аэропорта?"
+            },
+            {
+              "term": "билет",
+              "romanization": "bilet",
+              "phonetic": "/bʲɪˈlʲet/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bilet",
+                "EN": "ticket",
+                "DE": "das Ticket",
+                "FR": "le billet",
+                "ES": "el billete",
+                "IT": "il biglietto",
+                "ZH": "票"
+              },
+              "example": "Я уже купил билет."
+            },
+            {
+              "term": "паспорт",
+              "romanization": "pasport",
+              "phonetic": "/ˈpaspərt/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "pasaport",
+                "EN": "passport",
+                "DE": "der Reisepass",
+                "FR": "le passeport",
+                "ES": "el pasaporte",
+                "IT": "il passaporto",
+                "ZH": "护照"
+              },
+              "example": "Не забудь паспорт!"
+            },
+            {
+              "term": "гостиница",
+              "romanization": "gostinitsa",
+              "phonetic": "/ɡɐˈsʲtʲinʲɪt͡sə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "otel",
+                "EN": "hotel",
+                "DE": "das Hotel",
+                "FR": "l'hôtel",
+                "ES": "el hotel",
+                "IT": "l'hotel",
+                "ZH": "酒店"
+              },
+              "example": "Гостиница находится в центре."
+            },
+            {
+              "term": "чемодан",
+              "romanization": "chemodan",
+              "phonetic": "/t͡ɕɪmɐˈdan/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bavul",
+                "EN": "suitcase",
+                "DE": "der Koffer",
+                "FR": "la valise",
+                "ES": "la maleta",
+                "IT": "la valigia",
+                "ZH": "行李箱"
+              },
+              "example": "Мой чемодан очень тяжёлый."
+            },
+            {
+              "term": "путешествовать",
+              "romanization": "puteshestvovat'",
+              "phonetic": "/pʊtʲɪˈʂɛstvəvətʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "seyahat etmek",
+                "EN": "to travel",
+                "DE": "reisen",
+                "FR": "voyager",
+                "ES": "viajar",
+                "IT": "viaggiare",
+                "ZH": "旅行"
+              },
+              "example": "Я люблю путешествовать."
+            },
+            {
+              "term": "отпуск",
+              "romanization": "otpusk",
+              "phonetic": "/ˈotpʊsk/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tatil",
+                "EN": "vacation",
+                "DE": "der Urlaub",
+                "FR": "les vacances",
+                "ES": "las vacaciones",
+                "IT": "le vacanze",
+                "ZH": "假期"
+              },
+              "example": "Летом у меня отпуск."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Restoranda",
+            "EN": "At the restaurant",
+            "DE": "Im Restaurant",
+            "FR": "Au restaurant",
+            "ES": "En el restaurante",
+            "IT": "Al ristorante",
+            "RU": "В ресторане",
+            "ZH": "在餐厅"
+          },
+          "description": {
+            "TR": "Rezervasyon, sipariş ve ödeme.",
+            "EN": "Book, order and pay.",
+            "DE": "Reservieren, bestellen und bezahlen.",
+            "FR": "Réserver, commander et payer.",
+            "ES": "Reserva, pide y paga.",
+            "IT": "Prenotare, ordinare e pagare.",
+            "RU": "Бронируйте, заказывайте и платите.",
+            "ZH": "预订、点菜和结账。"
+          },
+          "icon": "fork.knife.circle",
+          "words": [
+            {
+              "term": "ресторан",
+              "romanization": "restoran",
+              "phonetic": "/rʲɪstɐˈran/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "restoran",
+                "EN": "restaurant",
+                "DE": "das Restaurant",
+                "FR": "le restaurant",
+                "ES": "el restaurante",
+                "IT": "il ristorante",
+                "ZH": "餐厅"
+              },
+              "example": "Это хороший ресторан."
+            },
+            {
+              "term": "меню",
+              "romanization": "menyu",
+              "phonetic": "/mʲɪˈnʲu/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "menü",
+                "EN": "menu",
+                "DE": "die Speisekarte",
+                "FR": "la carte",
+                "ES": "la carta",
+                "IT": "il menù",
+                "ZH": "菜单"
+              },
+              "example": "Можно меню, пожалуйста?"
+            },
+            {
+              "term": "официант",
+              "romanization": "ofitsiant",
+              "phonetic": "/ɐfʲɪt͡sɨˈant/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "garson",
+                "EN": "waiter",
+                "DE": "der Kellner",
+                "FR": "le serveur",
+                "ES": "el camarero",
+                "IT": "il cameriere",
+                "ZH": "服务员"
+              },
+              "example": "Официант, можно вас?"
+            },
+            {
+              "term": "счёт",
+              "romanization": "schyot",
+              "phonetic": "/ɕːot/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hesap",
+                "EN": "bill",
+                "DE": "die Rechnung",
+                "FR": "l'addition",
+                "ES": "la cuenta",
+                "IT": "il conto",
+                "ZH": "账单"
+              },
+              "example": "Счёт, пожалуйста."
+            },
+            {
+              "term": "заказывать",
+              "romanization": "zakazyvat'",
+              "phonetic": "/zɐˈkazɨvətʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sipariş vermek",
+                "EN": "to order",
+                "DE": "bestellen",
+                "FR": "commander",
+                "ES": "pedir",
+                "IT": "ordinare",
+                "ZH": "点菜"
+              },
+              "example": "Что вы будете заказывать?"
+            },
+            {
+              "term": "бронировать",
+              "romanization": "bronirovat'",
+              "phonetic": "/brɐˈnʲirəvətʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "rezervasyon yapmak",
+                "EN": "to book",
+                "DE": "reservieren",
+                "FR": "réserver",
+                "ES": "reservar",
+                "IT": "prenotare",
+                "ZH": "预订"
+              },
+              "example": "Нужно бронировать заранее?"
+            },
+            {
+              "term": "блюдо",
+              "romanization": "blyudo",
+              "phonetic": "/ˈblʲudə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yemek",
+                "EN": "dish",
+                "DE": "das Gericht",
+                "FR": "le plat",
+                "ES": "el plato",
+                "IT": "il piatto",
+                "ZH": "菜"
+              },
+              "example": "Это моё любимое блюдо."
+            },
+            {
+              "term": "салат",
+              "romanization": "salat",
+              "phonetic": "/sɐˈlat/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "salata",
+                "EN": "salad",
+                "DE": "der Salat",
+                "FR": "la salade",
+                "ES": "la ensalada",
+                "IT": "l'insalata",
+                "ZH": "沙拉"
+              },
+              "example": "Я возьму салат."
+            },
+            {
+              "term": "десерт",
+              "romanization": "desert",
+              "phonetic": "/dʲɪˈsʲert/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tatlı",
+                "EN": "dessert",
+                "DE": "der Nachtisch",
+                "FR": "le dessert",
+                "ES": "el postre",
+                "IT": "il dolce",
+                "ZH": "甜点"
+              },
+              "example": "На десерт — мороженое."
+            },
+            {
+              "term": "вегетарианский",
+              "romanization": "vegetarianskiy",
+              "phonetic": "/vʲɪɡʲɪtərʲɪˈanskʲɪj/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "vejetaryen",
+                "EN": "vegetarian",
+                "DE": "vegetarisch",
+                "FR": "végétarien",
+                "ES": "vegetariano",
+                "IT": "vegetariano",
+                "ZH": "素食"
+              },
+              "example": "У вас есть вегетарианские блюда?"
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Sağlık",
+            "EN": "Health",
+            "DE": "Gesundheit",
+            "FR": "La santé",
+            "ES": "Salud",
+            "IT": "Salute",
+            "RU": "Здоровье",
+            "ZH": "健康"
+          },
+          "description": {
+            "TR": "Belirtiler, doktorlar ve eczaneler.",
+            "EN": "Symptoms, doctors and pharmacies.",
+            "DE": "Beschwerden, Ärzte und Apotheken.",
+            "FR": "Symptômes, médecins et pharmacies.",
+            "ES": "Síntomas, médicos y farmacias.",
+            "IT": "Sintomi, medici e farmacie.",
+            "RU": "Симптомы, врачи и аптеки.",
+            "ZH": "症状、医生和药店。"
+          },
+          "icon": "cross.case",
+          "words": [
+            {
+              "term": "врач",
+              "romanization": "vrach",
+              "phonetic": "/vrat͡ɕ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "doktor",
+                "EN": "doctor",
+                "DE": "der Arzt",
+                "FR": "le médecin",
+                "ES": "el médico",
+                "IT": "il medico",
+                "ZH": "医生"
+              },
+              "example": "Мой брат — врач."
+            },
+            {
+              "term": "больница",
+              "romanization": "bol'nitsa",
+              "phonetic": "/bɐlʲˈnʲit͡sə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hastane",
+                "EN": "hospital",
+                "DE": "das Krankenhaus",
+                "FR": "l'hôpital",
+                "ES": "el hospital",
+                "IT": "l'ospedale",
+                "ZH": "医院"
+              },
+              "example": "Бабушка в больнице."
+            },
+            {
+              "term": "аптека",
+              "romanization": "apteka",
+              "phonetic": "/ɐpˈtʲekə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "eczane",
+                "EN": "pharmacy",
+                "DE": "die Apotheke",
+                "FR": "la pharmacie",
+                "ES": "la farmacia",
+                "IT": "la farmacia",
+                "ZH": "药店"
+              },
+              "example": "Где ближайшая аптека?"
+            },
+            {
+              "term": "лекарство",
+              "romanization": "lekarstvo",
+              "phonetic": "/lʲɪˈkarstvə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ilaç",
+                "EN": "medicine",
+                "DE": "das Medikament",
+                "FR": "le médicament",
+                "ES": "el medicamento",
+                "IT": "la medicina",
+                "ZH": "药"
+              },
+              "example": "Принимай лекарство три раза в день."
+            },
+            {
+              "term": "болеть",
+              "romanization": "bolet'",
+              "phonetic": "/bɐˈlʲetʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hasta olmak",
+                "EN": "to be ill",
+                "DE": "krank sein",
+                "FR": "être malade",
+                "ES": "estar enfermo",
+                "IT": "essere malato",
+                "ZH": "生病"
+              },
+              "example": "Я болею уже три дня."
+            },
+            {
+              "term": "голова",
+              "romanization": "golova",
+              "phonetic": "/ɡəlɐˈva/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "baş",
+                "EN": "head",
+                "DE": "der Kopf",
+                "FR": "la tête",
+                "ES": "la cabeza",
+                "IT": "la testa",
+                "ZH": "头"
+              },
+              "example": "Надень шапку на голову."
+            },
+            {
+              "term": "температура",
+              "romanization": "temperatura",
+              "phonetic": "/tʲɪmpʲɪrɐˈturə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ateş",
+                "EN": "fever",
+                "DE": "das Fieber",
+                "FR": "la fièvre",
+                "ES": "la fiebre",
+                "IT": "la febbre",
+                "ZH": "发烧"
+              },
+              "example": "У меня высокая температура."
+            },
+            {
+              "term": "простуда",
+              "romanization": "prostuda",
+              "phonetic": "/prɐˈstudə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "soğuk algınlığı",
+                "EN": "a cold",
+                "DE": "die Erkältung",
+                "FR": "le rhume",
+                "ES": "el resfriado",
+                "IT": "il raffreddore",
+                "ZH": "感冒"
+              },
+              "example": "Это просто простуда."
+            },
+            {
+              "term": "здоровый",
+              "romanization": "zdorovyy",
+              "phonetic": "/zdɐˈrovɨj/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sağlıklı",
+                "EN": "healthy",
+                "DE": "gesund",
+                "FR": "en bonne santé",
+                "ES": "sano",
+                "IT": "sano",
+                "ZH": "健康"
+              },
+              "example": "Он здоровый и сильный."
+            },
+            {
+              "term": "помощь",
+              "romanization": "pomoshch'",
+              "phonetic": "/ˈpoməɕː/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yardım",
+                "EN": "help",
+                "DE": "die Hilfe",
+                "FR": "l'aide",
+                "ES": "la ayuda",
+                "IT": "l'aiuto",
+                "ZH": "帮助"
+              },
+              "example": "Помогите! Мне нужна помощь."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Hayat ve fikirler",
+        "EN": "Life and opinions",
+        "DE": "Leben und Meinungen",
+        "FR": "Vie et opinions",
+        "ES": "Vida y opiniones",
+        "IT": "Vita e opinioni",
+        "RU": "Жизнь и мнения",
+        "ZH": "生活与观点"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "İş",
+            "EN": "Work",
+            "DE": "Arbeit",
+            "FR": "Le travail",
+            "ES": "Trabajo",
+            "IT": "Lavoro",
+            "RU": "Работа",
+            "ZH": "工作"
+          },
+          "description": {
+            "TR": "Ofis hayatı ve kariyer.",
+            "EN": "Office life and careers.",
+            "DE": "Büroalltag und Beruf.",
+            "FR": "Vie de bureau et carrière.",
+            "ES": "Vida de oficina y carrera.",
+            "IT": "Vita d'ufficio e carriera.",
+            "RU": "Офис и карьера.",
+            "ZH": "职场与职业。"
+          },
+          "icon": "briefcase",
+          "words": [
+            {
+              "term": "офис",
+              "romanization": "ofis",
+              "phonetic": "/ˈofʲɪs/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ofis",
+                "EN": "office",
+                "DE": "das Büro",
+                "FR": "le bureau",
+                "ES": "la oficina",
+                "IT": "l'ufficio",
+                "ZH": "办公室"
+              },
+              "example": "Я работаю в офисе с девяти до шести."
+            },
+            {
+              "term": "коллега",
+              "romanization": "kollega",
+              "phonetic": "/kɐˈlʲeɡə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "iş arkadaşı",
+                "EN": "colleague",
+                "DE": "der Kollege",
+                "FR": "le collègue",
+                "ES": "el compañero de trabajo",
+                "IT": "il collega",
+                "ZH": "同事"
+              },
+              "example": "Мой коллега помог мне с проектом."
+            },
+            {
+              "term": "начальник",
+              "romanization": "nachal'nik",
+              "phonetic": "/nɐˈt͡ɕalʲnʲɪk/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "patron",
+                "EN": "boss",
+                "DE": "der Chef",
+                "FR": "le patron",
+                "ES": "el jefe",
+                "IT": "il capo",
+                "ZH": "老板"
+              },
+              "example": "Начальник сегодня в хорошем настроении."
+            },
+            {
+              "term": "зарплата",
+              "romanization": "zarplata",
+              "phonetic": "/zɐrˈplatə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "maaş",
+                "EN": "salary",
+                "DE": "das Gehalt",
+                "FR": "le salaire",
+                "ES": "el sueldo",
+                "IT": "lo stipendio",
+                "ZH": "工资"
+              },
+              "example": "Мне повысили зарплату."
+            },
+            {
+              "term": "собеседование",
+              "romanization": "sobesedovaniye",
+              "phonetic": "/səbʲɪˈsʲedəvənʲɪjə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "iş görüşmesi",
+                "EN": "job interview",
+                "DE": "das Vorstellungsgespräch",
+                "FR": "l'entretien d'embauche",
+                "ES": "la entrevista de trabajo",
+                "IT": "il colloquio di lavoro",
+                "ZH": "面试"
+              },
+              "example": "Завтра у меня собеседование."
+            },
+            {
+              "term": "опыт",
+              "romanization": "opyt",
+              "phonetic": "/ˈopɨt/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "deneyim",
+                "EN": "experience",
+                "DE": "die Erfahrung",
+                "FR": "l'expérience",
+                "ES": "la experiencia",
+                "IT": "l'esperienza",
+                "ZH": "经验"
+              },
+              "example": "У меня большой опыт работы."
+            },
+            {
+              "term": "компания",
+              "romanization": "kompaniya",
+              "phonetic": "/kɐmˈpanʲɪjə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "şirket",
+                "EN": "company",
+                "DE": "die Firma",
+                "FR": "l'entreprise",
+                "ES": "la empresa",
+                "IT": "l'azienda",
+                "ZH": "公司"
+              },
+              "example": "Наша компания продаёт мебель."
+            },
+            {
+              "term": "встреча",
+              "romanization": "vstrecha",
+              "phonetic": "/ˈfstrʲet͡ɕə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "toplantı",
+                "EN": "meeting",
+                "DE": "die Besprechung",
+                "FR": "la réunion",
+                "ES": "la reunión",
+                "IT": "la riunione",
+                "ZH": "会议"
+              },
+              "example": "Встреча начнётся в десять."
+            },
+            {
+              "term": "профессия",
+              "romanization": "professiya",
+              "phonetic": "/prɐˈfʲesʲɪjə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "meslek",
+                "EN": "profession",
+                "DE": "der Beruf",
+                "FR": "le métier",
+                "ES": "la profesión",
+                "IT": "la professione",
+                "ZH": "职业"
+              },
+              "example": "Какая у вас профессия?"
+            },
+            {
+              "term": "резюме",
+              "romanization": "rezyume",
+              "phonetic": "/rʲɪzʲʊˈmɛ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "özgeçmiş",
+                "EN": "résumé",
+                "DE": "der Lebenslauf",
+                "FR": "le CV",
+                "ES": "el currículum",
+                "IT": "il curriculum",
+                "ZH": "简历"
+              },
+              "example": "Вчера я отправил своё резюме."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Hobiler",
+            "EN": "Hobbies",
+            "DE": "Hobbys",
+            "FR": "Les loisirs",
+            "ES": "Aficiones",
+            "IT": "Hobby",
+            "RU": "Хобби",
+            "ZH": "爱好"
+          },
+          "description": {
+            "TR": "Boş zaman ve ilgi alanları.",
+            "EN": "Free time and interests.",
+            "DE": "Freizeit und Interessen.",
+            "FR": "Temps libre et centres d'intérêt.",
+            "ES": "Tiempo libre e intereses.",
+            "IT": "Tempo libero e interessi.",
+            "RU": "Свободное время и интересы.",
+            "ZH": "业余时间和兴趣。"
+          },
+          "icon": "paintpalette",
+          "words": [
+            {
+              "term": "хобби",
+              "romanization": "khobbi",
+              "phonetic": "/ˈxobʲɪ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hobi",
+                "EN": "hobby",
+                "DE": "das Hobby",
+                "FR": "le loisir",
+                "ES": "el pasatiempo",
+                "IT": "l'hobby",
+                "ZH": "爱好"
+              },
+              "example": "Какое у тебя хобби?"
+            },
+            {
+              "term": "музыка",
+              "romanization": "muzyka",
+              "phonetic": "/ˈmuzɨkə/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "müzik",
+                "EN": "music",
+                "DE": "die Musik",
+                "FR": "la musique",
+                "ES": "la música",
+                "IT": "la musica",
+                "ZH": "音乐"
+              },
+              "example": "Я слушаю музыку каждый вечер."
+            },
+            {
+              "term": "спорт",
+              "romanization": "sport",
+              "phonetic": "/sport/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "spor",
+                "EN": "sport",
+                "DE": "der Sport",
+                "FR": "le sport",
+                "ES": "el deporte",
+                "IT": "lo sport",
+                "ZH": "运动"
+              },
+              "example": "Я занимаюсь спортом три раза в неделю."
+            },
+            {
+              "term": "футбол",
+              "romanization": "futbol",
+              "phonetic": "/fʊdˈbol/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "futbol",
+                "EN": "football",
+                "DE": "der Fußball",
+                "FR": "le football",
+                "ES": "el fútbol",
+                "IT": "il calcio",
+                "ZH": "足球"
+              },
+              "example": "В субботу мы смотрели футбол."
+            },
+            {
+              "term": "плавать",
+              "romanization": "plavat'",
+              "phonetic": "/ˈplavətʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yüzmek",
+                "EN": "to swim",
+                "DE": "schwimmen",
+                "FR": "nager",
+                "ES": "nadar",
+                "IT": "nuotare",
+                "ZH": "游泳"
+              },
+              "example": "Прошлым летом я научился плавать."
+            },
+            {
+              "term": "рисовать",
+              "romanization": "risovat'",
+              "phonetic": "/rʲɪsɐˈvatʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "resim yapmak",
+                "EN": "to draw",
+                "DE": "zeichnen",
+                "FR": "dessiner",
+                "ES": "dibujar",
+                "IT": "disegnare",
+                "ZH": "画画"
+              },
+              "example": "В детстве я любил рисовать."
+            },
+            {
+              "term": "петь",
+              "romanization": "pet'",
+              "phonetic": "/pʲetʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "şarkı söylemek",
+                "EN": "to sing",
+                "DE": "singen",
+                "FR": "chanter",
+                "ES": "cantar",
+                "IT": "cantare",
+                "ZH": "唱歌"
+              },
+              "example": "Она очень любит петь."
+            },
+            {
+              "term": "танцевать",
+              "romanization": "tantsevat'",
+              "phonetic": "/tənt͡sɨˈvatʲ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "dans etmek",
+                "EN": "to dance",
+                "DE": "tanzen",
+                "FR": "danser",
+                "ES": "bailar",
+                "IT": "ballare",
+                "ZH": "跳舞"
+              },
+              "example": "Пойдём сегодня танцевать!"
+            },
+            {
+              "term": "играть на гитаре",
+              "romanization": "igrat' na gitare",
+              "phonetic": "/ɪˈɡratʲ nə ɡʲɪˈtarʲɪ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "gitar çalmak",
+                "EN": "to play the guitar",
+                "DE": "Gitarre spielen",
+                "FR": "jouer de la guitare",
+                "ES": "tocar la guitarra",
+                "IT": "suonare la chitarra",
+                "ZH": "弹吉他"
+              },
+              "example": "Я хочу научиться играть на гитаре."
+            },
+            {
+              "term": "фильм",
+              "romanization": "fil'm",
+              "phonetic": "/fʲilʲm/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "film",
+                "EN": "movie",
+                "DE": "der Film",
+                "FR": "le film",
+                "ES": "la película",
+                "IT": "il film",
+                "ZH": "电影"
+              },
+              "example": "Вчера мы смотрели интересный фильм."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Duygular",
+            "EN": "Feelings",
+            "DE": "Gefühle",
+            "FR": "Les émotions",
+            "ES": "Sentimientos",
+            "IT": "Emozioni",
+            "RU": "Чувства",
+            "ZH": "情绪"
+          },
+          "description": {
+            "TR": "Nasıl hissettiğini ifade et.",
+            "EN": "Express how you feel.",
+            "DE": "Sagen, wie es dir geht.",
+            "FR": "Exprimer ce qu'on ressent.",
+            "ES": "Expresa cómo te sientes.",
+            "IT": "Esprimere come ti senti.",
+            "RU": "Выражайте свои чувства.",
+            "ZH": "表达你的感受。"
+          },
+          "icon": "face.smiling",
+          "words": [
+            {
+              "term": "счастливый",
+              "romanization": "schastlivyy",
+              "phonetic": "/ɕːɪsˈlʲivɨj/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "mutlu",
+                "EN": "happy",
+                "DE": "glücklich",
+                "FR": "heureux",
+                "ES": "feliz",
+                "IT": "felice",
+                "ZH": "开心"
+              },
+              "example": "Сегодня самый счастливый день в моей жизни."
+            },
+            {
+              "term": "грустный",
+              "romanization": "grustnyy",
+              "phonetic": "/ˈɡrusnɨj/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "üzgün",
+                "EN": "sad",
+                "DE": "traurig",
+                "FR": "triste",
+                "ES": "triste",
+                "IT": "triste",
+                "ZH": "难过"
+              },
+              "example": "Почему ты такой грустный?"
+            },
+            {
+              "term": "уставший",
+              "romanization": "ustavshiy",
+              "phonetic": "/ʊˈstafʂɨj/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yorgun",
+                "EN": "tired",
+                "DE": "müde",
+                "FR": "fatigué",
+                "ES": "cansado",
+                "IT": "stanco",
+                "ZH": "累"
+              },
+              "example": "У тебя уставший вид."
+            },
+            {
+              "term": "сердитый",
+              "romanization": "serdityy",
+              "phonetic": "/sʲɪrˈdʲitɨj/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "kızgın",
+                "EN": "angry",
+                "DE": "wütend",
+                "FR": "en colère",
+                "ES": "enfadado",
+                "IT": "arrabbiato",
+                "ZH": "生气"
+              },
+              "example": "Почему у него такое сердитое лицо?"
+            },
+            {
+              "term": "спокойный",
+              "romanization": "spokoynyy",
+              "phonetic": "/spɐˈkojnɨj/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "sakin",
+                "EN": "calm",
+                "DE": "ruhig",
+                "FR": "calme",
+                "ES": "tranquilo",
+                "IT": "calmo",
+                "ZH": "平静"
+              },
+              "example": "Она всегда спокойная."
+            },
+            {
+              "term": "удивлённый",
+              "romanization": "udivlyonnyy",
+              "phonetic": "/ʊdʲɪˈvlʲonːɨj/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "şaşkın",
+                "EN": "surprised",
+                "DE": "überrascht",
+                "FR": "surpris",
+                "ES": "sorprendido",
+                "IT": "sorpreso",
+                "ZH": "惊讶"
+              },
+              "example": "У него было удивлённое лицо."
+            },
+            {
+              "term": "бояться",
+              "romanization": "boyat'sya",
+              "phonetic": "/bɐˈjat͡sə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "korkmak",
+                "EN": "to be afraid",
+                "DE": "Angst haben",
+                "FR": "avoir peur",
+                "ES": "tener miedo",
+                "IT": "avere paura",
+                "ZH": "害怕"
+              },
+              "example": "Я боюсь собак."
+            },
+            {
+              "term": "волноваться",
+              "romanization": "volnovat'sya",
+              "phonetic": "/vəlnɐˈvat͡sə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "endişelenmek",
+                "EN": "to worry",
+                "DE": "sich Sorgen machen",
+                "FR": "s'inquiéter",
+                "ES": "preocuparse",
+                "IT": "preoccuparsi",
+                "ZH": "担心"
+              },
+              "example": "Мама всегда волнуется за меня."
+            },
+            {
+              "term": "скучать",
+              "romanization": "skuchat'",
+              "phonetic": "/skʊˈt͡ɕatʲ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "özlemek",
+                "EN": "to miss",
+                "DE": "vermissen",
+                "FR": "manquer à",
+                "ES": "echar de menos",
+                "IT": "sentire la mancanza di",
+                "ZH": "想念"
+              },
+              "example": "Я очень скучаю по тебе."
+            },
+            {
+              "term": "гордиться",
+              "romanization": "gordit'sya",
+              "phonetic": "/ɡɐrˈdʲit͡sə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "gurur duymak",
+                "EN": "to be proud",
+                "DE": "stolz sein",
+                "FR": "être fier",
+                "ES": "estar orgulloso",
+                "IT": "essere orgoglioso",
+                "ZH": "自豪"
+              },
+              "example": "Мы гордимся тобой."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Anılar",
+            "EN": "Life events",
+            "DE": "Erlebnisse",
+            "FR": "Souvenirs",
+            "ES": "Recuerdos",
+            "IT": "Ricordi",
+            "RU": "Воспоминания",
+            "ZH": "往事"
+          },
+          "description": {
+            "TR": "Geçmiş hakkında konuş.",
+            "EN": "Talk about the past.",
+            "DE": "Über die Vergangenheit sprechen.",
+            "FR": "Parler du passé.",
+            "ES": "Habla del pasado.",
+            "IT": "Parlare del passato.",
+            "RU": "Говорите о прошлом.",
+            "ZH": "谈论过去。"
+          },
+          "icon": "clock.arrow.circlepath",
+          "words": [
+            {
+              "term": "в прошлом году",
+              "romanization": "v proshlom godu",
+              "phonetic": "/f ˈproʂləm ɡɐˈdu/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "geçen yıl",
+                "EN": "last year",
+                "DE": "letztes Jahr",
+                "FR": "l'année dernière",
+                "ES": "el año pasado",
+                "IT": "l'anno scorso",
+                "ZH": "去年"
+              },
+              "example": "В прошлом году мы ездили в Италию."
+            },
+            {
+              "term": "недавно",
+              "romanization": "nedavno",
+              "phonetic": "/nʲɪˈdavnə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "son zamanlarda",
+                "EN": "recently",
+                "DE": "neulich",
+                "FR": "récemment",
+                "ES": "recientemente",
+                "IT": "di recente",
+                "ZH": "最近"
+              },
+              "example": "Недавно я начал учить русский."
+            },
+            {
+              "term": "раньше",
+              "romanization": "ran'she",
+              "phonetic": "/ˈranʲʂɨ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "eskiden",
+                "EN": "in the past",
+                "DE": "früher",
+                "FR": "avant",
+                "ES": "antes",
+                "IT": "prima",
+                "ZH": "以前"
+              },
+              "example": "Раньше я жил в деревне."
+            },
+            {
+              "term": "однажды",
+              "romanization": "odnazhdy",
+              "phonetic": "/ɐdˈnaʐdɨ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "bir gün",
+                "EN": "once",
+                "DE": "einmal",
+                "FR": "un jour",
+                "ES": "una vez",
+                "IT": "una volta",
+                "ZH": "有一次"
+              },
+              "example": "Однажды я потерял ключи."
+            },
+            {
+              "term": "случиться",
+              "romanization": "sluchit'sya",
+              "phonetic": "/slʊˈt͡ɕit͡sə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "olmak",
+                "EN": "to happen",
+                "DE": "passieren",
+                "FR": "se passer",
+                "ES": "pasar",
+                "IT": "succedere",
+                "ZH": "发生"
+              },
+              "example": "Что случилось?"
+            },
+            {
+              "term": "помнить",
+              "romanization": "pomnit'",
+              "phonetic": "/ˈpomnʲɪtʲ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "hatırlamak",
+                "EN": "to remember",
+                "DE": "sich erinnern",
+                "FR": "se souvenir",
+                "ES": "recordar",
+                "IT": "ricordare",
+                "ZH": "记得"
+              },
+              "example": "Ты помнишь наш первый урок?"
+            },
+            {
+              "term": "родиться",
+              "romanization": "rodit'sya",
+              "phonetic": "/rɐˈdʲit͡sə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "doğmak",
+                "EN": "to be born",
+                "DE": "geboren werden",
+                "FR": "naître",
+                "ES": "nacer",
+                "IT": "nascere",
+                "ZH": "出生"
+              },
+              "example": "Я родился в маленьком городе."
+            },
+            {
+              "term": "переехать",
+              "romanization": "pereyekhat'",
+              "phonetic": "/pʲɪrʲɪˈjexətʲ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "taşınmak",
+                "EN": "to move",
+                "DE": "umziehen",
+                "FR": "déménager",
+                "ES": "mudarse",
+                "IT": "trasferirsi",
+                "ZH": "搬家"
+              },
+              "example": "Мы переехали в новую квартиру."
+            },
+            {
+              "term": "окончить",
+              "romanization": "okonchit'",
+              "phonetic": "/ɐˈkont͡ɕɪtʲ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "mezun olmak",
+                "EN": "to graduate",
+                "DE": "den Abschluss machen",
+                "FR": "obtenir son diplôme",
+                "ES": "graduarse",
+                "IT": "laurearsi",
+                "ZH": "毕业"
+              },
+              "example": "Она окончила университет в прошлом году."
+            },
+            {
+              "term": "в первый раз",
+              "romanization": "v pervyy raz",
+              "phonetic": "/f ˈpʲervɨj ras/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "ilk kez",
+                "EN": "for the first time",
+                "DE": "zum ersten Mal",
+                "FR": "pour la première fois",
+                "ES": "por primera vez",
+                "IT": "per la prima volta",
+                "ZH": "第一次"
+              },
+              "example": "В первый раз я увидел море в пять лет."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Planlar ve fikirler",
+            "EN": "Plans & opinions",
+            "DE": "Pläne und Meinungen",
+            "FR": "Projets et opinions",
+            "ES": "Planes y opiniones",
+            "IT": "Progetti e opinioni",
+            "RU": "Планы и мнения",
+            "ZH": "计划与观点"
+          },
+          "description": {
+            "TR": "Planlarını ve fikirlerini paylaş.",
+            "EN": "Share plans and opinions.",
+            "DE": "Pläne und Meinungen teilen.",
+            "FR": "Partager ses projets et avis.",
+            "ES": "Comparte planes y opiniones.",
+            "IT": "Condividere progetti e opinioni.",
+            "RU": "Делитесь планами и мнениями.",
+            "ZH": "分享计划和看法。"
+          },
+          "icon": "lightbulb",
+          "words": [
+            {
+              "term": "планировать",
+              "romanization": "planirovat'",
+              "phonetic": "/plɐˈnʲirəvətʲ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "planlamak",
+                "EN": "to plan",
+                "DE": "planen",
+                "FR": "prévoir",
+                "ES": "planear",
+                "IT": "pianificare",
+                "ZH": "计划"
+              },
+              "example": "Что ты планируешь делать летом?"
+            },
+            {
+              "term": "мечтать",
+              "romanization": "mechtat'",
+              "phonetic": "/mʲɪt͡ɕˈtatʲ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "hayal etmek",
+                "EN": "to dream",
+                "DE": "träumen",
+                "FR": "rêver",
+                "ES": "soñar",
+                "IT": "sognare",
+                "ZH": "梦想"
+              },
+              "example": "Я мечтаю побывать в Японии."
+            },
+            {
+              "term": "надеяться",
+              "romanization": "nadeyat'sya",
+              "phonetic": "/nɐˈdʲejɪt͡sə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "ummak",
+                "EN": "to hope",
+                "DE": "hoffen",
+                "FR": "espérer",
+                "ES": "esperar",
+                "IT": "sperare",
+                "ZH": "希望"
+              },
+              "example": "Надеюсь, завтра будет солнце."
+            },
+            {
+              "term": "будущее",
+              "romanization": "budushcheye",
+              "phonetic": "/ˈbudʊɕːɪjə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "gelecek",
+                "EN": "future",
+                "DE": "die Zukunft",
+                "FR": "l'avenir",
+                "ES": "el futuro",
+                "IT": "il futuro",
+                "ZH": "未来"
+              },
+              "example": "Никто не знает, что будет в будущем."
+            },
+            {
+              "term": "мнение",
+              "romanization": "mneniye",
+              "phonetic": "/ˈmnʲenʲɪjə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "fikir",
+                "EN": "opinion",
+                "DE": "die Meinung",
+                "FR": "l'avis",
+                "ES": "la opinión",
+                "IT": "l'opinione",
+                "ZH": "看法"
+              },
+              "example": "Мне важно твоё мнение."
+            },
+            {
+              "term": "по-моему",
+              "romanization": "po-moyemu",
+              "phonetic": "/pɐˈmojɪmʊ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "bence",
+                "EN": "in my opinion",
+                "DE": "meiner Meinung nach",
+                "FR": "à mon avis",
+                "ES": "en mi opinión",
+                "IT": "secondo me",
+                "ZH": "我觉得"
+              },
+              "example": "По-моему, он прав."
+            },
+            {
+              "term": "соглашаться",
+              "romanization": "soglashat'sya",
+              "phonetic": "/səɡlɐˈʂat͡sə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "katılmak",
+                "EN": "to agree",
+                "DE": "zustimmen",
+                "FR": "être d'accord",
+                "ES": "estar de acuerdo",
+                "IT": "essere d'accordo",
+                "ZH": "同意"
+              },
+              "example": "Я не всегда соглашаюсь с ним."
+            },
+            {
+              "term": "наверное",
+              "romanization": "navernoye",
+              "phonetic": "/nɐˈvʲernəjə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "muhtemelen",
+                "EN": "probably",
+                "DE": "wahrscheinlich",
+                "FR": "probablement",
+                "ES": "probablemente",
+                "IT": "probabilmente",
+                "ZH": "也许"
+              },
+              "example": "Наверное, я приду поздно."
+            },
+            {
+              "term": "решить",
+              "romanization": "reshit'",
+              "phonetic": "/rʲɪˈʂɨtʲ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "karar vermek",
+                "EN": "to decide",
+                "DE": "entscheiden",
+                "FR": "décider",
+                "ES": "decidir",
+                "IT": "decidere",
+                "ZH": "决定"
+              },
+              "example": "Мы решили купить машину."
+            },
+            {
+              "term": "обязательно",
+              "romanization": "obyazatel'no",
+              "phonetic": "/ɐbʲɪˈzatʲɪlʲnə/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "kesinlikle",
+                "EN": "definitely",
+                "DE": "auf jeden Fall",
+                "FR": "sans faute",
+                "ES": "sin falta",
+                "IT": "senz'altro",
+                "ZH": "一定"
+              },
+              "example": "Я обязательно тебе позвоню."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sentences": [
+    {
+      "level": 1,
+      "target_text": "Привет! Меня зовут Анна.",
+      "translations": {
+        "TR": "Merhaba! Benim adım Anna.",
+        "EN": "Hi! My name is Anna.",
+        "DE": "Hallo! Ich heiße Anna.",
+        "FR": "Salut ! Je m'appelle Anna.",
+        "ES": "¡Hola! Me llamo Anna.",
+        "IT": "Ciao! Mi chiamo Anna.",
+        "ZH": "你好！我叫安娜。"
+      },
+      "key_word": "Привет",
+      "key_word_translations": {
+        "TR": "merhaba",
+        "EN": "hello",
+        "DE": "hallo",
+        "FR": "salut",
+        "ES": "hola",
+        "IT": "ciao",
+        "ZH": "你好"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 1,
+      "target_text": "Спасибо, всё хорошо.",
+      "translations": {
+        "TR": "Teşekkürler, her şey yolunda.",
+        "EN": "Thanks, everything's fine.",
+        "DE": "Danke, alles gut.",
+        "FR": "Merci, tout va bien.",
+        "ES": "Gracias, todo bien.",
+        "IT": "Grazie, tutto bene.",
+        "ZH": "谢谢，一切都好。"
+      },
+      "key_word": "Спасибо",
+      "key_word_translations": {
+        "TR": "teşekkürler",
+        "EN": "thank you",
+        "DE": "danke",
+        "FR": "merci",
+        "ES": "gracias",
+        "IT": "grazie",
+        "ZH": "谢谢"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 2,
+      "target_text": "Сколько стоит чай?",
+      "translations": {
+        "TR": "Çay ne kadar?",
+        "EN": "How much is the tea?",
+        "DE": "Wie viel kostet der Tee?",
+        "FR": "Combien coûte le thé ?",
+        "ES": "¿Cuánto cuesta el té?",
+        "IT": "Quanto costa il tè?",
+        "ZH": "茶多少钱？"
+      },
+      "key_word": "Сколько",
+      "key_word_translations": {
+        "TR": "ne kadar",
+        "EN": "how much",
+        "DE": "wie viel",
+        "FR": "combien",
+        "ES": "cuánto",
+        "IT": "quanto",
+        "ZH": "多少"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 2,
+      "target_text": "Мне двадцать лет.",
+      "translations": {
+        "TR": "Yirmi yaşındayım.",
+        "EN": "I'm twenty years old.",
+        "DE": "Ich bin zwanzig Jahre alt.",
+        "FR": "J'ai vingt ans.",
+        "ES": "Tengo veinte años.",
+        "IT": "Ho vent'anni.",
+        "ZH": "我二十岁。"
+      },
+      "key_word": "двадцать",
+      "key_word_translations": {
+        "TR": "yirmi",
+        "EN": "twenty",
+        "DE": "zwanzig",
+        "FR": "vingt",
+        "ES": "veinte",
+        "IT": "venti",
+        "ZH": "二十"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 3,
+      "target_text": "Это моя мама и мой папа.",
+      "translations": {
+        "TR": "Bu benim annem ve babam.",
+        "EN": "This is my mom and my dad.",
+        "DE": "Das sind meine Mama und mein Papa.",
+        "FR": "Voici ma mère et mon père.",
+        "ES": "Estos son mi mamá y mi papá.",
+        "IT": "Questi sono mia mamma e mio papà.",
+        "ZH": "这是我的妈妈和爸爸。"
+      },
+      "key_word": "мама",
+      "key_word_translations": {
+        "TR": "anne",
+        "EN": "mom",
+        "DE": "Mama",
+        "FR": "maman",
+        "ES": "mamá",
+        "IT": "mamma",
+        "ZH": "妈妈"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 3,
+      "target_text": "Моя бабушка живёт в деревне.",
+      "translations": {
+        "TR": "Büyükannem köyde yaşıyor.",
+        "EN": "My grandma lives in the countryside.",
+        "DE": "Meine Oma wohnt auf dem Land.",
+        "FR": "Ma grand-mère habite à la campagne.",
+        "ES": "Mi abuela vive en el campo.",
+        "IT": "Mia nonna vive in campagna.",
+        "ZH": "我奶奶住在农村。"
+      },
+      "key_word": "бабушка",
+      "key_word_translations": {
+        "TR": "büyükanne",
+        "EN": "grandma",
+        "DE": "Oma",
+        "FR": "grand-mère",
+        "ES": "abuela",
+        "IT": "nonna",
+        "ZH": "奶奶"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 4,
+      "target_text": "Я хочу хлеб и сыр.",
+      "translations": {
+        "TR": "Ekmek ve peynir istiyorum.",
+        "EN": "I want bread and cheese.",
+        "DE": "Ich möchte Brot und Käse.",
+        "FR": "Je voudrais du pain et du fromage.",
+        "ES": "Quiero pan y queso.",
+        "IT": "Vorrei pane e formaggio.",
+        "ZH": "我想要面包和奶酪。"
+      },
+      "key_word": "хлеб",
+      "key_word_translations": {
+        "TR": "ekmek",
+        "EN": "bread",
+        "DE": "Brot",
+        "FR": "pain",
+        "ES": "pan",
+        "IT": "pane",
+        "ZH": "面包"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 4,
+      "target_text": "Рыба очень вкусная.",
+      "translations": {
+        "TR": "Balık çok lezzetli.",
+        "EN": "The fish is very tasty.",
+        "DE": "Der Fisch ist sehr lecker.",
+        "FR": "Le poisson est délicieux.",
+        "ES": "El pescado está muy rico.",
+        "IT": "Il pesce è buonissimo.",
+        "ZH": "鱼很好吃。"
+      },
+      "key_word": "Рыба",
+      "key_word_translations": {
+        "TR": "balık",
+        "EN": "fish",
+        "DE": "Fisch",
+        "FR": "poisson",
+        "ES": "pescado",
+        "IT": "pesce",
+        "ZH": "鱼"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 5,
+      "target_text": "Один кофе с молоком, пожалуйста.",
+      "translations": {
+        "TR": "Bir sütlü kahve, lütfen.",
+        "EN": "One coffee with milk, please.",
+        "DE": "Einen Kaffee mit Milch, bitte.",
+        "FR": "Un café au lait, s'il vous plaît.",
+        "ES": "Un café con leche, por favor.",
+        "IT": "Un caffè con latte, per favore.",
+        "ZH": "请给我一杯加奶的咖啡。"
+      },
+      "key_word": "кофе",
+      "key_word_translations": {
+        "TR": "kahve",
+        "EN": "coffee",
+        "DE": "Kaffee",
+        "FR": "café",
+        "ES": "café",
+        "IT": "caffè",
+        "ZH": "咖啡"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 5,
+      "target_text": "Этот торт очень вкусный.",
+      "translations": {
+        "TR": "Bu pasta çok lezzetli.",
+        "EN": "This cake is very tasty.",
+        "DE": "Dieser Kuchen ist sehr lecker.",
+        "FR": "Ce gâteau est délicieux.",
+        "ES": "Esta tarta está deliciosa.",
+        "IT": "Questa torta è buonissima.",
+        "ZH": "这个蛋糕很好吃。"
+      },
+      "key_word": "вкусный",
+      "key_word_translations": {
+        "TR": "lezzetli",
+        "EN": "tasty",
+        "DE": "lecker",
+        "FR": "délicieux",
+        "ES": "delicioso",
+        "IT": "buono",
+        "ZH": "好吃"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 6,
+      "target_text": "Моя комната маленькая, но уютная.",
+      "translations": {
+        "TR": "Odam küçük ama rahat.",
+        "EN": "My room is small but cozy.",
+        "DE": "Mein Zimmer ist klein, aber gemütlich.",
+        "FR": "Ma chambre est petite mais confortable.",
+        "ES": "Mi habitación es pequeña pero acogedora.",
+        "IT": "La mia stanza è piccola ma accogliente.",
+        "ZH": "我的房间很小，但很舒服。"
+      },
+      "key_word": "комната",
+      "key_word_translations": {
+        "TR": "oda",
+        "EN": "room",
+        "DE": "Zimmer",
+        "FR": "chambre",
+        "ES": "habitación",
+        "IT": "stanza",
+        "ZH": "房间"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 6,
+      "target_text": "Ключи на столе на кухне.",
+      "translations": {
+        "TR": "Anahtarlar mutfakta, masanın üstünde.",
+        "EN": "The keys are on the kitchen table.",
+        "DE": "Die Schlüssel liegen auf dem Küchentisch.",
+        "FR": "Les clés sont sur la table de la cuisine.",
+        "ES": "Las llaves están en la mesa de la cocina.",
+        "IT": "Le chiavi sono sul tavolo della cucina.",
+        "ZH": "钥匙在厨房的桌子上。"
+      },
+      "key_word": "кухне",
+      "key_word_translations": {
+        "TR": "mutfak",
+        "EN": "kitchen",
+        "DE": "Küche",
+        "FR": "cuisine",
+        "ES": "cocina",
+        "IT": "cucina",
+        "ZH": "厨房"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 7,
+      "target_text": "Я встаю в семь часов утра.",
+      "translations": {
+        "TR": "Sabah yedide kalkarım.",
+        "EN": "I get up at seven in the morning.",
+        "DE": "Ich stehe um sieben Uhr morgens auf.",
+        "FR": "Je me lève à sept heures du matin.",
+        "ES": "Me levanto a las siete de la mañana.",
+        "IT": "Mi alzo alle sette di mattina.",
+        "ZH": "我早上七点起床。"
+      },
+      "key_word": "встаю",
+      "key_word_translations": {
+        "TR": "kalkmak",
+        "EN": "to get up",
+        "DE": "aufstehen",
+        "FR": "se lever",
+        "ES": "levantarse",
+        "IT": "alzarsi",
+        "ZH": "起床"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 7,
+      "target_text": "После работы я отдыхаю дома.",
+      "translations": {
+        "TR": "İşten sonra evde dinlenirim.",
+        "EN": "After work I rest at home.",
+        "DE": "Nach der Arbeit ruhe ich mich zu Hause aus.",
+        "FR": "Après le travail, je me repose à la maison.",
+        "ES": "Después del trabajo descanso en casa.",
+        "IT": "Dopo il lavoro mi riposo a casa.",
+        "ZH": "下班以后我在家休息。"
+      },
+      "key_word": "отдыхаю",
+      "key_word_translations": {
+        "TR": "dinlenmek",
+        "EN": "to rest",
+        "DE": "sich ausruhen",
+        "FR": "se reposer",
+        "ES": "descansar",
+        "IT": "riposarsi",
+        "ZH": "休息"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 8,
+      "target_text": "Сегодня понедельник.",
+      "translations": {
+        "TR": "Bugün pazartesi.",
+        "EN": "Today is Monday.",
+        "DE": "Heute ist Montag.",
+        "FR": "Aujourd'hui, c'est lundi.",
+        "ES": "Hoy es lunes.",
+        "IT": "Oggi è lunedì.",
+        "ZH": "今天星期一。"
+      },
+      "key_word": "понедельник",
+      "key_word_translations": {
+        "TR": "pazartesi",
+        "EN": "Monday",
+        "DE": "Montag",
+        "FR": "lundi",
+        "ES": "lunes",
+        "IT": "lunedì",
+        "ZH": "星期一"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 8,
+      "target_text": "Завтра мы идём в кино.",
+      "translations": {
+        "TR": "Yarın sinemaya gidiyoruz.",
+        "EN": "Tomorrow we're going to the movies.",
+        "DE": "Morgen gehen wir ins Kino.",
+        "FR": "Demain, on va au cinéma.",
+        "ES": "Mañana vamos al cine.",
+        "IT": "Domani andiamo al cinema.",
+        "ZH": "明天我们去看电影。"
+      },
+      "key_word": "Завтра",
+      "key_word_translations": {
+        "TR": "yarın",
+        "EN": "tomorrow",
+        "DE": "morgen",
+        "FR": "demain",
+        "ES": "mañana",
+        "IT": "domani",
+        "ZH": "明天"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 9,
+      "target_text": "Сегодня идёт дождь.",
+      "translations": {
+        "TR": "Bugün yağmur yağıyor.",
+        "EN": "It's raining today.",
+        "DE": "Heute regnet es.",
+        "FR": "Aujourd'hui, il pleut.",
+        "ES": "Hoy llueve.",
+        "IT": "Oggi piove.",
+        "ZH": "今天下雨。"
+      },
+      "key_word": "дождь",
+      "key_word_translations": {
+        "TR": "yağmur",
+        "EN": "rain",
+        "DE": "Regen",
+        "FR": "pluie",
+        "ES": "lluvia",
+        "IT": "pioggia",
+        "ZH": "雨"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 9,
+      "target_text": "Зимой здесь очень холодно.",
+      "translations": {
+        "TR": "Burada kışın çok soğuk olur.",
+        "EN": "It's very cold here in winter.",
+        "DE": "Im Winter ist es hier sehr kalt.",
+        "FR": "Ici, il fait très froid en hiver.",
+        "ES": "Aquí hace mucho frío en invierno.",
+        "IT": "Qui d'inverno fa molto freddo.",
+        "ZH": "这里冬天很冷。"
+      },
+      "key_word": "Зимой",
+      "key_word_translations": {
+        "TR": "kış",
+        "EN": "winter",
+        "DE": "Winter",
+        "FR": "hiver",
+        "ES": "invierno",
+        "IT": "inverno",
+        "ZH": "冬天"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 10,
+      "target_text": "Это слишком дорого для меня.",
+      "translations": {
+        "TR": "Bu benim için çok pahalı.",
+        "EN": "This is too expensive for me.",
+        "DE": "Das ist mir zu teuer.",
+        "FR": "C'est trop cher pour moi.",
+        "ES": "Esto es demasiado caro para mí.",
+        "IT": "È troppo caro per me.",
+        "ZH": "这对我来说太贵了。"
+      },
+      "key_word": "дорого",
+      "key_word_translations": {
+        "TR": "pahalı",
+        "EN": "expensive",
+        "DE": "teuer",
+        "FR": "cher",
+        "ES": "caro",
+        "IT": "caro",
+        "ZH": "贵"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 10,
+      "target_text": "Можно заплатить картой?",
+      "translations": {
+        "TR": "Kartla ödeyebilir miyim?",
+        "EN": "Can I pay by card?",
+        "DE": "Kann ich mit Karte bezahlen?",
+        "FR": "Je peux payer par carte ?",
+        "ES": "¿Puedo pagar con tarjeta?",
+        "IT": "Posso pagare con la carta?",
+        "ZH": "可以用卡付钱吗？"
+      },
+      "key_word": "заплатить",
+      "key_word_translations": {
+        "TR": "ödemek",
+        "EN": "to pay",
+        "DE": "bezahlen",
+        "FR": "payer",
+        "ES": "pagar",
+        "IT": "pagare",
+        "ZH": "付钱"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 11,
+      "target_text": "Я живу в центре города.",
+      "translations": {
+        "TR": "Şehir merkezinde yaşıyorum.",
+        "EN": "I live in the city center.",
+        "DE": "Ich wohne in der Innenstadt.",
+        "FR": "J'habite au centre-ville.",
+        "ES": "Vivo en el centro de la ciudad.",
+        "IT": "Abito in centro.",
+        "ZH": "我住在市中心。"
+      },
+      "key_word": "центре",
+      "key_word_translations": {
+        "TR": "şehir merkezi",
+        "EN": "city center",
+        "DE": "Innenstadt",
+        "FR": "centre-ville",
+        "ES": "centro",
+        "IT": "centro",
+        "ZH": "市中心"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 11,
+      "target_text": "В этом городе много красивых парков.",
+      "translations": {
+        "TR": "Bu şehirde birçok güzel park var.",
+        "EN": "There are many beautiful parks in this city.",
+        "DE": "In dieser Stadt gibt es viele schöne Parks.",
+        "FR": "Il y a beaucoup de beaux parcs dans cette ville.",
+        "ES": "En esta ciudad hay muchos parques bonitos.",
+        "IT": "In questa città ci sono molti bei parchi.",
+        "ZH": "这个城市有很多漂亮的公园。"
+      },
+      "key_word": "парков",
+      "key_word_translations": {
+        "TR": "park",
+        "EN": "park",
+        "DE": "Park",
+        "FR": "parc",
+        "ES": "parque",
+        "IT": "parco",
+        "ZH": "公园"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 12,
+      "target_text": "Извините, где здесь вокзал?",
+      "translations": {
+        "TR": "Affedersiniz, tren istasyonu nerede?",
+        "EN": "Excuse me, where is the train station?",
+        "DE": "Entschuldigung, wo ist der Bahnhof?",
+        "FR": "Excusez-moi, où est la gare ?",
+        "ES": "Perdone, ¿dónde está la estación?",
+        "IT": "Scusi, dov'è la stazione?",
+        "ZH": "请问，火车站在哪里？"
+      },
+      "key_word": "где",
+      "key_word_translations": {
+        "TR": "nerede",
+        "EN": "where",
+        "DE": "wo",
+        "FR": "où",
+        "ES": "dónde",
+        "IT": "dove",
+        "ZH": "哪里"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 12,
+      "target_text": "Идите прямо, потом поверните налево.",
+      "translations": {
+        "TR": "Düz gidin, sonra sola dönün.",
+        "EN": "Go straight ahead, then turn left.",
+        "DE": "Gehen Sie geradeaus und dann links.",
+        "FR": "Allez tout droit, puis tournez à gauche.",
+        "ES": "Siga todo recto y luego gire a la izquierda.",
+        "IT": "Vada dritto, poi giri a sinistra.",
+        "ZH": "一直走，然后往左拐。"
+      },
+      "key_word": "налево",
+      "key_word_translations": {
+        "TR": "sola",
+        "EN": "to the left",
+        "DE": "links",
+        "FR": "à gauche",
+        "ES": "a la izquierda",
+        "IT": "a sinistra",
+        "ZH": "往左"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 13,
+      "target_text": "Я забыл паспорт дома!",
+      "translations": {
+        "TR": "Pasaportumu evde unuttum!",
+        "EN": "I left my passport at home!",
+        "DE": "Ich habe meinen Pass zu Hause vergessen!",
+        "FR": "J'ai oublié mon passeport à la maison !",
+        "ES": "¡Me he olvidado el pasaporte en casa!",
+        "IT": "Ho dimenticato il passaporto a casa!",
+        "ZH": "我把护照忘在家里了！"
+      },
+      "key_word": "паспорт",
+      "key_word_translations": {
+        "TR": "pasaport",
+        "EN": "passport",
+        "DE": "Reisepass",
+        "FR": "passeport",
+        "ES": "pasaporte",
+        "IT": "passaporto",
+        "ZH": "护照"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 13,
+      "target_text": "Наш поезд отправляется в восемь.",
+      "translations": {
+        "TR": "Trenimiz sekizde kalkıyor.",
+        "EN": "Our train leaves at eight.",
+        "DE": "Unser Zug fährt um acht ab.",
+        "FR": "Notre train part à huit heures.",
+        "ES": "Nuestro tren sale a las ocho.",
+        "IT": "Il nostro treno parte alle otto.",
+        "ZH": "我们的火车八点出发。"
+      },
+      "key_word": "поезд",
+      "key_word_translations": {
+        "TR": "tren",
+        "EN": "train",
+        "DE": "Zug",
+        "FR": "train",
+        "ES": "tren",
+        "IT": "treno",
+        "ZH": "火车"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 14,
+      "target_text": "Я хотел бы забронировать столик на двоих.",
+      "translations": {
+        "TR": "İki kişilik bir masa ayırtmak istiyorum.",
+        "EN": "I'd like to book a table for two.",
+        "DE": "Ich möchte einen Tisch für zwei Personen reservieren.",
+        "FR": "Je voudrais réserver une table pour deux.",
+        "ES": "Quisiera reservar una mesa para dos.",
+        "IT": "Vorrei prenotare un tavolo per due.",
+        "ZH": "我想预订一张两人桌。"
+      },
+      "key_word": "забронировать",
+      "key_word_translations": {
+        "TR": "rezervasyon yapmak",
+        "EN": "to book",
+        "DE": "reservieren",
+        "FR": "réserver",
+        "ES": "reservar",
+        "IT": "prenotare",
+        "ZH": "预订"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 14,
+      "target_text": "Официант принёс нам меню.",
+      "translations": {
+        "TR": "Garson bize menüyü getirdi.",
+        "EN": "The waiter brought us the menu.",
+        "DE": "Der Kellner hat uns die Speisekarte gebracht.",
+        "FR": "Le serveur nous a apporté la carte.",
+        "ES": "El camarero nos trajo la carta.",
+        "IT": "Il cameriere ci ha portato il menù.",
+        "ZH": "服务员给我们拿来了菜单。"
+      },
+      "key_word": "меню",
+      "key_word_translations": {
+        "TR": "menü",
+        "EN": "menu",
+        "DE": "Speisekarte",
+        "FR": "carte",
+        "ES": "carta",
+        "IT": "menù",
+        "ZH": "菜单"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 15,
+      "target_text": "У меня болит голова.",
+      "translations": {
+        "TR": "Başım ağrıyor.",
+        "EN": "I have a headache.",
+        "DE": "Ich habe Kopfschmerzen.",
+        "FR": "J'ai mal à la tête.",
+        "ES": "Me duele la cabeza.",
+        "IT": "Ho mal di testa.",
+        "ZH": "我头疼。"
+      },
+      "key_word": "голова",
+      "key_word_translations": {
+        "TR": "baş",
+        "EN": "head",
+        "DE": "Kopf",
+        "FR": "tête",
+        "ES": "cabeza",
+        "IT": "testa",
+        "ZH": "头"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 15,
+      "target_text": "Тебе нужно пойти к врачу.",
+      "translations": {
+        "TR": "Doktora gitmen gerekiyor.",
+        "EN": "You need to see a doctor.",
+        "DE": "Du solltest zum Arzt gehen.",
+        "FR": "Tu devrais aller chez le médecin.",
+        "ES": "Deberías ir al médico.",
+        "IT": "Dovresti andare dal medico.",
+        "ZH": "你应该去看医生。"
+      },
+      "key_word": "врачу",
+      "key_word_translations": {
+        "TR": "doktor",
+        "EN": "doctor",
+        "DE": "Arzt",
+        "FR": "médecin",
+        "ES": "médico",
+        "IT": "medico",
+        "ZH": "医生"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 16,
+      "target_text": "Завтра у меня важная встреча.",
+      "translations": {
+        "TR": "Yarın önemli bir toplantım var.",
+        "EN": "I have an important meeting tomorrow.",
+        "DE": "Morgen habe ich eine wichtige Besprechung.",
+        "FR": "Demain, j'ai une réunion importante.",
+        "ES": "Mañana tengo una reunión importante.",
+        "IT": "Domani ho una riunione importante.",
+        "ZH": "明天我有一个重要的会议。"
+      },
+      "key_word": "встреча",
+      "key_word_translations": {
+        "TR": "toplantı",
+        "EN": "meeting",
+        "DE": "Besprechung",
+        "FR": "réunion",
+        "ES": "reunión",
+        "IT": "riunione",
+        "ZH": "会议"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 16,
+      "target_text": "Она работает в большой компании уже пять лет.",
+      "translations": {
+        "TR": "Beş yıldır büyük bir şirkette çalışıyor.",
+        "EN": "She has been working at a big company for five years.",
+        "DE": "Sie arbeitet seit fünf Jahren bei einer großen Firma.",
+        "FR": "Elle travaille dans une grande entreprise depuis cinq ans.",
+        "ES": "Trabaja en una gran empresa desde hace cinco años.",
+        "IT": "Lavora in una grande azienda da cinque anni.",
+        "ZH": "她在一家大公司工作了五年了。"
+      },
+      "key_word": "компании",
+      "key_word_translations": {
+        "TR": "şirket",
+        "EN": "company",
+        "DE": "Firma",
+        "FR": "entreprise",
+        "ES": "empresa",
+        "IT": "azienda",
+        "ZH": "公司"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 17,
+      "target_text": "В свободное время я играю на гитаре.",
+      "translations": {
+        "TR": "Boş zamanlarımda gitar çalarım.",
+        "EN": "In my free time I play the guitar.",
+        "DE": "In meiner Freizeit spiele ich Gitarre.",
+        "FR": "Pendant mon temps libre, je joue de la guitare.",
+        "ES": "En mi tiempo libre toco la guitarra.",
+        "IT": "Nel tempo libero suono la chitarra.",
+        "ZH": "我有空的时候弹吉他。"
+      },
+      "key_word": "гитаре",
+      "key_word_translations": {
+        "TR": "gitar",
+        "EN": "guitar",
+        "DE": "Gitarre",
+        "FR": "guitare",
+        "ES": "guitarra",
+        "IT": "chitarra",
+        "ZH": "吉他"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 17,
+      "target_text": "Летом мы каждый день плавали в море.",
+      "translations": {
+        "TR": "Yazın her gün denizde yüzdük.",
+        "EN": "In the summer we swam in the sea every day.",
+        "DE": "Im Sommer sind wir jeden Tag im Meer geschwommen.",
+        "FR": "L'été, nous nagions dans la mer tous les jours.",
+        "ES": "En verano nadábamos en el mar todos los días.",
+        "IT": "D'estate nuotavamo nel mare ogni giorno.",
+        "ZH": "那个夏天我们每天都在海里游泳。"
+      },
+      "key_word": "плавали",
+      "key_word_translations": {
+        "TR": "yüzmek",
+        "EN": "to swim",
+        "DE": "schwimmen",
+        "FR": "nager",
+        "ES": "nadar",
+        "IT": "nuotare",
+        "ZH": "游泳"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 18,
+      "target_text": "После работы я очень устаю.",
+      "translations": {
+        "TR": "İşten sonra çok yoruluyorum.",
+        "EN": "I'm very tired after work.",
+        "DE": "Ich bin nach der Arbeit sehr müde.",
+        "FR": "Je suis très fatigué après le travail.",
+        "ES": "Estoy muy cansado después del trabajo.",
+        "IT": "Sono molto stanco dopo il lavoro.",
+        "ZH": "下班以后我很累。"
+      },
+      "key_word": "устаю",
+      "key_word_translations": {
+        "TR": "yorgun",
+        "EN": "tired",
+        "DE": "müde",
+        "FR": "fatigué",
+        "ES": "cansado",
+        "IT": "stanco",
+        "ZH": "累"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 18,
+      "target_text": "Не волнуйся, всё будет хорошо.",
+      "translations": {
+        "TR": "Merak etme, her şey yoluna girecek.",
+        "EN": "Don't worry, everything will be fine.",
+        "DE": "Mach dir keine Sorgen, alles wird gut.",
+        "FR": "Ne t'inquiète pas, tout ira bien.",
+        "ES": "No te preocupes, todo saldrá bien.",
+        "IT": "Non preoccuparti, andrà tutto bene.",
+        "ZH": "别担心，一切都会好的。"
+      },
+      "key_word": "волнуйся",
+      "key_word_translations": {
+        "TR": "endişelenmek",
+        "EN": "to worry",
+        "DE": "sich Sorgen machen",
+        "FR": "s'inquiéter",
+        "ES": "preocuparse",
+        "IT": "preoccuparsi",
+        "ZH": "担心"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 19,
+      "target_text": "В прошлом году мы переехали в другой город.",
+      "translations": {
+        "TR": "Geçen yıl başka bir şehre taşındık.",
+        "EN": "Last year we moved to another city.",
+        "DE": "Letztes Jahr sind wir in eine andere Stadt gezogen.",
+        "FR": "L'année dernière, nous avons déménagé dans une autre ville.",
+        "ES": "El año pasado nos mudamos a otra ciudad.",
+        "IT": "L'anno scorso ci siamo trasferiti in un'altra città.",
+        "ZH": "去年我们搬到了另一个城市。"
+      },
+      "key_word": "переехали",
+      "key_word_translations": {
+        "TR": "taşınmak",
+        "EN": "to move",
+        "DE": "umziehen",
+        "FR": "déménager",
+        "ES": "mudarse",
+        "IT": "trasferirsi",
+        "ZH": "搬家"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 19,
+      "target_text": "Ты помнишь, как мы познакомились?",
+      "translations": {
+        "TR": "Nasıl tanıştığımızı hatırlıyor musun?",
+        "EN": "Do you remember how we met?",
+        "DE": "Erinnerst du dich, wie wir uns kennengelernt haben?",
+        "FR": "Tu te souviens de notre rencontre ?",
+        "ES": "¿Recuerdas cómo nos conocimos?",
+        "IT": "Ti ricordi come ci siamo conosciuti?",
+        "ZH": "你还记得我们是怎么认识的吗？"
+      },
+      "key_word": "помнишь",
+      "key_word_translations": {
+        "TR": "hatırlamak",
+        "EN": "to remember",
+        "DE": "sich erinnern",
+        "FR": "se souvenir",
+        "ES": "recordar",
+        "IT": "ricordare",
+        "ZH": "记得"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 20,
+      "target_text": "Я надеюсь, что мы скоро увидимся.",
+      "translations": {
+        "TR": "Umarım yakında görüşürüz.",
+        "EN": "I hope we'll see each other soon.",
+        "DE": "Ich hoffe, wir sehen uns bald.",
+        "FR": "J'espère qu'on se reverra bientôt.",
+        "ES": "Espero que nos veamos pronto.",
+        "IT": "Spero che ci rivedremo presto.",
+        "ZH": "我希望我们很快能再见面。"
+      },
+      "key_word": "надеюсь",
+      "key_word_translations": {
+        "TR": "ummak",
+        "EN": "to hope",
+        "DE": "hoffen",
+        "FR": "espérer",
+        "ES": "esperar",
+        "IT": "sperare",
+        "ZH": "希望"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 20,
+      "target_text": "По-моему, это очень интересная идея.",
+      "translations": {
+        "TR": "Bence bu çok ilginç bir fikir.",
+        "EN": "In my opinion, this is a very interesting idea.",
+        "DE": "Meiner Meinung nach ist das eine sehr interessante Idee.",
+        "FR": "À mon avis, c'est une idée très intéressante.",
+        "ES": "En mi opinión, es una idea muy interesante.",
+        "IT": "Secondo me è un'idea molto interessante.",
+        "ZH": "我觉得这是一个很有意思的主意。"
+      },
+      "key_word": "По-моему",
+      "key_word_translations": {
+        "TR": "bence",
+        "EN": "in my opinion",
+        "DE": "meiner Meinung nach",
+        "FR": "à mon avis",
+        "ES": "en mi opinión",
+        "IT": "secondo me",
+        "ZH": "我觉得"
+      },
+      "difficulty": 3
+    }
+  ]
+}

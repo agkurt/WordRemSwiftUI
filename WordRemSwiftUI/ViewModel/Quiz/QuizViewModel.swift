@@ -198,7 +198,7 @@ final class QuizViewModel: ObservableObject {
     private func saveResult() async {
         isSaving = true
         do {
-            try await FirebaseService.shared.saveQuizResult(
+            try await DeckService.shared.saveQuizResult(
                 cardId: cardId,
                 mode: mode.rawValue,
                 score: score,

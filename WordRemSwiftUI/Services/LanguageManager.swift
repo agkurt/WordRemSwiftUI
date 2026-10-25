@@ -44,21 +44,6 @@ final class LanguageManager: ObservableObject {
         UserDefaults.standard.set(resolved, forKey: userDefaultsKey)
     }
 
-    // MARK: - Supabase Senkronizasyonu
-    /// Kullanıcı profilinden native_lang_id alır, languages tablosunda koda çevirir ve dili günceller.
-    /// Hata durumunda mevcut değer (fallback: "en") korunur.
-    @MainActor
-    func syncFromSupabase() async {
-        guard let user = try? await SupabaseDataService.shared.fetchUserProfile(),
-              let nativeLangId = user.nativeLangId else { return }
-
-        guard let languages = try? await SupabaseDataService.shared.fetchLanguages() else { return }
-
-        if let lang = languages.first(where: { $0.id == nativeLangId }) {
-            setLanguage(lang.code)
-        }
-    }
-
     // MARK: - RTL Desteği
     /// Seçili dil sağdan sola yazılıyorsa `.rightToLeft` döner.
     var layoutDirection: LayoutDirection {

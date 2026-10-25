@@ -20,7 +20,7 @@ final class CardDetailViewModel: ObservableObject {
 
     func fetchCardInfo(cardId: String) async {
         do {
-            let fetchedWordInfo = try await FirebaseService.shared.fetchTheCardNameInfo(cardId: cardId)
+            let fetchedWordInfo = try await DeckService.shared.fetchTheCardNameInfo(cardId: cardId)
             // Already on MainActor — no need for DispatchQueue.main.async
             self.wordInfo = fetchedWordInfo
             self.cardIds = fetchedWordInfo.map { $0.id }
@@ -37,7 +37,7 @@ final class CardDetailViewModel: ObservableObject {
     
     private func fetchLanguageInfo(cardId: String) async {
         do {
-            let fetch = try await FirebaseService.shared.fetchSourceAndTargetLang(cardId: cardId)
+            let fetch = try await DeckService.shared.fetchSourceAndTargetLang(cardId: cardId)
             self.sourceLang = fetch.first?.sourceLang ?? "TR"
             self.targetLang = fetch.first?.targetLang ?? "EN"
         } catch {
@@ -53,7 +53,7 @@ final class CardDetailViewModel: ObservableObject {
         let cardId = self.cardIds[index]
         Task { @MainActor in
             do {
-                try await FirebaseService.shared.deleteCardInfoAndTransactions(deckId: deckId, cardId: cardId)
+                try await DeckService.shared.deleteCardInfoAndTransactions(deckId: deckId, cardId: cardId)
                 // await sonrası index kaymış olabilir — id ile bul
                 guard let i = self.cardIds.firstIndex(of: cardId) else { return }
                 if i < self.wordInfo.count { self.wordInfo.remove(at: i) }

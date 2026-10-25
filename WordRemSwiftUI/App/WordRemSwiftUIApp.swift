@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Firebase
 import UserNotifications
 
 @main
@@ -40,10 +39,8 @@ struct WordRemSwiftUIApp: App {
                     MainTabView()
                 } else if !hasCompletedOnboarding {
                     WelcomeView()
-                } else if authManager.userIsLoggedIn {
-                    MainTabView()
                 } else {
-                    LoginScreenView()
+                    MainTabView()
                 }
             }
             .environmentObject(authManager)
@@ -62,8 +59,9 @@ struct WordRemSwiftUIApp: App {
                     // 1) Bildirim izni — açılışta değil, onboarding tamamlandıktan sonra
                     if hasCompletedOnboarding { await requestNotificationPermission() }
 
-                    // 2) Supabase'den kullanıcı dilini senkronize et (fallback: UserDefaults değeri korunur)
-                    await languageManager.syncFromSupabase()
+                    // 2) Game Center (sıralama) ve günlük seri
+                    GameCenterService.shared.authenticate()
+                    if hasCompletedOnboarding { _ = try? await DataService.shared.updateDailyLoginStreak() }
 
                     // 3) RevenueCat'ten premium durumunu senkronize et
                     await InAppPurchaseManager.shared.syncPremiumStatus()
@@ -83,11 +81,7 @@ struct WordRemSwiftUIApp: App {
 
     private func requestNotificationPermission() async {
         let center = UNUserNotificationCenter.current()
-        if let granted = try? await center.requestAuthorization(options: [.alert, .badge, .sound]),
-           granted {
-            await MainActor.run {
-                UIApplication.shared.registerForRemoteNotifications()
-            }
-        }
+        // Yalnızca yerel bildirimler (günlük hedef / tekrar hatırlatıcıları); uzak push yok
+        _ = try? await center.requestAuthorization(options: [.alert, .badge, .sound])
     }
 }

@@ -10,7 +10,7 @@ struct LeaderboardView: View {
     @EnvironmentObject var langManager: LanguageManager
     @Binding var selectedTab: AppTab
     @StateObject private var vm = LeaderboardViewModel()
-    @EnvironmentObject var authManager: AuthManager
+    @ObservedObject private var gameCenter = GameCenterService.shared
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -18,7 +18,7 @@ struct LeaderboardView: View {
                 leaderboardHeader
 
                 // Guest kullanıcıya login yönlendirme
-                if authManager.isAnonymous {
+                if !gameCenter.isAuthenticated {
                     guestPromptView
 
                 } else if vm.isLoading && vm.users.isEmpty {
@@ -62,14 +62,17 @@ struct LeaderboardView: View {
             .frame(maxWidth: .infinity)
         }
         .refreshable {
-            guard !authManager.isAnonymous else { return }
+            guard gameCenter.isAuthenticated else { return }
             await vm.loadLeaderboard()
         }
         .paperBackground()
         .navigationBarHidden(true)
         .onAppear {
-            guard !authManager.isAnonymous else { return }
+            guard gameCenter.isAuthenticated else { return }
             Task { await vm.loadLeaderboard() }
+        }
+        .onChange(of: gameCenter.isAuthenticated) { ok in
+            if ok { Task { await vm.loadLeaderboard() } }
         }
     }
 
@@ -89,15 +92,17 @@ struct LeaderboardView: View {
     private var guestPromptView: some View {
         PaperCard(padding: 24) {
             VStack(alignment: .leading, spacing: 12) {
-                Text(langManager.s(.leaderboardJoinTitle))
+                Text(langManager.s(.gcJoinTitle))
                     .font(DS.Font.display(24))
                     .foregroundStyle(DS.Colors.ink)
-                Text(langManager.s(.leaderboardJoinDesc))
+                Text(langManager.s(.gcJoinDesc))
                     .font(DS.Font.ui(15))
                     .foregroundStyle(DS.Colors.inkSoft)
                     .fixedSize(horizontal: false, vertical: true)
-                Button(langManager.s(.leaderboardSignIn)) {
-                    selectedTab = .profile
+                Button(langManager.s(.gcOpenSettings)) {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
                 }
                 .buttonStyle(InkButtonStyle())
                 .padding(.top, 6)
@@ -184,9 +189,6 @@ private struct BoardOwnRankCard: View {
                         .font(DS.Font.ui(16, weight: .semibold))
                         .foregroundStyle(DS.Colors.ink)
                         .lineLimit(1)
-                    Text(langManager.f(.leaderboardDayStreak, user.streakDays))
-                        .font(DS.Font.ui(13))
-                        .foregroundStyle(DS.Colors.muted)
                 }
                 Spacer(minLength: 8)
                 Text("\(user.totalXp) XP")
@@ -219,9 +221,6 @@ private struct BoardRankRow: View {
                     .font(DS.Font.ui(16, weight: isCurrentUser ? .bold : .semibold))
                     .foregroundStyle(DS.Colors.ink)
                     .lineLimit(1)
-                Text(langManager.f(.leaderboardDayStreak, user.streakDays))
-                    .font(DS.Font.ui(12))
-                    .foregroundStyle(DS.Colors.muted)
             }
 
             Spacer(minLength: 8)

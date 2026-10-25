@@ -95,7 +95,7 @@ struct QuizModeSelectionView: View {
                 }
             }
             .task {
-                if let cards = try? await FirebaseService.shared.fetchSourceAndTargetLang(cardId: cardId),
+                if let cards = try? await DeckService.shared.fetchSourceAndTargetLang(cardId: cardId),
                    let lang = cards.first?.targetLang {
                     targetLang = lang
                 }

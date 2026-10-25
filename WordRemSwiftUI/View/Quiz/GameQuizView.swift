@@ -135,13 +135,13 @@ struct GameQuizView: View {
                     default:   maxDiff = 3
                     }
 
-                    words = try await SupabaseDataService.shared.fetchWords(levelId: lId, maxDifficulty: maxDiff)
-                    if let courseId = words.isEmpty ? nil : (try? await SupabaseDataService.shared.fetchCourseId(forLevel: lId)) {
-                        sentences = (try? await SupabaseDataService.shared.fetchSentences(courseId: courseId, maxDifficulty: maxDiff)) ?? []
+                    words = try await DataService.shared.fetchWords(levelId: lId, maxDifficulty: maxDiff)
+                    if let courseId = words.isEmpty ? nil : (try? await DataService.shared.fetchCourseId(forLevel: lId)) {
+                        sentences = (try? await DataService.shared.fetchSentences(courseId: courseId, maxDifficulty: maxDiff)) ?? []
                     }
                 case .mistakes:
                     let ids = MistakesManager.shared.mistakeUUIDs
-                    words = try await SupabaseDataService.shared.fetchWords(byIds: ids)
+                    words = try await DataService.shared.fetchWords(byIds: ids)
                     // Veritabanında karşılığı olmayan (eski/geçersiz) id'leri listeden temizle
                     let found = Set(words.map { $0.id })
                     let stale = Set(ids.filter { !found.contains($0) }.map { $0.uuidString })

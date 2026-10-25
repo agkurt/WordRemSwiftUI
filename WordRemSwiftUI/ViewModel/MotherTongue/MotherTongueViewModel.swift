@@ -14,7 +14,7 @@ final class MotherTongueViewModel: ObservableObject {
     
     func addMotherTongue(motherTongue:String) async {
         do {
-            try await FirebaseService.shared.addMotherTongueLanguage(motherTongue: motherTongue)
+            try await DeckService.shared.addMotherTongueLanguage(motherTongue: motherTongue)
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.isSuccess = true

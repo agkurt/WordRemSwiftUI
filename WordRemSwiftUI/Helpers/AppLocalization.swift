@@ -132,6 +132,14 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case gcJoinTitle = "gc.join_title"
+        case gcJoinDesc = "gc.join_desc"
+        case gcOpenSettings = "gc.open_settings"
+        case profileResetProgress = "profile.reset_progress"
+        case profileResetTitle = "profile.reset_title"
+        case profileResetMessage = "profile.reset_message"
+        case profileResetConfirm = "profile.reset_confirm"
+        case profileSyncNote = "profile.sync_note"
         case deckNoWords = "deck.no_words"
         case deckTapToAdd = "deck.tap_to_add"
         case deckWordCount = "deck.word_count"
@@ -599,6 +607,14 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .gcJoinTitle: "Sıralamanı gör",
+            .gcJoinDesc: "Sıralama tablosu Game Center kullanır. Diğer öğrencilerle XP'ni karşılaştırmak için Ayarlar'dan Game Center'a giriş yap.",
+            .gcOpenSettings: "Ayarlar'ı aç",
+            .profileResetProgress: "İlerlemeyi sıfırla",
+            .profileResetTitle: "Tüm ilerleme sıfırlansın mı?",
+            .profileResetMessage: "XP'n, serin, öğrendiğin kelimeler ve destelerin bu cihazdan ve iCloud'dan silinecek. Bu işlem geri alınamaz. Aboneliğin etkilenmez.",
+            .profileResetConfirm: "Sıfırla",
+            .profileSyncNote: "İlerlemen iCloud hesabınla otomatik olarak senkronlanır.",
             .deckNoWords: "Henüz kelime yok",
             .deckTapToAdd: "İlk kelimeni eklemek için + simgesine dokun",
             .deckWordCount: "%d kelime",
@@ -1016,6 +1032,14 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .gcJoinTitle: "See how you rank",
+            .gcJoinDesc: "The leaderboard uses Game Center. Sign in to Game Center in Settings to compare your XP with other learners.",
+            .gcOpenSettings: "Open Settings",
+            .profileResetProgress: "Reset progress",
+            .profileResetTitle: "Reset all progress?",
+            .profileResetMessage: "Your XP, streak, learned words and decks will be deleted from this device and iCloud. This can't be undone. Your subscription is not affected.",
+            .profileResetConfirm: "Reset",
+            .profileSyncNote: "Your progress syncs automatically with your iCloud account.",
             .deckNoWords: "No words yet",
             .deckTapToAdd: "Tap + to add your first word",
             .deckWordCount: "%d words",

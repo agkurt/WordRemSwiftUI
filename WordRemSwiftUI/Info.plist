@@ -2,19 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.373025749298-5h1n51mhabtf5odk6jb434vdlj0fe8u3</string>
-			</array>
-		</dict>
-	</array>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<false/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>WordRem uses your microphone for the Speaking quiz mode so you can practice pronunciation aloud.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

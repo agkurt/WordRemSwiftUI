@@ -21,7 +21,7 @@ final class HomeScreenViewModel: ObservableObject {
     func fetchCardName() async {
         isLoading = true
         do {
-            let fetchedCards = try await FirebaseService.shared.fetchCardName()
+            let fetchedCards = try await DeckService.shared.fetchCardName()
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.cards = fetchedCards
@@ -49,7 +49,7 @@ final class HomeScreenViewModel: ObservableObject {
         let cardId = self.cardIds[index]
         Task {
             do {
-                try await FirebaseService.shared.deleteCardAndTransactions(withId: cardId)
+                try await DeckService.shared.deleteCardAndTransactions(withId: cardId)
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self,
                           let i = self.cardIds.firstIndex(of: cardId) else { return }

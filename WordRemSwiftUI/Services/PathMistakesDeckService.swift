@@ -33,7 +33,7 @@ final class PathMistakesDeckService {
 
         do {
             // 1. Supabase'den kelimeleri getir
-            let words = try await SupabaseDataService.shared.fetchWords(byIds: wordIds)
+            let words = try await DataService.shared.fetchWords(byIds: wordIds)
             guard !words.isEmpty else { return }
 
             // 2. Firestore'da mevcut deck var mı kontrol et, yoksa yeni oluştur
@@ -42,11 +42,11 @@ final class PathMistakesDeckService {
             let name      = deckTitle(levelTitle: levelTitle, targetLangCode: targetLangCode)
 
             let deckId: String
-            if let existingId = await FirebaseService.shared.findDeckId(named: name) {
+            if let existingId = await DeckService.shared.findDeckId(named: name) {
                 // Aynı isimde deck zaten var — ona ekle
                 deckId = existingId
             } else {
-                guard let newId = await FirebaseService.shared.addCardNameInfo(
+                guard let newId = await DeckService.shared.addCardNameInfo(
                     name: name, selectedFlag: flag, sourceLang: phoneCode, targetLang: targetLangCode.uppercased()
                 ) else { return }
                 deckId = newId
@@ -56,7 +56,7 @@ final class PathMistakesDeckService {
             for word in words {
                 let nativeTranslation = word.displayTranslation(phoneCode: OL.nativeLangCode)
                 let sentence = (try? await generateSentence(term: word.term, langCode: targetLangCode)) ?? ""
-                await FirebaseService.shared.addWordToCard(
+                await DeckService.shared.addWordToCard(
                     cardId: deckId,
                     wordName: nativeTranslation,   // ön yüz: kullanıcının dilindeki çeviri (native)
                     wordMean: word.term,            // arka yüz: öğrenilen dildeki kelime (target)
@@ -97,10 +97,10 @@ final class PathMistakesDeckService {
         let name      = "\(emoji) AI — \(topicTitle)"
 
         let deckId: String
-        if let existingId = await FirebaseService.shared.findDeckId(named: name) {
+        if let existingId = await DeckService.shared.findDeckId(named: name) {
             deckId = existingId
         } else {
-            guard let newId = await FirebaseService.shared.addCardNameInfo(
+            guard let newId = await DeckService.shared.addCardNameInfo(
                 name: name,
                 selectedFlag: flag,
                 sourceLang: phoneCode,
@@ -110,7 +110,7 @@ final class PathMistakesDeckService {
         }
 
         for q in questions {
-            await FirebaseService.shared.addWordToCard(
+            await DeckService.shared.addWordToCard(
                 cardId: deckId,
                 wordName: q.word.term,          // soru metni (ön yüz)
                 wordMean: q.correctAnswer,      // doğru cevap (arka yüz)

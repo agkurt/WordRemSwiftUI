@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Lottie
 
 struct AppLoadingView: View {
     var message: String? = nil

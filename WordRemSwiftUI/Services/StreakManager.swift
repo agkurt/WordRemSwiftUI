@@ -28,7 +28,7 @@ final class StreakManager: ObservableObject {
     /// the first app open of the day.
     func handleAppLaunch() async {
         do {
-            let streak = try await SupabaseDataService.shared.updateDailyLoginStreak()
+            let streak = try await DataService.shared.updateDailyLoginStreak()
             currentStreak = streak
 
             guard streak >= 1 else { return }

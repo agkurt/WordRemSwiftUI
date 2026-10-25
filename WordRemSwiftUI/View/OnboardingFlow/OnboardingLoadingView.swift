@@ -80,44 +80,19 @@ struct OnboardingLoadingView: View {
             }
 
             // Yükleme animasyonu için kısa bekleme
-            try? await Task.sleep(nanoseconds: 2_500_000_000)
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
 
-            // Uygulama yeniden kurulduğunda Keychain'de eski session kalabilir.
-            // Yeni misafir başlatmadan önce mutlaka mevcut oturumu kapat.
-            if SupabaseAuthService.shared.isSignedIn {
-                try? await SupabaseAuthService.shared.signOut()
-                // Sign-out'un Supabase tarafında işlenmesi için kısa bekleme
-                try? await Task.sleep(nanoseconds: 300_000_000)
-            }
+            // Hesap yok: tercihler cihazda, ilerleme UserStore'da (iCloud senkron)
+            try? await DataService.shared.saveUserPreferences(
+                targetLangCode: languageCode,
+                nativeLangCode: nativeLangCode,
+                proficiencyLevel: proficiencyLevel,
+                learningInterest: learningInterest,
+                dailyGoalMinutes: dailyGoalMinutes
+            )
+            _ = try? await DataService.shared.updateDailyLoginStreak()
 
-            // Supabase anonim giriş — oturum olmadan uygulama çalışmaz; hata olursa tekrar dene ekranı
-            do {
-                try await SupabaseAuthService.shared.signInAnonymously()
-                let guestName = "Guest-\(Int.random(in: 1000...9999))"
-                try? await SupabaseAuthService.shared.ensureUserRow(username: guestName)
-                print("✅ Anonymous login success")
-            } catch {
-                print("⚠️ Anonymous login failed: \(error.localizedDescription)")
-                await MainActor.run { signInFailed = true }
-                return
-            }
-
-            // Supabase'e TÜM tercihleri kaydet (arka planda, başarısız olsa da devam et)
-            Task {
-                try? await SupabaseDataService.shared.saveUserPreferences(
-                    targetLangCode: languageCode,
-                    nativeLangCode: nativeLangCode,
-                    proficiencyLevel: proficiencyLevel,
-                    learningInterest: learningInterest,
-                    dailyGoalMinutes: dailyGoalMinutes
-                )
-            }
-
-            // Oturum açıldı → ana uygulamaya geç
-            await MainActor.run {
-                authManager.userIsLoggedIn = true
-                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-            }
+            await MainActor.run { authManager.completeOnboarding() }
         }
     }
 }

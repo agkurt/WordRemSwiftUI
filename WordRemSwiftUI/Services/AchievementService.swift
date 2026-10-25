@@ -9,7 +9,6 @@
 //
 
 import SwiftUI
-import Supabase
 
 @MainActor
 final class AchievementService: ObservableObject {
@@ -35,32 +34,15 @@ final class AchievementService: ObservableObject {
         let achievement_id: String
     }
 
-    private var db: SupabaseClient { SupabaseService.shared.client }
 
-    // MARK: - Fetch saved achievements from Supabase
+    // MARK: - Fetch saved achievements (yerel + iCloud)
     func fetchSaved() async {
-        guard let uid = SupabaseService.shared.currentUserId else { return }
-        do {
-            let rows: [UserAchievementRow] = try await db
-                .from("user_achievements")
-                .select("achievement_id, unlocked_at")
-                .eq("user_id", value: uid.uuidString)
-                .execute()
-                .value
-
-            let ids = Set(rows.map { $0.achievement_id })
-            unlockedIds = ids
-
-            // Rebuild the `all` array with correct unlock states
-            let dateMap = Dictionary(uniqueKeysWithValues: rows.map { ($0.achievement_id, $0.unlocked_at) })
-            all = Achievement.all().map { ach in
-                var copy = ach
-                copy.isUnlocked = ids.contains(ach.id)
-                copy.unlockedAt = dateMap[ach.id] ?? nil
-                return copy
-            }
-        } catch {
-            print("⚠️ AchievementService.fetchSaved error: \(error)")
+        let ids = Set((try? await DataService.shared.fetchAchievementIds()) ?? [])
+        unlockedIds = ids
+        all = Achievement.all().map { ach in
+            var copy = ach
+            copy.isUnlocked = ids.contains(ach.id)
+            return copy
         }
     }
 
@@ -69,7 +51,6 @@ final class AchievementService: ObservableObject {
     /// Compares current stats against all achievement conditions,
     /// saves new unlocks to Supabase, and queues popup notifications.
     func checkAndUnlock(user: SBUser, stats: UserStats) async {
-        guard let uid = SupabaseService.shared.currentUserId else { return }
 
         // Refresh saved IDs first (cheap query)
         await fetchSaved()
@@ -96,17 +77,7 @@ final class AchievementService: ObservableObject {
                 accuracy: accuracy
             ) else { continue }
 
-            // Save to Supabase
-            do {
-                try await db
-                    .from("user_achievements")
-                    .insert(InsertRow(user_id: uid.uuidString, achievement_id: ach.id))
-                    .execute()
-                print("🏆 Achievement unlocked: \(ach.id)")
-            } catch {
-                print("⚠️ AchievementService save error (\(ach.id)): \(error)")
-                continue // Don't notify if save failed (avoids duplicate toasts)
-            }
+            try? await DataService.shared.saveAchievement(id: ach.id)
 
             var unlocked = ach
             unlocked.isUnlocked = true
