@@ -42,14 +42,8 @@ final class VoiceBackend {
 
     private var appUserId: String { Purchases.isConfigured ? Purchases.shared.appUserID : UserStore.shared.userId.uuidString }
 
-    /// Başlangıç seviyesinde öğretmen daha yavaş konuşur
-    private var speechSpeed: Double {
-        switch UserDefaults.standard.integer(forKey: "selectedProficiencyLevel") {
-        case 0, 1: return 0.85
-        case 2:    return 0.95
-        default:   return 1.0
-        }
-    }
+    /// Ses hızı hep doğal (yapay yavaşlatma sesi bulanıklaştırıyor); yavaşlık talimatla sağlanır
+    private var speechSpeed: Double { 1.0 }
 
     func createSession(instructions: String, tools: [[String: Any]]) async throws -> Grant {
         guard let baseURL else { throw Failure(code: "not_configured", remainingSeconds: nil) }

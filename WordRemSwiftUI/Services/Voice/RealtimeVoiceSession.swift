@@ -59,14 +59,18 @@ final class RealtimeVoiceSession: ObservableObject {
     private let outFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 24_000, channels: 1, interleaved: false)!
     private let wireFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 24_000, channels: 1, interleaved: false)!
     private var converter: AVAudioConverter?
-    private var micMuted = true
+    private var micMuted = true { didSet { tapState.set(stream: !micMuted) } }
+    /// Ses iş parçacığının okuduğu durum (mikrofon akışı açık mı, hangi sokete)
+    private let tapState = TapState()
     private var holdStartedAt: Date?
     /// AI konuşurken (ve bitişinden kısa süre sonra) mikrofon sunucuya gitmez:
     /// hoparlörden çıkan ses mikrofona geri girip "kullanıcı konuştu" sanılmasın.
     private var echoGuardUntil = Date.distantPast
     private var aiAudible: Bool { scheduledSamples > 0 || Date() < echoGuardUntil }
 
-    private var fullAIText = ""            // gelen transkript (sesten önde)
+    private var fullAIText = ""            // gelen transkript (sesten önde), temizlenmiş
+    private var rawAIText = ""             // modelin ham metni
+    private var phraseShownThisResponse = false
     private var scheduledSamples: Double = 0
     private var playbackStart: AVAudioTime?
     /// Ses motoru durursa altyazı yine ilerlesin diye duvar saati yedeği
@@ -86,6 +90,8 @@ final class RealtimeVoiceSession: ObservableObject {
             let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools)
             sessionId = grant.sessionId
             allowedSeconds = grant.allowedSeconds
+            // İzin penceresi ses motorunu yarıda kesmesin: önce izni al
+            _ = await AVAudioApplication.requestRecordPermission()
             try configureAudio()
             connect(model: grant.model, secret: grant.clientSecret)
             startClock()
@@ -101,6 +107,7 @@ final class RealtimeVoiceSession: ObservableObject {
         reportUsage(final: true)
         socket?.cancel(with: .normalClosure, reason: nil)
         socket = nil
+        tapState.set(socket: nil)
         clock?.invalidate(); captionTimer?.invalidate()
         audioObservers.forEach(NotificationCenter.default.removeObserver)
         audioObservers = []
@@ -170,10 +177,13 @@ final class RealtimeVoiceSession: ObservableObject {
     // MARK: - Audio
     private func configureAudio() throws {
         let s = AVAudioSession.sharedInstance()
-        try s.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetoothHFP])
+        // .voiceChat + ses işleme (VPIO) gerçek iPhone'da AVAudioPlayerNode çıkışını susturabiliyor;
+        // bas-konuş kullandığımız için yankı engellemeye gerek yok → sade playAndRecord + hoparlör.
+        try s.setCategory(.playAndRecord, mode: .default,
+                          options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP])
         try s.setActive(true)
+        try? s.overrideOutputAudioPort(.speaker)
 
-        try? engine.inputNode.setVoiceProcessingEnabled(true)   // yankı engelleme: AI kendi sesini duymasın
         if player.engine == nil { engine.attach(player) }
         engine.connect(player, to: engine.mainMixerNode, format: outFormat)
         installMicTap()
@@ -188,11 +198,26 @@ final class RealtimeVoiceSession: ObservableObject {
         input.removeTap(onBus: 0)
         let inFormat = input.outputFormat(forBus: 0)
         guard inFormat.sampleRate > 0 else { return }
-        converter = AVAudioConverter(from: inFormat, to: wireFormat)
+        guard let converter = AVAudioConverter(from: inFormat, to: wireFormat) else { return }
+        let wire = wireFormat
+        let state = tapState
+        // Dönüştürme + gönderme ses iş parçacığında; ana iş parçacığına yalnızca konuşurken seviye gider
         input.installTap(onBus: 0, bufferSize: 2400, format: inFormat) { [weak self] buffer, _ in
-            guard let self else { return }
+            guard let socket = state.streamingSocket else { return }
             let level = Self.rms(buffer)
-            Task { @MainActor in self.handleMic(buffer, level: level) }
+            let ratio = wire.sampleRate / buffer.format.sampleRate
+            let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 32
+            guard let out = AVAudioPCMBuffer(pcmFormat: wire, frameCapacity: capacity) else { return }
+            var fed = false
+            var err: NSError?
+            converter.convert(to: out, error: &err) { _, status in
+                if fed { status.pointee = .noDataNow; return nil }
+                fed = true; status.pointee = .haveData; return buffer
+            }
+            guard err == nil, out.frameLength > 0, let ch = out.int16ChannelData else { return }
+            let b64 = Data(bytes: ch[0], count: Int(out.frameLength) * 2).base64EncodedString()
+            socket.send(.string("{\"type\":\"input_audio_buffer.append\",\"audio\":\"\(b64)\"}")) { _ in }
+            Task { @MainActor in self?.inputLevel = level }
         }
     }
 
@@ -222,34 +247,22 @@ final class RealtimeVoiceSession: ObservableObject {
         if !player.isPlaying { player.play() }
     }
 
-    private func handleMic(_ buffer: AVAudioPCMBuffer, level: Float) {
-        inputLevel = level
-        guard !micMuted, socket != nil, let converter else { return }
-        if aiAudible && !isHoldingToTalk { return }
-        let ratio = wireFormat.sampleRate / buffer.format.sampleRate
-        let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 32
-        guard let out = AVAudioPCMBuffer(pcmFormat: wireFormat, frameCapacity: capacity) else { return }
-        var fed = false
-        var err: NSError?
-        converter.convert(to: out, error: &err) { _, status in
-            if fed { status.pointee = .noDataNow; return nil }
-            fed = true; status.pointee = .haveData; return buffer
-        }
-        guard err == nil, out.frameLength > 0, let ch = out.int16ChannelData else { return }
-        let data = Data(bytes: ch[0], count: Int(out.frameLength) * 2)
-        send(["type": "input_audio_buffer.append", "audio": data.base64EncodedString()])
-    }
-
-    private func playAudio(base64: String) {
+    /// base64 PCM16 → Float32 tampon (arka planda çağrılır)
+    nonisolated private static func decodePCM(_ base64: String, format: AVAudioFormat) -> AVAudioPCMBuffer? {
         guard let data = Data(base64Encoded: base64), data.count >= 2,
-              let buf = AVAudioPCMBuffer(pcmFormat: outFormat, frameCapacity: AVAudioFrameCount(data.count / 2)),
-              let dst = buf.floatChannelData?[0] else { return }
+              let buf = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(data.count / 2)),
+              let dst = buf.floatChannelData?[0] else { return nil }
         let n = data.count / 2
         data.withUnsafeBytes { raw in
             let src = raw.bindMemory(to: Int16.self)
             for i in 0..<n { dst[i] = Float(Int16(littleEndian: src[i])) / 32768 }
         }
         buf.frameLength = AVAudioFrameCount(n)
+        return buf
+    }
+
+    private func playAudio(_ buf: AVAudioPCMBuffer) {
+        let n = Int(buf.frameLength)
         restartAudioIfNeeded()
         if playbackStart == nil {
             playbackStart = player.lastRenderTime
@@ -310,7 +323,7 @@ final class RealtimeVoiceSession: ObservableObject {
         return prefix.distance(from: prefix.startIndex, to: lastSpace) + 1
     }
 
-    private static func rms(_ buffer: AVAudioPCMBuffer) -> Float {
+    nonisolated private static func rms(_ buffer: AVAudioPCMBuffer) -> Float {
         guard let ch = buffer.floatChannelData?[0], buffer.frameLength > 0 else { return 0 }
         var sum: Float = 0
         for i in 0..<Int(buffer.frameLength) { sum += ch[i] * ch[i] }
@@ -323,6 +336,7 @@ final class RealtimeVoiceSession: ObservableObject {
         req.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
         let task = URLSession.shared.webSocketTask(with: req)
         socket = task
+        tapState.set(socket: task)
         task.resume()
         receive()
     }
@@ -333,21 +347,29 @@ final class RealtimeVoiceSession: ObservableObject {
         socket.send(.string(text)) { _ in }
     }
 
+    /// JSON çözme ve ses çözme arka planda; ana iş parçacığına yalnızca hazır olay/tampon gider
     private func receive() {
+        let format = outFormat
         socket?.receive { [weak self] result in
-            Task { @MainActor in
-                guard let self else { return }
-                switch result {
-                case .failure:
+            switch result {
+            case .failure:
+                Task { @MainActor in
+                    guard let self else { return }
                     if self.phase != .ended { self.phase = .failed("connection"); self.stop() }
-                case .success(let message):
-                    if case .string(let text) = message,
-                       let data = text.data(using: .utf8),
-                       let event = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                        self.handle(event)
-                    }
-                    self.receive()
                 }
+            case .success(let message):
+                if case .string(let text) = message, let data = text.data(using: .utf8),
+                   let event = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] {
+                    let type = event["type"] as? String ?? ""
+                    if type == "response.output_audio.delta" || type == "response.audio.delta" {
+                        let buf = (event["delta"] as? String).flatMap { Self.decodePCM($0, format: format) }
+                        Task { @MainActor in if let buf { self?.playAudio(buf) } }
+                    } else {
+                        nonisolated(unsafe) let e = event
+                        Task { @MainActor in self?.handle(e) }
+                    }
+                }
+                Task { @MainActor in self?.receive() }
             }
         }
     }
@@ -377,16 +399,15 @@ final class RealtimeVoiceSession: ObservableObject {
             if !t.isEmpty { turns.append(Turn(role: .user, text: t)) }
 
         case "response.created":
-            fullAIText = ""; caption = ""; captionFull = ""; responseFinished = false
+            fullAIText = ""; rawAIText = ""; phraseShownThisResponse = false
+            caption = ""; captionFull = ""; responseFinished = false
             responseCount += 1
             turns.append(Turn(role: .ai, text: ""))
 
-        case "response.output_audio.delta", "response.audio.delta":
-            if let d = e["delta"] as? String { playAudio(base64: d) }
-
         case "response.output_audio_transcript.delta", "response.audio_transcript.delta":
             if let d = e["delta"] as? String {
-                fullAIText += d
+                rawAIText += d
+                fullAIText = Self.stripToolText(rawAIText)
                 if let i = turns.lastIndex(where: { $0.role == .ai }) { turns[i].text = fullAIText }
             }
 
@@ -395,6 +416,7 @@ final class RealtimeVoiceSession: ObservableObject {
             let callId = e["call_id"] as? String ?? ""
             let args = (e["arguments"] as? String).flatMap { $0.data(using: .utf8) }
                 .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] } ?? [:]
+            if name == "show_phrase" { phraseShownThisResponse = true }
             let output = onToolCall?(name, args) ?? "ok"
             send(["type": "conversation.item.create",
                   "item": ["type": "function_call_output", "call_id": callId, "output": output]])
@@ -406,6 +428,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
         case "response.done":
             responseFinished = true
+            ensurePhraseCard()
             if pendingToolFollowUp {
                 pendingToolFollowUp = false
                 send(["type": "response.create"])
@@ -424,6 +447,33 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     private var pendingToolFollowUp = false
+
+    /// Küçük model kart komutunu bazen düz metin olarak yazar: ekranda/transkriptte gösterme
+    nonisolated static func stripToolText(_ s: String) -> String {
+        var t = s.replacingOccurrences(of: #"show_phrase\s*\([^)]*\)?"#, with: "", options: .regularExpression)
+        if let r = t.range(of: "show_phrase") { t = String(t[..<r.lowerBound]) }
+        return t.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Her tur bir kartla bitmeli (Pingo gibi). Model aracı çağırmadıysa: metne yazdığı komutu ya da
+    /// son tırnak içindeki ifadeyi kart yap.
+    private func ensurePhraseCard() {
+        guard !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty else { return }
+        var phrase: String?, translation = ""
+        let q = #"["“”]"#
+        if let r = rawAIText.range(of: #"show_phrase\s*\(\s*\#(q)([^"“”]+)\#(q)\s*,\s*\#(q)([^"“”]*)\#(q)"#, options: .regularExpression) {
+            let parts = rawAIText[r].split(whereSeparator: { "\"“”".contains($0) }).map(String.init)
+            if parts.count >= 2 { phrase = parts[1] }
+            if parts.count >= 4 { translation = parts[3] }
+        }
+        if phrase == nil {
+            let quotes = fullAIText.matches(of: try! Regex(#"[“"]([^"“”]{2,80})[”"]"#))
+            if let last = quotes.last, let sub = last.output[1].substring { phrase = String(sub) }
+        }
+        guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        phraseShownThisResponse = true
+        _ = onToolCall?("show_phrase", ["phrase": phrase, "translation": translation])
+    }
 
     // MARK: - Süre & kullanım
     private func startClock() {
@@ -456,4 +506,16 @@ final class RealtimeVoiceSession: ObservableObject {
         let seconds = elapsedSeconds
         Task { await VoiceBackend.shared.reportUsage(sessionId: sessionId, seconds: seconds) }
     }
+}
+
+/// Ses iş parçacığı ile ana iş parçacığı arasında paylaşılan küçük durum (kilitli)
+final class TapState: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stream = false
+    private var socket: URLSessionWebSocketTask?
+
+    func set(stream: Bool) { lock.lock(); self.stream = stream; lock.unlock() }
+    func set(socket: URLSessionWebSocketTask?) { lock.lock(); self.socket = socket; lock.unlock() }
+    /// Mikrofon akışı açıksa gönderilecek soket
+    var streamingSocket: URLSessionWebSocketTask? { lock.lock(); defer { lock.unlock() }; return stream ? socket : nil }
 }

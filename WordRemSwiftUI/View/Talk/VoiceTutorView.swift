@@ -147,7 +147,7 @@ struct VoiceTutorView: View {
                         .mask(LinearGradient(stops: [.init(color: long ? .clear : .black, location: 0),
                                                      .init(color: .black, location: long ? 0.28 : 0)],
                                              startPoint: .top, endPoint: .bottom))
-                        .animation(.easeOut(duration: 0.2), value: session.caption)
+
                 }
             }
         }
@@ -195,10 +195,12 @@ struct VoiceTutorView: View {
                     .multilineTextAlignment(.center)
             }
             HStack(spacing: 36) {
-                Button { withAnimation { showTranslation.toggle() } } label: {
-                    Image(systemName: "character.bubble").font(.system(size: 24, weight: .medium))
+                if !p.translation.isEmpty {
+                    Button { withAnimation { showTranslation.toggle() } } label: {
+                        Image(systemName: "character.bubble").font(.system(size: 24, weight: .medium))
+                    }
+                    .accessibilityLabel(AL.s(.talkTranslate))
                 }
-                .accessibilityLabel(AL.s(.talkTranslate))
                 Button { TTSManager.shared.speak(p.text, langCode: targetCode) } label: {
                     Image(systemName: "speaker.wave.2").font(.system(size: 24, weight: .medium))
                 }
@@ -302,7 +304,7 @@ struct VoiceLogoView: View {
     private let colors: [Color] = [DS.Colors.ink, DS.Colors.accent, DS.Colors.slate, DS.Colors.accent.opacity(0.55)]
 
     var body: some View {
-        TimelineView(.animation) { ctx in
+        TimelineView(.animation(minimumInterval: 1.0 / 30)) { ctx in
             let t = ctx.date.timeIntervalSinceReferenceDate
             HStack(spacing: 5) {
                 ForEach(0..<4, id: \.self) { i in

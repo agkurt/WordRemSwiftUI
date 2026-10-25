@@ -88,7 +88,7 @@ enum TutorBrain {
     private static var languagePolicy: String {
         switch proficiency {
         case 0, 1:
-            return "The learner is a beginner. Speak mostly in \(nativeName). Say every \(targetName) phrase slowly and clearly, then give its \(nativeName) meaning. Never speak long \(targetName) sentences without explaining."
+            return "The learner is a beginner. Speak slowly and very clearly, with short sentences. Speak mostly in \(nativeName). Say every \(targetName) phrase slowly and clearly, then give its \(nativeName) meaning. Never speak long \(targetName) sentences without explaining."
         case 2:
             return "The learner is around A2. Use simple \(targetName) for the conversation and switch to \(nativeName) only to explain a new phrase or when the learner is stuck."
         default:
@@ -252,7 +252,7 @@ enum TutorBrain {
 
     /// Sohbette öğretilen kalıp → "Sohbetten" destesi (kelime defteri) + tekrar planı
     private static func savePhrase(_ phrase: String, _ translation: String) {
-        guard !phrase.isEmpty else { return }
+        guard !phrase.isEmpty, !translation.isEmpty else { return }
         let id = "chat:" + phrase.lowercased()
         LearnedWordsStore.add([LearnedWord(id: id, term: phrase, meaning: translation, phonetic: nil,
                                            languageCode: targetCode.uppercased(), learnedAt: Date())],

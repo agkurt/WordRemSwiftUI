@@ -398,6 +398,7 @@ private final class GreetingSpeaker: NSObject, ObservableObject, AVSpeechSynthes
     private let synth = AVSpeechSynthesizer()
     private var text = ""
     private var fallback: Timer?
+    private var started = false   // seslendirme gerçekten başladı mı
 
     func speak(_ text: String, nativeCode: String) {
         self.text = text
@@ -412,13 +413,15 @@ private final class GreetingSpeaker: NSObject, ObservableObject, AVSpeechSynthes
         synth.speak(u)
         isSpeaking = true
 
-        // Ses yoksa (sessiz mod/simülatör) altyazı yine de okuma hızında ilerlesin
+        // Altyazı sesi bekler (kelimeler seslendirme ilerledikçe açılır). Ses 2.5 sn içinde hiç başlamazsa
+        // (sessiz mod vb.) altyazı okuma hızında kendiliğinden akar.
         let start = Date()
         fallback = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task { @MainActor in
-                guard let self else { return }
-                let byTime = Int(Date().timeIntervalSince(start) * 14)
-                if byTime > self.spoken + 22 { self.reveal(upTo: byTime) }
+                guard let self, !self.started else { return }
+                let waited = Date().timeIntervalSince(start) - 2.5
+                guard waited > 0 else { return }
+                self.reveal(upTo: Int(waited * 14))
                 if self.spoken >= self.text.count { self.complete() }
             }
         }
@@ -460,6 +463,10 @@ private final class GreetingSpeaker: NSObject, ObservableObject, AVSpeechSynthes
             let upTo = (ns.substring(to: min(end, ns.length)) as String).count
             self.spoken = max(self.spoken, upTo)
         }
+    }
+
+    nonisolated func speechSynthesizer(_ s: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        Task { @MainActor in self.started = true }
     }
 
     nonisolated func speechSynthesizer(_ s: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
