@@ -130,6 +130,7 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                 self.isAnonymous = true
                 InAppPurchaseManager.shared.isPremium = false  // didSet → UserDefaults + DailyLimitManager
                 UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+                LearnedWordsStore.clear()
             }
             EventManager.shared.logLogoutEvent()
         }
@@ -372,6 +373,7 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                     self.isAnonymous = true
                     InAppPurchaseManager.shared.isPremium = false
                     UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+                LearnedWordsStore.clear()
                 }
                 EventManager.shared.logLogoutEvent()
             } catch {

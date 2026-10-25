@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B0B0C0DE000000000000000B /* WordRemWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000001 /* WordRemWidgetBundle.swift */; };
+		B0B0C0DE000000000000000C /* WordOfTheDayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000002 /* WordOfTheDayWidget.swift */; };
+		B0B0C0DE000000000000000D /* LearnedWordsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000005 /* LearnedWordsStore.swift */; };
+		B0B0C0DE000000000000000E /* LearnedWordsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000005 /* LearnedWordsStore.swift */; };
+		B0B0C0DE000000000000000F /* WordRemWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000006 /* WordRemWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		090C4101529442909EC4B45A /* GameQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A91F10AFF24B3EA659AE2A /* GameQuizView.swift */; };
 		1E136AADF31B4615B532D710 /* WordRemSwiftUI/Model/QuizQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ABC7D553FA4699AD919732 /* WordRemSwiftUI/Model/QuizQuestion.swift */; };
 		1FDDD35FCDC645B4B0B2026F /* WordRemSwiftUI/View/Quiz/QuizModeSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939814EB8BE447D2AEAE1A82 /* WordRemSwiftUI/View/Quiz/QuizModeSelectionView.swift */; };
@@ -234,7 +239,37 @@
 		WEL000000000000000001A3 /* WelcomePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WEL000000000000000001F3 /* WelcomePopupView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B0B0C0DE000000000000001A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E879EC5A2B3B3E2C003534B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B0B0C0DE0000000000000015;
+			remoteInfo = WordRemWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B0B0C0DE0000000000000019 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B0B0C0DE000000000000000F /* WordRemWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		B0B0C0DE0000000000000001 /* WordRemWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordRemWidgetBundle.swift; sourceTree = "<group>"; };
+		B0B0C0DE0000000000000002 /* WordOfTheDayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOfTheDayWidget.swift; sourceTree = "<group>"; };
+		B0B0C0DE0000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B0B0C0DE0000000000000004 /* WordRemWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordRemWidget.entitlements; sourceTree = "<group>"; };
+		B0B0C0DE0000000000000005 /* LearnedWordsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnedWordsStore.swift; sourceTree = "<group>"; };
+		B0B0C0DE0000000000000006 /* WordRemWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WordRemWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		006233436A024E18986A5183 /* WordRemSwiftUI/Model/QuizMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordRemSwiftUI/Model/QuizMode.swift; sourceTree = SOURCE_ROOT; };
 		17ABC7D553FA4699AD919732 /* WordRemSwiftUI/Model/QuizQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordRemSwiftUI/Model/QuizQuestion.swift; sourceTree = SOURCE_ROOT; };
 		17C6D36AE6254ED6858D40B9 /* PathMapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PathMapViewModel.swift; path = WordRemSwiftUI/ViewModel/Path/PathMapViewModel.swift; sourceTree = SOURCE_ROOT; };
@@ -437,6 +472,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B0B0C0DE0000000000000017 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E879EC5F2B3B3E2C003534B5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -479,6 +521,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B0B0C0DE0000000000000014 /* WordRemWidget */ = {
+			isa = PBXGroup;
+			children = (
+				B0B0C0DE0000000000000001 /* WordRemWidgetBundle.swift */,
+				B0B0C0DE0000000000000002 /* WordOfTheDayWidget.swift */,
+				B0B0C0DE0000000000000003 /* Info.plist */,
+				B0B0C0DE0000000000000004 /* WordRemWidget.entitlements */,
+			);
+			path = WordRemWidget;
+			sourceTree = "<group>";
+		};
 		367C22DA6AF49B63D6FBBA5C /* OnboardingFlow */ = {
 			isa = PBXGroup;
 			children = (
@@ -687,6 +740,7 @@
 				E8BE726E2B93BA3E00900217 /* AuthManager */,
 				E8527C522B6EBD590047E4A6 /* FirebaseService */,
 				F0EB6F1DCEE89012C58E24A2 /* MistakesManager.swift */,
+				B0B0C0DE0000000000000005 /* LearnedWordsStore.swift */,
 				BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */,
 				DD11EE22FF33AA4400DD0022 /* DailyLimitManager.swift */,
 				EE11FF22AA33BB4400EE0022 /* HintManager.swift */,
@@ -749,6 +803,7 @@
 			children = (
 				E82A49412F6B41070051A1AC /* wordremAI.storekit */,
 				E879EC642B3B3E2C003534B5 /* WordRemSwiftUI */,
+				B0B0C0DE0000000000000014 /* WordRemWidget */,
 				E879EC632B3B3E2C003534B5 /* Products */,
 				E88176932F65FAFC00D0AB91 /* Recovered References */,
 				E81C0B082F6614F900ACF8BB /* Frameworks */,
@@ -759,6 +814,7 @@
 			isa = PBXGroup;
 			children = (
 				E879EC622B3B3E2C003534B5 /* WordRemSwiftUI.app */,
+				B0B0C0DE0000000000000006 /* WordRemWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1121,6 +1177,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B0B0C0DE0000000000000015 /* WordRemWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B0B0C0DE000000000000001E /* Build configuration list for PBXNativeTarget "WordRemWidgetExtension" */;
+			buildPhases = (
+				B0B0C0DE0000000000000016 /* Sources */,
+				B0B0C0DE0000000000000017 /* Frameworks */,
+				B0B0C0DE0000000000000018 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WordRemWidgetExtension;
+			productName = WordRemWidgetExtension;
+			productReference = B0B0C0DE0000000000000006 /* WordRemWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		E879EC612B3B3E2C003534B5 /* WordRemSwiftUI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E879EC702B3B3E2E003534B5 /* Build configuration list for PBXNativeTarget "WordRemSwiftUI" */;
@@ -1128,10 +1201,12 @@
 				E879EC5E2B3B3E2C003534B5 /* Sources */,
 				E879EC5F2B3B3E2C003534B5 /* Frameworks */,
 				E879EC602B3B3E2C003534B5 /* Resources */,
+				B0B0C0DE0000000000000019 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B0B0C0DE000000000000001B /* PBXTargetDependency */,
 			);
 			name = WordRemSwiftUI;
 			packageProductDependencies = (
@@ -1187,6 +1262,9 @@
 					E879EC612B3B3E2C003534B5 = {
 						CreatedOnToolsVersion = 15.1;
 					};
+					B0B0C0DE0000000000000015 = {
+						CreatedOnToolsVersion = 26.0;
+					};
 				};
 			};
 			buildConfigurationList = E879EC5D2B3B3E2C003534B5 /* Build configuration list for PBXProject "WordRemSwiftUI" */;
@@ -1211,11 +1289,19 @@
 			projectRoot = "";
 			targets = (
 				E879EC612B3B3E2C003534B5 /* WordRemSwiftUI */,
+				B0B0C0DE0000000000000015 /* WordRemWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B0B0C0DE0000000000000018 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E879EC602B3B3E2C003534B5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1265,6 +1351,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B0B0C0DE0000000000000016 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0B0C0DE000000000000000B /* WordRemWidgetBundle.swift in Sources */,
+				B0B0C0DE000000000000000C /* WordOfTheDayWidget.swift in Sources */,
+				B0B0C0DE000000000000000D /* LearnedWordsStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E879EC5E2B3B3E2C003534B5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1399,6 +1495,7 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				B0B0C0DE000000000000000E /* LearnedWordsStore.swift in Sources */,
 				BB11CC22DD33EE4400BB0011 /* PathMistakesDeckService.swift in Sources */,
 				DD11EE22FF33AA4400DD0011 /* DailyLimitManager.swift in Sources */,
 				EE11FF22AA33BB4400EE0011 /* HintManager.swift in Sources */,
@@ -1428,7 +1525,79 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		B0B0C0DE000000000000001B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B0B0C0DE0000000000000015 /* WordRemWidgetExtension */;
+			targetProxy = B0B0C0DE000000000000001A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		B0B0C0DE000000000000001C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WordRemWidget/WordRemWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7T569GVN5Q;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WordRemWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRem;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.WordRemSwiftUI.WordRemWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B0B0C0DE000000000000001D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WordRemWidget/WordRemWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7T569GVN5Q;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WordRemWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRem;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twinflare.WordRemSwiftUI.WordRemWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		E879EC6E2B3B3E2E003534B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1627,6 +1796,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B0B0C0DE000000000000001E /* Build configuration list for PBXNativeTarget "WordRemWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0B0C0DE000000000000001C /* Debug */,
+				B0B0C0DE000000000000001D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E879EC5D2B3B3E2C003534B5 /* Build configuration list for PBXProject "WordRemSwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

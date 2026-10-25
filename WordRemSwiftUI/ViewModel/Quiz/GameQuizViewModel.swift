@@ -174,6 +174,18 @@ final class GameQuizViewModel: ObservableObject {
             if case .mistakes = sessionType, let q = currentQuestion {
                 MistakesManager.shared.removeMistakes([q.word.id.uuidString])
             }
+            // Widget "Günün Kelimesi" için öğrenilen kelimeyi kaydet (seviye + hatalar quizleri)
+            if let q = currentQuestion, q.sentence == nil, isWordSession {
+                let native = OL.nativeLangCode
+                LearnedWordsStore.add([LearnedWord(
+                    id: q.word.id.uuidString,
+                    term: q.word.term,
+                    meaning: q.word.displayTranslation(phoneCode: native),
+                    phonetic: q.word.phonetic,
+                    languageCode: targetLangCode.uppercased(),
+                    learnedAt: Date()
+                )], nativeLangCode: native)
+            }
         } else {
             // Cümle sorularının word.id'si geçici bir UUID — hatalar listesine yazma (asla temizlenemez)
             if let q = currentQuestion, q.sentence == nil {
@@ -181,6 +193,14 @@ final class GameQuizViewModel: ObservableObject {
             }
         }
         state = .answered(isCorrect: isCorrect)
+    }
+
+    /// Gerçek kelime içeren oturumlar (AI quiz'in sentetik soruları hariç)
+    private var isWordSession: Bool {
+        switch sessionType {
+        case .level, .mistakes: return true
+        default:                return false
+        }
     }
 
     private func showXPToastAnimation() {
