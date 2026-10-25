@@ -33,6 +33,8 @@ struct VoiceTutorView: View {
             .frame(maxWidth: 620)
             .padding(.horizontal, 28)
             .animation(.easeOut(duration: 0.25), value: phrase?.text)
+            .contentShape(Rectangle())
+            .onTapGesture { if phrase == nil { session.interrupt() } }
             Spacer(minLength: 0)
             bottomArea
         }
@@ -234,7 +236,6 @@ struct VoiceTutorView: View {
         case .listening:    return AL.s(.talkListening)
         case .userSpeaking: return AL.s(.talkHearing)
         case .thinking:     return "…"
-        case .aiSpeaking:   return AL.s(.talkTranscript)
         default:            return " "
         }
     }
@@ -297,11 +298,11 @@ struct VoiceLogoView: View {
     private func height(_ i: Int, _ t: Double) -> CGFloat {
         switch phase {
         case .aiSpeaking:
-            return 14 + 22 * CGFloat(abs(sin(t * 6 + Double(i) * 0.9)))
+            return 14 + 22 * CGFloat(abs(sin(t * 2.4 + Double(i) * 0.9)))
         case .userSpeaking:
-            return 12 + 26 * CGFloat(level) * CGFloat(0.6 + 0.4 * abs(sin(t * 9 + Double(i))))
+            return 12 + 26 * CGFloat(level) * CGFloat(0.6 + 0.4 * abs(sin(t * 3.5 + Double(i))))
         case .thinking, .connecting:
-            return 11 + 6 * CGFloat(abs(sin(t * 3 + Double(i) * 0.6)))
+            return 11 + 6 * CGFloat(abs(sin(t * 1.5 + Double(i) * 0.6)))
         case .listening:
             return 11 + 10 * CGFloat(level)
         default:

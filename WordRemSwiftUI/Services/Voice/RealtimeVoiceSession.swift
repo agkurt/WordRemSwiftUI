@@ -55,10 +55,17 @@ final class RealtimeVoiceSession: ObservableObject {
     private let wireFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 24_000, channels: 1, interleaved: false)!
     private var converter: AVAudioConverter?
     private var micMuted = false
+    /// AI konuşurken (ve bitişinden kısa süre sonra) mikrofon sunucuya gitmez:
+    /// hoparlörden çıkan ses mikrofona geri girip "kullanıcı konuştu" sanılmasın.
+    private var echoGuardUntil = Date.distantPast
+    private var aiAudible: Bool { scheduledSamples > 0 || Date() < echoGuardUntil }
 
     private var fullAIText = ""            // gelen transkript (sesten önde)
     private var scheduledSamples: Double = 0
     private var playbackStart: AVAudioTime?
+    /// Ses motoru durursa altyazı yine ilerlesin diye duvar saati yedeği
+    private var playbackWallStart: Date?
+    private var audioObservers: [NSObjectProtocol] = []
     private var captionTimer: Timer?
     private var clock: Timer?
     private var lastUsageReport = 0
@@ -89,6 +96,8 @@ final class RealtimeVoiceSession: ObservableObject {
         socket?.cancel(with: .normalClosure, reason: nil)
         socket = nil
         clock?.invalidate(); captionTimer?.invalidate()
+        audioObservers.forEach(NotificationCenter.default.removeObserver)
+        audioObservers = []
         player.stop()
         engine.inputNode.removeTap(onBus: 0)
         engine.stop()
@@ -126,6 +135,15 @@ final class RealtimeVoiceSession: ObservableObject {
         phase = .thinking
     }
 
+    /// AI konuşurken ekrana dokununca sözünü kes (mikrofon AI konuşurken kapalı olduğundan sesle kesilemez)
+    func interrupt() {
+        guard phase == .aiSpeaking || phase == .thinking else { return }
+        stopPlayback()
+        send(["type": "response.cancel"])
+        send(["type": "input_audio_buffer.clear"])
+        phase = .listening
+    }
+
     /// Kullanıcı yazıyla bir şey göndermek isterse (ör. konu seçimi çipleri)
     func sendText(_ text: String) {
         send(["type": "conversation.item.create",
@@ -141,27 +159,59 @@ final class RealtimeVoiceSession: ObservableObject {
         try s.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetoothHFP])
         try s.setActive(true)
 
-        let input = engine.inputNode
-        try? input.setVoiceProcessingEnabled(true)       // yankı engelleme: AI kendi sesini duymasın
-        let inFormat = input.outputFormat(forBus: 0)
-        converter = AVAudioConverter(from: inFormat, to: wireFormat)
-
-        engine.attach(player)
+        try? engine.inputNode.setVoiceProcessingEnabled(true)   // yankı engelleme: AI kendi sesini duymasın
+        if player.engine == nil { engine.attach(player) }
         engine.connect(player, to: engine.mainMixerNode, format: outFormat)
+        installMicTap()
+        engine.prepare()
+        try engine.start()
+        player.play()
+        observeAudioChanges()
+    }
 
+    private func installMicTap() {
+        let input = engine.inputNode
+        input.removeTap(onBus: 0)
+        let inFormat = input.outputFormat(forBus: 0)
+        guard inFormat.sampleRate > 0 else { return }
+        converter = AVAudioConverter(from: inFormat, to: wireFormat)
         input.installTap(onBus: 0, bufferSize: 2400, format: inFormat) { [weak self] buffer, _ in
             guard let self else { return }
             let level = Self.rms(buffer)
             Task { @MainActor in self.handleMic(buffer, level: level) }
         }
-        engine.prepare()
-        try engine.start()
-        player.play()
+    }
+
+    /// Ses yolu değişince (hoparlöre geçiş, kulaklık, kesinti) AVAudioEngine kendini durdurur:
+    /// yeniden başlatılmazsa AI sesi çalınmaz ve altyazı ilerlemez.
+    private func observeAudioChanges() {
+        guard audioObservers.isEmpty else { return }
+        let nc = NotificationCenter.default
+        let restart: (Notification) -> Void = { [weak self] _ in
+            Task { @MainActor in self?.restartAudioIfNeeded(reinstallTap: true) }
+        }
+        audioObservers = [
+            nc.addObserver(forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main, using: restart),
+            nc.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main, using: restart),
+            nc.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil, queue: .main, using: restart),
+        ]
+    }
+
+    private func restartAudioIfNeeded(reinstallTap: Bool = false) {
+        guard phase != .ended, phase != .idle else { return }
+        if reinstallTap { installMicTap() }
+        if !engine.isRunning {
+            try? AVAudioSession.sharedInstance().setActive(true)
+            engine.prepare()
+            do { try engine.start() } catch { print("⚠️ audio engine restart failed: \(error)") }
+        }
+        if !player.isPlaying { player.play() }
     }
 
     private func handleMic(_ buffer: AVAudioPCMBuffer, level: Float) {
         inputLevel = level
         guard !micMuted, socket != nil, let converter else { return }
+        if aiAudible && !isHoldingToTalk { return }
         let ratio = wireFormat.sampleRate / buffer.format.sampleRate
         let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 32
         guard let out = AVAudioPCMBuffer(pcmFormat: wireFormat, frameCapacity: capacity) else { return }
@@ -186,7 +236,12 @@ final class RealtimeVoiceSession: ObservableObject {
             for i in 0..<n { dst[i] = Float(Int16(littleEndian: src[i])) / 32768 }
         }
         buf.frameLength = AVAudioFrameCount(n)
-        if playbackStart == nil { playbackStart = player.lastRenderTime; startCaptionTimer() }
+        restartAudioIfNeeded()
+        if playbackStart == nil {
+            playbackStart = player.lastRenderTime
+            playbackWallStart = Date()
+            startCaptionTimer()
+        }
         scheduledSamples += Double(n)
         player.scheduleBuffer(buf, completionHandler: nil)
         if phase != .aiSpeaking { phase = .aiSpeaking }
@@ -195,7 +250,7 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Kullanıcı araya girince AI'ın sesini hemen kes
     private func stopPlayback() {
         player.stop(); player.play()
-        scheduledSamples = 0; playbackStart = nil
+        scheduledSamples = 0; playbackStart = nil; playbackWallStart = nil
         captionTimer?.invalidate()
         if !fullAIText.isEmpty { caption = fullAIText }
     }
@@ -209,16 +264,24 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     private func tickCaption() {
-        guard scheduledSamples > 0,
-              let node = player.lastRenderTime, let t = player.playerTime(forNodeTime: node) else { return }
-        let played = min(1, Double(t.sampleTime) / scheduledSamples)
+        guard scheduledSamples > 0 else { return }
+        // Çalınan örnek sayısı; motor çalışmıyorsa duvar saatine göre tahmin et
+        var playedSamples: Double = 0
+        if engine.isRunning, let node = player.lastRenderTime, let t = player.playerTime(forNodeTime: node), t.sampleTime > 0 {
+            playedSamples = Double(t.sampleTime)
+        } else if let start = playbackWallStart {
+            playedSamples = Date().timeIntervalSince(start) * outFormat.sampleRate
+        }
+        let played = min(1, playedSamples / scheduledSamples)
         let target = Int(Double(fullAIText.count) * played)
         if target > caption.count { caption = String(fullAIText.prefix(target)) }
         if played >= 0.999 && responseFinished {
             caption = fullAIText
             captionTimer?.invalidate()
-            scheduledSamples = 0; playbackStart = nil
-            if phase == .aiSpeaking { phase = pushToTalk ? .listening : .listening }
+            scheduledSamples = 0; playbackStart = nil; playbackWallStart = nil
+            echoGuardUntil = Date().addingTimeInterval(0.6)
+            send(["type": "input_audio_buffer.clear"])
+            if phase == .aiSpeaking { phase = .listening }
         }
     }
 
@@ -309,7 +372,11 @@ final class RealtimeVoiceSession: ObservableObject {
             let output = onToolCall?(name, args) ?? "ok"
             send(["type": "conversation.item.create",
                   "item": ["type": "function_call_output", "call_id": callId, "output": output]])
-            pendingToolFollowUp = true
+            // Kart gösterildiyse sıra kullanıcıda: AI'ı tekrar konuşturma (yoksa kendi kendine devam eder).
+            // Diğer araçlarda yalnızca AI bu yanıtta hiç konuşmadıysa devam ettir.
+            if name != "show_phrase" && name != "finish_lesson" && fullAIText.isEmpty {
+                pendingToolFollowUp = true
+            }
 
         case "response.done":
             responseFinished = true

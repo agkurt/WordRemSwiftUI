@@ -80,6 +80,7 @@ interface SessionRequest {
   instructions: string;
   tools?: unknown[];
   voice?: string;
+  speed?: number;
 }
 
 interface UsageRequest {
@@ -158,6 +159,7 @@ async function createSession(req: Request, env: Env): Promise<Response> {
       output: {
         format: { type: "audio/pcm", rate: 24000 },
         voice: body.voice || env.VOICE,
+        speed: Math.min(1.2, Math.max(0.7, Number(body.speed) || 1)),
       },
     },
     tools: (body.tools ?? []).slice(0, 8),

@@ -42,6 +42,15 @@ final class VoiceBackend {
 
     private var appUserId: String { Purchases.isConfigured ? Purchases.shared.appUserID : UserStore.shared.userId.uuidString }
 
+    /// Başlangıç seviyesinde öğretmen daha yavaş konuşur
+    private var speechSpeed: Double {
+        switch UserDefaults.standard.integer(forKey: "selectedProficiencyLevel") {
+        case 0, 1: return 0.85
+        case 2:    return 0.95
+        default:   return 1.0
+        }
+    }
+
     func createSession(instructions: String, tools: [[String: Any]]) async throws -> Grant {
         guard let baseURL else { throw Failure(code: "not_configured", remainingSeconds: nil) }
         var req = URLRequest(url: baseURL.appendingPathComponent("v1/voice/session"))
@@ -50,7 +59,7 @@ final class VoiceBackend {
         req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
         req.timeoutInterval = 15
         req.httpBody = try JSONSerialization.data(withJSONObject: [
-            "appUserId": appUserId, "instructions": instructions, "tools": tools,
+            "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed,
         ])
         let (data, response) = try await URLSession.shared.data(for: req)
         let status = (response as? HTTPURLResponse)?.statusCode ?? 0
