@@ -121,6 +121,7 @@ struct GameQuizView: View {
             do {
                 let words: [SBWord]
                 var sentences: [SBSentence] = []
+                var pool: [SBSentence] = []
                 switch sessionType {
                 case .level(let lId):
                     // Proficiency → max difficulty (kelimeler + cümleler)
@@ -137,7 +138,9 @@ struct GameQuizView: View {
 
                     words = try await DataService.shared.fetchWords(levelId: lId, maxDifficulty: maxDiff)
                     if let courseId = words.isEmpty ? nil : (try? await DataService.shared.fetchCourseId(forLevel: lId)) {
-                        sentences = (try? await DataService.shared.fetchSentences(courseId: courseId, maxDifficulty: maxDiff)) ?? []
+                        // Seviyenin kendi cümleleri; çeldiriciler için kursun tüm cümleleri
+                        pool = (try? await DataService.shared.fetchSentences(courseId: courseId, maxDifficulty: 3)) ?? []
+                        sentences = pool.filter { $0.levelId == lId }
                     }
                 case .mistakes:
                     let ids = MistakesManager.shared.mistakeUUIDs
@@ -148,7 +151,7 @@ struct GameQuizView: View {
                     MistakesManager.shared.removeMistakes(stale)
                 case .aiGenerated: return   // already handled above
                 }
-                vm.setup(sessionType: sessionType, words: words, sentences: sentences, levelTitle: title)
+                vm.setup(sessionType: sessionType, words: words, sentences: sentences, pool: pool, levelTitle: title)
             } catch {
                 print("❌ Failed to load words: \(error)")
                 vm.state = .loadFailed
@@ -160,8 +163,8 @@ struct GameQuizView: View {
                 // Premium aktivasyonundan sonra quiz'i sıfırla
                 if DailyLimitManager.shared.isPremium {
                     vm.setup(sessionType: sessionType,
-                             words: vm.questions.compactMap { $0.sentence == nil ? $0.word : nil },
-                             sentences: vm.questions.compactMap { $0.sentence },
+                             words: uniqueWords(vm.questions.filter(\.tracksWord).map(\.word)),
+                             sentences: Array(Set(vm.questions.compactMap { $0.sentence?.id })).compactMap { id in vm.questions.first { $0.sentence?.id == id }?.sentence },
                              levelTitle: title)
                 }
             }
@@ -227,6 +230,14 @@ struct GameQuizView: View {
             fillInTheBlankView(question)
         case .sentenceBuilder:
             sentenceBuilderView(question)
+        case .introduce:
+            introduceView(question)
+        case .translateSentence:
+            translateSentenceView(question)
+        case .buildSentence:
+            buildSentenceView(question)
+        case .matchPairs:
+            matchPairsView(question)
         default:
             standardQuestionView(question)
         }
@@ -442,7 +453,17 @@ struct GameQuizView: View {
                 // Path format: "_____ → Good morning" → show "Translate: Good morning"
                 // AI format: "She ___ to school" → show sentence with gap
                 let parts = question.gapSentence.components(separatedBy: " → ")
-                if parts.count == 2 && question.gapSentence.hasPrefix("_") {
+                if question.gapSentence.contains("____") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(question.gapSentence)
+                            .font(DS.Font.display(26, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(AL.f(.quizMeaningHint, question.displayedMeaning))
+                            .font(DS.Font.ui(15, weight: .medium))
+                            .foregroundStyle(DS.Colors.muted)
+                    }
+                } else if parts.count == 2 && question.gapSentence.hasPrefix("_") {
                     // Path word question
                     VStack(alignment: .leading, spacing: 6) {
                         Text(AL.s(.gameTranslateLabel))
@@ -499,6 +520,153 @@ struct GameQuizView: View {
         }
     }
 
+    private func uniqueWords(_ words: [SBWord]) -> [SBWord] {
+        var seen = Set<UUID>()
+        return words.filter { seen.insert($0.id).inserted }
+    }
+
+    private var targetLangCode: String {
+        UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
+    }
+
+    // MARK: - Yeni kelime kartı
+    @ViewBuilder
+    private func introduceView(_ question: GameQuestion) -> some View {
+        let w = question.word
+        VStack(spacing: 0) {
+            quizHeader
+            Spacer(minLength: 12)
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Eyebrow(text: AL.s(.hcNewWord), color: DS.Colors.accent)
+                    Spacer()
+                    Button { TTSManager.shared.speak(w.term, langCode: targetLangCode) } label: {
+                        QuizCircleIcon {
+                            Image(systemName: "speaker.wave.2")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(DS.Colors.ink)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(AL.s(.quizTapToHear))
+                }
+                Text(w.term)
+                    .font(DS.Font.display(40, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let p = w.pronunciation, !p.isEmpty {
+                    Text(p)
+                        .font(.system(size: 16, design: .monospaced))
+                        .foregroundStyle(DS.Colors.muted)
+                }
+                Rectangle().fill(DS.Colors.accent).frame(width: 32, height: 2)
+                Text(question.displayedMeaning)
+                    .font(DS.Font.display(24, weight: .regular))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let ex = w.exampleSentence, !ex.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Eyebrow(text: AL.s(.quizExample), color: DS.Colors.muted)
+                        Button { TTSManager.shared.speak(ex, langCode: targetLangCode) } label: {
+                            HStack(alignment: .top, spacing: 8) {
+                                Text(ex)
+                                    .font(DS.Font.ui(17))
+                                    .foregroundStyle(DS.Colors.ink)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer(minLength: 0)
+                                Image(systemName: "speaker.wave.1")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(DS.Colors.muted)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.top, 6)
+                }
+            }
+            .quizCardSurface()
+            .padding(.horizontal, 24)
+            Spacer(minLength: 20)
+        }
+        .quizReadableWidth()
+        .onAppear { TTSManager.shared.speak(w.term, langCode: targetLangCode) }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            VStack(spacing: 0) {
+                Rectangle().fill(DS.Colors.line).frame(height: 1)
+                Button(AL.s(.quizGotIt)) { vm.continueAfterIntro() }
+                    .buttonStyle(InkButtonStyle())
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .quizReadableWidth()
+            }
+            .background(DS.Colors.paper.ignoresSafeArea(edges: .bottom))
+        }
+    }
+
+    // MARK: - Cümle çevirisi
+    @ViewBuilder
+    private func translateSentenceView(_ question: GameQuestion) -> some View {
+        let answered = isAnswered
+        VStack(spacing: 0) {
+            quizHeader
+            QuizInstruction(eyebrow: AL.s(.hcTranslateSentence), title: AL.s(.quizTranslateSentence))
+            QuizSentenceCard(text: question.promptText, langCode: targetLangCode)
+            Spacer(minLength: 20)
+            VStack(spacing: 10) {
+                ForEach(question.options, id: \.self) { option in
+                    QuizOptionChip(
+                        text: option,
+                        status: quizOptionStatus(option, correct: question.correctAnswer, answered: answered,
+                                                 selected: pendingAnswer, submitted: submittedAnswer)
+                    ) {
+                        if !answered { withAnimation(.easeOut(duration: 0.15)) { pendingAnswer = option } }
+                    }
+                    .disabled(answered)
+                }
+            }
+            .padding(.horizontal, 24)
+            Spacer(minLength: 12)
+        }
+        .quizReadableWidth()
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !answered {
+                bottomCheckBar(onCheck: {
+                    guard let chosen = pendingAnswer else { return }
+                    submittedAnswer = chosen
+                    vm.submitMultipleChoice(selected: chosen)
+                    pendingAnswer = nil
+                })
+            }
+        }
+    }
+
+    // MARK: - Cümle kurma
+    @ViewBuilder
+    private func buildSentenceView(_ question: GameQuestion) -> some View {
+        VStack(spacing: 0) {
+            quizHeader
+            QuizBuildSentenceContent(question: question, isAnswered: isAnswered, targetLang: targetLangCode) { tokens in
+                vm.submitBuildSentence(tokens: tokens)
+            }
+            .id(question.id)
+        }
+        .quizReadableWidth()
+    }
+
+    // MARK: - Eşleştirme
+    @ViewBuilder
+    private func matchPairsView(_ question: GameQuestion) -> some View {
+        VStack(spacing: 0) {
+            quizHeader
+            QuizMatchPairsContent(question: question, isAnswered: isAnswered, targetLang: targetLangCode) { mistakes in
+                vm.submitMatch(mistakes: mistakes)
+            }
+            .id(question.id)
+        }
+        .quizReadableWidth()
+    }
+
     // MARK: - Sentence Builder View
     @ViewBuilder
     private func sentenceBuilderView(_ question: GameQuestion) -> some View {
@@ -547,10 +715,10 @@ struct GameQuizView: View {
             }
             .frame(height: 4)
 
-            Text("\(vm.currentIndex + 1)/\(vm.totalCount)")
+            Text("\(vm.currentIndex + 1)/\(vm.questions.count)")
                 .font(DS.Font.ui(13, weight: .medium).monospacedDigit())
                 .foregroundStyle(DS.Colors.muted)
-                .accessibilityLabel(String(format: AL.s(.gameQuestionFormat), vm.currentIndex + 1, vm.totalCount))
+                .accessibilityLabel(String(format: AL.s(.gameQuestionFormat), vm.currentIndex + 1, vm.questions.count))
 
             // Kalan günlük soru sayısı
             if !DailyLimitManager.shared.isPremium {
@@ -670,21 +838,10 @@ struct GameQuizView: View {
         }
     }
 
+    /// Dil adı kullanıcının ana dilinde ("İspanyolca", "Spanish"…)
     private func languageDisplayName(_ code: String) -> String {
-        switch code.uppercased() {
-        case "EN": return "English"
-        case "FR": return "French"
-        case "DE": return "German"
-        case "ES": return "Spanish"
-        case "IT": return "Italian"
-        case "RU": return "Russian"
-        case "ZH": return "Chinese"
-        case "TR": return "Turkish"
-        case "JA": return "Japanese"
-        case "KO": return "Korean"
-        case "PT": return "Portuguese"
-        default:   return code
-        }
+        let name = Locale(identifier: OL.nativeLangCode).localizedString(forLanguageCode: code.lowercased()) ?? code
+        return name.prefix(1).uppercased(with: Locale(identifier: OL.nativeLangCode)) + name.dropFirst()
     }
 
     // MARK: - Multiple Choice Grid
@@ -1332,8 +1489,8 @@ private struct QuizSentenceBuilderContent: View {
         VStack(spacing: 0) {
             // ── Instruction ───────────────────────────────────────
             VStack(alignment: .leading, spacing: 6) {
-                Eyebrow(text: AL.s(.hcNewWord), color: DS.Colors.slate)
-                Text(AL.s(.hcTranslateSentence))
+                Eyebrow(text: AL.s(.quizWordInContextEyebrow), color: DS.Colors.slate)
+                Text(AL.f(.quizWordInContext, sentenceKeyWord))
                     .font(DS.Font.display(26, weight: .bold))
                     .foregroundStyle(DS.Colors.ink)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1376,13 +1533,9 @@ private struct QuizSentenceBuilderContent: View {
                             withAnimation(.easeOut(duration: 0.2)) { selectedChip = nil }
                         }
                 } else {
-                    HStack(spacing: 10) {
-                        ForEach(0..<3, id: \.self) { _ in
-                            Capsule()
-                                .fill(DS.Colors.line)
-                                .frame(width: 44, height: 3)
-                        }
-                    }
+                    Capsule()
+                        .fill(DS.Colors.line)
+                        .frame(width: 64, height: 3)
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
@@ -1611,70 +1764,27 @@ private struct QuizSentenceTappableWords: View {
     @Binding var tooltipIndex: Int?
     let targetLang: String
 
-    private var words: [String] {
-        sentence.components(separatedBy: " ").filter { !$0.isEmpty }
+    /// Anahtar kelime cümle içinde (noktalama dahil edilmeden) vurgulanır; her dilde çalışır (boşluksuz ZH/JA dahil).
+    /// Anlamı göstermez — cevabı vermemek için.
+    private var attributed: AttributedString {
+        var a = AttributedString(sentence)
+        a.font = DS.Font.display(24, weight: .regular)
+        a.foregroundColor = DS.Colors.ink
+        var searchStart = a.startIndex
+        while let r = a[searchStart...].range(of: keyWord, options: [.caseInsensitive, .diacriticInsensitive]) {
+            a[r].foregroundColor = DS.Colors.accent
+            a[r].font = DS.Font.display(24, weight: .semibold)
+            a[r].underlineStyle = .single
+            searchStart = r.upperBound
+        }
+        return a
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            // Words in a wrapping flow
-            OBFlowLayout(spacing: 6) {
-                ForEach(Array(words.enumerated()), id: \.offset) { idx, word in
-                    let clean = word.trimmingCharacters(in: .punctuationCharacters).lowercased()
-                    let isKey = clean.contains(keyWord.lowercased()) || keyWord.lowercased().contains(clean)
-
-                    Text(word)
-                        .font(DS.Font.display(24, weight: isKey ? .semibold : .regular))
-                        .foregroundStyle(isKey ? DS.Colors.accent : DS.Colors.ink)
-                        .underline(isKey, color: DS.Colors.accent.opacity(0.5))
-                        .onTapGesture {
-                            if isKey {
-                                withAnimation(.easeOut(duration: 0.2)) {
-                                    tooltipIndex = tooltipIndex == idx ? nil : idx
-                                }
-                            } else {
-                                // Play pronunciation for other words
-                                TTSManager.shared.speak(
-                                    word.trimmingCharacters(in: .punctuationCharacters),
-                                    langCode: targetLang
-                                )
-                            }
-                        }
-                }
-            }
-
-            // Tooltip strip (shown below sentence when key word tapped)
-            if tooltipIndex != nil {
-                HStack(spacing: 8) {
-                    Text(keyWord)
-                        .font(DS.Font.ui(15, weight: .semibold))
-                        .foregroundStyle(DS.Colors.accent)
-
-                    Text("—")
-                        .font(DS.Font.ui(15))
-                        .foregroundStyle(DS.Colors.muted)
-
-                    Text(keyMeaning)
-                        .font(DS.Font.ui(15))
-                        .foregroundStyle(DS.Colors.ink)
-
-                    Spacer()
-
-                    Button {
-                        TTSManager.shared.speak(keyWord, langCode: targetLang)
-                    } label: {
-                        Image(systemName: "speaker.wave.1")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(DS.Colors.inkSoft)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 9)
-                .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 10))
-                .transition(.opacity)
-            }
-        }
+        Text(attributed)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .onTapGesture { TTSManager.shared.speak(sentence, langCode: targetLang) }
     }
 }
 
@@ -1699,3 +1809,203 @@ private struct QuizSentenceChip: View {
             )
     }
 }
+
+// MARK: - Shared pieces for sentence questions
+private struct QuizInstruction: View {
+    let eyebrow: String?
+    let title: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if let eyebrow { Eyebrow(text: eyebrow, color: DS.Colors.slate) }
+            Text(title)
+                .font(DS.Font.display(26, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 24)
+        .padding(.top, 8)
+        .padding(.bottom, 16)
+    }
+}
+
+private struct QuizSentenceCard: View {
+    let text: String
+    let langCode: String?
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(text)
+                .font(DS.Font.display(24, weight: .regular))
+                .foregroundStyle(DS.Colors.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            if let langCode {
+                Button { TTSManager.shared.speak(text, langCode: langCode) } label: {
+                    QuizCircleIcon {
+                        Image(systemName: "speaker.wave.2")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(DS.Colors.ink)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .quizCardSurface()
+        .padding(.horizontal, 24)
+        .onAppear { if let langCode { TTSManager.shared.speak(text, langCode: langCode) } }
+    }
+}
+
+// MARK: - Build Sentence
+private struct QuizBuildSentenceContent: View {
+    let question: GameQuestion
+    let isAnswered: Bool
+    let targetLang: String
+    let onSubmit: ([String]) -> Void
+
+    /// Seçilen kutucukların bankadaki indeksleri (aynı kelime iki kez olabilir)
+    @State private var picked: [Int] = []
+
+    var body: some View {
+        VStack(spacing: 0) {
+            QuizInstruction(eyebrow: AL.s(.quizBuildSentence), title: question.promptText)
+
+            OBFlowLayout(spacing: 8) {
+                ForEach(picked, id: \.self) { idx in
+                    QuizSentenceChip(word: question.sentenceWords[idx], style: .selected)
+                        .onTapGesture {
+                            guard !isAnswered else { return }
+                            withAnimation(.easeOut(duration: 0.15)) { picked.removeAll { $0 == idx } }
+                        }
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 104, alignment: .topLeading)
+            .padding(14)
+            .background(
+                RoundedRectangle(cornerRadius: DS.Radius.button)
+                    .strokeBorder(DS.Colors.line, style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+            )
+            .padding(.horizontal, 24)
+
+            Spacer(minLength: 20)
+
+            OBFlowLayout(spacing: 10) {
+                ForEach(Array(question.sentenceWords.enumerated()), id: \.offset) { idx, word in
+                    let used = picked.contains(idx)
+                    QuizSentenceChip(word: word, style: .bank)
+                        .opacity(used ? 0 : (isAnswered ? 0.5 : 1))
+                        .onTapGesture {
+                            guard !isAnswered, !used else { return }
+                            withAnimation(.easeOut(duration: 0.15)) { picked.append(idx) }
+                            TTSManager.shared.speak(word, langCode: targetLang)
+                        }
+                }
+            }
+            .padding(.horizontal, 24)
+
+            Spacer(minLength: 20)
+
+            if !isAnswered {
+                Button(AL.s(.gameCheck)) { onSubmit(picked.map { question.sentenceWords[$0] }) }
+                    .buttonStyle(InkButtonStyle(fill: picked.isEmpty ? DS.Colors.line : DS.Colors.ink,
+                                                foreground: picked.isEmpty ? DS.Colors.muted : DS.Colors.paperRaised))
+                    .disabled(picked.isEmpty)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+            } else {
+                Spacer(minLength: 78)
+            }
+        }
+    }
+}
+
+// MARK: - Match Pairs
+private struct QuizMatchPairsContent: View {
+    let question: GameQuestion
+    let isAnswered: Bool
+    let targetLang: String
+    let onFinish: (Int) -> Void
+
+    @State private var left: [String] = []
+    @State private var right: [String] = []
+    @State private var selectedLeft: String?
+    @State private var selectedRight: String?
+    @State private var matched: Set<String> = []      // eşleşen terimler
+    @State private var wrongFlash: Set<String> = []
+    @State private var mistakes = 0
+
+    private func meaning(of term: String) -> String? { question.pairs.first { $0.term == term }?.meaning }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            QuizInstruction(eyebrow: nil, title: AL.s(.quizMatchPairs))
+            HStack(alignment: .top, spacing: 12) {
+                VStack(spacing: 10) {
+                    ForEach(left, id: \.self) { term in
+                        tile(term, done: matched.contains(term), selected: selectedLeft == term) {
+                            selectedLeft = term
+                            TTSManager.shared.speak(term, langCode: targetLang)
+                            check()
+                        }
+                    }
+                }
+                VStack(spacing: 10) {
+                    ForEach(right, id: \.self) { m in
+                        let done = matched.contains { meaning(of: $0) == m }
+                        tile(m, done: done, selected: selectedRight == m) {
+                            selectedRight = m
+                            check()
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 24)
+            Spacer(minLength: 24)
+        }
+        .onAppear {
+            left = question.pairs.map(\.term).shuffled()
+            right = question.pairs.map(\.meaning).shuffled()
+        }
+    }
+
+    private func tile(_ text: String, done: Bool, selected: Bool, action: @escaping () -> Void) -> some View {
+        let wrong = wrongFlash.contains(text)
+        return Button(action: action) {
+            Text(text)
+                .font(DS.Font.ui(16, weight: .medium))
+                .foregroundStyle(done ? DS.Colors.muted : DS.Colors.ink)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.75)
+                .frame(maxWidth: .infinity, minHeight: 56)
+                .padding(.horizontal, 8)
+                .background(wrong ? DS.Colors.dangerSoft : (done ? DS.Colors.successSoft : DS.Colors.paperRaised),
+                            in: RoundedRectangle(cornerRadius: DS.Radius.button))
+                .overlay(RoundedRectangle(cornerRadius: DS.Radius.button)
+                    .strokeBorder(wrong ? DS.Colors.danger : (selected ? DS.Colors.ink : DS.Colors.line),
+                                  lineWidth: selected || wrong ? 1.5 : 1))
+                .opacity(done ? 0.55 : 1)
+        }
+        .buttonStyle(.plain)
+        .disabled(done || isAnswered)
+        .animation(.easeOut(duration: 0.15), value: selected)
+    }
+
+    private func check() {
+        guard let l = selectedLeft, let r = selectedRight else { return }
+        if meaning(of: l) == r {
+            matched.insert(l)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            if matched.count == question.pairs.count {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { onFinish(mistakes) }
+            }
+        } else {
+            mistakes += 1
+            wrongFlash = [l, r]
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { wrongFlash = [] }
+        }
+        selectedLeft = nil
+        selectedRight = nil
+    }
+}
+

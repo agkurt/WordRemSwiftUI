@@ -16,8 +16,20 @@ enum QuizMode: String, CaseIterable, Identifiable {
     case fillInTheBlank  = "Fill in the Blank"
     /// Kelimeleri doğru sırayla diz
     case sentenceBuilder = "Sentence Builder"
+    /// Yeni kelime kartı (puanlanmaz)
+    case introduce       = "New Word"
+    /// Hedef dildeki cümlenin doğru çevirisini seç
+    case translateSentence = "Translate Sentence"
+    /// Ana dildeki cümleyi hedef dilde kelime kutucuklarıyla kur
+    case buildSentence   = "Build Sentence"
+    /// Kelime ↔ anlam eşleştirme
+    case matchPairs      = "Match Pairs"
 
     var id: String { rawValue }
+
+    /// Deste quizinde seçilebilen modlar (ders akışına özel modlar hariç)
+    static let deckModes: [QuizMode] = [.multipleChoice, .trueFalse, .writing, .listening, .speaking,
+                                        .fillInTheBlank, .sentenceBuilder]
 
     var icon: String {
         switch self {
@@ -28,6 +40,10 @@ enum QuizMode: String, CaseIterable, Identifiable {
         case .speaking:       return "mic.fill"
         case .fillInTheBlank:  return "text.insert"
         case .sentenceBuilder: return "list.number"
+        case .introduce:       return "sparkles"
+        case .translateSentence: return "text.bubble"
+        case .buildSentence:   return "square.stack.3d.up"
+        case .matchPairs:      return "rectangle.grid.2x2"
         }
     }
 
@@ -40,6 +56,10 @@ enum QuizMode: String, CaseIterable, Identifiable {
         case .speaking:       return "Hear the word and repeat it aloud"
         case .fillInTheBlank:  return "Complete the sentence with the missing word"
         case .sentenceBuilder: return "Arrange the words to form a correct sentence"
+        case .introduce:       return "Meet a new word"
+        case .translateSentence: return "Choose the correct translation"
+        case .buildSentence:   return "Build the sentence from word tiles"
+        case .matchPairs:      return "Match words with their meanings"
         }
     }
 
@@ -52,6 +72,9 @@ enum QuizMode: String, CaseIterable, Identifiable {
         case .speaking:       return 1
         case .fillInTheBlank:  return 4
         case .sentenceBuilder: return 2
+        case .introduce, .buildSentence: return 1
+        case .translateSentence: return 1
+        case .matchPairs:      return 3
         }
     }
 }

@@ -130,6 +130,8 @@ struct QuizSessionView: View {
                                 ) { selected in
                                     withAnimation { viewModel.submitSentenceBuilder(selectedWord: selected) }
                                 }
+                            case .introduce, .translateSentence, .buildSentence, .matchPairs:
+                                EmptyView()   // ders akışına özel modlar, deste quizinde kullanılmaz
                             }
 
                             // Next button

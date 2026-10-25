@@ -59,7 +59,8 @@ final class GameQuizViewModel: ObservableObject {
     var isLastQuestion: Bool { currentIndex >= questions.count - 1 }
 
     var correctCount: Int { score }
-    var totalCount: Int   { questions.count }
+    /// Yeni kelime kartları puana dahil değil
+    var totalCount: Int   { questions.filter(\.isScored).count }
 
     var scorePercent: Int {
         guard totalCount > 0 else { return 0 }
@@ -67,16 +68,27 @@ final class GameQuizViewModel: ObservableObject {
     }
 
     // MARK: - Setup
-    func setup(sessionType: QuizSessionType, words: [SBWord], sentences: [SBSentence] = [], levelTitle: String = "") {
+    func setup(sessionType: QuizSessionType, words: [SBWord], sentences: [SBSentence] = [],
+               pool: [SBSentence] = [], levelTitle: String = "") {
         self.sessionType    = sessionType
         self.levelTitle     = levelTitle
         self.targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
         let proficiency     = UserDefaults.standard.integer(forKey: "selectedProficiencyLevel")
-        self.questions      = GameQuestion.generate(from: words, sentences: sentences, proficiency: proficiency)
+        var isLevel = false
+        if case .level = sessionType { isLevel = true }
+        self.questions      = GameQuestion.generate(from: words, sentences: sentences, pool: pool.isEmpty ? sentences : pool,
+                                                    proficiency: proficiency, introduceNew: isLevel)
         self.currentIndex   = 0
         self.score          = 0
         self.writingAnswer  = ""
         self.sessionMistakes = []
+        #if DEBUG
+        // Ekran kontrolü için: `-QuizStartMode "Match Pairs"` o tipteki ilk soruyu başa alır
+        if let raw = UserDefaults.standard.string(forKey: "QuizStartMode"),
+           let i = questions.firstIndex(where: { $0.mode.rawValue == raw }) {
+            questions.insert(questions.remove(at: i), at: 0)
+        }
+        #endif
 
         if questions.isEmpty {
             self.state = .loadFailed
@@ -88,7 +100,7 @@ final class GameQuizViewModel: ObservableObject {
 
         // Prefetch audio for all listening/speaking questions so they play instantly
         let audioWords = questions
-            .filter { $0.mode == .listening || $0.mode == .speaking }
+            .filter { $0.mode == .listening || $0.mode == .speaking || $0.mode == .introduce }
             .map { $0.word.term }
         let lang = targetLangCode
         Task.detached(priority: .background) {
@@ -162,6 +174,25 @@ final class GameQuizViewModel: ObservableObject {
         recordAnswer(isCorrect: selectedWord.lowercased() == q.correctAnswer.lowercased())
     }
 
+    // MARK: - Answer: Build Sentence (noktalama ve büyük/küçük harf önemsiz)
+    func submitBuildSentence(tokens: [String]) {
+        guard case .question = state, let q = currentQuestion else { return }
+        let norm = { (a: [String]) in a.map { $0.lowercased() }.joined(separator: " ") }
+        recordAnswer(isCorrect: norm(tokens) == norm(q.answerTokens))
+    }
+
+    // MARK: - Answer: Match Pairs (en fazla 1 hata ile geçer)
+    func submitMatch(mistakes: Int) {
+        guard case .question = state else { return }
+        recordAnswer(isCorrect: mistakes <= 1)
+    }
+
+    // MARK: - Yeni kelime kartı → devam (günlük hak harcamaz, puanlanmaz)
+    func continueAfterIntro() {
+        guard case .question = state else { return }
+        nextQuestion()
+    }
+
     // MARK: - Core Record
     private func recordAnswer(isCorrect: Bool) {
         // Günlük soru hakkını kullan
@@ -175,7 +206,7 @@ final class GameQuizViewModel: ObservableObject {
                 MistakesManager.shared.removeMistakes([q.word.id.uuidString])
             }
             // Widget "Günün Kelimesi" için öğrenilen kelimeyi kaydet (seviye + hatalar quizleri)
-            if let q = currentQuestion, q.sentence == nil, isWordSession {
+            if let q = currentQuestion, q.tracksWord, isWordSession {
                 let native = OL.nativeLangCode
                 LearnedWordsStore.add([LearnedWord(
                     id: q.word.id.uuidString,
@@ -189,7 +220,7 @@ final class GameQuizViewModel: ObservableObject {
             }
         } else {
             // Cümle sorularının word.id'si geçici bir UUID — hatalar listesine yazma (asla temizlenemez)
-            if let q = currentQuestion, q.sentence == nil {
+            if let q = currentQuestion, q.tracksWord {
                 sessionMistakes.insert(q.word.id.uuidString)
             }
         }
@@ -274,7 +305,7 @@ final class GameQuizViewModel: ObservableObject {
 
             // quiz_attempts kaydet (arka planda)
             if let uid = Optional(UserStore.shared.userId) {
-                let attempts: [SBQuizAttemptInsert] = questions.map { q in
+                let attempts: [SBQuizAttemptInsert] = questions.filter(\.isScored).map { q in
                     let isCorrect = !sessionMistakes.contains(q.word.id.uuidString)
                     return SBQuizAttemptInsert(
                         userId: uid,
@@ -338,7 +369,7 @@ final class GameQuizViewModel: ObservableObject {
             }
 
         case .mistakes:
-            let allIds     = Set(questions.map { $0.word.id.uuidString })
+            let allIds     = Set(questions.filter(\.tracksWord).map { $0.word.id.uuidString })
             let correctIds = allIds.subtracting(sessionMistakes)
             if !correctIds.isEmpty { MistakesManager.shared.removeMistakes(correctIds) }
             if !MistakesManager.shared.hasMistakes {
@@ -412,176 +443,188 @@ struct GameQuestion: Identifiable {
     /// Set when this is a DB sentence question (sentenceBuilder from sentences table)
     var sentence: SBSentence?   = nil
 
-    /// proficiency → soru tipleri zorluğu:
-    ///   0 beginner:           Sadece MultipleChoice + TrueFalse
-    ///   1 elementary:         + Listening
-    ///   2 intermediate:       + Writing + FillInBlank
-    ///   3 upper-intermediate: + SentenceBuilder
-    ///   4 advanced:           + Speaking (tüm modlar aktif)
-    static func generate(from words: [SBWord], sentences: [SBSentence] = [], proficiency: Int = 2) -> [GameQuestion] {
-        let phoneCode   = OL.nativeLangCode
-        let shuffled    = words.shuffled()
-        let enoughWords = words.count >= 4
+    /// Eşleştirme sorusu için kelime–anlam çiftleri
+    var pairs: [MatchPair] = []
+    /// buildSentence: doğru sıradaki hedef dil kelimeleri
+    var answerTokens: [String] = []
 
-        // Proficiency-based mode flags
-        let canMulti    = enoughWords                               // MC: her zaman
-        let canListen   = enoughWords && proficiency >= 1           // Listening: elementary+
-        let canWrite    = proficiency >= 2                          // Writing: intermediate+
-        let canFill     = enoughWords && proficiency >= 2           // FillInBlank: intermediate+
-        let canSentence = words.count >= 2 && proficiency >= 3      // SentenceBuilder: upper+
+    struct MatchPair: Hashable {
+        let term: String
+        let meaning: String
+    }
 
-        // Speaking is disabled when user has activated the 15-minute mute
-        let isSpeakingMuted: Bool = {
-            if let muteUntil = UserDefaults.standard.object(forKey: "speakingMutedUntil") as? Date {
-                return Date() < muteUntil
-            }
-            return false
-        }()
-        let canSpeak    = words.count >= 1 && !isSpeakingMuted && proficiency >= 4  // Speaking: advanced only
+    func with(pairs: [MatchPair]) -> GameQuestion { var c = self; c.pairs = pairs; return c }
 
-        let wordQuestions: [GameQuestion] = shuffled.enumerated().map { index, word in
-            let nativeMeaning = word.displayTranslation(phoneCode: phoneCode)
-            let wrongNative   = words.filter { $0.id != word.id }
-                                     .map { $0.displayTranslation(phoneCode: phoneCode) }
-                                     .shuffled()
-            let wrongTerms    = words.filter { $0.id != word.id }
-                                     .map { $0.term }
-                                     .shuffled()
+    /// Puanlanan soru mu (yeni kelime kartı puanlanmaz)
+    var isScored: Bool { mode != .introduce }
 
-            // ── mode selection ───────────────────────────────────────────
-            let shouldBeFill     = canFill && index % 6 == 5
-            let shouldBeSentence = canSentence && index % 8 == 7 && !shouldBeFill
+    /// Bu soru tek bir gerçek kelimeyi mi ölçüyor (hatalar listesi / öğrenilen kelimeler için)
+    var tracksWord: Bool {
+        sentence == nil && [.multipleChoice, .listening, .fillInTheBlank, .speaking, .writing, .trueFalse].contains(mode)
+    }
 
-            let finalMode: QuizMode
-            if canListen && index % 5 == 4 {
-                finalMode = .listening
-            } else if canSpeak && index % 7 == 6 {
-                finalMode = .speaking
-            } else if shouldBeFill {
-                finalMode = .fillInTheBlank
-            } else if shouldBeSentence {
-                finalMode = .sentenceBuilder
-            } else if canMulti {
-                finalMode = .multipleChoice
-            } else if canWrite {
-                finalMode = .writing
-            } else {
-                finalMode = .multipleChoice   // fallback: her zaman MC
-            }
-            // ─────────────────────────────────────────────────────────────
+    // MARK: - Ders üretimi
+    /// Duolingo tarzı ders akışı:
+    ///  • yeni kelime kartı → hemen ardından o kelimenin alıştırması (araya bir sonraki kelime girer)
+    ///  • alıştırma tipleri dönüşümlü: anlamını seç → dinle → ters yön → boşluk doldur
+    ///  • her 5 kelimede bir eşleştirme turu
+    ///  • sonda seviyenin cümleleri: kelimenin cümledeki anlamı, cümle çevirisi, cümle kurma
+    /// `sentences` = bu seviyenin cümleleri, `pool` = çeldirici için kursun tüm cümleleri.
+    static func generate(from words: [SBWord], sentences: [SBSentence] = [], pool: [SBSentence] = [],
+                         proficiency: Int = 2, introduceNew: Bool = true) -> [GameQuestion] {
+        guard !words.isEmpty else { return [] }
+        let native  = OL.nativeLangCode
+        let target  = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN").uppercased()
+        let known   = Set(LearnedWordsStore.load().map(\.id))
+        let meaning = { (w: SBWord) in w.displayTranslation(phoneCode: native) }
 
-            // ── question direction (only for multipleChoice & writing) ───
-            let canFlipDirection = (finalMode == .multipleChoice || finalMode == .writing) && canMulti
-            let direction: QuestionDirection = canFlipDirection && Bool.random()
-                ? .nativeToTarget
-                : .targetToNative
-            // ─────────────────────────────────────────────────────────────
+        var steps: [GameQuestion] = []
+        var practiceCounter = 0
 
-            // ── build options & correctAnswer based on direction ─────────
-            let finalCorrect: String
-            let finalOptions: [String]
-            let finalPrompt:  String
-
-            if direction == .nativeToTarget {
-                // Card shows native meaning → user picks target-lang word
-                finalPrompt   = nativeMeaning
-                finalCorrect  = word.term
-                finalOptions  = canMulti
-                    ? (Array(wrongTerms.prefix(3)) + [word.term]).shuffled()
-                    : []
-            } else {
-                // Card shows target word → user picks native translation
-                finalPrompt   = word.term
-                finalCorrect  = nativeMeaning
-                finalOptions  = canMulti
-                    ? (Array(wrongNative.prefix(3)) + [nativeMeaning]).shuffled()
-                    : []
-            }
-
-            // Correct answer rules:
-            // • fillInTheBlank → user types/picks the target term  (word.term)
-            // • speaking        → user pronounces the target term   (word.term)
-            // • all others      → user picks the native meaning     (finalCorrect = nativeMeaning)
-            let adjustedCorrect: String
-            switch finalMode {
-            case .fillInTheBlank, .speaking:
-                adjustedCorrect = word.term   // target-language word
-            default:
-                adjustedCorrect = finalCorrect
-            }
-            // ─────────────────────────────────────────────────────────────
-
-            // trueFalse display pair (always targetToNative logic)
-            let showWrong = Bool.random() && !wrongNative.isEmpty
-            let display   = showWrong ? (wrongNative.first ?? nativeMeaning) : nativeMeaning
-
-            // sentenceWords:
-            //  • sentenceBuilder → native chips (user picks the correct native meaning)
-            //  • fillInTheBlank  → target terms (user picks the correct target word)
-            let sentenceBuilderChips = (Array(wrongNative.prefix(3)) + [nativeMeaning])
-                .filter { !$0.isEmpty }.shuffled()
-            let fillBlankChips = (Array(wrongTerms.prefix(3)) + [word.term])
-                .filter { !$0.isEmpty }.shuffled()
-
-            var q = GameQuestion(
-                word: word,
-                mode: finalMode,
-                options: finalOptions,
-                correctAnswer: adjustedCorrect,
-                displayedMeaning: display,
-                isCorrectPair: !showWrong
-            )
-            q.questionDirection = direction
-            q.promptText  = finalPrompt
-            q.sentenceWords = (finalMode == .sentenceBuilder) ? sentenceBuilderChips : fillBlankChips
-            q.gapSentence = "_____ → \(nativeMeaning)"
-            return q
+        func practice(_ w: SBWord) -> GameQuestion {
+            defer { practiceCounter += 1 }
+            let kinds: [QuizMode] = [.multipleChoice, .listening, .multipleChoice, .fillInTheBlank]
+            var kind = kinds[practiceCounter % kinds.count]
+            let reverse = practiceCounter % kinds.count == 2
+            if kind == .fillInTheBlank, gapSentence(for: w) == nil { kind = .multipleChoice }
+            return question(for: w, mode: kind, reverse: reverse, in: words, native: native)
         }
 
-        // ── Append DB sentence questions (one per sentence) ──────────────
-        // Each sentence question shows the full target-lang sentence and the user
-        // picks the correct key-word meaning from word chips.
-        let allNative = words.map { $0.displayTranslation(phoneCode: phoneCode) }
-        let sentenceQuestions: [GameQuestion] = sentences.compactMap { sentence in
-            guard let keyWord = sentence.keyWord,
-                  let keyNative = sentence.keyWordNative,
-                  !keyWord.isEmpty, !keyNative.isEmpty else { return nil }
-
-            // Distractors: random native meanings from the word pool (excluding keyNative)
-            let distractors = allNative.filter { $0 != keyNative }.shuffled().prefix(3)
-            let chips = (Array(distractors) + [keyNative]).shuffled()
-
-            // Use a placeholder SBWord (term = keyWord, translation = keyNative)
-            let placeholder = SBWord(
-                id: UUID(), sourceLangId: 1, targetLangId: 2,
-                term: keyWord, translation: keyNative,
-                phonetic: nil, description: nil,
-                exampleSentence: sentence.targetText,
-                difficulty: sentence.difficulty,
-                translations: nil
-            )
-            var q = GameQuestion(
-                word: placeholder,
-                mode: .sentenceBuilder,
-                options: [],
-                correctAnswer: keyNative,
-                displayedMeaning: keyNative,
-                isCorrectPair: true
-            )
-            q.questionDirection = .targetToNative
-            q.promptText    = sentence.targetText   // full sentence shown to user
-            q.sentenceWords = chips
-            q.sentence      = sentence
-            return q
+        let chunks = stride(from: 0, to: words.count, by: 5).map { Array(words[$0..<min($0 + 5, words.count)]) }
+        for chunk in chunks {
+            for (i, w) in chunk.enumerated() {
+                if introduceNew && !known.contains(w.id.uuidString) {
+                    steps.append(introduce(w, native: native))
+                }
+                if i >= 1 { steps.append(practice(chunk[i - 1])) }
+            }
+            if let last = chunk.last { steps.append(practice(last)) }
+            if chunk.count >= 3 { steps.append(match(chunk, native: native)) }
         }
 
-        // Interleave sentence questions evenly throughout the word questions
-        var result = wordQuestions
-        let step = max(1, result.count / max(1, sentenceQuestions.count))
-        for (i, sq) in sentenceQuestions.enumerated() {
-            let insertAt = min((i + 1) * step, result.count)
-            result.insert(sq, at: insertAt)
+        // Kısa tekrar: 3 kelime, ters yönde
+        for w in words.shuffled().prefix(min(3, words.count)) {
+            steps.append(question(for: w, mode: .multipleChoice, reverse: true, in: words, native: native))
         }
-        return result
+
+        // Cümleler
+        let spaced = !["ZH", "JA"].contains(target)
+        for (i, s) in sentences.enumerated() {
+            if i == 0, let q = wordInContext(s, words: words, native: native) { steps.append(q) }
+            if i % 2 == 1 && spaced, let q = buildSentence(s, pool: pool) {
+                steps.append(q)
+            } else if let q = translateSentence(s, pool: pool) {
+                steps.append(q)
+            }
+        }
+        return steps
+    }
+
+    // MARK: - Soru kurucuları
+    private static func introduce(_ w: SBWord, native: String) -> GameQuestion {
+        var q = GameQuestion(word: w, mode: .introduce, options: [], correctAnswer: w.term,
+                             displayedMeaning: w.displayTranslation(phoneCode: native), isCorrectPair: true)
+        q.promptText = w.term
+        return q
+    }
+
+    private static func question(for w: SBWord, mode: QuizMode, reverse: Bool, in words: [SBWord], native: String) -> GameQuestion {
+        let m = w.displayTranslation(phoneCode: native)
+        let others = words.filter { $0.id != w.id }.shuffled()
+        let wrongNative = Array(Set(others.map { $0.displayTranslation(phoneCode: native) }).subtracting([m])).shuffled()
+        let wrongTerms  = Array(Set(others.map(\.term)).subtracting([w.term])).shuffled()
+
+        var q: GameQuestion
+        switch mode {
+        case .fillInTheBlank:
+            q = GameQuestion(word: w, mode: .fillInTheBlank, options: [], correctAnswer: w.term,
+                             displayedMeaning: m, isCorrectPair: true)
+            q.gapSentence   = gapSentence(for: w) ?? ""
+            q.sentenceWords = (Array(wrongTerms.prefix(3)) + [w.term]).shuffled()
+        case .listening:
+            q = GameQuestion(word: w, mode: .listening, options: (Array(wrongNative.prefix(3)) + [m]).shuffled(),
+                             correctAnswer: m, displayedMeaning: m, isCorrectPair: true)
+        default:
+            let options = reverse ? (Array(wrongTerms.prefix(3)) + [w.term]) : (Array(wrongNative.prefix(3)) + [m])
+            q = GameQuestion(word: w, mode: .multipleChoice, options: options.shuffled(),
+                             correctAnswer: reverse ? w.term : m, displayedMeaning: m, isCorrectPair: true)
+            q.questionDirection = reverse ? .nativeToTarget : .targetToNative
+        }
+        q.promptText = (mode == .multipleChoice && reverse) ? m : w.term
+        return q
+    }
+
+    /// Örnek cümlede kelimeyi "____" ile değiştirir (bulunamazsa nil)
+    static func gapSentence(for w: SBWord) -> String? {
+        guard let ex = w.exampleSentence, !ex.isEmpty,
+              let r = ex.range(of: w.term, options: [.caseInsensitive, .diacriticInsensitive]) else { return nil }
+        return ex.replacingCharacters(in: r, with: "____")
+    }
+
+    private static func match(_ chunk: [SBWord], native: String) -> GameQuestion {
+        var q = GameQuestion(word: chunk[0], mode: .matchPairs, options: [], correctAnswer: "",
+                             displayedMeaning: "", isCorrectPair: true)
+        q.pairs = chunk.map { MatchPair(term: $0.term, meaning: $0.displayTranslation(phoneCode: native)) }
+        return GameQuestion(word: q.word, mode: .matchPairs, options: [],
+                            correctAnswer: q.pairs.map { "\($0.term) = \($0.meaning)" }.joined(separator: " · "),
+                            displayedMeaning: "", isCorrectPair: true).with(pairs: q.pairs)
+    }
+
+    private static func placeholder(_ s: SBSentence, term: String, meaning: String) -> SBWord {
+        SBWord(id: UUID(), sourceLangId: 1, targetLangId: 2, term: term, translation: meaning,
+               phonetic: nil, description: nil, exampleSentence: s.targetText,
+               difficulty: s.difficulty, translations: nil)
+    }
+
+    /// "Bu cümlede 'X' ne demek?" — anahtar kelimenin anlamını seç
+    private static func wordInContext(_ s: SBSentence, words: [SBWord], native: String) -> GameQuestion? {
+        guard let key = s.keyWord, let keyNative = s.keyWordNative, !key.isEmpty, !keyNative.isEmpty else { return nil }
+        let distractors = Array(Set(words.map { $0.displayTranslation(phoneCode: native) }).subtracting([keyNative]))
+            .shuffled().prefix(3)
+        var q = GameQuestion(word: placeholder(s, term: key, meaning: keyNative), mode: .sentenceBuilder,
+                             options: [], correctAnswer: keyNative, displayedMeaning: keyNative, isCorrectPair: true)
+        q.promptText    = s.targetText
+        q.sentenceWords = (Array(distractors) + [keyNative]).shuffled()
+        q.sentence      = s
+        return q
+    }
+
+    /// Cümlenin doğru çevirisini 3 seçenek arasından bul
+    private static func translateSentence(_ s: SBSentence, pool: [SBSentence]) -> GameQuestion? {
+        let correct = s.nativeText
+        let wrong = Array(Set(pool.filter { $0.id != s.id }.map(\.nativeText)).subtracting([correct])).shuffled().prefix(2)
+        guard !wrong.isEmpty else { return nil }
+        var q = GameQuestion(word: placeholder(s, term: s.targetText, meaning: correct), mode: .translateSentence,
+                             options: (Array(wrong) + [correct]).shuffled(), correctAnswer: correct,
+                             displayedMeaning: correct, isCorrectPair: true)
+        q.promptText = s.targetText
+        q.sentence   = s
+        return q
+    }
+
+    /// Ana dildeki cümleyi gösterir; kullanıcı hedef dil kelimelerini sırayla dizer
+    private static func buildSentence(_ s: SBSentence, pool: [SBSentence]) -> GameQuestion? {
+        let tokens = tokenize(s.targetText)
+        guard tokens.count >= 3, tokens.count <= 10 else { return translateSentence(s, pool: pool) }
+        let lower = Set(tokens.map { $0.lowercased() })
+        let extra = Array(Set(pool.filter { $0.id != s.id }.flatMap { tokenize($0.targetText) })
+            .filter { !lower.contains($0.lowercased()) }).shuffled().prefix(3)
+        var q = GameQuestion(word: placeholder(s, term: s.targetText, meaning: s.nativeText), mode: .buildSentence,
+                             options: [], correctAnswer: tokens.joined(separator: " "),
+                             displayedMeaning: s.nativeText, isCorrectPair: true)
+        q.promptText    = s.nativeText
+        q.answerTokens  = tokens
+        q.sentenceWords = (tokens + extra).shuffled()
+        q.sentence      = s
+        return q
+    }
+
+    /// Boşluklara göre böler, kelime başı/sonundaki noktalamayı atar ("¿Cómo" → "Cómo")
+    static func tokenize(_ text: String) -> [String] {
+        let punct = CharacterSet.punctuationCharacters.union(.symbols)
+        return text.split(whereSeparator: \.isWhitespace)
+            .map { String($0).trimmingCharacters(in: punct) }
+            .filter { !$0.isEmpty }
     }
 }
+

@@ -36,7 +36,7 @@ struct QuizModeSelectionView: View {
                             .padding(.top, 20)
 
                         // Mode rows
-                        ForEach(QuizMode.allCases) { mode in
+                        ForEach(QuizMode.deckModes) { mode in
                             QuizModeRow(
                                 mode: mode,
                                 isSelected: selectedMode == mode,
