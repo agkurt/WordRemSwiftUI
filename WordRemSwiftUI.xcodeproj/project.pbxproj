@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1DE90653F7CB3D0B2785546 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE90653F7CB3D0B2785546 /* DemoData.swift */; };
 		C1DE11A019AF810A0B827D3F /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */; };
 		C1DEEBE4900BF6326E432FB4 /* AIEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */; };
 		C1DE0000000000000000C0A1 /* content.json in Resources */ = {isa = PBXBuildFile; fileRef = C0DE0000000000000000C0A1 /* content.json */; };
@@ -210,6 +211,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DE90653F7CB3D0B2785546 /* DemoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoData.swift; sourceTree = "<group>"; };
 		C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 		C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIEngine.swift; sourceTree = "<group>"; };
 		C0DE0000000000000000C0A1 /* content.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/content.json; sourceTree = "<group>"; };
@@ -566,6 +568,7 @@
 				C0DE28E8AD2831C9CC219FEE /* DesignSystem.swift */,
 				BB11CC22DD33EE44FF550022 /* OnboardingLocalization.swift */,
 				CC22DD33EE44FF5500110022 /* AppLocalization.swift */,
+				C0DE90653F7CB3D0B2785546 /* DemoData.swift */,
 				E8E1B4E12B7CFF0800AE6CD0 /* KeyboardResponder.swift */,
 				E84DEC9A2B8E14950014916C /* CheckBoxStyle.swift */,
 				E8E2546D2BC3A22200AACD0D /* Reminder.swift */,
@@ -1295,6 +1298,7 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				C1DE90653F7CB3D0B2785546 /* DemoData.swift in Sources */,
 				C1DE11A019AF810A0B827D3F /* LaunchScreenView.swift in Sources */,
 				C1DEEBE4900BF6326E432FB4 /* AIEngine.swift in Sources */,
 				C1DEE01425A64424D6988A1A /* DeckService.swift in Sources */,

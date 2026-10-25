@@ -53,6 +53,10 @@ struct WordRemSwiftUIApp: App {
                 Task { await requestNotificationPermission() }
             }
             .onAppear {
+                if DemoData.isOn {   // Debug: ekran görüntüleri — izin/Game Center pencereleri açılmaz
+                    DemoData.seedIfNeeded()
+                    return
+                }
                 Task {
                     // 1) Bildirim izni — açılışta değil, onboarding tamamlandıktan sonra
                     if hasCompletedOnboarding { await requestNotificationPermission() }

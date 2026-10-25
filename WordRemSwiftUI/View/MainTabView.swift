@@ -41,7 +41,7 @@ struct MainTabView: View {
     @EnvironmentObject var langManager: LanguageManager
     @StateObject private var homeVM = HomeScreenViewModel()
     @StateObject private var pathVM = PathMapViewModel()
-    @State private var selectedTab: AppTab = .today
+    @State private var selectedTab: AppTab = DemoData.startTab ?? .today
     @State private var wordsSegment: WordsView.Segment = .learned
     @State private var showCreateDeck = false
     @State private var showLeaderboard = false

@@ -165,6 +165,13 @@ struct PathMapView: View {
                 withAnimation(.easeOut(duration: 0.6).delay(0.2)) {
                     appeared = true
                 }
+                if DemoData.autoOpenQuiz {
+                    for _ in 0..<20 where vm.levelsWithProgress.isEmpty {
+                        try? await Task.sleep(nanoseconds: 200_000_000)
+                    }
+                    try? await Task.sleep(nanoseconds: 600_000_000)
+                    selectedLevel = vm.levelsWithProgress.first { $0.status == .unlocked }
+                }
             }
             .fullScreenCover(item: $selectedLevel, onDismiss: {
                 if justCompletedLevel {

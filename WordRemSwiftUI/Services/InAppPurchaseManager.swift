@@ -197,11 +197,12 @@ final class InAppPurchaseManager: ObservableObject {
                                       productIdentifier: ProductIdentifier.annual.rawValue, productType: .autoRenewableSubscription,
                                       localizedDescription: "", subscriptionGroupIdentifier: "pro",
                                       subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .year),
-                                      introductoryDiscount: trial).toStoreProduct()
+                                      introductoryDiscount: trial, locale: Locale(identifier: "en_US")).toStoreProduct()
         let weekly = TestStoreProduct(localizedTitle: "WordRem Pro Weekly", price: 2.99, localizedPriceString: "$2.99",
                                       productIdentifier: ProductIdentifier.weekly.rawValue, productType: .autoRenewableSubscription,
                                       localizedDescription: "", subscriptionGroupIdentifier: "pro",
-                                      subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week)).toStoreProduct()
+                                      subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week),
+                                      locale: Locale(identifier: "en_US")).toStoreProduct()
         return [SubscriptionPlan(product: annual, trialDays: 7), SubscriptionPlan(product: weekly, trialDays: nil)]
     }
     #endif
