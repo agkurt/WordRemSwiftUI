@@ -9,8 +9,9 @@ import RevenueCat
 // MARK: - Product Identifier
 /// App Store Connect'te aynı abonelik grubunda olmalı; yıllıkta 7 günlük ücretsiz deneme tanımlı.
 enum ProductIdentifier: String, CaseIterable {
-    case annual = "wordrem_annual_subscription"
-    case weekly = "wordrem_weekly_subscription"
+    case annual  = "wordrem_annual_subscription"
+    case monthly = "wordrem_monthly_subscription"
+    case weekly  = "wordrem_weekly_subscription"
 
     static var all: [String] { allCases.map(\.rawValue) }
 }
@@ -23,6 +24,7 @@ struct SubscriptionPlan: Identifiable {
 
     var id: String { product.productIdentifier }
     var isAnnual: Bool { product.subscriptionPeriod?.unit == .year }
+    var isMonthly: Bool { product.subscriptionPeriod?.unit == .month }
 
     static func freeTrialDays(of product: StoreProduct) -> Int? {
         guard let intro = product.introductoryDiscount, intro.paymentMode == .freeTrial else { return nil }
@@ -128,8 +130,12 @@ final class InAppPurchaseManager: ObservableObject {
                 let eligible = eligibility[p.productIdentifier]?.status != .ineligible
                 return SubscriptionPlan(product: p, trialDays: eligible ? SubscriptionPlan.freeTrialDays(of: p) : nil)
             }
-            .sorted { ($0.isAnnual ? 0 : 1) < ($1.isAnnual ? 0 : 1) }
+            // Sıra: yıllık, aylık, haftalık — aylık varsa haftalık gösterilmez
+            .filter { plan in !(plan.product.subscriptionPeriod?.unit == .week && products.contains { $0.subscriptionPeriod?.unit == .month }) }
+            .sorted { rank($0) < rank($1) }
     }
+
+    private func rank(_ p: SubscriptionPlan) -> Int { p.isAnnual ? 0 : (p.isMonthly ? 1 : 2) }
 
     // MARK: - Purchase
     func purchase(product: StoreProduct, completion: @escaping (PurchaseOutcome) -> Void) {
@@ -195,15 +201,15 @@ final class InAppPurchaseManager: ObservableObject {
                                              paymentMode: .freeTrial,
                                              subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week),
                                              numberOfPeriods: 1, type: .introductory)
-        let annual = TestStoreProduct(localizedTitle: "WordRem Pro Annual", price: 29.99, localizedPriceString: "$29.99",
+        let annual = TestStoreProduct(localizedTitle: "WordRem Pro Annual", price: 79.99, localizedPriceString: "$79.99",
                                       productIdentifier: ProductIdentifier.annual.rawValue, productType: .autoRenewableSubscription,
                                       localizedDescription: "", subscriptionGroupIdentifier: "pro",
                                       subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .year),
                                       introductoryDiscount: trial, locale: Locale(identifier: "en_US")).toStoreProduct()
-        let weekly = TestStoreProduct(localizedTitle: "WordRem Pro Weekly", price: 2.99, localizedPriceString: "$2.99",
-                                      productIdentifier: ProductIdentifier.weekly.rawValue, productType: .autoRenewableSubscription,
+        let weekly = TestStoreProduct(localizedTitle: "WordRem Pro Monthly", price: 14.99, localizedPriceString: "$14.99",
+                                      productIdentifier: ProductIdentifier.monthly.rawValue, productType: .autoRenewableSubscription,
                                       localizedDescription: "", subscriptionGroupIdentifier: "pro",
-                                      subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week),
+                                      subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month),
                                       locale: Locale(identifier: "en_US")).toStoreProduct()
         return [SubscriptionPlan(product: annual, trialDays: 7), SubscriptionPlan(product: weekly, trialDays: nil)]
     }

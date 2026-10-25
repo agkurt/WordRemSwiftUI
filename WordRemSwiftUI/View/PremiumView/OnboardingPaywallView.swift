@@ -26,18 +26,20 @@ struct OnboardingPaywallView: View {
     @State private var showPurchaseErrorAlert: Bool = false
     @State private var showWelcomePro: Bool = false
     @State private var restoreMessage: String?
+    /// 0: değer · 1: plan seçimi · 2: deneme hatırlatma sözü (yalnızca deneme varsa)
+    @State private var step = 0
 
     // (SF Symbol, title, subtitle) — Pro'nun gerçekten açtığı özellikler
     // AI satırları yalnızca Apple Intelligence olan cihazlarda gösterilir (vaat edilen her şey çalışmalı)
     private var features: [(String, String, String)] {
         var list = [
+            ("waveform.circle", AL.s(.paywallVoiceTitle), AL.s(.paywallVoiceSub)),
             ("infinity",  langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
             ("lightbulb", langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
         ]
         if AIEngine.isAvailable {
             list += [
                 ("list.bullet.rectangle", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
-                ("waveform",              langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
             ]
         }
         return list
@@ -51,112 +53,11 @@ struct OnboardingPaywallView: View {
                 ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
 
-                    // ── Hero ───────────────────────────────────────────
-                    VStack(alignment: .leading, spacing: 10) {
-                        Eyebrow(text: "WordRem Pro")
-                        Text(langManager.s(.paywallSubtitle))
-                            .font(DS.Font.display(34, weight: .bold))
-                            .foregroundStyle(DS.Colors.ink)
-                            .fixedSize(horizontal: false, vertical: true)
+                    switch step {
+                    case 0:  valueStep
+                    case 1:  planStep
+                    default: reminderStep
                     }
-                    .padding(.top, 16)
-                    .padding(.bottom, 28)
-
-                    // ── Features ───────────────────────────────────────
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(features, id: \.0) { symbol, title, subtitle in
-                            HStack(alignment: .top, spacing: 16) {
-                                Image(systemName: symbol)
-                                    .font(.system(size: 17, weight: .medium))
-                                    .foregroundStyle(DS.Colors.accent)
-                                    .frame(width: 24)
-                                    .padding(.top, 2)
-                                VStack(alignment: .leading, spacing: 3) {
-                                    Text(title)
-                                        .font(DS.Font.ui(17, weight: .semibold))
-                                        .foregroundStyle(DS.Colors.ink)
-                                    Text(subtitle)
-                                        .font(DS.Font.ui(14))
-                                        .foregroundStyle(DS.Colors.muted)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                Spacer(minLength: 0)
-                            }
-                            .padding(.vertical, 14)
-                            if symbol != features.last?.0 {
-                                Rectangle().fill(DS.Colors.line).frame(height: 1)
-                            }
-                        }
-                    }
-                    .padding(.bottom, 28)
-
-                    // ── Plans ──────────────────────────────────────────
-                    Group {
-                        if !plans.isEmpty {
-                            VStack(spacing: 12) {
-                                ForEach(plans) { plan in
-                                    planCard(plan)
-                                }
-                            }
-                        } else if fetchFailed {
-                            VStack(spacing: 8) {
-                                Text(langManager.s(.paywallPriceFailed))
-                                    .font(DS.Font.ui(15, weight: .medium))
-                                    .foregroundStyle(DS.Colors.inkSoft)
-                                Button { fetchAttempts = 0; fetchPlans() } label: {
-                                    Text(langManager.s(.paywallRetry))
-                                        .font(DS.Font.ui(15, weight: .semibold))
-                                        .foregroundStyle(DS.Colors.accent)
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 80)
-                            .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: DS.Radius.card))
-                        } else {
-                            RoundedRectangle(cornerRadius: DS.Radius.card)
-                                .fill(DS.Colors.paperSunken)
-                                .frame(height: 150)
-                                .overlay(ProgressView().tint(DS.Colors.muted))
-                        }
-                    }
-                    .padding(.bottom, 20)
-
-                    // ── Trial timeline (only when a free trial applies) ──
-                    if let days = selectedPlan?.trialDays, days >= 3 {
-                        trialTimeline(days: days)
-                            .padding(.bottom, 20)
-                    }
-
-                    // ── Purchase Button ────────────────────────────────
-                    Button(ctaTitle, action: purchaseSelected)
-                        .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-                        .disabled(selectedPlan == nil || isLoading)
-                        .opacity(selectedPlan == nil ? 0.4 : 1)
-                        .padding(.bottom, 8)
-
-                    Text(ctaSubtitle)
-                        .font(DS.Font.ui(13))
-                        .foregroundStyle(DS.Colors.inkSoft)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .padding(.bottom, 16)
-
-                    // ── Legal ──────────────────────────────────────────
-                    HStack(spacing: 20) {
-                        legalButton(langManager.s(.paywallPrivacy)) { showPrivacy = true }
-                        legalButton(langManager.s(.paywallTerms))   { showTerms = true }
-                        legalButton(langManager.s(.paywallRestore)) { restorePurchases() }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.bottom, 10)
-
-                    // ── Auto-renewal Disclosure (Apple requirement) ─────
-                    Text(langManager.s(.paywallDisclosure))
-                        .font(DS.Font.ui(11))
-                        .foregroundStyle(DS.Colors.muted)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .padding(.bottom, 16)
                 }
                 .padding(.horizontal, 24)
                 .frame(maxWidth: 560)
@@ -171,7 +72,13 @@ struct OnboardingPaywallView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if isCloseVisible {
+                    if step > 0 {
+                        Button { withAnimation { step -= 1 } } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(DS.Colors.inkSoft)
+                        }
+                    } else if isCloseVisible {
                         Button {
                             EventManager.shared.logPaywallEvent("close_tapped")
                             presentationMode.wrappedValue.dismiss()
@@ -182,6 +89,11 @@ struct OnboardingPaywallView: View {
                                 .foregroundStyle(DS.Colors.inkSoft)
                         }
                     }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(langManager.s(.paywallRestore)) { restorePurchases() }
+                        .font(DS.Font.ui(14, weight: .medium))
+                        .foregroundStyle(DS.Colors.inkSoft)
                 }
             }
         }
@@ -217,6 +129,163 @@ struct OnboardingPaywallView: View {
         }
     }
 
+    // MARK: - Adım 1: değer
+    private var valueStep: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 10) {
+                Eyebrow(text: "WordRem Pro")
+                Text(AL.s(.paywallHeroVoice))
+                    .font(DS.Font.display(34, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 24)
+
+            VoiceLogoView(phase: .aiSpeaking, level: 0.4)
+                .scaleEffect(2.2)
+                .frame(maxWidth: .infinity)
+                .frame(height: 110)
+
+            featureList.padding(.vertical, 20)
+
+            Button(langManager.s(.paywallContinue)) { withAnimation { step = 1 } }
+                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                .padding(.bottom, 10)
+            Text(AL.s(.paywallNoCommit))
+                .font(DS.Font.ui(13))
+                .foregroundStyle(DS.Colors.inkSoft)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 16)
+        }
+    }
+
+    private var featureList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(features, id: \.0) { symbol, title, subtitle in
+                HStack(alignment: .top, spacing: 16) {
+                    Image(systemName: symbol)
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundStyle(DS.Colors.accent)
+                        .frame(width: 24)
+                        .padding(.top, 2)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(title)
+                            .font(DS.Font.ui(17, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                        Text(subtitle)
+                            .font(DS.Font.ui(14))
+                            .foregroundStyle(DS.Colors.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.vertical, 12)
+            }
+        }
+    }
+
+    // MARK: - Adım 2: plan seçimi
+    private var planStep: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(AL.s(.paywallChoosePlan))
+                .font(DS.Font.display(32, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .padding(.top, 16)
+                .padding(.bottom, 24)
+
+            Group {
+                if !plans.isEmpty {
+                    VStack(spacing: 14) {
+                        ForEach(plans) { plan in planCard(plan) }
+                    }
+                } else if fetchFailed {
+                    VStack(spacing: 8) {
+                        Text(langManager.s(.paywallPriceFailed))
+                            .font(DS.Font.ui(15, weight: .medium))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                        Button { fetchAttempts = 0; fetchPlans() } label: {
+                            Text(langManager.s(.paywallRetry))
+                                .font(DS.Font.ui(15, weight: .semibold))
+                                .foregroundStyle(DS.Colors.accent)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 80)
+                    .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: DS.Radius.card))
+                } else {
+                    RoundedRectangle(cornerRadius: DS.Radius.card)
+                        .fill(DS.Colors.paperSunken)
+                        .frame(height: 150)
+                        .overlay(ProgressView().tint(DS.Colors.muted))
+                }
+            }
+            .padding(.bottom, 24)
+
+            Button(selectedPlan?.trialDays != nil ? langManager.s(.paywallContinue) : ctaTitle) {
+                if selectedPlan?.trialDays != nil { withAnimation { step = 2 } } else { purchaseSelected() }
+            }
+            .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+            .disabled(selectedPlan == nil || isLoading)
+            .opacity(selectedPlan == nil ? 0.4 : 1)
+            .padding(.bottom, 8)
+
+            Text(ctaSubtitle)
+                .font(DS.Font.ui(13))
+                .foregroundStyle(DS.Colors.inkSoft)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 16)
+            legalFooter
+        }
+    }
+
+    // MARK: - Adım 3: hatırlatma sözü
+    private var reminderStep: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(AL.s(.paywallReminderHeadline))
+                .font(DS.Font.display(32, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 16)
+                .padding(.bottom, 28)
+            if let days = selectedPlan?.trialDays {
+                trialTimeline(days: days).padding(.bottom, 32)
+            }
+            Button(ctaTitle, action: purchaseSelected)
+                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                .disabled(selectedPlan == nil || isLoading)
+                .padding(.bottom, 8)
+            Text(ctaSubtitle)
+                .font(DS.Font.ui(13))
+                .foregroundStyle(DS.Colors.inkSoft)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 6)
+            Label(AL.s(.paywallEasyCancel), systemImage: "checkmark")
+                .font(DS.Font.ui(13, weight: .medium))
+                .foregroundStyle(DS.Colors.inkSoft)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 16)
+            legalFooter
+        }
+    }
+
+    private var legalFooter: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 20) {
+                legalButton(langManager.s(.paywallPrivacy)) { showPrivacy = true }
+                legalButton(langManager.s(.paywallTerms))   { showTerms = true }
+            }
+            Text(langManager.s(.paywallDisclosure))
+                .font(DS.Font.ui(11))
+                .foregroundStyle(DS.Colors.muted)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.bottom, 16)
+    }
+
     // MARK: - Legal Button
     private func legalButton(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -230,18 +299,31 @@ struct OnboardingPaywallView: View {
     // MARK: - Plan helpers
     private var selectedPlan: SubscriptionPlan? { plans.first { $0.id == selectedId } }
     private var weeklyPlan: SubscriptionPlan? { plans.first { $0.product.subscriptionPeriod?.unit == .week } }
+    private var monthlyPlan: SubscriptionPlan? { plans.first { $0.product.subscriptionPeriod?.unit == .month } }
+
+    /// Yıllığın karşılaştırma fiyatı: aylık plan × 12 (yoksa haftalık × 52) — gerçek bir fiyat
+    private func yearlyEquivalent() -> Decimal? {
+        if let m = monthlyPlan { return m.product.price * 12 }
+        if let w = weeklyPlan { return w.product.price * 52 }
+        return nil
+    }
+
+    private func formatted(_ amount: Decimal, like plan: SubscriptionPlan) -> String? {
+        plan.product.priceFormatter?.string(from: NSDecimalNumber(decimal: amount))
+    }
 
     /// Yıllık planın haftalığa göre tasarruf yüzdesi
     private func savingsPercent(_ plan: SubscriptionPlan) -> Int? {
-        guard plan.isAnnual, let weekly = weeklyPlan?.product.price, weekly > 0 else { return nil }
-        let ratio = NSDecimalNumber(decimal: plan.product.price / (weekly * 52)).doubleValue
+        guard plan.isAnnual, let yearly = yearlyEquivalent(), yearly > 0 else { return nil }
+        let ratio = NSDecimalNumber(decimal: plan.product.price / yearly).doubleValue
         let pct = Int((1 - ratio) * 100)
         return pct >= 10 ? pct : nil
     }
 
     private func periodPrice(_ plan: SubscriptionPlan) -> String {
-        plan.isAnnual ? AL.f(.paywallPerYear, plan.product.localizedPriceString)
-                      : langManager.f(.paywallPerWeek, plan.product.localizedPriceString)
+        if plan.isAnnual { return AL.f(.paywallPerYear, plan.product.localizedPriceString) }
+        if plan.isMonthly { return AL.f(.paywallPerMonth, plan.product.localizedPriceString) }
+        return langManager.f(.paywallPerWeek, plan.product.localizedPriceString)
     }
 
     private var ctaTitle: String {
@@ -269,7 +351,7 @@ struct OnboardingPaywallView: View {
                     .foregroundStyle(selected ? DS.Colors.accent : DS.Colors.line)
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 8) {
-                        Text(plan.isAnnual ? AL.s(.paywallAnnual) : AL.s(.paywallWeeklyPlan))
+                        Text(plan.isAnnual ? AL.s(.paywallAnnual) : (plan.isMonthly ? AL.s(.paywallMonthlyPlan) : AL.s(.paywallWeeklyPlan)))
                             .font(DS.Font.ui(17, weight: .semibold))
                             .foregroundStyle(DS.Colors.ink)
                         if let days = plan.trialDays {
@@ -285,16 +367,24 @@ struct OnboardingPaywallView: View {
                             .font(DS.Font.ui(13))
                             .foregroundStyle(DS.Colors.muted)
                     } else {
-                        Text(langManager.s(.paywallWeeklyTerm))
+                        Text(plan.isMonthly ? AL.s(.paywallMonthlyTerm) : langManager.s(.paywallWeeklyTerm))
                             .font(DS.Font.ui(13))
                             .foregroundStyle(DS.Colors.muted)
                     }
                 }
                 Spacer(minLength: 8)
-                Text(periodPrice(plan))
-                    .font(DS.Font.display(18, weight: .bold))
-                    .foregroundStyle(DS.Colors.ink)
-                    .multilineTextAlignment(.trailing)
+                VStack(alignment: .trailing, spacing: 2) {
+                    if plan.isAnnual, let y = yearlyEquivalent(), y > plan.product.price, let f = formatted(y, like: plan) {
+                        Text(f)
+                            .font(DS.Font.ui(13, weight: .medium))
+                            .strikethrough(true, color: DS.Colors.muted)
+                            .foregroundStyle(DS.Colors.muted)
+                    }
+                    Text(periodPrice(plan))
+                        .font(DS.Font.display(18, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .multilineTextAlignment(.trailing)
+                }
             }
             .padding(18)
             .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
