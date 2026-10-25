@@ -82,7 +82,7 @@ struct InteractiveSentenceView: View {
                                     .tint(AppTheme.Colors.primaryOrange)
                                     .scaleEffect(0.8)
                                 Text("Translating...")
-                                    .font(.custom("Feather-Bold", size: 12))
+                                    .font(.system(size: 12, weight: .semibold))
                                     .foregroundStyle(AppTheme.Colors.textSecondary)
                             }
                             .padding(.leading, 4)
@@ -150,7 +150,7 @@ private struct AlignedSentenceText: View {
                 cleanWord.contains(highlightedWord.lowercased())
 
             Text(word)
-                .font(.custom("Feather-Bold", size: 14))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(
                     isHighlighted
                     ? AppTheme.Colors.primaryOrange

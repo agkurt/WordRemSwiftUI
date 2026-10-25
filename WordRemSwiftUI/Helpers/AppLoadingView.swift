@@ -13,15 +13,14 @@ struct AppLoadingView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            LottieView(animation: .named("reeny_waving"))
-                .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                .frame(width: 140, height: 140)
+            ProgressView()
+                .tint(DS.Colors.muted)
+                .scaleEffect(1.2)
 
             if let message {
                 Text(message)
-                    .font(.custom("Poppins-Regular", size: 14))
-                    .foregroundStyle(Color(hex: "#94a3b8"))
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color(hex: "#8A8277"))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }

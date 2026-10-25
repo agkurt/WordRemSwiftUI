@@ -12,8 +12,8 @@ struct WelcomeProView: View {
     @EnvironmentObject var langManager: LanguageManager
     var onContinue: () -> Void
 
-    private let proColor     = Color(hex: "#8b5cf6")
-    private let proColorDark = Color(hex: "#7c3aed")
+    private let proColor     = Color(hex: "#2F4B5C")
+    private let proColorDark = Color(hex: "#243B48")
 
     private var features: [(String, String)] {[
         ("infinity",     langManager.s(.welcomeProFeature1)),
@@ -25,7 +25,7 @@ struct WelcomeProView: View {
         ZStack {
             // Gradient background
             LinearGradient(
-                colors: [proColor.opacity(0.18), Color(hex: "#f8fafc")],
+                colors: [proColor.opacity(0.18), Color(hex: "#F6F2EA")],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -54,7 +54,7 @@ struct WelcomeProView: View {
 
                 // Title
                 Text(langManager.s(.welcomeProTitle))
-                    .font(.custom("Feather-Bold", size: 26))
+                    .font(.system(size: 26, weight: .semibold, design: .serif))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [proColor, proColorDark],
@@ -67,8 +67,8 @@ struct WelcomeProView: View {
 
                 // Subtitle
                 Text(langManager.s(.welcomeProSubtitle))
-                    .font(.custom("Feather-Bold", size: 15))
-                    .foregroundStyle(Color(hex: "#64748b"))
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#6B645A"))
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)
                     .padding(.horizontal, 32)
@@ -87,8 +87,8 @@ struct WelcomeProView: View {
                                     .foregroundStyle(proColor)
                             }
                             Text(text)
-                                .font(.custom("Feather-Bold", size: 15))
-                                .foregroundStyle(Color(hex: "#1e293b"))
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color(hex: "#1C1A17"))
                             Spacer()
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 20))
@@ -104,7 +104,7 @@ struct WelcomeProView: View {
                 // CTA button
                 Button(action: onContinue) {
                     Text(langManager.s(.welcomeProCTA))
-                        .font(.custom("Feather-Bold", size: 17))
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)

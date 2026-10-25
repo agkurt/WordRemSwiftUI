@@ -25,13 +25,13 @@ struct QuizModeSelectionView: View {
                     // Header
                     VStack(spacing: 6) {
                         Text("Quiz Mode")
-                            .font(.custom("Feather-Bold", size: 28))
+                            .font(.system(size: 28, weight: .semibold, design: .serif))
                             .foregroundStyle(.primary)
                         Text(cardName)
-                            .font(.custom("Feather-Bold", size: 14))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(.secondary)
                         Text("\(wordInfos.count) words")
-                            .font(.custom("Feather-Bold", size: 13))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.secondary)
                     }
                     .padding(.top, 20)
@@ -63,20 +63,20 @@ struct QuizModeSelectionView: View {
                         HStack(spacing: 10) {
                             Image(systemName: "play.fill")
                             Text("Start Quiz")
-                                .font(.custom("Feather-Bold", size: 17))
+                                .font(.system(size: 17, weight: .semibold))
                         }
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
                         .background(
                             selectedMode != nil
-                                ? LinearGradient(colors: [Color(hex: "#f97316"), Color(hex: "#ea580c")],
+                                ? LinearGradient(colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
                                                  startPoint: .leading, endPoint: .trailing)
                                 : LinearGradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.4)],
                                                  startPoint: .leading, endPoint: .trailing)
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: selectedMode != nil ? Color(hex: "#f97316").opacity(0.4) : .clear,
+                        .shadow(color: selectedMode != nil ? Color(hex: "#C2512F").opacity(0.4) : .clear,
                                 radius: 12, y: 6)
                     }
                     .disabled(selectedMode == nil)
@@ -140,14 +140,14 @@ private struct QuizModeCard: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(mode.rawValue)
-                        .font(.custom("Feather-Bold", size: 15))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(isAvailable ? .primary : .secondary)
                     Text(mode.description)
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.secondary)
                     if !isAvailable {
                         Text("Needs at least \(mode.minimumWordCount) words")
-                            .font(.custom("Feather-Bold", size: 11))
+                            .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(.orange)
                     }
                 }

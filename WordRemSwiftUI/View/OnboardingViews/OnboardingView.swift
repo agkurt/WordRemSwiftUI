@@ -45,7 +45,7 @@ struct OnboardingView: View {
                                 Image(systemName: "chevron.left")
                                 Text("Back")
                             }
-                            .font(.custom("Feather-Bold", size: 16))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(AppTheme.Colors.textSecondary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
@@ -69,20 +69,20 @@ struct OnboardingView: View {
                             Text(viewModel.currentPage == 2 ? "Get Started" : "Continue")
                             Image(systemName: viewModel.currentPage == 2 ? "checkmark" : "chevron.right")
                         }
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
                         .background(
                             LinearGradient(
-                                colors: viewModel.canProceed() ? [Color(hex: "#f97316"), Color(hex: "#ea580c")] : [Color.gray.opacity(0.5), Color.gray.opacity(0.5)],
+                                colors: viewModel.canProceed() ? [Color(hex: "#C2512F"), Color(hex: "#9E3F22")] : [Color.gray.opacity(0.5), Color.gray.opacity(0.5)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                         .shadow(
-                            color: viewModel.canProceed() ? Color(hex: "#f97316").opacity(0.4) : .clear,
+                            color: viewModel.canProceed() ? Color(hex: "#C2512F").opacity(0.4) : .clear,
                             radius: 12,
                             y: 6
                         )
@@ -129,12 +129,12 @@ struct AgeSelectionPage: View {
                     .font(.system(size: 80))
                 
                 Text("Welcome to WordRem!")
-                    .font(.custom("Feather-Bold", size: 32))
+                    .font(.system(size: 32, weight: .semibold, design: .serif))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
                 
                 Text("Let's personalize your learning experience")
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -142,7 +142,7 @@ struct AgeSelectionPage: View {
             
             VStack(spacing: 16) {
                 Text("What's your age range?")
-                    .font(.custom("Feather-Bold", size: 18))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 
                 VStack(spacing: 12) {
@@ -175,10 +175,10 @@ struct AgeRangeButton: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(age.rawValue)
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                     Text(age.description)
-                        .font(.custom("Feather-Bold", size: 13))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
                 
@@ -227,12 +227,12 @@ struct NativeLanguagePage: View {
                     .font(.system(size: 60))
                 
                 Text("What's your native language?")
-                    .font(.custom("Feather-Bold", size: 26))
+                    .font(.system(size: 26, weight: .semibold, design: .serif))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
                 
                 Text("This will be your translation source")
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -244,7 +244,7 @@ struct NativeLanguagePage: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(AppTheme.Colors.textSecondary)
                 TextField("Search language...", text: $searchText)
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .autocapitalization(.none)
             }
@@ -292,12 +292,12 @@ struct TargetLanguagePage: View {
                     .font(.system(size: 60))
                 
                 Text("Which language do you want to learn?")
-                    .font(.custom("Feather-Bold", size: 26))
+                    .font(.system(size: 26, weight: .semibold, design: .serif))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
                 
                 Text("This will be your learning target")
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -309,7 +309,7 @@ struct TargetLanguagePage: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(AppTheme.Colors.textSecondary)
                 TextField("Search language...", text: $searchText)
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .autocapitalization(.none)
             }
@@ -351,7 +351,7 @@ struct LanguageCardButton: View {
                     .font(.system(size: 40))
                 
                 Text(language.shortName)
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 
                 if isSelected {

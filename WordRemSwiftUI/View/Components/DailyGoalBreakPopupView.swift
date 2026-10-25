@@ -23,9 +23,9 @@ struct DailyGoalBreakPopupView: View {
     @State private var confettiOpacity: Double = 1
 
     // MARK: - Theme
-    private let gradStart = Color(hex: "#10b981")   // emerald-500
+    private let gradStart = Color(hex: "#3F7D58")   // emerald-500
     private let gradEnd   = Color(hex: "#059669")   // emerald-600
-    private let bgCard    = Color(hex: "#f0fdf4")   // green-50
+    private let bgCard    = Color(hex: "#E3EEE6")   // green-50
 
     var body: some View {
         ZStack {
@@ -69,7 +69,7 @@ struct DailyGoalBreakPopupView: View {
 
                         // Title
                         Text(langManager.s(.dailyBreakTitle))
-                            .font(.custom("Poppins-Bold", size: 20))
+                            .font(.system(size: 20, weight: .bold))
                             .foregroundStyle(.white)
                             .multilineTextAlignment(.center)
                     }
@@ -86,7 +86,7 @@ struct DailyGoalBreakPopupView: View {
                             .font(.system(size: 14))
                             .foregroundStyle(gradStart)
                         Text(String(format: langManager.s(.dailyBreakBodyFormat), minutesStudied))
-                            .font(.custom("Poppins-SemiBold", size: 14))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color(hex: "#065f46"))
                     }
                     .padding(.horizontal, 16).padding(.vertical, 10)
@@ -98,7 +98,7 @@ struct DailyGoalBreakPopupView: View {
 
                     // Subtitle — "mola verebilirsin ama devam etmek senin kararın"
                     Text(langManager.s(.dailyBreakSubtitle))
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(Color(hex: "#374151"))
                         .multilineTextAlignment(.center)
                         .lineSpacing(3)
@@ -109,7 +109,7 @@ struct DailyGoalBreakPopupView: View {
                         // Primary: Devam Et
                         Button { dismiss() } label: {
                             Text(langManager.s(.dailyBreakContinue))
-                                .font(.custom("Poppins-SemiBold", size: 16))
+                                .font(.system(size: 16, weight: .semibold))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 14)
@@ -123,7 +123,7 @@ struct DailyGoalBreakPopupView: View {
                         // Secondary: Mola Ver
                         Button { dismiss() } label: {
                             Text(langManager.s(.dailyBreakRest))
-                                .font(.custom("Poppins-SemiBold", size: 15))
+                                .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(gradStart)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 13)

@@ -43,7 +43,7 @@ struct CardPlusView: View {
                     VStack(spacing: 24) {
                         // MARK: - Title
                         Text(editMode ? "Edit Your Word" : "Create Your Word")
-                            .font(.custom("Feather-Bold", size: 28))
+                            .font(.system(size: 28, weight: .semibold, design: .serif))
                             .foregroundStyle(AppTheme.Colors.textPrimary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top, 8)
@@ -58,7 +58,7 @@ struct CardPlusView: View {
                                     ProgressView()
                                         .tint(AppTheme.Colors.primaryOrange)
                                     Text("Translating...")
-                                        .font(.custom("Feather-Bold", size: 14))
+                                        .font(.system(size: 14, weight: .semibold))
                                         .foregroundStyle(AppTheme.Colors.textSecondary)
                                 }
                                 .padding(.vertical, 8)
@@ -77,7 +77,7 @@ struct CardPlusView: View {
                                         Image(systemName: "arrow.left.arrow.right")
                                             .font(.system(size: 14, weight: .semibold))
                                         Text("Translate")
-                                            .font(.custom("Feather-Bold", size: 15))
+                                            .font(.system(size: 15, weight: .semibold))
                                     }
                                     .foregroundStyle(viewModel.wordName.isEmpty ? AppTheme.Colors.textSecondary : AppTheme.Colors.primaryOrange)
                                     .padding(.horizontal, 16)
@@ -101,7 +101,7 @@ struct CardPlusView: View {
                                     ProgressView()
                                         .tint(AppTheme.Colors.primaryOrange)
                                     Text("Generating sentence...")
-                                        .font(.custom("Feather-Bold", size: 14))
+                                        .font(.system(size: 14, weight: .semibold))
                                         .foregroundStyle(AppTheme.Colors.textSecondary)
                                 }
                                 .padding(.vertical, 8)
@@ -116,7 +116,7 @@ struct CardPlusView: View {
                                         Image(systemName: "text.quote")
                                             .font(.system(size: 14, weight: .semibold))
                                         Text("Generate Example Sentence")
-                                            .font(.custom("Feather-Bold", size: 15))
+                                            .font(.system(size: 15, weight: .semibold))
                                     }
                                     .foregroundStyle(
                                         !viewModel.wordMean.isEmpty
@@ -145,7 +145,7 @@ struct CardPlusView: View {
                                         .font(.system(size: 14))
                                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                                     Text("Reminder")
-                                        .font(.custom("Feather-Bold", size: 16))
+                                        .font(.system(size: 16, weight: .semibold))
                                         .foregroundStyle(AppTheme.Colors.textPrimary)
                                 }
                             }
@@ -169,7 +169,7 @@ struct CardPlusView: View {
                                     )
                                     .datePickerStyle(.compact)
                                     .tint(AppTheme.Colors.primaryOrange)
-                                    .font(.custom("Feather-Bold", size: 15))
+                                    .font(.system(size: 15, weight: .semibold))
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 14)
                                     .background(
@@ -181,7 +181,7 @@ struct CardPlusView: View {
                                     // Repeat Options
                                     VStack(alignment: .leading, spacing: 8) {
                                         Text("Repeat")
-                                            .font(.custom("Feather-Bold", size: 14))
+                                            .font(.system(size: 14, weight: .semibold))
                                             .foregroundStyle(AppTheme.Colors.textSecondary)
                                         
                                         Picker("Repeat", selection: $reminderViewModel.repeatOption) {
@@ -204,7 +204,7 @@ struct CardPlusView: View {
                                     if reminderViewModel.repeatOption != "None" {
                                         VStack(alignment: .leading, spacing: 8) {
                                             Text("Frequency")
-                                                .font(.custom("Feather-Bold", size: 14))
+                                                .font(.system(size: 14, weight: .semibold))
                                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                                             
                                             Stepper(
@@ -212,7 +212,7 @@ struct CardPlusView: View {
                                                 in: 1...5
                                             ) {
                                                 Text("Repeat every \(reminderViewModel.repeatValue) \(reminderViewModel.repeatOption.lowercased())")
-                                                    .font(.custom("Feather-Bold", size: 15))
+                                                    .font(.system(size: 15, weight: .semibold))
                                                     .foregroundStyle(AppTheme.Colors.textPrimary)
                                             }
                                             .tint(AppTheme.Colors.primaryOrange)
@@ -290,7 +290,7 @@ struct CardPlusView: View {
                                 ? AppTheme.Colors.textSecondary
                                 : AppTheme.Colors.primaryOrange
                             )
-                            .font(.custom("Feather-Bold", size: 16))
+                            .font(.system(size: 16, weight: .semibold))
                     }
                     .disabled(viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty)
                 }
@@ -317,12 +317,12 @@ private struct ModernTextField: View {
             VStack(alignment: .leading, spacing: 2) {
                 if isFocused || !text.isEmpty {
                     Text(placeholder)
-                        .font(.custom("Feather-Bold", size: 11))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
                 
                 TextField(isFocused || !text.isEmpty ? "" : placeholder, text: $text)
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .tint(AppTheme.Colors.primaryOrange)
                     .autocorrectionDisabled()

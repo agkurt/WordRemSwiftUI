@@ -392,11 +392,11 @@ enum AIQuizTopic: String, CaseIterable, Identifiable {
     var gradientColors: [Color] {
         switch category {
         case .tenses:
-            return [Color(hex: "#f97316"), Color(hex: "#ec4899")]
+            return [Color(hex: "#C2512F"), Color(hex: "#C2512F")]
         case .structure:
-            return [Color(hex: "#6366f1"), Color(hex: "#8b5cf6")]
+            return [Color(hex: "#2F4B5C"), Color(hex: "#2F4B5C")]
         case .vocabulary:
-            return [Color(hex: "#10b981"), Color(hex: "#3b82f6")]
+            return [Color(hex: "#3F7D58"), Color(hex: "#2F4B5C")]
         }
     }
 }

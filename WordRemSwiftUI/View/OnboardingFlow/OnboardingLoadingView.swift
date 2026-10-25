@@ -21,47 +21,47 @@ struct OnboardingLoadingView: View {
     @State private var signInFailed = false
 
     var body: some View {
-        ZStack {
-            Color(hex: "#1a1a2e").ignoresSafeArea()
+        VStack(spacing: 0) {
+            Spacer()
 
-            VStack(spacing: 32) {
-                Spacer()
-                LoadingAnimationView(width: 160, height: 160)
+            VStack(alignment: .leading, spacing: 20) {
                 if signInFailed {
-                    VStack(spacing: 16) {
-                        Text(AL.s(.loadFailedMessage))
-                            .font(.custom("Feather-Bold", size: 16))
-                            .foregroundStyle(.white)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                        Button {
-                            signInFailed = false
-                            startGame()
-                        } label: {
-                            Text(AL.s(.paywallRetry))
-                                .font(.custom("Feather-Bold", size: 16))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 32)
-                                .padding(.vertical, 12)
-                                .background(AppTheme.Colors.primaryOrange, in: Capsule())
-                        }
+                    Text(AL.s(.loadFailedMessage))
+                        .font(DS.Font.display(28, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Button {
+                        signInFailed = false
+                        startGame()
+                    } label: {
+                        Text(AL.s(.paywallRetry))
                     }
+                    .buttonStyle(InkButtonStyle())
+                    .padding(.top, 8)
                 } else {
-                VStack(spacing: 16) {
-                    Text(langManager.s(.loadingText))
-                        .font(.custom("Feather-Bold", size: 18))
-                        .foregroundStyle(Color(hex: "#94a3b8"))
+                    Eyebrow(text: langManager.s(.loadingText), color: DS.Colors.muted)
+
                     Text(langManager.s(.loadingMessage))
-                        .font(.custom("Feather-Bold", size: 16))
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                        .lineSpacing(6)
+                        .font(DS.Font.display(30, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .lineSpacing(4)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(DS.Colors.ink)
+                        .padding(.top, 8)
                 }
-                }
-                Spacer()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 28)
+            .obContentWidth()
+
+            Spacer()
+            Spacer()
         }
+        .paperBackground()
         .navigationBarHidden(true)
         .onAppear { startGame() }
     }

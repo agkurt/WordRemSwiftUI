@@ -36,6 +36,8 @@ struct WordRemSwiftUIApp: App {
                             startupDone = true
                         }
                     })
+                } else if Self.forceMainTabs {
+                    MainTabView()
                 } else if !hasCompletedOnboarding {
                     WelcomeView()
                 } else if authManager.userIsLoggedIn {
@@ -68,6 +70,15 @@ struct WordRemSwiftUIApp: App {
                 }
             }
         }
+    }
+
+    /// Sadece Debug: `-ShowMainTabs` argümanıyla girişsiz ana ekranları açar (sunucu kapalıyken UI kontrolü için)
+    private static var forceMainTabs: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("-ShowMainTabs")
+        #else
+        false
+        #endif
     }
 
     private func requestNotificationPermission() async {

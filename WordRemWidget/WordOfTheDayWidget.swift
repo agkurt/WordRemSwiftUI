@@ -63,9 +63,12 @@ struct WordOfTheDayProvider: TimelineProvider {
 
 // MARK: - Palette
 private enum Palette {
-    static let accent = Color(red: 0.976, green: 0.451, blue: 0.086) // #f97316 — uygulama turuncusu
+    static let accent = Color(red: 0.761, green: 0.318, blue: 0.184) // #C2512F — uygulamanın imza rengi (terracotta)
     static let ink    = Color.primary
     static let muted  = Color.secondary
+    static let paper  = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark
+        ? UIColor.systemBackground
+        : UIColor(red: 0.965, green: 0.949, blue: 0.918, alpha: 1) })   // #F6F2EA
 }
 
 // MARK: - Views
@@ -85,7 +88,8 @@ struct WordOfTheDayView: View {
             }
         }
         .containerBackground(for: .widget) {
-            Color(.systemBackground)
+            // Açık modda uygulamanın kâğıt zemini, koyu modda sistem zemini
+            Palette.paper
         }
     }
 

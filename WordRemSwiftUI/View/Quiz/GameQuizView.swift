@@ -98,7 +98,7 @@ struct GameQuizView: View {
                         .font(.system(size: 44))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                     Text(AL.s(.loadFailedMessage))
-                        .font(.custom("Poppins-SemiBold", size: 15))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -108,14 +108,14 @@ struct GameQuizView: View {
                         loadAttempt += 1
                     } label: {
                         Text(AL.s(.paywallRetry))
-                            .font(.custom("Feather-Bold", size: 16))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 32)
                             .padding(.vertical, 12)
                             .background(AppTheme.Colors.primaryOrange, in: Capsule())
                     }
                     Button(AL.s(.gameQuit)) { dismiss() }
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -207,7 +207,7 @@ struct GameQuizView: View {
         VStack(spacing: 16) {
             ProgressView().scaleEffect(1.3)
             Text(AL.s(.gameLoading))
-                .font(.custom("Poppins-SemiBold", size: 15))
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
     }
@@ -247,7 +247,7 @@ struct GameQuizView: View {
                 Text(question.questionDirection == .targetToNative
                      ? AL.s(.gameWhatIsMeaning)
                      : "What is the \(languageDisplayName(targetLang)) word for this?")
-                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
@@ -279,7 +279,7 @@ struct GameQuizView: View {
             Divider().opacity(0.15)
             Button(action: onCheck) {
                 Text(label)
-                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 15)
@@ -288,7 +288,7 @@ struct GameQuizView: View {
                             ? AnyShapeStyle(LinearGradient(
                                 colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
                                 startPoint: .leading, endPoint: .trailing))
-                            : AnyShapeStyle(Color(hex: "#cbd5e1")),
+                            : AnyShapeStyle(Color(hex: "#D6CEBF")),
                         in: RoundedRectangle(cornerRadius: 14)
                     )
             }
@@ -353,7 +353,7 @@ struct GameQuizView: View {
                     Image(systemName: "mic.fill")
                         .font(.system(size: 11, weight: .semibold))
                     Text(AL.s(.gameSpeakPrompt))
-                        .font(.custom("Poppins-SemiBold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                 }
                 .foregroundStyle(AppTheme.Colors.primaryOrange)
                 .padding(.horizontal, 14).padding(.vertical, 5)
@@ -361,14 +361,14 @@ struct GameQuizView: View {
 
                 // ── Word to say (TARGET language) ─────────────────
                 Text(wordToSay)
-                    .font(.custom("Poppins-Bold", size: 44))
+                    .font(.system(size: 44, weight: .bold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
 
                 // ── Phonetic ──────────────────────────────────────
                 if let phonetic = question.word.phonetic {
                     Text("/\(phonetic)/")
-                        .font(.custom("Poppins-SemiBold", size: 15))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
 
@@ -379,7 +379,7 @@ struct GameQuizView: View {
                             .font(.system(size: 11))
                             .foregroundStyle(AppTheme.Colors.textSecondary.opacity(0.7))
                         Text(nativeHint)
-                            .font(.custom("Poppins-Regular", size: 14))
+                            .font(.system(size: 14))
                             .foregroundStyle(AppTheme.Colors.textSecondary)
                     }
                     .padding(.horizontal, 12).padding(.vertical, 4)
@@ -389,7 +389,7 @@ struct GameQuizView: View {
                 // ── Language badge + audio replay ─────────────────
                 HStack(spacing: 10) {
                     Text("🗣 \(languageDisplayName(targetLang))")
-                        .font(.custom("Poppins-Regular", size: 12))
+                        .font(.system(size: 12))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .padding(.horizontal, 12).padding(.vertical, 4)
                         .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Capsule())
@@ -454,7 +454,7 @@ struct GameQuizView: View {
             ZStack(alignment: .topTrailing) {
                 VStack(spacing: 12) {
                     Text(AL.s(.gameFillBlank))
-                        .font(.custom("Poppins-Regular", size: 13))
+                        .font(.system(size: 13))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
 
                     // Path format: "_____ → Good morning" → show "Translate: Good morning"
@@ -464,10 +464,10 @@ struct GameQuizView: View {
                         // Path word question
                         VStack(spacing: 4) {
                             Text(AL.s(.gameTranslateLabel))
-                                .font(.custom("Poppins-Regular", size: 13))
+                                .font(.system(size: 13))
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                             Text(parts[1])
-                                .font(.custom("Poppins-Bold", size: 30))
+                                .font(.system(size: 30, weight: .bold))
                                 .foregroundStyle(AppTheme.Colors.textPrimary)
                                 .multilineTextAlignment(.center)
                         }
@@ -491,14 +491,14 @@ struct GameQuizView: View {
                     Button { triggerHint(for: question) } label: {
                         ZStack {
                             Circle()
-                                .fill(Color(hex: "#f59e0b").opacity(0.15))
+                                .fill(Color(hex: "#C8962E").opacity(0.15))
                                 .frame(width: 36, height: 36)
                             if isLoadingHint {
-                                ProgressView().scaleEffect(0.7).tint(Color(hex: "#f59e0b"))
+                                ProgressView().scaleEffect(0.7).tint(Color(hex: "#C8962E"))
                             } else {
                                 Image(systemName: "lightbulb.fill")
                                     .font(.system(size: 16))
-                                    .foregroundStyle(Color(hex: "#f59e0b"))
+                                    .foregroundStyle(Color(hex: "#C8962E"))
                             }
                         }
                     }
@@ -537,7 +537,7 @@ struct GameQuizView: View {
                             }
                         } label: {
                             Text(wordOption)
-                                .font(.custom("Poppins-Regular", size: 14))
+                                .font(.system(size: 14))
                                 .foregroundStyle(
                                     answered
                                         ? (wordOption == question.correctAnswer ? Color.green : Color.red)
@@ -650,7 +650,7 @@ struct GameQuizView: View {
                         Image(systemName: "bolt.fill")
                             .font(.system(size: 11))
                         Text("\(remaining)")
-                            .font(.custom("Poppins-Regular", size: 13))
+                            .font(.system(size: 13))
                     }
                     .foregroundStyle(remaining <= 5 ? Color.red : AppTheme.Colors.primaryOrange)
                     .padding(.horizontal, 8)
@@ -662,13 +662,13 @@ struct GameQuizView: View {
                 } else {
                     Image(systemName: "infinity")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#8b5cf6"))
+                        .foregroundStyle(Color(hex: "#2F4B5C"))
                 }
             }
             .padding(.horizontal, 20)
 
             Text(String(format: AL.s(.gameQuestionFormat), vm.currentIndex + 1, vm.totalCount))
-                .font(.custom("Poppins-Regular", size: 12))
+                .font(.system(size: 12))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
         .padding(.top, 16)
@@ -684,7 +684,7 @@ struct GameQuizView: View {
                 // For nativeToTarget, also show a small target-lang label so user knows what to find
                 if question.questionDirection == .nativeToTarget {
                     Text(AL.f(.gameWordQuestionFormat, languageDisplayName(targetLangCode)))
-                        .font(.custom("Poppins-Regular", size: 12))
+                        .font(.system(size: 12))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 3)
@@ -707,7 +707,7 @@ struct GameQuizView: View {
                     .multilineTextAlignment(.center)
                 } else {
                     Text(question.promptText)
-                        .font(.custom("Poppins-Bold", size: question.mode == .multipleChoice ? 22 : 32))
+                        .font(.system(size: question.mode == .multipleChoice ? 22 : 32, weight: .bold))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                         .multilineTextAlignment(.center)
                         .lineSpacing(3)
@@ -717,7 +717,7 @@ struct GameQuizView: View {
                 if question.questionDirection == .targetToNative,
                    let phonetic = question.word.phonetic {
                     Text("/\(phonetic)/")
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
             }
@@ -732,16 +732,16 @@ struct GameQuizView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(Color(hex: "#f59e0b").opacity(0.15))
+                            .fill(Color(hex: "#C8962E").opacity(0.15))
                             .frame(width: 36, height: 36)
                         if isLoadingHint {
                             ProgressView()
                                 .scaleEffect(0.7)
-                                .tint(Color(hex: "#f59e0b"))
+                                .tint(Color(hex: "#C8962E"))
                         } else {
                             Image(systemName: "lightbulb.fill")
                                 .font(.system(size: 16))
-                                .foregroundStyle(Color(hex: "#f59e0b"))
+                                .foregroundStyle(Color(hex: "#C8962E"))
                         }
                     }
                 }
@@ -830,14 +830,14 @@ struct GameQuizView: View {
     private var writingField: some View {
         VStack(spacing: 12) {
             TextField(AL.s(.gameTypeTranslation), text: $vm.writingAnswer)
-                .font(.custom("Poppins-SemiBold", size: 16))
+                .font(.system(size: 16, weight: .semibold))
                 .padding()
                 .background(AppTheme.Colors.inputBackground, in: RoundedRectangle(cornerRadius: 14))
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(AppTheme.Colors.inputBorder))
                 .padding(.horizontal, 24)
             Button { vm.submitWriting() } label: {
                 Text(AL.s(.gameCheck))
-                    .font(.custom("Poppins-SemiBold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -915,7 +915,7 @@ private struct FeedbackPanel: View {
         VStack(spacing: 0) {
             // Top accent bar
             Rectangle()
-                .fill(isCorrect ? Color.green : Color(hex: "#ef4444"))
+                .fill(isCorrect ? Color.green : Color(hex: "#B4423A"))
                 .frame(height: 3)
 
             VStack(spacing: 12) {
@@ -923,16 +923,16 @@ private struct FeedbackPanel: View {
                     // Icon
                     ZStack {
                         Circle()
-                            .fill(isCorrect ? Color.green.opacity(0.15) : Color(hex: "#ef4444").opacity(0.12))
+                            .fill(isCorrect ? Color.green.opacity(0.15) : Color(hex: "#B4423A").opacity(0.12))
                             .frame(width: 48, height: 48)
                         Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
                             .font(.system(size: 26, weight: .bold))
-                            .foregroundStyle(isCorrect ? Color.green : Color(hex: "#ef4444"))
+                            .foregroundStyle(isCorrect ? Color.green : Color(hex: "#B4423A"))
                     }
 
                     Text(titleText)
-                        .font(.custom("Poppins-SemiBold", size: 18))
-                        .foregroundStyle(isCorrect ? Color.green : Color(hex: "#ef4444"))
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(isCorrect ? Color.green : Color(hex: "#B4423A"))
 
                     Spacer()
                 }
@@ -940,7 +940,7 @@ private struct FeedbackPanel: View {
                 // Continue button
                 Button(action: onContinue) {
                     Text(continueText)
-                        .font(.custom("Poppins-SemiBold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -958,7 +958,7 @@ private struct FeedbackPanel: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
             .background(
-                isCorrect ? Color.green.opacity(0.06) : Color(hex: "#ef4444").opacity(0.06)
+                isCorrect ? Color.green.opacity(0.06) : Color(hex: "#B4423A").opacity(0.06)
             )
         }
         .background(Color.white)
@@ -996,7 +996,7 @@ private struct ListeningCardContent: View {
             }
 
             Text(AL.s(.gameListenPrompt))
-                .font(.custom("Poppins-SemiBold", size: 16))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
@@ -1010,11 +1010,11 @@ private struct ListeningCardContent: View {
                         if isLoading {
                             HStack(spacing: 8) {
                                 ProgressView().tint(.white).scaleEffect(0.8)
-                                Text(AL.s(.gameLoadingAudio)).font(.custom("Poppins-Regular", size: 14))
+                                Text(AL.s(.gameLoadingAudio)).font(.system(size: 14))
                             }
                         } else {
                             Label(AL.s(.gameListenNormal), systemImage: "play.fill")
-                                .font(.custom("Poppins-Regular", size: 14))
+                                .font(.system(size: 14))
                         }
                     }
                     .foregroundStyle(.white)
@@ -1036,7 +1036,7 @@ private struct ListeningCardContent: View {
                     TTSManager.shared.speakSlow(term, langCode: langCode)
                 } label: {
                     Label(AL.s(.gameListenSlow), systemImage: "tortoise.fill")
-                        .font(.custom("Poppins-Regular", size: 13))
+                        .font(.system(size: 13))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
@@ -1073,7 +1073,7 @@ private struct OptionButton: View {
     var body: some View {
         Button(action: action) {
             Text(text)
-                .font(.custom("Poppins-Regular", size: 14))
+                .font(.system(size: 14))
                 .foregroundStyle(textColor)
                 .multilineTextAlignment(.center)
                 .padding(.vertical, 14)
@@ -1128,7 +1128,7 @@ private struct XPToastView: View {
                 ZStack {
                     Circle()
                         .fill(LinearGradient(
-                            colors: [Color(hex: "#f59e0b"), Color(hex: "#f97316")],
+                            colors: [Color(hex: "#C8962E"), Color(hex: "#C2512F")],
                             startPoint: .topLeading, endPoint: .bottomTrailing))
                         .frame(width: 32, height: 32)
                     Image(systemName: "bolt.fill")
@@ -1136,18 +1136,18 @@ private struct XPToastView: View {
                         .foregroundStyle(.white)
                 }
                 Text("+\(amount) XP")
-                    .font(.custom("Poppins-SemiBold", size: 17))
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 10)
             .background(
                 LinearGradient(
-                    colors: [Color(hex: "#f97316"), Color(hex: "#f59e0b")],
+                    colors: [Color(hex: "#C2512F"), Color(hex: "#C8962E")],
                     startPoint: .leading, endPoint: .trailing),
                 in: Capsule()
             )
-            .shadow(color: Color(hex: "#f97316").opacity(0.45), radius: 12, y: 6)
+            .shadow(color: Color(hex: "#C2512F").opacity(0.45), radius: 12, y: 6)
             .scaleEffect(scale)
             .offset(y: offsetY)
             .onAppear {
@@ -1178,8 +1178,8 @@ private struct ConfettiView: View {
 private struct ConfettiParticle: Identifiable {
     let id = UUID()
     let x: CGFloat      = CGFloat.random(in: 0.1...0.9)
-    let color: Color    = [Color(hex: "#f97316"), Color(hex: "#6366f1"), Color(hex: "#10b981"),
-                           Color(hex: "#f59e0b"), Color(hex: "#ec4899"), Color(hex: "#3b82f6")].randomElement()!
+    let color: Color    = [Color(hex: "#C2512F"), Color(hex: "#2F4B5C"), Color(hex: "#3F7D58"),
+                           Color(hex: "#C8962E"), Color(hex: "#C2512F"), Color(hex: "#2F4B5C")].randomElement()!
     let size: CGFloat   = CGFloat.random(in: 7...14)
     let isCircle: Bool  = Bool.random()
     let delay: Double   = Double.random(in: 0...0.3)
@@ -1235,30 +1235,30 @@ private struct HintSheetView: View {
                     // Icon
                     ZStack {
                         Circle()
-                            .fill(Color(hex: "#f59e0b").opacity(0.15))
+                            .fill(Color(hex: "#C8962E").opacity(0.15))
                             .frame(width: 72, height: 72)
                         Image(systemName: "lightbulb.fill")
                             .font(.system(size: 32))
-                            .foregroundStyle(Color(hex: "#f59e0b"))
+                            .foregroundStyle(Color(hex: "#C8962E"))
                     }
                     .padding(.top, 16)
 
                     Text(AL.s(.gameHintTitle))
-                        .font(.custom("Poppins-Bold", size: 22))
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
 
                     Text(hintText)
-                        .font(.custom("Poppins-SemiBold", size: 15))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 16)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color(hex: "#f59e0b").opacity(0.08))
+                                .fill(Color(hex: "#C8962E").opacity(0.08))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color(hex: "#f59e0b").opacity(0.3), lineWidth: 1.5)
+                                        .stroke(Color(hex: "#C8962E").opacity(0.3), lineWidth: 1.5)
                                 )
                         )
                         .padding(.horizontal, 20)
@@ -1267,9 +1267,9 @@ private struct HintSheetView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "lightbulb.fill")
                             .font(.system(size: 12))
-                            .foregroundStyle(Color(hex: "#f59e0b"))
+                            .foregroundStyle(Color(hex: "#C8962E"))
                         Text(AL.f(.gameHintRemainingFormat, hintsRemaining))
-                            .font(.custom("Poppins-Regular", size: 13))
+                            .font(.system(size: 13))
                             .foregroundStyle(AppTheme.Colors.textSecondary)
                     }
 
@@ -1277,7 +1277,7 @@ private struct HintSheetView: View {
                         dismiss()
                     } label: {
                         Text(AL.s(.gameHintGotIt))
-                            .font(.custom("Poppins-SemiBold", size: 16))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -1310,7 +1310,7 @@ private struct SpeakingMicButton: View {
     @State private var permissionDenied = false
     @State private var showMuteAlert = false
 
-    private let micColor = Color(hex: "#8b5cf6")
+    private let micColor = Color(hex: "#2F4B5C")
 
     var body: some View {
         VStack(spacing: 16) {
@@ -1323,7 +1323,7 @@ private struct SpeakingMicButton: View {
                         .fill(srm.isRecording
                               ? LinearGradient(colors: [Color.red.opacity(0.8), Color.red],
                                                startPoint: .topLeading, endPoint: .bottomTrailing)
-                              : LinearGradient(colors: [micColor, Color(hex: "#7c3aed")],
+                              : LinearGradient(colors: [micColor, Color(hex: "#243B48")],
                                                startPoint: .topLeading, endPoint: .bottomTrailing))
                         .frame(width: 90, height: 90)
                         .shadow(color: (srm.isRecording ? Color.red : micColor).opacity(0.4),
@@ -1341,30 +1341,30 @@ private struct SpeakingMicButton: View {
             // Status / recognized text
             if srm.isRecording {
                 Text(AL.s(.gameSpeakListening))
-                    .font(.custom("Poppins-Regular", size: 14))
+                    .font(.system(size: 14))
                     .foregroundStyle(Color.red)
             } else if srm.isProcessing {
                 HStack(spacing: 8) {
                     ProgressView().scaleEffect(0.8).tint(AppTheme.Colors.primaryOrange)
                     Text("Analiz ediliyor...")
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                 }
             } else if !srm.recognizedText.isEmpty {
                 Text(srm.recognizedText)
-                    .font(.custom("Poppins-SemiBold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(AppTheme.Colors.inputBackground, in: RoundedRectangle(cornerRadius: 10))
             } else if permissionDenied {
                 Text(AL.s(.gameSpeakNoPermission))
-                    .font(.custom("Poppins-Regular", size: 13))
+                    .font(.system(size: 13))
                     .foregroundStyle(Color.red)
                     .multilineTextAlignment(.center)
             } else {
                 Text(AL.s(.gameSpeakMicHint))
-                    .font(.custom("Poppins-Regular", size: 14))
+                    .font(.system(size: 14))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
 
@@ -1374,7 +1374,7 @@ private struct SpeakingMicButton: View {
                     onResult(srm.recognizedText)
                 } label: {
                     Text(AL.s(.gameCheck))
-                        .font(.custom("Poppins-SemiBold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1396,7 +1396,7 @@ private struct SpeakingMicButton: View {
                     Image(systemName: "mic.slash")
                         .font(.system(size: 12))
                     Text(AL.s(.gameSpeakCantSpeak))
-                        .font(.custom("Poppins-Regular", size: 13))
+                        .font(.system(size: 13))
                 }
                 .foregroundStyle(AppTheme.Colors.textSecondary)
             }
@@ -1446,8 +1446,8 @@ private struct DailyLimitOverlay: View {
     @State private var countdown: String = DailyLimitManager.shared.countdownString
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
-    private let proColor     = Color(hex: "#8b5cf6")
-    private let proColorDark = Color(hex: "#7c3aed")
+    private let proColor     = Color(hex: "#2F4B5C")
+    private let proColorDark = Color(hex: "#243B48")
 
     var body: some View {
         ZStack {
@@ -1466,11 +1466,11 @@ private struct DailyLimitOverlay: View {
                     }
 
                     Text(AL.s(.dailyLimitTitle))
-                        .font(.custom("Poppins-Bold", size: 22))
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundStyle(.white)
 
                     Text(AL.s(.dailyLimitSubtitle))
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(.white.opacity(0.75))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 8)
@@ -1481,11 +1481,11 @@ private struct DailyLimitOverlay: View {
                 // ── Geri sayım ─────────────────────────────────────────
                 VStack(spacing: 6) {
                     Text(AL.s(.dailyLimitResetsIn))
-                        .font(.custom("Poppins-Regular", size: 13))
+                        .font(.system(size: 13))
                         .foregroundStyle(.white.opacity(0.6))
 
                     Text(countdown)
-                        .font(.custom("Poppins-Bold", size: 36))
+                        .font(.system(size: 36, weight: .bold))
                         .foregroundStyle(.white)
                         .monospacedDigit()
                 }
@@ -1503,7 +1503,7 @@ private struct DailyLimitOverlay: View {
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 15))
                             Text(AL.s(.dailyLimitGetPro))
-                                .font(.custom("Poppins-SemiBold", size: 16))
+                                .font(.system(size: 16, weight: .semibold))
                         }
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -1519,7 +1519,7 @@ private struct DailyLimitOverlay: View {
                     // Kapat
                     Button(action: onQuit) {
                         Text(AL.s(.dailyLimitClose))
-                            .font(.custom("Poppins-SemiBold", size: 15))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.6))
                     }
                 }
@@ -1529,7 +1529,7 @@ private struct DailyLimitOverlay: View {
             }
             .background(
                 RoundedRectangle(cornerRadius: 28)
-                    .fill(Color(hex: "#1a1a2e"))
+                    .fill(Color(hex: "#1C1A17"))
                     .shadow(color: .black.opacity(0.4), radius: 30, y: 10)
             )
             .padding(.horizontal, 20)
@@ -1583,13 +1583,13 @@ private struct SentenceBuilderContent: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(AL.s(.hcNewWord))
-                        .font(.custom("Poppins-Regular", size: 11))
-                        .foregroundStyle(Color(hex: "#8b5cf6"))
+                        .font(.system(size: 11))
+                        .foregroundStyle(Color(hex: "#2F4B5C"))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(Color(hex: "#8b5cf6").opacity(0.1), in: Capsule())
+                        .background(Color(hex: "#2F4B5C").opacity(0.1), in: Capsule())
                     Text(AL.s(.hcTranslateSentence))
-                        .font(.custom("Poppins-Bold", size: 22))
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                 }
                 Spacer()
@@ -1633,13 +1633,13 @@ private struct SentenceBuilderContent: View {
                 .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color(hex: "#e2e8f0"), lineWidth: 1.5)
+                        .stroke(Color(hex: "#E4DDD0"), lineWidth: 1.5)
                 )
                 // Speech bubble tail (sol kenara üçgen)
                 .overlay(alignment: .bottomLeading) {
                     Image(systemName: "triangle.fill")
                         .font(.system(size: 10))
-                        .foregroundStyle(Color(hex: "#e2e8f0"))
+                        .foregroundStyle(Color(hex: "#E4DDD0"))
                         .rotationEffect(.degrees(-90))
                         .offset(x: -7, y: -14)
                 }
@@ -1709,7 +1709,7 @@ private struct SentenceBuilderContent: View {
             if let answer = selectedChip, !isAnswered {
                 Button { onSubmit(answer) } label: {
                     Text(AL.s(.gameCheck))
-                        .font(.custom("Poppins-SemiBold", size: 17))
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
@@ -1766,7 +1766,7 @@ private struct AITappableWordsView: View {
                     if isGap {
                         // boşluk chip'i — dokunulamaz
                         Text("_____")
-                            .font(.custom("Poppins-Bold", size: 18))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(AppTheme.Colors.primaryOrange)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
@@ -1776,10 +1776,10 @@ private struct AITappableWordsView: View {
                             )
                     } else {
                         Text(token)
-                            .font(.custom("Poppins-SemiBold", size: 16))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(isActive
                                 ? AppTheme.Colors.primaryOrange
-                                : Color(hex: "#1e293b"))
+                                : Color(hex: "#1C1A17"))
                             .padding(.horizontal, 4)
                             .padding(.vertical, 2)
                             .background(
@@ -1791,7 +1791,7 @@ private struct AITappableWordsView: View {
                             // Her kelime daima altı çizili — kullanıcı tıklanabilir olduğunu anlar
                             .underline(true, color: isActive
                                 ? AppTheme.Colors.primaryOrange
-                                : Color(hex: "#94a3b8"))
+                                : Color(hex: "#8A8277"))
                             .onTapGesture {
                                 handleTap(token: token, clean: clean)
                             }
@@ -1807,16 +1807,16 @@ private struct AITappableWordsView: View {
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
 
                     Text(key)
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
 
                     Text("=")
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
 
                     if let meaning = translations[key] {
                         Text(meaning)
-                            .font(.custom("Poppins-Regular", size: 14))
+                            .font(.system(size: 14))
                             .foregroundStyle(AppTheme.Colors.textPrimary)
                     } else {
                         ProgressView()
@@ -1836,7 +1836,7 @@ private struct AITappableWordsView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color(hex: "#f0f9ff"), in: RoundedRectangle(cornerRadius: 10))
+                .background(Color(hex: "#E9EEF0"), in: RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(AppTheme.Colors.primaryOrange.opacity(0.3), lineWidth: 1)
@@ -1940,8 +1940,8 @@ private struct SentenceTappableWords: View {
                     let isKey = clean.contains(keyWord.lowercased()) || keyWord.lowercased().contains(clean)
 
                     Text(word)
-                        .font(.custom("Poppins-SemiBold", size: 16))
-                        .foregroundStyle(isKey ? AppTheme.Colors.primaryOrange : Color(hex: "#1e293b"))
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(isKey ? AppTheme.Colors.primaryOrange : Color(hex: "#1C1A17"))
                         .padding(.horizontal, isKey ? 6 : 2)
                         .padding(.vertical, isKey ? 3 : 0)
                         .background(
@@ -1975,15 +1975,15 @@ private struct SentenceTappableWords: View {
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
 
                     Text(keyWord)
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
 
                     Text("=")
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
 
                     Text(keyMeaning)
-                        .font(.custom("Poppins-Regular", size: 14))
+                        .font(.system(size: 14))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
 
                     Spacer()
@@ -1998,7 +1998,7 @@ private struct SentenceTappableWords: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color(hex: "#f0f9ff"), in: RoundedRectangle(cornerRadius: 10))
+                .background(Color(hex: "#E9EEF0"), in: RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(AppTheme.Colors.primaryOrange.opacity(0.3), lineWidth: 1)
@@ -2018,10 +2018,10 @@ private struct SentenceChipBubble: View {
 
     var body: some View {
         Text(word)
-            .font(.custom("Poppins-SemiBold", size: 16))
+            .font(.system(size: 16, weight: .semibold))
             .foregroundStyle(style == .selected
                 ? AppTheme.Colors.primaryOrange
-                : Color(hex: "#1e293b"))
+                : Color(hex: "#1C1A17"))
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(
@@ -2035,7 +2035,7 @@ private struct SentenceChipBubble: View {
                     .stroke(
                         style == .selected
                         ? AppTheme.Colors.primaryOrange
-                        : Color(hex: "#cbd5e1"),
+                        : Color(hex: "#D6CEBF"),
                         lineWidth: style == .selected ? 2 : 1
                     )
             )

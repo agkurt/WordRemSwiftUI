@@ -105,13 +105,13 @@ struct MainTabView: View {
                         Circle()
                             .fill(
                                 LinearGradient(
-                                    colors: [Color(hex: "#f97316"), Color(hex: "#E8409C")],
+                                    colors: [Color(hex: "#C2512F"), Color(hex: "#C2512F")],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
                             )
                             .frame(width: 54, height: 54)
-                            .shadow(color: Color(hex: "#f97316").opacity(0.45), radius: 12, y: 4)
+                            .shadow(color: Color(hex: "#C2512F").opacity(0.45), radius: 12, y: 4)
                         Image(systemName: "plus")
                             .font(.system(size: 22, weight: .bold))
                             .foregroundStyle(.white)
@@ -159,18 +159,18 @@ private struct TabBarItem: View {
                     .font(.system(size: 20, weight: isSelected ? .bold : .medium))
                     .foregroundStyle(
                         isSelected
-                        ? Color(hex: "#f97316")
-                        : Color(hex: "#94a3b8")
+                        ? Color(hex: "#C2512F")
+                        : Color(hex: "#8A8277")
                     )
                     .frame(height: 24)
                     .scaleEffect(isSelected ? 1.12 : 1.0)
 
                 Text(tab.label)
-                    .font(.custom("Poppins-Bold", size: 10))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(
                         isSelected
-                        ? Color(hex: "#f97316")
-                        : Color(hex: "#94a3b8")
+                        ? Color(hex: "#C2512F")
+                        : Color(hex: "#8A8277")
                     )
             }
             .frame(maxWidth: .infinity)

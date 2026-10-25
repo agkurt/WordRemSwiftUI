@@ -10,27 +10,13 @@ struct WordRemLogoText: View {
     let size: CGFloat
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 6) {
-            Text("WordRem")
-                .font(.custom("Feather-Bold", size: size))
-                .foregroundStyle(Color(hex: "#ae7979"))
-
-            Text("AI")
-                .font(.custom("Feather-Bold", size: size * 0.38))
-                .foregroundStyle(.white)
-                .padding(.horizontal, size * 0.18)
-                .padding(.vertical, size * 0.1)
-                .background(
-                    LinearGradient(
-                        colors: [Color(hex: "#7c3aed"), Color(hex: "#4f46e5")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    in: RoundedRectangle(cornerRadius: size * 0.16)
-                )
-                .shadow(color: Color(hex: "#7c3aed").opacity(0.45), radius: 8, y: 3)
-                .padding(.bottom, size * 0.1)
-        }
+        // Serif yazı markası + imza renginde nokta
+        (Text("WordRem")
+            .foregroundColor(DS.Colors.ink)
+         + Text(".")
+            .foregroundColor(DS.Colors.accent))
+            .font(DS.Font.display(size, weight: .bold))
+            .accessibilityLabel("WordRem")
     }
 }
 
@@ -51,19 +37,14 @@ struct SplashScreenView: View {
                 .environmentObject(sentenceViewModel)
         } else {
             ZStack {
-                LinearGradient(
-                    colors: [Color(hex: "#fdf4f4"), Color(hex: "#fff9f9"), Color.white],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+                DS.Colors.paper.ignoresSafeArea()
 
                 VStack(spacing: 28) {
                     WordRemLogoText(size: 48)
                         .scaleEffect(logoScale)
                         .opacity(logoOpacity)
 
-                    LoadingAnimationView(width: 80, height: 80)
+                    ProgressView().tint(DS.Colors.muted)
                         .opacity(logoOpacity)
                 }
             }
@@ -92,19 +73,14 @@ struct LaunchScreenView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color(hex: "#fdf4f4"), Color(hex: "#fff9f9"), Color.white],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            DS.Colors.paper.ignoresSafeArea()
 
             VStack(spacing: 28) {
                 WordRemLogoText(size: 48)
                     .scaleEffect(logoScale)
                     .opacity(logoOpacity)
 
-                LoadingAnimationView(width: 80, height: 80)
+                ProgressView().tint(DS.Colors.muted)
                     .opacity(logoOpacity)
             }
         }

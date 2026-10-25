@@ -43,18 +43,18 @@ struct ArcMenuButton: View {
                                             Circle()
                                                 .fill(
                                                     LinearGradient(
-                                                        colors: [Color(hex: "#f97316"), Color(hex: "#ea580c")],
+                                                        colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
                                                         startPoint: .topLeading, endPoint: .bottomTrailing
                                                     )
                                                 )
                                                 .frame(width: 48, height: 48)
-                                                .shadow(color: Color(hex: "#f97316").opacity(0.45), radius: 10, y: 4)
+                                                .shadow(color: Color(hex: "#C2512F").opacity(0.45), radius: 10, y: 4)
                                             Image(systemName: menuItems[index].icon)
                                                 .font(.system(size: 18, weight: .medium))
                                                 .foregroundStyle(.white)
                                         }
                                         Text(menuItems[index].label)
-                                            .font(.custom("Feather-Bold", size: 9))
+                                            .font(.system(size: 9, weight: .semibold))
                                             .foregroundStyle(.white.opacity(0.85))
                                             .shadow(radius: 3)
                                     }
@@ -83,12 +83,12 @@ struct ArcMenuButton: View {
                                 Circle()
                                     .fill(
                                         LinearGradient(
-                                            colors: [Color(hex: "#f97316"), Color(hex: "#c2400c")],
+                                            colors: [Color(hex: "#C2512F"), Color(hex: "#c2400c")],
                                             startPoint: .topLeading, endPoint: .bottomTrailing
                                         )
                                     )
                                     .frame(width: 60, height: 60)
-                                    .shadow(color: Color(hex: "#f97316").opacity(0.55), radius: 16, y: 6)
+                                    .shadow(color: Color(hex: "#C2512F").opacity(0.55), radius: 16, y: 6)
 
                                 Image(systemName: isExpanded ? "xmark" : "square.grid.2x2.fill")
                                     .font(.system(size: 20, weight: .semibold))

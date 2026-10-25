@@ -154,7 +154,7 @@ struct OL {
 
         // ─────────────────────────────────────────
         "tr": [
-            .continueButton:    "DEVAM ET",
+            .continueButton:     "Devam et",
             .nativeLangTitle:   "Ana dilin hangisi?",
             .nativeLangHint:    "Bunu bilerek sana en uygun dersleri hazırlıyoruz.",
             .whatToLearn:       "Ne öğrenmek istersin?",
@@ -174,7 +174,7 @@ struct OL {
             .benefit3Title:     "Öğrenim alışkanlığı edin",
             .benefit3Desc:      "Akıllı bildirimler, eğlenceli mücadeleler ve daha fazlası",
             .quizInstruction:   "Aşağıdaki cümleyi çevir:",
-            .quizCheck:         "KONTROL ET",
+            .quizCheck:          "Kontrol et",
             .quizCorrect:       "Harika!",
             .quizWrong:         "Yanlış Cevap",
             .quizCorrectAnswer: "Doğrusu: %@",
@@ -183,7 +183,7 @@ struct OL {
             .planFreeTitle:     "Ücretsiz Öğrenim",
             .planFreeSubtitle:  "Günlük limitlerle ana öğrenim özellikleri",
             .planRecommended:   "TAVSİYE EDİLEN",
-            .loadingText:       "YÜKLENİYOR...",
+            .loadingText:        "Yükleniyor...",
             .loadingMessage:    "İnsanlar WordRem'de, aynı süre boyunca bir sınıfta ders alan öğrencilerden daha fazla şey öğreniyor. Hem de evden çıkmalarına gerek kalmadan!",
             .profResultItsOkay:      "Sorun değil! ",
             .profResultPeopleAre:    " kişi\n%@ seviyesinde",
@@ -209,7 +209,7 @@ struct OL {
 
         // ─────────────────────────────────────────
         "en": [
-            .continueButton:    "CONTINUE",
+            .continueButton:     "Continue",
             .nativeLangTitle:   "What is your native language?",
             .nativeLangHint:    "We'll personalize your lessons based on this.",
             .whatToLearn:       "What do you want to learn?",
@@ -229,7 +229,7 @@ struct OL {
             .benefit3Title:     "Build a learning habit",
             .benefit3Desc:      "Smart reminders, fun challenges and more",
             .quizInstruction:   "Translate the sentence below:",
-            .quizCheck:         "CHECK",
+            .quizCheck:          "Check",
             .quizCorrect:       "Great!",
             .quizWrong:         "Wrong Answer",
             .quizCorrectAnswer: "Correct: %@",
@@ -238,7 +238,7 @@ struct OL {
             .planFreeTitle:     "Free Learning",
             .planFreeSubtitle:  "Core learning features with daily limits",
             .planRecommended:   "RECOMMENDED",
-            .loadingText:       "LOADING...",
+            .loadingText:        "Loading...",
             .loadingMessage:    "People learn more on WordRem than students who spend the same time in a classroom — without even leaving home!",
             .profResultItsOkay:      "It's okay! ",
             .profResultPeopleAre:    " of people\nare at %@ level",
@@ -264,7 +264,7 @@ struct OL {
 
         // ─────────────────────────────────────────
         "de": [
-            .continueButton:    "WEITER",
+            .continueButton:     "Weiter",
             .nativeLangTitle:   "Was ist deine Muttersprache?",
             .nativeLangHint:    "So können wir deine Lektionen optimal anpassen.",
             .whatToLearn:       "Was möchtest du lernen?",
@@ -284,7 +284,7 @@ struct OL {
             .benefit3Title:     "Lerngewohnheit aufbauen",
             .benefit3Desc:      "Intelligente Erinnerungen, lustige Herausforderungen und mehr",
             .quizInstruction:   "Übersetze den folgenden Satz:",
-            .quizCheck:         "PRÜFEN",
+            .quizCheck:          "Prüfen",
             .quizCorrect:       "Toll!",
             .quizWrong:         "Falsche Antwort",
             .quizCorrectAnswer: "Richtig: %@",
@@ -293,7 +293,7 @@ struct OL {
             .planFreeTitle:     "Kostenlos lernen",
             .planFreeSubtitle:  "Kernfunktionen mit Tageslimits",
             .planRecommended:   "EMPFOHLEN",
-            .loadingText:       "WIRD GELADEN...",
+            .loadingText:        "Wird geladen...",
             .loadingMessage:    "Menschen lernen mit WordRem mehr als Schüler, die die gleiche Zeit im Unterricht verbringen – und das ohne das Haus zu verlassen!",
             .profResultItsOkay:      "Kein Problem! ",
             .profResultPeopleAre:    " der Menschen\nsind %@",
@@ -319,7 +319,7 @@ struct OL {
 
         // ─────────────────────────────────────────
         "fr": [
-            .continueButton:    "CONTINUER",
+            .continueButton:     "Continuer",
             .nativeLangTitle:   "Quelle est ta langue maternelle ?",
             .nativeLangHint:    "Cela nous permet de personnaliser tes leçons.",
             .whatToLearn:       "Que veux-tu apprendre ?",
@@ -339,7 +339,7 @@ struct OL {
             .benefit3Title:     "Créer une habitude d'apprentissage",
             .benefit3Desc:      "Rappels intelligents, défis amusants et plus encore",
             .quizInstruction:   "Traduis la phrase ci-dessous :",
-            .quizCheck:         "VÉRIFIER",
+            .quizCheck:          "Vérifier",
             .quizCorrect:       "Super !",
             .quizWrong:         "Mauvaise réponse",
             .quizCorrectAnswer: "Correct : %@",
@@ -348,7 +348,7 @@ struct OL {
             .planFreeTitle:     "Apprentissage gratuit",
             .planFreeSubtitle:  "Fonctionnalités de base avec limites quotidiennes",
             .planRecommended:   "RECOMMANDÉ",
-            .loadingText:       "CHARGEMENT...",
+            .loadingText:        "Chargement...",
             .loadingMessage:    "Les gens apprennent plus avec WordRem que les élèves qui passent le même temps en classe — sans même quitter la maison !",
             .profResultItsOkay:      "Pas de souci ! ",
             .profResultPeopleAre:    " personnes\nsont %@",
@@ -374,7 +374,7 @@ struct OL {
 
         // ─────────────────────────────────────────
         "es": [
-            .continueButton:    "CONTINUAR",
+            .continueButton:     "Continuar",
             .nativeLangTitle:   "¿Cuál es tu idioma nativo?",
             .nativeLangHint:    "Así personalizamos tus lecciones.",
             .whatToLearn:       "¿Qué quieres aprender?",
@@ -394,7 +394,7 @@ struct OL {
             .benefit3Title:     "Crea un hábito de aprendizaje",
             .benefit3Desc:      "Recordatorios inteligentes, desafíos divertidos y más",
             .quizInstruction:   "Traduce la siguiente frase:",
-            .quizCheck:         "VERIFICAR",
+            .quizCheck:          "Verificar",
             .quizCorrect:       "¡Genial!",
             .quizWrong:         "Respuesta incorrecta",
             .quizCorrectAnswer: "Correcto: %@",
@@ -403,7 +403,7 @@ struct OL {
             .planFreeTitle:     "Aprendizaje gratuito",
             .planFreeSubtitle:  "Funciones principales con límites diarios",
             .planRecommended:   "RECOMENDADO",
-            .loadingText:       "CARGANDO...",
+            .loadingText:        "Cargando...",
             .loadingMessage:    "¡Las personas aprenden más con WordRem que los estudiantes que pasan el mismo tiempo en clase, y sin salir de casa!",
             .profResultItsOkay:      "¡No pasa nada! ",
             .profResultPeopleAre:    " personas\nson %@",
@@ -429,7 +429,7 @@ struct OL {
 
         // ─────────────────────────────────────────
         "it": [
-            .continueButton:    "CONTINUA",
+            .continueButton:     "Continua",
             .nativeLangTitle:   "Qual è la tua lingua madre?",
             .nativeLangHint:    "In questo modo personalizziamo le tue lezioni.",
             .whatToLearn:       "Cosa vuoi imparare?",
@@ -449,7 +449,7 @@ struct OL {
             .benefit3Title:     "Crea un'abitudine di apprendimento",
             .benefit3Desc:      "Promemoria intelligenti, sfide divertenti e altro",
             .quizInstruction:   "Traduci la frase seguente:",
-            .quizCheck:         "VERIFICA",
+            .quizCheck:          "Verifica",
             .quizCorrect:       "Ottimo!",
             .quizWrong:         "Risposta sbagliata",
             .quizCorrectAnswer: "Corretto: %@",
@@ -458,7 +458,7 @@ struct OL {
             .planFreeTitle:     "Apprendimento gratuito",
             .planFreeSubtitle:  "Funzionalità principali con limiti giornalieri",
             .planRecommended:   "CONSIGLIATO",
-            .loadingText:       "CARICAMENTO...",
+            .loadingText:        "Caricamento...",
             .loadingMessage:    "Le persone imparano di più con WordRem rispetto agli studenti che trascorrono lo stesso tempo in classe, senza neanche uscire di casa!",
             .profResultItsOkay:      "Non preoccuparti! ",
             .profResultPeopleAre:    " persone\nsono %@",
@@ -484,7 +484,7 @@ struct OL {
 
         // ─────────────────────────────────────────
         "ru": [
-            .continueButton:    "ПРОДОЛЖИТЬ",
+            .continueButton:     "Продолжить",
             .nativeLangTitle:   "Какой у тебя родной язык?",
             .nativeLangHint:    "Это поможет нам персонализировать твои уроки.",
             .whatToLearn:       "Что ты хочешь выучить?",
@@ -504,7 +504,7 @@ struct OL {
             .benefit3Title:     "Выработай привычку учиться",
             .benefit3Desc:      "Умные напоминания, весёлые челленджи и многое другое",
             .quizInstruction:   "Переведи следующее предложение:",
-            .quizCheck:         "ПРОВЕРИТЬ",
+            .quizCheck:          "Проверить",
             .quizCorrect:       "Отлично!",
             .quizWrong:         "Неправильный ответ",
             .quizCorrectAnswer: "Правильно: %@",
@@ -513,7 +513,7 @@ struct OL {
             .planFreeTitle:     "Бесплатное обучение",
             .planFreeSubtitle:  "Основные функции с дневными лимитами",
             .planRecommended:   "РЕКОМЕНДУЕТСЯ",
-            .loadingText:       "ЗАГРУЗКА...",
+            .loadingText:        "Загрузка...",
             .loadingMessage:    "Люди учатся с WordRem больше, чем студенты, проводящие столько же времени в классе — и даже не выходя из дома!",
             .profResultItsOkay:      "Всё нормально! ",
             .profResultPeopleAre:    " людей\n%@",

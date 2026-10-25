@@ -11,9 +11,9 @@ struct AnimationView: View {
     @State var start = false
     var body: some View {
         ZStack{
-            Text("Loading...").bold().font(Font.custom("Arial-BoldMT", size: 25))
+            Text("Loading...").bold().font(Font.system(size: 25, weight: .bold))
                 .foregroundStyle(.black)
-            Text("Loading...").bold().font(Font.custom("Arial-BoldMT", size: 25))
+            Text("Loading...").bold().font(Font.system(size: 25, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(width: 200, height: 50)
                 .background(.black.opacity(0.9))

@@ -21,20 +21,15 @@ struct DailyGoalView: View {
     private struct GoalOption {
         let minutes: Int
         let label: String
-        let barColor: Color
         let barHeights: [CGFloat]   // 4 bars, increasing height
     }
 
     private var goals: [GoalOption] {
         [
-            GoalOption(minutes: 5,  label: langManager.s(.dailyGoalCasual),
-                       barColor: Color(hex: "#4ade80"), barHeights: [8, 13, 18, 18]),
-            GoalOption(minutes: 10, label: langManager.s(.dailyGoalRegular),
-                       barColor: Color(hex: "#60a5fa"), barHeights: [8, 13, 18, 24]),
-            GoalOption(minutes: 15, label: langManager.s(.dailyGoalAccel),
-                       barColor: Color(hex: "#c084fc"), barHeights: [8, 13, 20, 28]),
-            GoalOption(minutes: 20, label: langManager.s(.dailyGoalIntense),
-                       barColor: Color(hex: "#f472b6"), barHeights: [8, 14, 22, 30]),
+            GoalOption(minutes: 5,  label: langManager.s(.dailyGoalCasual),  barHeights: [8, 13, 18, 18]),
+            GoalOption(minutes: 10, label: langManager.s(.dailyGoalRegular), barHeights: [8, 13, 18, 24]),
+            GoalOption(minutes: 15, label: langManager.s(.dailyGoalAccel),   barHeights: [8, 13, 20, 28]),
+            GoalOption(minutes: 20, label: langManager.s(.dailyGoalIntense), barHeights: [8, 14, 22, 30]),
         ]
     }
 
@@ -42,96 +37,54 @@ struct DailyGoalView: View {
         VStack(spacing: 0) {
 
             // ── Progress Bar ───────────────────────────────────────
-            HStack(spacing: 8) {
-                ForEach(0..<4, id: \.self) { i in
-                    Capsule()
-                        .fill(AppTheme.Colors.primaryOrange)
-                        .frame(height: 12)
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
+            OBProgressBar(total: 4, filled: 4)
 
-            // ── Mascot + Speech Bubble ─────────────────────────────
-            HStack(alignment: .top, spacing: 16) {
-                MascotAnimationView(width: 70, height: 70)
-
-                Text(langManager.s(.dailyGoalQuestion))
-                    .font(.custom("Feather-Bold", size: 16))
-                    .foregroundStyle(Color(hex: "#1e293b"))
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(hex: "#f0f4ff"))
-                            .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
-                    )
-                    .overlay(
-                        Path { path in
-                            path.move(to: CGPoint(x: 0, y: 20))
-                            path.addLine(to: CGPoint(x: -10, y: 25))
-                            path.addLine(to: CGPoint(x: 0, y: 30))
-                        }
-                        .fill(Color(hex: "#f0f4ff"))
-                    )
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 24)
-            .padding(.bottom, 28)
+            // ── Header ─────────────────────────────────────────────
+            OBHeader(title: langManager.s(.dailyGoalQuestion))
 
             // ── Goal Options ───────────────────────────────────────
-            VStack(spacing: 12) {
+            VStack(spacing: 10) {
                 ForEach(0..<goals.count, id: \.self) { i in
                     let goal = goals[i]
+                    let isSelected = selectedGoal == i
                     Button {
                         selectedGoal = i
                     } label: {
-                        HStack(spacing: 16) {
+                        HStack(spacing: 14) {
                             // Bar chart icon
                             HStack(alignment: .bottom, spacing: 3) {
                                 ForEach(0..<4, id: \.self) { b in
                                     Capsule()
-                                        .fill(selectedGoal == i
-                                              ? goal.barColor
-                                              : goal.barColor.opacity(0.5))
-                                        .frame(width: 5, height: goal.barHeights[b])
+                                        .fill(isSelected ? DS.Colors.ink : DS.Colors.muted.opacity(0.45))
+                                        .frame(width: 4, height: goal.barHeights[b])
                                 }
                             }
-                            .frame(width: 34, height: 32, alignment: .bottom)
+                            .frame(width: 30, height: 30, alignment: .bottom)
 
                             Text(String(format: langManager.s(.dailyGoalMinFormat), goal.minutes))
-                                .font(.custom("Feather-Bold", size: 16))
-                                .foregroundStyle(Color(hex: "#1e293b"))
+                                .font(DS.Font.ui(17, weight: .medium))
+                                .foregroundStyle(DS.Colors.ink)
 
                             Spacer()
 
                             Text(goal.label)
-                                .font(.custom("Feather-Bold", size: 14))
-                                .foregroundStyle(Color(hex: "#94a3b8"))
+                                .font(DS.Font.ui(15))
+                                .foregroundStyle(DS.Colors.muted)
+
+                            OBCheckmark(isSelected: isSelected)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(selectedGoal == i
-                                      ? goal.barColor.opacity(0.08)
-                                      : Color.white)
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(selectedGoal == i
-                                        ? goal.barColor
-                                        : Color(hex: "#e2e8f0"), lineWidth: 2)
-                        )
+                        .modifier(OBSelectableCard(isSelected: isSelected))
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, 24)
+            .obContentWidth()
 
             Spacer()
 
             // ── Continue Button ────────────────────────────────────
-            VStack {
-                Divider()
+            OBBottomBar {
                 Button {
                     if let g = selectedGoal {
                         UserDefaults.standard.set(goals[g].minutes, forKey: "dailyGoalMinutes")
@@ -139,25 +92,12 @@ struct DailyGoalView: View {
                     navigateToQuiz = true
                 } label: {
                     Text(langManager.s(.continueButton))
-                        .font(.custom("Feather-Bold", size: 17))
-                        .foregroundStyle(selectedGoal == nil ? Color(hex: "#94a3b8") : .white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(selectedGoal == nil
-                                    ? Color(hex: "#e2e8f0")
-                                    : AppTheme.Colors.primaryOrange)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: selectedGoal == nil ? .clear
-                                : AppTheme.Colors.primaryOrange.opacity(0.4), radius: 8, y: 4)
                 }
-                .disabled(selectedGoal == nil)
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+                .buttonStyle(InkButtonStyle())
+                .obDisabled(selectedGoal == nil)
             }
-            .background(Color.white)
         }
-        .background(Color(hex: "#f8fafc").ignoresSafeArea())
+        .paperBackground()
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToQuiz) {
             let minutes = selectedGoal.map { goals[$0].minutes } ?? 10

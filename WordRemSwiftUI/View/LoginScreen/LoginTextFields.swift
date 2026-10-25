@@ -15,15 +15,15 @@ struct LoginTextFields: View {
         VStack(alignment:.leading,spacing: 15) {
             Text(" Welcome")
                 .frame(maxWidth: .infinity,alignment:.leading)
-                .font(.custom("Feather-Bold", size: 25))
+                .font(.system(size: 25, weight: .semibold, design: .serif))
             Text(" Login")
                 .frame(maxWidth: .infinity,alignment:.leading)
-                .font(.custom("Feather-Bold", size: 25))
+                .font(.system(size: 25, weight: .semibold, design: .serif))
         }
         .padding(.bottom,30)
         
         Text("Sign in with email")
-            .font(.custom("Feather-Bold", size: 15))
+            .font(.system(size: 15, weight: .semibold))
             .frame(maxWidth: .infinity,alignment:.leading)
             .padding()
         VStack(spacing:20) {

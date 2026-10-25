@@ -43,7 +43,7 @@ struct AchievementUnlockPopup: View {
 
                     // Rarity badge
                     Text(achievement.rarity.label.uppercased())
-                        .font(.custom("Poppins-Bold", size: 11))
+                        .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(.white)
                         .tracking(1.5)
                         .padding(.horizontal, 14)
@@ -87,26 +87,26 @@ struct AchievementUnlockPopup: View {
                     // "New Achievement!" header
                     VStack(spacing: 4) {
                         Text(langManager.s(.achievementNewUnlocked))
-                            .font(.custom("Poppins-Bold", size: 13))
+                            .font(.system(size: 13, weight: .bold))
                             .foregroundStyle(achievement.rarity.color)
 
                         Text(achievement.title)
-                            .font(.custom("Poppins-Bold", size: 24))
-                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(Color(hex: "#1C1A17"))
                             .multilineTextAlignment(.center)
                     }
 
                     // Description
                     Text(achievement.description)
-                        .font(.custom("Poppins-Regular", size: 14))
-                        .foregroundStyle(Color(hex: "#64748b"))
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color(hex: "#6B645A"))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 8)
 
                     // Dismiss hint
                     Text(langManager.s(.achievementTapToDismiss))
-                        .font(.custom("Poppins-Regular", size: 12))
-                        .foregroundStyle(Color(hex: "#94a3b8"))
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color(hex: "#8A8277"))
                         .padding(.bottom, 4)
                 }
                 .padding(.top, 28)

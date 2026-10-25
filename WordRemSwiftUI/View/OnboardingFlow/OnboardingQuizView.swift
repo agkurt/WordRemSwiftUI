@@ -118,64 +118,50 @@ struct OnboardingQuizView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Top Progress Bar
-            HStack(spacing: 8) {
-                ForEach(0..<4, id: \.self) { index in
-                    Capsule()
-                        .fill(AppTheme.Colors.primaryOrange)
-                        .frame(height: 12)
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
-            
-            // Question Section
-            VStack(alignment: .leading, spacing: 24) {
-                Text(langManager.s(.quizInstruction))
-                    .font(.custom("Feather-Bold", size: 22))
-                    .foregroundStyle(Color(hex: "#1e293b"))
-                
-                HStack(alignment: .bottom, spacing: 0) {
-                    // Maskot (sol — Duolingo tarzı)
-                    MascotAnimationView(width: 90, height: 90)
-                        .offset(y: 8)
+            OBProgressBar(total: 4, filled: 4)
 
-                    // Speech bubble (sağ)
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Speaker button (bubble içinde)
-                        HStack {
-                            Button(action: { speakSentence() }) {
-                                Image(systemName: isSpeaking ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(isSpeaking ? .white : Color.blue)
-                                    .padding(8)
-                                    .background(
-                                        isSpeaking ? Color.blue : Color.blue.opacity(0.1),
-                                        in: Circle()
-                                    )
-                            }
-                            .animation(.easeInOut(duration: 0.2), value: isSpeaking)
-                            Spacer()
-                        }
+            // Question Section
+            VStack(alignment: .leading, spacing: 20) {
+                Text(langManager.s(.quizInstruction))
+                    .font(DS.Font.display(28, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                // Sentence card
+                HStack(alignment: .top, spacing: 14) {
+                    // Speaker button
+                    Button(action: { speakSentence() }) {
+                        Image(systemName: isSpeaking ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(isSpeaking ? DS.Colors.paperRaised : DS.Colors.ink)
+                            .frame(width: 40, height: 40)
+                            .background(
+                                isSpeaking ? DS.Colors.ink : DS.Colors.paperSunken,
+                                in: Circle()
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .animation(.easeInOut(duration: 0.2), value: isSpeaking)
+
+                    VStack(alignment: .leading, spacing: 12) {
                         let words = foreignSentence.components(separatedBy: " ").filter { !$0.isEmpty }
-                        OBFlowLayout(spacing: 8) {
+                        OBFlowLayout(spacing: 6) {
                             ForEach(Array(words.enumerated()), id: \.offset) { idx, word in
                                 let clean = word.trimmingCharacters(in: .punctuationCharacters)
                                 let hasMeaning = sentenceWordMeanings[clean] != nil
                                 let isTapped = tappedWordIdx == idx
-                                let textColor: Color = isTapped ? .blue : Color(hex: "#1e293b")
-                                let bgColor: Color = hasMeaning
-                                    ? Color.blue.opacity(isTapped ? 0.12 : 0.06)
-                                    : .clear
+                                let textColor: Color = isTapped ? DS.Colors.accentDeep : DS.Colors.ink
+                                let bgColor: Color = (hasMeaning && isTapped) ? DS.Colors.accentSoft : .clear
 
                                 Text(word)
-                                    .font(.custom("Feather-Bold", size: 18))
+                                    .font(DS.Font.display(24, weight: .medium))
                                     .foregroundStyle(textColor)
-                                    .padding(.horizontal, hasMeaning ? 6 : 0)
-                                    .padding(.vertical, hasMeaning ? 2 : 0)
+                                    .padding(.horizontal, hasMeaning ? 4 : 0)
+                                    .padding(.vertical, hasMeaning ? 1 : 0)
                                     .background(bgColor, in: RoundedRectangle(cornerRadius: 5))
-                                    .underline(hasMeaning, color: Color.blue.opacity(0.4))
+                                    .underline(hasMeaning, pattern: .dot, color: DS.Colors.muted)
                                     .onTapGesture {
-                                        withAnimation(.spring(response: 0.25)) {
+                                        withAnimation(.easeOut(duration: 0.2)) {
                                             tappedWordIdx = tappedWordIdx == idx ? nil : idx
                                         }
                                         // Tıklanan kelimeyi seslendir
@@ -194,58 +180,48 @@ struct OnboardingQuizView: View {
                             if let meaning = sentenceWordMeanings[clean] {
                                 HStack(spacing: 8) {
                                     Text(clean)
-                                        .font(.custom("Feather-Bold", size: 13))
-                                        .foregroundStyle(Color.blue)
+                                        .font(DS.Font.ui(14, weight: .semibold))
+                                        .foregroundStyle(DS.Colors.accentDeep)
                                     Text("=")
-                                        .foregroundStyle(Color(hex: "#94a3b8"))
+                                        .font(DS.Font.ui(14))
+                                        .foregroundStyle(DS.Colors.muted)
                                     Text(meaning)
-                                        .font(.custom("Feather-Bold", size: 13))
-                                        .foregroundStyle(Color(hex: "#1e293b"))
+                                        .font(DS.Font.ui(14, weight: .medium))
+                                        .foregroundStyle(DS.Colors.ink)
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 7)
-                                .background(Color(hex: "#f0f9ff"), in: RoundedRectangle(cornerRadius: 10))
+                                .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 10))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.blue.opacity(0.25), lineWidth: 1)
+                                        .stroke(DS.Colors.line, lineWidth: 1)
                                 )
-                                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                                .transition(.opacity)
                             }
                         }
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 12)
-                    .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color(hex: "#e2e8f0"), lineWidth: 1.5)
-                    )
-                    // Speech bubble tail
-                    .overlay(alignment: .bottomLeading) {
-                        Image(systemName: "triangle.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(Color(hex: "#e2e8f0"))
-                            .rotationEffect(.degrees(-90))
-                            .offset(x: -7, y: -14)
-                    }
-                    .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-                    .animation(.spring(response: 0.3), value: tappedWordIdx)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .padding(18)
+                .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 16))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(DS.Colors.line, lineWidth: 1)
+                )
+                .animation(.easeOut(duration: 0.2), value: tappedWordIdx)
             }
             .padding(.horizontal, 24)
-            .padding(.top, 32)
-            
+            .padding(.top, 28)
+            .obContentWidth()
+
             // Answer Drop Zone
             VStack(alignment: .leading) {
-                Divider().opacity(0)
-                
-                // Wrap view for selected words (simple layout for mock)
                 if selectedWords.isEmpty {
-                    VStack {
+                    VStack(spacing: 0) {
                         Spacer()
-                        Divider()
-                            .padding(.vertical, 8)
-                        Divider()
+                        Rectangle().fill(DS.Colors.line).frame(height: 1)
+                            .padding(.bottom, 44)
+                        Rectangle().fill(DS.Colors.line).frame(height: 1)
                     }
                     .frame(height: 100)
                 } else {
@@ -265,10 +241,11 @@ struct OnboardingQuizView: View {
                 }
             }
             .padding(.horizontal, 24)
-            .padding(.top, 40)
-            
+            .padding(.top, 32)
+            .obContentWidth()
+
             Spacer()
-            
+
             // Available Words Zone
             OBFlowLayout(spacing: 10) {
                 ForEach(availableWords.sorted(), id: \.self) { word in
@@ -284,40 +261,48 @@ struct OnboardingQuizView: View {
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
-            
+            .obContentWidth()
+
             // Bottom Check Button
             VStack(spacing: 0) {
                 if checkStatus == .correct {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(langManager.s(.quizCorrect))
-                                .font(.custom("Feather-Bold", size: 20))
-                                .foregroundStyle(Color.green)
-                        }
+                    HStack(spacing: 10) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(DS.Colors.success)
+                        Text(langManager.s(.quizCorrect))
+                            .font(DS.Font.display(20, weight: .bold))
+                            .foregroundStyle(DS.Colors.success)
                         Spacer()
                     }
                     .padding(.horizontal, 24)
-                    .padding(.vertical, 16)
-                    .background(Color.green.opacity(0.1))
+                    .padding(.top, 18)
+                    .obContentWidth()
                 } else if checkStatus == .wrong {
-                    HStack {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(DS.Colors.danger)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(langManager.s(.quizWrong))
-                                .font(.custom("Feather-Bold", size: 20))
-                                .foregroundStyle(Color.red)
+                                .font(DS.Font.display(20, weight: .bold))
+                                .foregroundStyle(DS.Colors.danger)
                             Text(langManager.f(.quizCorrectAnswer, correctWords.joined(separator: " ")))
-                                .font(.custom("Feather-Bold", size: 16))
-                                .foregroundStyle(Color.red.opacity(0.8))
+                                .font(DS.Font.ui(15, weight: .medium))
+                                .foregroundStyle(DS.Colors.danger)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         Spacer()
                     }
                     .padding(.horizontal, 24)
-                    .padding(.vertical, 16)
-                    .background(Color.red.opacity(0.1))
+                    .padding(.top, 18)
+                    .obContentWidth()
                 } else {
-                    Divider()
+                    Rectangle()
+                        .fill(DS.Colors.line)
+                        .frame(height: 1)
                 }
-                
+
                 Button(action: {
                     if checkStatus == .correct || checkStatus == .wrong {
                         navigateToPlan = true
@@ -326,22 +311,21 @@ struct OnboardingQuizView: View {
                     }
                 }) {
                     Text(checkStatus == .idle ? langManager.s(.quizCheck) : langManager.s(.continueButton))
-                        .font(.custom("Feather-Bold", size: 17))
-                        .foregroundStyle(selectedWords.isEmpty && checkStatus == .idle ? Color(hex: "#94a3b8") : .white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(buttonColor)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: (selectedWords.isEmpty && checkStatus == .idle) ? .clear : buttonColor.opacity(0.4), radius: 8, y: 4)
                 }
-                .disabled(selectedWords.isEmpty && checkStatus == .idle)
+                .buttonStyle(InkButtonStyle(fill: buttonColor))
+                .obDisabled(selectedWords.isEmpty && checkStatus == .idle)
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
                 .padding(.bottom, 20)
-                .background(checkStatus == .correct ? Color.green.opacity(0.1) : (checkStatus == .wrong ? Color.red.opacity(0.1) : Color.white))
+                .obContentWidth()
             }
+            .background(
+                (checkStatus == .correct ? DS.Colors.successSoft
+                 : (checkStatus == .wrong ? DS.Colors.dangerSoft : DS.Colors.paper))
+                .ignoresSafeArea(edges: .bottom)
+            )
         }
-        .background(Color(hex: "#f8fafc").ignoresSafeArea())
+        .paperBackground()
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear {
             synthesizer.stopSpeaking(at: .immediate)
@@ -378,10 +362,9 @@ struct OnboardingQuizView: View {
     }
 
     private var buttonColor: Color {
-        if checkStatus == .correct { return Color(hex: "#22c55e") } // Green
-        if checkStatus == .wrong { return Color(hex: "#ef4444") } // Red
-        if selectedWords.isEmpty { return Color(hex: "#e2e8f0") }
-        return AppTheme.Colors.primaryOrange
+        if checkStatus == .correct { return DS.Colors.success }
+        if checkStatus == .wrong { return DS.Colors.danger }
+        return DS.Colors.ink
     }
     
     private func validateAnswer() {
@@ -399,17 +382,15 @@ struct WordBubble: View {
     let word: String
     var body: some View {
         Text(word)
-            .font(.custom("Feather-Bold", size: 16))
-            .foregroundStyle(Color(hex: "#1e293b"))
+            .font(DS.Font.ui(17, weight: .medium))
+            .foregroundStyle(DS.Colors.ink)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(hex: "#cbd5e1"), lineWidth: 1)
+                    .stroke(DS.Colors.line, lineWidth: 1)
             )
-            .shadow(color: .black.opacity(0.05), radius: 2, y: 2)
     }
 }
 

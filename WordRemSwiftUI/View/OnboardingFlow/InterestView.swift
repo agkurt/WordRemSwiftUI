@@ -32,109 +32,56 @@ struct InterestView: View {
         VStack(spacing: 0) {
 
             // ── Progress Bar ───────────────────────────────────────
-            HStack(spacing: 8) {
-                ForEach(0..<4, id: \.self) { i in
-                    Capsule()
-                        .fill(i < 4 ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"))
-                        .frame(height: 12)
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
+            OBProgressBar(total: 4, filled: 4)
 
-            // ── Mascot + Speech Bubble ─────────────────────────────
-            HStack(alignment: .top, spacing: 16) {
-                MascotAnimationView(width: 70, height: 70)
-
-                Text(langManager.f(.interestQuestion, selectedLanguageName))
-                    .font(.custom("Feather-Bold", size: 16))
-                    .foregroundStyle(Color(hex: "#1e293b"))
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(hex: "#f0f4ff"))
-                            .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
-                    )
-                    .overlay(
-                        Path { path in
-                            path.move(to: CGPoint(x: 0, y: 20))
-                            path.addLine(to: CGPoint(x: -10, y: 25))
-                            path.addLine(to: CGPoint(x: 0, y: 30))
-                        }
-                        .fill(Color(hex: "#f0f4ff"))
-                    )
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 24)
-            .padding(.bottom, 28)
+            // ── Header ─────────────────────────────────────────────
+            OBHeader(title: langManager.f(.interestQuestion, selectedLanguageName))
 
             // ── Interest Options ───────────────────────────────────
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     ForEach(0..<interests.count, id: \.self) { i in
                         let item = interests[i]
                         Button {
                             selectedInterest = i
                         } label: {
-                            HStack(spacing: 16) {
+                            HStack(spacing: 14) {
                                 Image(item.asset)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 36, height: 36)
+                                    .frame(width: 32, height: 32)
 
                                 Text(item.label)
-                                    .font(.custom("Feather-Bold", size: 15))
-                                    .foregroundStyle(Color(hex: "#1e293b"))
+                                    .font(DS.Font.ui(17, weight: .medium))
+                                    .foregroundStyle(DS.Colors.ink)
+                                    .multilineTextAlignment(.leading)
 
                                 Spacer()
+
+                                OBCheckmark(isSelected: selectedInterest == i)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 16)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(selectedInterest == i
-                                          ? AppTheme.Colors.primaryOrange.opacity(0.1)
-                                          : Color.white)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(selectedInterest == i
-                                            ? AppTheme.Colors.primaryOrange
-                                            : Color(hex: "#e2e8f0"), lineWidth: 2)
-                            )
+                            .modifier(OBSelectableCard(isSelected: selectedInterest == i))
                         }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 20)
+                .obContentWidth()
             }
 
             // ── Continue Button ────────────────────────────────────
-            VStack {
-                Divider()
+            OBBottomBar {
                 Button {
                     navigateToGoal = true
                 } label: {
                     Text(langManager.s(.continueButton))
-                        .font(.custom("Feather-Bold", size: 17))
-                        .foregroundStyle(selectedInterest == nil ? Color(hex: "#94a3b8") : .white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(selectedInterest == nil
-                                    ? Color(hex: "#e2e8f0")
-                                    : AppTheme.Colors.primaryOrange)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: selectedInterest == nil ? .clear
-                                : AppTheme.Colors.primaryOrange.opacity(0.4), radius: 8, y: 4)
                 }
-                .disabled(selectedInterest == nil)
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+                .buttonStyle(InkButtonStyle())
+                .obDisabled(selectedInterest == nil)
             }
-            .background(Color.white)
         }
-        .background(Color(hex: "#f8fafc").ignoresSafeArea())
+        .paperBackground()
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToGoal) {
             let label = selectedInterest.map { interests[$0].label } ?? ""

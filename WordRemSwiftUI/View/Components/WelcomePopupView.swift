@@ -50,15 +50,15 @@ struct WelcomePopupView: View {
     private var headerGradient: LinearGradient {
         isNew
             ? LinearGradient(
-                colors: [Color(hex: "#8b5cf6"), Color(hex: "#6d28d9")],
+                colors: [Color(hex: "#2F4B5C"), Color(hex: "#6d28d9")],
                 startPoint: .topLeading, endPoint: .bottomTrailing)
             : LinearGradient(
-                colors: [Color(hex: "#f97316"), Color(hex: "#ea580c")],
+                colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
                 startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
     private var ctaColor: Color {
-        isNew ? Color(hex: "#8b5cf6") : AppTheme.Colors.primaryOrange
+        isNew ? Color(hex: "#2F4B5C") : AppTheme.Colors.primaryOrange
     }
 
     // MARK: - Body
@@ -118,7 +118,7 @@ struct WelcomePopupView: View {
                         Text(isNew
                              ? langManager.s(.welcomeNewCTA)
                              : langManager.s(.welcomeBackCTA))
-                            .font(.custom("Feather-Bold", size: 17))
+                            .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
@@ -148,13 +148,13 @@ struct WelcomePopupView: View {
     private var newUserContent: some View {
         VStack(spacing: 6) {
             Text(langManager.s(.welcomeNewTitle))
-                .font(.custom("Feather-Bold", size: 22))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 22, weight: .semibold, design: .serif))
+                .foregroundStyle(Color(hex: "#1C1A17"))
                 .multilineTextAlignment(.center)
 
             Text(langManager.s(.welcomeNewSubtitle))
-                .font(.custom("Feather-Bold", size: 14))
-                .foregroundStyle(Color(hex: "#64748b"))
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color(hex: "#6B645A"))
                 .multilineTextAlignment(.center)
         }
 
@@ -177,12 +177,12 @@ struct WelcomePopupView: View {
     private var returningUserContent: some View {
         VStack(spacing: 8) {
             Text(langManager.s(.welcomeBackTitle))
-                .font(.custom("Feather-Bold", size: 24))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 24, weight: .semibold, design: .serif))
+                .foregroundStyle(Color(hex: "#1C1A17"))
                 .multilineTextAlignment(.center)
 
             Text(langManager.f(.welcomeBackMessageFormat, name))
-                .font(.custom("Feather-Bold", size: 16))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.primaryOrange)
                 .multilineTextAlignment(.center)
         }
@@ -192,15 +192,15 @@ struct WelcomePopupView: View {
             Text("💪")
                 .font(.system(size: 36))
             Text(langManager.s(.welcomeBackMotivation))
-                .font(.custom("Feather-Bold", size: 15))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
                 .multilineTextAlignment(.leading)
             Spacer()
         }
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(hex: "#fff7ed"))
+                .fill(Color(hex: "#F3E2D8"))
         )
     }
 
@@ -209,8 +209,8 @@ struct WelcomePopupView: View {
     private func featureRow(_ text: String) -> some View {
         HStack(spacing: 12) {
             Text(text)
-                .font(.custom("Feather-Bold", size: 14))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
             Spacer()
         }
     }

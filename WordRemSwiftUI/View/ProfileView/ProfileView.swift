@@ -21,7 +21,7 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            Color(hex: "#f4f6f9").ignoresSafeArea()
+            Color(hex: "#F6F2EA").ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // ── Header (PathHeaderView ile aynı stil) ──────────
@@ -111,24 +111,24 @@ struct ProfileView: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color(hex: "#fff7ed"))
+                        .fill(Color(hex: "#F3E2D8"))
                         .frame(width: 44, height: 44)
                     Image(systemName: "person.badge.plus")
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#f97316"))
+                        .foregroundStyle(Color(hex: "#C2512F"))
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(langManager.s(.profileSaveProgress))
-                        .font(.custom("Feather-Bold", size: 14))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#1C1A17"))
                     Text(langManager.s(.profileSaveProgressHint))
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#cbd5e1"))
+                    .foregroundStyle(Color(hex: "#D6CEBF"))
             }
             .padding(16)
             .background(
@@ -136,9 +136,9 @@ struct ProfileView: View {
                     .fill(Color.white)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color(hex: "#fed7aa"), lineWidth: 1.5)
+                            .stroke(Color(hex: "#EBC9B6"), lineWidth: 1.5)
                     )
-                    .shadow(color: Color(hex: "#f97316").opacity(0.08), radius: 8, y: 3)
+                    .shadow(color: Color(hex: "#C2512F").opacity(0.08), radius: 8, y: 3)
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -149,10 +149,10 @@ struct ProfileView: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(vm.username)
-                    .font(.custom("Feather-Bold", size: 22))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
                 Text(langManager.f(.profileLevelFormat, vm.userLevel))
-                    .font(.custom("Feather-Bold", size: 12))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -161,14 +161,14 @@ struct ProfileView: View {
             HStack(spacing: 5) {
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#f59e0b"))
+                    .foregroundStyle(Color(hex: "#C8962E"))
                 Text("\(vm.user?.totalXp ?? 0) XP")
-                    .font(.custom("Feather-Bold", size: 14))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 7)
-            .background(Color(hex: "#f59e0b").opacity(0.13), in: Capsule())
+            .background(Color(hex: "#C8962E").opacity(0.13), in: Capsule())
 
             // Streak pill
             HStack(spacing: 5) {
@@ -176,8 +176,8 @@ struct ProfileView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.orange)
                 Text("\(vm.user?.streakDays ?? 0)")
-                    .font(.custom("Feather-Bold", size: 14))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 7)
@@ -200,7 +200,7 @@ struct ProfileView: View {
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(Color(hex: "#f1f5f9"))
+                        .fill(Color(hex: "#EFE9DE"))
                         .frame(width: 68, height: 68)
                     if let char = vm.selectedCharacter {
                         Image(char)
@@ -209,8 +209,8 @@ struct ProfileView: View {
                             .clipShape(Circle())
                     } else {
                         Text(vm.initials)
-                            .font(.custom("Feather-Bold", size: 26))
-                            .foregroundStyle(Color(hex: "#64748b"))
+                            .font(.system(size: 26, weight: .semibold, design: .serif))
+                            .foregroundStyle(Color(hex: "#6B645A"))
                     }
                 }
                 .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
@@ -218,8 +218,8 @@ struct ProfileView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
                         Text(vm.username)
-                            .font(.custom("Feather-Bold", size: 18))
-                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#1C1A17"))
 
                         if !authManager.isAnonymous, (vm.user?.usernameChanges ?? 0) == 1 {
                             Button { showUsernameSetup = true } label: {
@@ -235,13 +235,13 @@ struct ProfileView: View {
                     // Level + XP + Streak inline
                     HStack(spacing: 8) {
                         Label(langManager.f(.profileLevelFormat, vm.userLevel), systemImage: "star.fill")
-                            .font(.custom("Feather-Bold", size: 11))
-                            .foregroundStyle(Color(hex: "#f59e0b"))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#C8962E"))
                         Label("\(vm.user?.totalXp ?? 0) XP", systemImage: "bolt.fill")
-                            .font(.custom("Feather-Bold", size: 11))
-                            .foregroundStyle(Color(hex: "#64748b"))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#6B645A"))
                         Label("\(vm.user?.streakDays ?? 0)", systemImage: "flame.fill")
-                            .font(.custom("Feather-Bold", size: 11))
+                            .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(.orange)
                     }
                 }
@@ -258,17 +258,17 @@ struct ProfileView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "crown.fill")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#8b5cf6"))
+                        .foregroundStyle(Color(hex: "#2F4B5C"))
                     Text("WordRem Pro")
-                        .font(.custom("Feather-Bold", size: 14))
-                        .foregroundStyle(Color(hex: "#8b5cf6"))
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#2F4B5C"))
                     Spacer()
                     Text("✓ Aktif")
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
-                        .background(Color(hex: "#8b5cf6"), in: Capsule())
+                        .background(Color(hex: "#2F4B5C"), in: Capsule())
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 16)
@@ -283,13 +283,13 @@ struct ProfileView: View {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 14, weight: .semibold))
                         Text(langManager.s(.profileUpgradePro))
-                            .font(.custom("Feather-Bold", size: 14))
+                            .font(.system(size: 14, weight: .semibold))
                     }
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color(hex: "#3B5BDB"), in: RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: Color(hex: "#3B5BDB").opacity(0.28), radius: 8, y: 4)
+                    .background(Color(hex: "#2F4B5C"), in: RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: Color(hex: "#2F4B5C").opacity(0.28), radius: 8, y: 4)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 14)
@@ -304,19 +304,19 @@ struct ProfileView: View {
         HStack(spacing: 12) {
             StatOverviewTile(
                 icon: "checkmark.seal.fill",
-                color: Color(hex: "#6366f1"),
+                color: Color(hex: "#2F4B5C"),
                 value: "\(vm.stats.totalAttempts)",
                 label: "Toplam Soru"
             )
             StatOverviewTile(
                 icon: "target",
-                color: Color(hex: "#E8409C"),
+                color: Color(hex: "#C2512F"),
                 value: String(format: "%.0f%%", vm.stats.accuracy),
                 label: AL.s(.hcAccuracy)
             )
             StatOverviewTile(
                 icon: "flag.checkered",
-                color: Color(hex: "#10b981"),
+                color: Color(hex: "#3F7D58"),
                 value: "\(vm.stats.completedLevels)",
                 label: "Tamamlanan"
             )
@@ -327,51 +327,51 @@ struct ProfileView: View {
     private var streakCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Seri")
-                .font(.custom("Feather-Bold", size: 18))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
 
             VStack(spacing: 10) {
                 // Günlük Seri
                 HStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color(hex: "#fff7ed"))
+                            .fill(Color(hex: "#F3E2D8"))
                             .frame(width: 38, height: 38)
                         Text("🔥").font(.system(size: 20))
                     }
                     Text(AL.s(.hcDailyStreak))
-                        .font(.custom("Feather-Bold", size: 15))
-                        .foregroundStyle(Color(hex: "#ea580c"))
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#9E3F22"))
                     Spacer()
                     Text("\(vm.user?.streakDays ?? 0)")
-                        .font(.custom("Feather-Bold", size: 20))
-                        .foregroundStyle(Color(hex: "#ea580c"))
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#9E3F22"))
                         .frame(minWidth: 44, minHeight: 36)
-                        .background(Color(hex: "#fff7ed"), in: RoundedRectangle(cornerRadius: 10))
+                        .background(Color(hex: "#F3E2D8"), in: RoundedRectangle(cornerRadius: 10))
                 }
                 .padding(12)
-                .background(Color(hex: "#fff7ed").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
+                .background(Color(hex: "#F3E2D8").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
 
                 // En İyi Seri
                 HStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color(hex: "#f0fdf4"))
+                            .fill(Color(hex: "#E3EEE6"))
                             .frame(width: 38, height: 38)
                         Text("🏆").font(.system(size: 20))
                     }
                     Text(AL.s(.hcBestStreak))
-                        .font(.custom("Feather-Bold", size: 15))
-                        .foregroundStyle(Color(hex: "#16a34a"))
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#336A4A"))
                     Spacer()
                     Text("\(vm.bestStreak)")
-                        .font(.custom("Feather-Bold", size: 20))
-                        .foregroundStyle(Color(hex: "#16a34a"))
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#336A4A"))
                         .frame(minWidth: 44, minHeight: 36)
-                        .background(Color(hex: "#f0fdf4"), in: RoundedRectangle(cornerRadius: 10))
+                        .background(Color(hex: "#E3EEE6"), in: RoundedRectangle(cornerRadius: 10))
                 }
                 .padding(12)
-                .background(Color(hex: "#f0fdf4").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
+                .background(Color(hex: "#E3EEE6").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
             }
 
             // Haftalık Takvim
@@ -413,13 +413,13 @@ struct ProfileView: View {
 
                 VStack(spacing: 6) {
                     Text(dayNames[weekdayIdx])
-                        .font(.custom("Feather-Bold", size: 10))
-                        .foregroundStyle(isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#94a3b8"))
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#8A8277"))
 
                     Circle()
                         .fill(isActive
                             ? (isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#fb923c").opacity(0.75))
-                            : Color(hex: "#e2e8f0")
+                            : Color(hex: "#E4DDD0")
                         )
                         .frame(width: 32, height: 32)
                         .overlay {
@@ -444,8 +444,8 @@ struct ProfileView: View {
 
         return VStack(alignment: .leading, spacing: 16) {
             Text(AL.s(.hcProgress))
-                .font(.custom("Feather-Bold", size: 18))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
 
             // XP Level Progress
             VStack(alignment: .leading, spacing: 8) {
@@ -453,47 +453,47 @@ struct ProfileView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "bolt.fill")
                             .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#f59e0b"))
+                            .foregroundStyle(Color(hex: "#C8962E"))
                         Text("Seviye \(currentLevel)")
-                            .font(.custom("Feather-Bold", size: 14))
-                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#1C1A17"))
                     }
                     Spacer()
                     Text("\(xp) XP")
-                        .font(.custom("Feather-Bold", size: 13))
-                        .foregroundStyle(Color(hex: "#64748b"))
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#6B645A"))
                 }
 
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(hex: "#f1f5f9"))
+                            .fill(Color(hex: "#EFE9DE"))
                             .frame(height: 10)
                         RoundedRectangle(cornerRadius: 6)
                             .fill(
                                 LinearGradient(
-                                    colors: [Color(hex: "#f59e0b"), Color(hex: "#f97316")],
+                                    colors: [Color(hex: "#C8962E"), Color(hex: "#C2512F")],
                                     startPoint: .leading, endPoint: .trailing
                                 )
                             )
                             .frame(width: max(10, geo.size.width * xpProgress), height: 10)
-                            .shadow(color: Color(hex: "#f97316").opacity(0.4), radius: 4, y: 2)
+                            .shadow(color: Color(hex: "#C2512F").opacity(0.4), radius: 4, y: 2)
                     }
                 }
                 .frame(height: 10)
 
                 HStack {
                     Text("\(xpInLevel)/\(xpPerLevel) XP")
-                        .font(.custom("Feather-Bold", size: 11))
-                        .foregroundStyle(Color(hex: "#94a3b8"))
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#8A8277"))
                     Spacer()
                     Text("Sonraki seviye")
-                        .font(.custom("Feather-Bold", size: 11))
-                        .foregroundStyle(Color(hex: "#94a3b8"))
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#8A8277"))
                 }
             }
             .padding(16)
-            .background(Color(hex: "#fffbeb").opacity(0.8), in: RoundedRectangle(cornerRadius: 14))
+            .background(Color(hex: "#F8F0E3").opacity(0.8), in: RoundedRectangle(cornerRadius: 14))
 
             // 3 mini stat kutucukları
             HStack(spacing: 10) {
@@ -501,7 +501,7 @@ struct ProfileView: View {
                     emoji: "⚡",
                     value: "\(xp)",
                     label: "Toplam XP",
-                    bg: Color(hex: "#fef9c3")
+                    bg: Color(hex: "#F5ECD2")
                 )
                 MiniProgressTile(
                     emoji: "📚",
@@ -513,7 +513,7 @@ struct ProfileView: View {
                     emoji: "🎯",
                     value: String(format: "%.0f%%", vm.stats.accuracy),
                     label: AL.s(.hcAccuracy),
-                    bg: Color(hex: "#fce7f3")
+                    bg: Color(hex: "#F3E2D8")
                 )
             }
         }
@@ -528,15 +528,15 @@ struct ProfileView: View {
             // Header row
             HStack {
                 Text(langManager.s(.profileAchievements))
-                    .font(.custom("Poppins-Bold", size: 17))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
 
                 Spacer()
 
                 // Unlocked count badge
                 let unlockedCount = achievementService.all.filter { $0.isUnlocked }.count
                 Text("\(unlockedCount)/\(achievementService.all.count)")
-                    .font(.custom("Poppins-SemiBold", size: 12))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.primaryOrange)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
@@ -546,7 +546,7 @@ struct ProfileView: View {
                     showAllAchievements = true
                 } label: {
                     Text(langManager.s(.achievementViewMore))
-                        .font(.custom("Poppins-SemiBold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.primaryOrange)
                 }
             }
@@ -585,7 +585,7 @@ struct ProfileView: View {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 14, weight: .semibold))
                 Text(langManager.s(.profileSignOut))
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.system(size: 14, weight: .semibold))
             }
             .foregroundStyle(.red)
             .frame(maxWidth: .infinity)
@@ -605,9 +605,9 @@ struct ProfileView: View {
                 Image(systemName: "trash")
                     .font(.system(size: 14, weight: .semibold))
                 Text(langManager.s(.profileDeleteAccount))
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.system(size: 14, weight: .semibold))
             }
-            .foregroundStyle(Color(hex: "#94a3b8"))
+            .foregroundStyle(Color(hex: "#8A8277"))
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
         }
@@ -741,11 +741,11 @@ private struct StatOverviewTile: View {
                     .foregroundStyle(color)
             }
             Text(value)
-                .font(.custom("Feather-Bold", size: 18))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
             Text(label)
-                .font(.custom("Feather-Bold", size: 10))
-                .foregroundStyle(Color(hex: "#94a3b8"))
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(Color(hex: "#8A8277"))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
@@ -766,11 +766,11 @@ private struct MiniProgressTile: View {
         VStack(spacing: 4) {
             Text(emoji).font(.system(size: 22))
             Text(value)
-                .font(.custom("Feather-Bold", size: 16))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
             Text(label)
-                .font(.custom("Feather-Bold", size: 10))
-                .foregroundStyle(Color(hex: "#64748b"))
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(Color(hex: "#6B645A"))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14)
@@ -796,10 +796,10 @@ private struct CompactStatTile: View {
             }
             VStack(alignment: .leading, spacing: 1) {
                 Text(value)
-                    .font(.custom("Feather-Bold", size: 16))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
                 Text(label)
-                    .font(.custom("Feather-Bold", size: 11))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -829,10 +829,10 @@ private struct ProfileStatCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(value)
-                        .font(.custom("Feather-Bold", size: 22))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                        .font(.system(size: 22, weight: .semibold, design: .serif))
+                        .foregroundStyle(Color(hex: "#1C1A17"))
                     Text(title)
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -859,10 +859,10 @@ private struct MiniStatCard: View {
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(color)
             Text(value)
-                .font(.custom("Feather-Bold", size: 18))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
             Text(label)
-                .font(.custom("Feather-Bold", size: 11))
+                .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -894,7 +894,7 @@ private struct AchievementBadge: View {
                                 startPoint: .topLeading, endPoint: .bottomTrailing
                               )
                             : LinearGradient(
-                                colors: [Color(hex: "#e2e8f0"), Color(hex: "#e2e8f0")],
+                                colors: [Color(hex: "#E4DDD0"), Color(hex: "#E4DDD0")],
                                 startPoint: .top, endPoint: .bottom
                               ),
                         lineWidth: isUnlocked ? 2.5 : 1.5
@@ -902,18 +902,18 @@ private struct AchievementBadge: View {
                     .frame(width: 62, height: 62)
 
                 Circle()
-                    .fill(isUnlocked ? color.opacity(0.12) : Color(hex: "#f1f5f9"))
+                    .fill(isUnlocked ? color.opacity(0.12) : Color(hex: "#EFE9DE"))
                     .frame(width: 56, height: 56)
 
                 Image(systemName: icon)
                     .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(isUnlocked ? color : Color(hex: "#cbd5e1"))
+                    .foregroundStyle(isUnlocked ? color : Color(hex: "#D6CEBF"))
             }
             .shadow(color: isUnlocked ? color.opacity(0.25) : .clear, radius: 8, y: 3)
 
             Text(title)
-                .font(.custom("Poppins-SemiBold", size: 10))
-                .foregroundStyle(isUnlocked ? Color(hex: "#1a1a2e") : Color(hex: "#94a3b8"))
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(isUnlocked ? Color(hex: "#1C1A17") : Color(hex: "#8A8277"))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .frame(width: 68)
@@ -951,7 +951,7 @@ struct AllAchievementsSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "#f4f6f9").ignoresSafeArea()
+                Color(hex: "#F6F2EA").ignoresSafeArea()
 
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 28) {
@@ -960,12 +960,12 @@ struct AllAchievementsSheet: View {
                                 // Section header
                                 HStack(spacing: 8) {
                                     Text(groupName)
-                                        .font(.custom("Poppins-Bold", size: 15))
-                                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                                        .font(.system(size: 15, weight: .bold))
+                                        .foregroundStyle(Color(hex: "#1C1A17"))
 
                                     let unlocked = items.filter { $0.isUnlocked }.count
                                     Text("\(unlocked)/\(items.count)")
-                                        .font(.custom("Poppins-Regular", size: 12))
+                                        .font(.system(size: 12))
                                         .foregroundStyle(.secondary)
                                 }
 
@@ -989,7 +989,7 @@ struct AllAchievementsSheet: View {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 22))
-                            .foregroundStyle(Color(hex: "#94a3b8"))
+                            .foregroundStyle(Color(hex: "#8A8277"))
                     }
                 }
             }
@@ -1007,7 +1007,7 @@ private struct AchievementGridCell: View {
                 Circle()
                     .fill(achievement.isUnlocked
                           ? achievement.color.opacity(0.13)
-                          : Color(hex: "#f1f5f9"))
+                          : Color(hex: "#EFE9DE"))
                     .frame(width: 64, height: 64)
 
                 Circle()
@@ -1018,7 +1018,7 @@ private struct AchievementGridCell: View {
                                 startPoint: .topLeading, endPoint: .bottomTrailing
                               )
                             : LinearGradient(
-                                colors: [Color(hex: "#e2e8f0"), Color(hex: "#e2e8f0")],
+                                colors: [Color(hex: "#E4DDD0"), Color(hex: "#E4DDD0")],
                                 startPoint: .top, endPoint: .bottom
                               ),
                         lineWidth: achievement.isUnlocked ? 2.5 : 1.5
@@ -1029,22 +1029,22 @@ private struct AchievementGridCell: View {
                     .font(.system(size: 26, weight: .bold))
                     .foregroundStyle(achievement.isUnlocked
                                      ? achievement.color
-                                     : Color(hex: "#cbd5e1"))
+                                     : Color(hex: "#D6CEBF"))
             }
             .shadow(color: achievement.isUnlocked ? achievement.color.opacity(0.3) : .clear,
                     radius: 8, y: 3)
 
             Text(achievement.title)
-                .font(.custom("Poppins-SemiBold", size: 11))
+                .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(achievement.isUnlocked
-                                  ? Color(hex: "#1a1a2e")
-                                  : Color(hex: "#94a3b8"))
+                                  ? Color(hex: "#1C1A17")
+                                  : Color(hex: "#8A8277"))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
 
             if achievement.isUnlocked {
                 Text(langManager.s(.achievementUnlockedBadge))
-                    .font(.custom("Poppins-Regular", size: 10))
+                    .font(.system(size: 10))
                     .foregroundStyle(achievement.rarity.color)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
@@ -1052,7 +1052,7 @@ private struct AchievementGridCell: View {
             } else {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 10))
-                    .foregroundStyle(Color(hex: "#cbd5e1"))
+                    .foregroundStyle(Color(hex: "#D6CEBF"))
             }
         }
         .frame(maxWidth: .infinity)
@@ -1093,12 +1093,12 @@ struct CharacterPickerSheet: View {
                     VStack(spacing: 16) {
                         Image(systemName: "person.crop.circle.badge.plus")
                             .font(.system(size: 56))
-                            .foregroundStyle(Color(hex: "#E8409C").opacity(0.6))
+                            .foregroundStyle(Color(hex: "#C2512F").opacity(0.6))
                         Text("Karakterler yakında!")
-                            .font(.custom("Feather-Bold", size: 18))
-                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#1C1A17"))
                         Text("xcassets'e karakter görselleri eklenecek")
-                            .font(.custom("Feather-Bold", size: 13))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -1114,7 +1114,7 @@ struct CharacterPickerSheet: View {
                                 } label: {
                                     ZStack {
                                         Circle()
-                                            .fill(Color(hex: "#f1f5f9"))
+                                            .fill(Color(hex: "#EFE9DE"))
                                             .frame(width: 90, height: 90)
 
                                         Image(name)
@@ -1127,7 +1127,7 @@ struct CharacterPickerSheet: View {
                                             Circle()
                                                 .strokeBorder(
                                                     LinearGradient(
-                                                        colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C")],
+                                                        colors: [Color(hex: "#D9A441"), Color(hex: "#C2512F")],
                                                         startPoint: .topLeading, endPoint: .bottomTrailing
                                                     ),
                                                     lineWidth: 3
@@ -1136,7 +1136,7 @@ struct CharacterPickerSheet: View {
 
                                             Image(systemName: "checkmark.circle.fill")
                                                 .font(.system(size: 22))
-                                                .foregroundStyle(Color(hex: "#E8409C"))
+                                                .foregroundStyle(Color(hex: "#C2512F"))
                                                 .offset(x: 32, y: -32)
                                         }
                                     }
@@ -1152,11 +1152,11 @@ struct CharacterPickerSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(langManager.s(.profileClose)) { dismiss() }
-                        .font(.custom("Feather-Bold", size: 14))
-                        .foregroundStyle(Color(hex: "#E8409C"))
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#C2512F"))
                 }
             }
-            .background(Color(hex: "#f4f6f9").ignoresSafeArea())
+            .background(Color(hex: "#F6F2EA").ignoresSafeArea())
         }
         .presentationDetents([.medium, .large])
         .presentationCornerRadius(24)
@@ -1187,7 +1187,7 @@ struct GuestLoginSheet: View {
                             .font(.system(size: 52))
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [Color(hex: "#f97316"), Color(hex: "#E8409C")],
+                                    colors: [Color(hex: "#C2512F"), Color(hex: "#C2512F")],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
@@ -1195,11 +1195,11 @@ struct GuestLoginSheet: View {
                             .padding(.top, 8)
 
                         Text(langManager.s(.profileSaveProgress))
-                            .font(.custom("Feather-Bold", size: 22))
-                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                            .font(.system(size: 22, weight: .semibold, design: .serif))
+                            .foregroundStyle(Color(hex: "#1C1A17"))
 
                         Text(langManager.s(.profileSaveProgressDesc))
-                            .font(.custom("Feather-Bold", size: 14))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -1224,8 +1224,8 @@ struct GuestLoginSheet: View {
                         GuestLoginButton(
                             icon: "g.circle.fill",
                             label: langManager.s(.profileLoginGoogle),
-                            background: Color(hex: "#f1f5f9"),
-                            foreground: Color(hex: "#1a1a2e")
+                            background: Color(hex: "#EFE9DE"),
+                            foreground: Color(hex: "#1C1A17")
                         ) {
                             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                                   let vc = windowScene.windows.first?.rootViewController else { return }
@@ -1239,7 +1239,7 @@ struct GuestLoginSheet: View {
                         GuestLoginButton(
                             icon: "envelope.fill",
                             label: langManager.s(.profileLoginEmail),
-                            background: Color(hex: "#f97316"),
+                            background: Color(hex: "#C2512F"),
                             foreground: .white
                         ) {
                             onEmailSelected?()
@@ -1248,7 +1248,7 @@ struct GuestLoginSheet: View {
 
                     if let err = errorMessage {
                         Text(err)
-                            .font(.custom("Feather-Bold", size: 13))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.red)
                             .multilineTextAlignment(.center)
                     }
@@ -1259,11 +1259,11 @@ struct GuestLoginSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(langManager.s(.profileClose)) { dismiss() }
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
             }
-            .background(Color(hex: "#f4f6f9").ignoresSafeArea())
+            .background(Color(hex: "#F6F2EA").ignoresSafeArea())
         }
         .presentationDetents([.large])
         .presentationCornerRadius(28)
@@ -1287,7 +1287,7 @@ private struct GuestLoginButton: View {
                 Image(systemName: icon)
                     .font(.system(size: 18, weight: .medium))
                 Text(label)
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
             }
             .foregroundStyle(foreground)
             .frame(maxWidth: .infinity)
@@ -1329,9 +1329,9 @@ private struct UsernameSetupPopup: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#64748b"))
+                            .foregroundStyle(Color(hex: "#6B645A"))
                             .padding(10)
-                            .background(Color(hex: "#f1f5f9"), in: Circle())
+                            .background(Color(hex: "#EFE9DE"), in: Circle())
                     }
                     .accessibilityLabel(langManager.s(.usernameSkip))
                 }
@@ -1341,24 +1341,24 @@ private struct UsernameSetupPopup: View {
                 MascotAnimationView(width: 110, height: 110)
 
                 Text(isFirstSetup ? langManager.s(.profileSetUsername) : langManager.s(.profileChangeUsername))
-                    .font(.custom("Feather-Bold", size: 20))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
                     .padding(.top, 6)
 
                 Text(isFirstSetup
                      ? langManager.s(.profileUsernameLeaderboard)
                      : langManager.s(.profileUsernameOneChange))
-                    .font(.custom("Feather-Bold", size: 13))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .padding(.top, 4)
 
                 TextField(langManager.s(.profileUsernamePlaceholder), text: $username)
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
-                    .background(Color(hex: "#f4f6f9"), in: RoundedRectangle(cornerRadius: 14))
+                    .background(Color(hex: "#F6F2EA"), in: RoundedRectangle(cornerRadius: 14))
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .focused($focused)
@@ -1376,7 +1376,7 @@ private struct UsernameSetupPopup: View {
                             ProgressView().tint(.white)
                         } else {
                             Text(langManager.s(.profileSave))
-                                .font(.custom("Feather-Bold", size: 16))
+                                .font(.system(size: 16, weight: .semibold))
                                 .foregroundStyle(.white)
                         }
                     }

@@ -25,19 +25,19 @@ enum AchievementRarity: String {
 
     var color: Color {
         switch self {
-        case .common:    return Color(hex: "#64748b")
-        case .rare:      return Color(hex: "#3b82f6")
-        case .epic:      return Color(hex: "#8b5cf6")
-        case .legendary: return Color(hex: "#f59e0b")
+        case .common:    return Color(hex: "#6B645A")
+        case .rare:      return Color(hex: "#2F4B5C")
+        case .epic:      return Color(hex: "#2F4B5C")
+        case .legendary: return Color(hex: "#C8962E")
         }
     }
 
     var gradientColors: [Color] {
         switch self {
-        case .common:    return [Color(hex: "#94a3b8"), Color(hex: "#64748b")]
-        case .rare:      return [Color(hex: "#60a5fa"), Color(hex: "#3b82f6")]
-        case .epic:      return [Color(hex: "#a78bfa"), Color(hex: "#7c3aed")]
-        case .legendary: return [Color(hex: "#fcd34d"), Color(hex: "#f59e0b")]
+        case .common:    return [Color(hex: "#8A8277"), Color(hex: "#6B645A")]
+        case .rare:      return [Color(hex: "#5C7A8A"), Color(hex: "#2F4B5C")]
+        case .epic:      return [Color(hex: "#a78bfa"), Color(hex: "#243B48")]
+        case .legendary: return [Color(hex: "#fcd34d"), Color(hex: "#C8962E")]
         }
     }
 }
@@ -67,7 +67,7 @@ extension Achievement {
             icon: "checkmark.seal.fill",
             title: AL.s(.achFirstStepsTitle),
             description: AL.s(.achFirstStepsDesc),
-            color: Color(hex: "#22c55e"),
+            color: Color(hex: "#3F7D58"),
             rarity: .common
         ),
         Achievement(
@@ -75,7 +75,7 @@ extension Achievement {
             icon: "flame.fill",
             title: AL.s(.achFirstStreakTitle),
             description: AL.s(.achFirstStreakDesc),
-            color: Color(hex: "#f97316"),
+            color: Color(hex: "#C2512F"),
             rarity: .common
         ),
         Achievement(
@@ -83,7 +83,7 @@ extension Achievement {
             icon: "bolt.fill",
             title: AL.s(.ach100XPTitle),
             description: AL.s(.ach100XPDesc),
-            color: Color(hex: "#f59e0b"),
+            color: Color(hex: "#C8962E"),
             rarity: .common
         ),
         Achievement(
@@ -99,7 +99,7 @@ extension Achievement {
             icon: "checkmark.circle.fill",
             title: AL.s(.ach50CorrectTitle),
             description: AL.s(.ach50CorrectDesc),
-            color: Color(hex: "#10b981"),
+            color: Color(hex: "#3F7D58"),
             rarity: .common
         ),
         // ── Rare ────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ extension Achievement {
             icon: "crown.fill",
             title: AL.s(.ach500XPTitle),
             description: AL.s(.ach500XPDesc),
-            color: Color(hex: "#8b5cf6"),
+            color: Color(hex: "#2F4B5C"),
             rarity: .rare
         ),
         Achievement(
@@ -116,7 +116,7 @@ extension Achievement {
             icon: "scope",
             title: AL.s(.achSharpEyeTitle),
             description: AL.s(.achSharpEyeDesc),
-            color: Color(hex: "#E8409C"),
+            color: Color(hex: "#C2512F"),
             rarity: .rare
         ),
         Achievement(
@@ -124,7 +124,7 @@ extension Achievement {
             icon: "star.circle.fill",
             title: AL.s(.ach10LevelsTitle),
             description: AL.s(.ach10LevelsDesc),
-            color: Color(hex: "#6366f1"),
+            color: Color(hex: "#2F4B5C"),
             rarity: .rare
         ),
         Achievement(
@@ -132,7 +132,7 @@ extension Achievement {
             icon: "flame.circle.fill",
             title: AL.s(.ach7StreakTitle),
             description: AL.s(.ach7StreakDesc),
-            color: Color(hex: "#ef4444"),
+            color: Color(hex: "#B4423A"),
             rarity: .rare
         ),
         Achievement(
@@ -140,7 +140,7 @@ extension Achievement {
             icon: "sparkles",
             title: AL.s(.ach1000XPTitle),
             description: AL.s(.ach1000XPDesc),
-            color: Color(hex: "#3b82f6"),
+            color: Color(hex: "#2F4B5C"),
             rarity: .rare
         ),
         Achievement(
@@ -157,7 +157,7 @@ extension Achievement {
             icon: "medal.fill",
             title: AL.s(.ach25LevelsTitle),
             description: AL.s(.ach25LevelsDesc),
-            color: Color(hex: "#f97316"),
+            color: Color(hex: "#C2512F"),
             rarity: .epic
         ),
         Achievement(
@@ -165,7 +165,7 @@ extension Achievement {
             icon: "calendar.badge.checkmark",
             title: AL.s(.ach30StreakTitle),
             description: AL.s(.ach30StreakDesc),
-            color: Color(hex: "#ec4899"),
+            color: Color(hex: "#C2512F"),
             rarity: .epic
         ),
         Achievement(
@@ -189,7 +189,7 @@ extension Achievement {
             icon: "hands.sparkles.fill",
             title: AL.s(.ach500CorrectTitle),
             description: AL.s(.ach500CorrectDesc),
-            color: Color(hex: "#7c3aed"),
+            color: Color(hex: "#243B48"),
             rarity: .epic
         ),
         // ── Legendary ───────────────────────────────────────────────────
@@ -214,7 +214,7 @@ extension Achievement {
             icon: "star.of.life.fill",
             title: AL.s(.ach10000XPTitle),
             description: AL.s(.ach10000XPDesc),
-            color: Color(hex: "#d97706"),
+            color: Color(hex: "#A87A22"),
             rarity: .legendary
         ),
         Achievement(
@@ -222,7 +222,7 @@ extension Achievement {
             icon: "book.fill",
             title: AL.s(.achWordGodTitle),
             description: AL.s(.achWordGodDesc),
-            color: Color(hex: "#7c3aed"),
+            color: Color(hex: "#243B48"),
             rarity: .legendary
         ),
     ]}

@@ -30,7 +30,7 @@ struct AIQuizView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color(hex: "#f0f4ff"), Color(hex: "#fef9f0"), Color.white],
+                colors: [Color(hex: "#E9EEF0"), Color(hex: "#F8F0E3"), Color.white],
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()
@@ -119,16 +119,16 @@ struct AIQuizView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("AI Quiz")
-                    .font(.custom("Feather-Bold", size: 22))
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 if case .selectCount(let topic) = vm.state {
                     Text(topic.rawValue)
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                         .lineLimit(1)
                 } else {
                     Text("Grammar & Vocabulary Practice")
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
             }
@@ -197,11 +197,11 @@ struct AIQuizView: View {
     private func countPickerTitle(topic: AIQuizTopic) -> some View {
         VStack(spacing: 6) {
             Text("How many questions?")
-                .font(.custom("Feather-Bold", size: 22))
+                .font(.system(size: 22, weight: .semibold, design: .serif))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
             Text(topic.rawValue)
-                .font(.custom("Feather-Bold", size: 14))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
     }
@@ -232,7 +232,7 @@ struct AIQuizView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "sparkles").font(.system(size: 15, weight: .semibold))
-                Text("Generate Quiz").font(.custom("Feather-Bold", size: 16))
+                Text("Generate Quiz").font(.system(size: 16, weight: .semibold))
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
@@ -256,10 +256,10 @@ struct AIQuizView: View {
                 .frame(width: 140, height: 140)
             VStack(spacing: 8) {
                 Text("Preparing your quiz...")
-                    .font(.custom("Feather-Bold", size: 20))
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 Text("\(count) questions about\n\(topic.rawValue)")
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -280,10 +280,10 @@ struct AIQuizView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(Color.orange)
             Text("Something went wrong")
-                .font(.custom("Feather-Bold", size: 20))
+                .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(msg)
-                .font(.custom("Feather-Bold", size: 13))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
@@ -291,7 +291,7 @@ struct AIQuizView: View {
                 vm.reset()
             } label: {
                 Text("Try Again")
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 40)
                     .padding(.vertical, 14)
@@ -323,17 +323,17 @@ private struct FeaturedTopicCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
                         Text(AL.s(.hcRecommended))
-                            .font(.custom("Feather-Bold", size: 10))
+                            .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.9))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .background(.white.opacity(0.2), in: Capsule())
                     }
                     Text(topic.rawValue)
-                        .font(.custom("Feather-Bold", size: 18))
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(.white)
                     Text(AL.s(.hcPerfectForBeginners))
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.85))
                 }
 
@@ -373,9 +373,9 @@ private struct CategorySection: View {
 
     var categoryColor: Color {
         switch category {
-        case .tenses:    return Color(hex: "#f97316")
-        case .structure: return Color(hex: "#6366f1")
-        case .vocabulary: return Color(hex: "#10b981")
+        case .tenses:    return Color(hex: "#C2512F")
+        case .structure: return Color(hex: "#2F4B5C")
+        case .vocabulary: return Color(hex: "#3F7D58")
         }
     }
 
@@ -392,11 +392,11 @@ private struct CategorySection: View {
                         .foregroundStyle(categoryColor)
                 }
                 Text(category.rawValue)
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 Spacer()
                 Text("\(topics.count) konu")
-                    .font(.custom("Feather-Bold", size: 12))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
             .padding(.horizontal, 20)
@@ -427,8 +427,8 @@ private struct CountButton: View {
         Button(action: action) {
             ZStack {
                 VStack(spacing: 4) {
-                    Text("\(count)").font(.custom("Feather-Bold", size: 24))
-                    Text("soru").font(.custom("Feather-Bold", size: 11))
+                    Text("\(count)").font(.system(size: 24, weight: .semibold, design: .serif))
+                    Text("soru").font(.system(size: 11, weight: .semibold))
                 }
                 .foregroundStyle(isLocked ? Color.gray.opacity(0.4) : (isSelected ? .white : AppTheme.Colors.textPrimary))
 
@@ -438,9 +438,9 @@ private struct CountButton: View {
                             Spacer()
                             Image(systemName: "lock.fill")
                                 .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(Color(hex: "#8b5cf6"))
+                                .foregroundStyle(Color(hex: "#2F4B5C"))
                                 .padding(4)
-                                .background(Color(hex: "#8b5cf6").opacity(0.12), in: Circle())
+                                .background(Color(hex: "#2F4B5C").opacity(0.12), in: Circle())
                         }
                         Spacer()
                     }
@@ -460,7 +460,7 @@ private struct CountButton: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 18)
-                    .stroke(isLocked ? Color(hex: "#8b5cf6").opacity(0.3) : (isSelected ? Color.clear : Color.gray.opacity(0.12)), lineWidth: 1)
+                    .stroke(isLocked ? Color(hex: "#2F4B5C").opacity(0.3) : (isSelected ? Color.clear : Color.gray.opacity(0.12)), lineWidth: 1)
             )
             .shadow(
                 color: isLocked ? .clear : (isSelected ? (gradientColors.first?.opacity(0.35) ?? .clear) : Color.black.opacity(0.06)),
@@ -496,7 +496,7 @@ private struct TopicCard: View {
                         ))
                 }
                 Text(topic.rawValue)
-                    .font(.custom("Feather-Bold", size: 13))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -539,25 +539,25 @@ private struct AIQuizOnboardingOverlay: View {
     private var pages: [(icon: String, colors: [Color], title: String, desc: String)] {[
         (
             icon: "sparkles",
-            colors: [Color(hex: "#8b5cf6"), Color(hex: "#6366f1")],
+            colors: [Color(hex: "#2F4B5C"), Color(hex: "#2F4B5C")],
             title: AL.s(.hcAIPage1Title),
             desc: AL.s(.hcAIPage1Desc)
         ),
         (
             icon: "clock.arrow.2.circlepath",
-            colors: [Color(hex: "#f97316"), Color(hex: "#ec4899")],
+            colors: [Color(hex: "#C2512F"), Color(hex: "#C2512F")],
             title: AL.s(.hcAIPage2Title),
             desc: AL.s(.hcAIPage2Desc)
         ),
         (
             icon: "text.alignleft",
-            colors: [Color(hex: "#6366f1"), Color(hex: "#8b5cf6")],
+            colors: [Color(hex: "#2F4B5C"), Color(hex: "#2F4B5C")],
             title: AL.s(.hcAIPage3Title),
             desc: AL.s(.hcAIPage3Desc)
         ),
         (
             icon: "book.pages",
-            colors: [Color(hex: "#10b981"), Color(hex: "#3b82f6")],
+            colors: [Color(hex: "#3F7D58"), Color(hex: "#2F4B5C")],
             title: AL.s(.hcAIPage4Title),
             desc: AL.s(.hcAIPage4Desc)
         )
@@ -603,11 +603,11 @@ private struct AIQuizOnboardingOverlay: View {
                     // Text
                     VStack(spacing: 10) {
                         Text(pages[page].title)
-                            .font(.custom("Feather-Bold", size: 20))
+                            .font(.system(size: 20, weight: .semibold))
                             .foregroundStyle(AppTheme.Colors.textPrimary)
                             .multilineTextAlignment(.center)
                         Text(pages[page].desc)
-                            .font(.custom("Feather-Bold", size: 14))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(AppTheme.Colors.textSecondary)
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
@@ -618,7 +618,7 @@ private struct AIQuizOnboardingOverlay: View {
                     if page < pages.count - 1 {
                         HStack(spacing: 16) {
                             Button("Atla") { onDismiss() }
-                                .font(.custom("Feather-Bold", size: 15))
+                                .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
 
                             Button {
@@ -628,7 +628,7 @@ private struct AIQuizOnboardingOverlay: View {
                                     Text(AL.s(.hcNext))
                                     Image(systemName: "arrow.right")
                                 }
-                                .font(.custom("Feather-Bold", size: 15))
+                                .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 32)
                                 .padding(.vertical, 13)
@@ -646,7 +646,7 @@ private struct AIQuizOnboardingOverlay: View {
                                 Image(systemName: "sparkles")
                                 Text(AL.s(.hcLetsStart))
                             }
-                            .font(.custom("Feather-Bold", size: 16))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 15)

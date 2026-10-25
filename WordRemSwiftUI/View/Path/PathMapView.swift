@@ -89,7 +89,7 @@ struct PathMapView: View {
                                         Image(systemName: "exclamationmark.triangle.fill")
                                             .foregroundStyle(.white)
                                         Text(langManager.f(.pathMistakesFormat, mistakes.count))
-                                            .font(.custom("Feather-Bold", size: 14))
+                                            .font(.system(size: 14, weight: .semibold))
                                             .foregroundStyle(.white)
                                     }
                                     .padding(.horizontal, 20)
@@ -119,7 +119,7 @@ struct PathMapView: View {
                                     .font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(.white)
                                 Text("AI Grammar Quiz")
-                                    .font(.custom("Feather-Bold", size: 14))
+                                    .font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(.white)
                                 Spacer()
                                 Image(systemName: "chevron.right")
@@ -131,12 +131,12 @@ struct PathMapView: View {
                             .frame(maxWidth: .infinity)
                             .background(
                                 LinearGradient(
-                                    colors: [Color(hex: "#8b5cf6"), Color(hex: "#6366f1")],
+                                    colors: [Color(hex: "#2F4B5C"), Color(hex: "#2F4B5C")],
                                     startPoint: .leading, endPoint: .trailing
                                 ),
                                 in: RoundedRectangle(cornerRadius: 16)
                             )
-                            .shadow(color: Color(hex: "#8b5cf6").opacity(0.35), radius: 6, y: 3)
+                            .shadow(color: Color(hex: "#2F4B5C").opacity(0.35), radius: 6, y: 3)
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
@@ -286,27 +286,8 @@ struct PathMapView: View {
     // MARK: - Background
     private var pathBackground: some View {
         ZStack {
-            LinearGradient(
-                colors: [
-                    Color(hex: "#e8f4f8"),
-                    Color(hex: "#f0f4ff"),
-                    Color(hex: "#fef9f0"),
-                    Color.white
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            // Decorative floating elements
-            GeometryReader { geo in
-                ForEach(0..<8, id: \.self) { i in
-                    DecoElement(index: i, size: geo.size)
-                }
-            }
-            .ignoresSafeArea()
-            .opacity(appeared ? 0.6 : 0)
-            .animation(.easeIn(duration: 1), value: appeared)
+            DS.Colors.paper
+                .ignoresSafeArea()
         }
     }
 
@@ -318,10 +299,10 @@ struct PathMapView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
             Text(langManager.s(.pathSomethingWrong))
-                .font(.custom("Feather-Bold", size: 17))
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(err)
-                .font(.custom("Feather-Bold", size: 13))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
@@ -329,7 +310,7 @@ struct PathMapView: View {
                 Task { await vm.loadCourses() }
             } label: {
                 Text(langManager.s(.pathTryAgain))
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 12)
@@ -345,11 +326,11 @@ struct PathMapView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
             Text(langManager.s(.pathNoCourseForLang))
-                .font(.custom("Feather-Bold", size: 20))
+                .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
                 .multilineTextAlignment(.center)
             Text(langManager.s(.pathNoCourseForLangHint))
-                .font(.custom("Feather-Bold", size: 14))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
         }
@@ -363,17 +344,17 @@ struct PathMapView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
             Text(langManager.s(.pathNoCourses))
-                .font(.custom("Feather-Bold", size: 20))
+                .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(langManager.s(.pathNoCoursesHint))
-                .font(.custom("Feather-Bold", size: 14))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
                 .multilineTextAlignment(.center)
             Button {
                 Task { await vm.loadCourses() }
             } label: {
                 Label(langManager.s(.pathRefresh), systemImage: "arrow.clockwise")
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
@@ -450,9 +431,9 @@ private struct UnitDividerView: View {
 
     private var accentColor: Color {
         switch status {
-        case .completed:              return Color(hex: "#22c55e")
+        case .completed:              return Color(hex: "#3F7D58")
         case .inProgress, .unlocked:  return AppTheme.Colors.primaryOrange
-        case .locked:                 return Color(hex: "#cbd5e1")
+        case .locked:                 return Color(hex: "#D6CEBF")
         }
     }
 
@@ -486,8 +467,8 @@ private struct UnitDividerView: View {
                             .foregroundStyle(accentColor)
                     }
                     Text(langManager.f(.pathUnitFormat, unitNumber))
-                        .font(.custom("Feather-Bold", size: 12))
-                        .foregroundStyle(status == .locked ? Color(hex: "#94a3b8") : Color(hex: "#1a1a2e"))
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(status == .locked ? Color(hex: "#8A8277") : Color(hex: "#1C1A17"))
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
@@ -514,7 +495,7 @@ private struct UnitDividerView: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule()
-                            .fill(Color(hex: "#e2e8f0"))
+                            .fill(Color(hex: "#E4DDD0"))
                             .frame(height: 3)
                         Capsule()
                             .fill(accentColor)
@@ -526,8 +507,8 @@ private struct UnitDividerView: View {
                 .padding(.horizontal, 48)
 
                 Text(langManager.f(.pathLevelProgressFormat, completed, total))
-                    .font(.custom("Feather-Bold", size: 10))
-                    .foregroundStyle(Color(hex: "#94a3b8"))
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#8A8277"))
             }
         }
         .padding(.top, unitNumber == 1 ? 16 : 8)
@@ -562,14 +543,14 @@ private struct UnitHeaderView: View {
             // Orta: başlık + progress
             VStack(alignment: .leading, spacing: 4) {
                 Text(langManager.f(.pathUnitFormat, unitNumber))
-                    .font(.custom("Feather-Bold", size: 17))
-                    .foregroundStyle(status == .locked ? Color(hex: "#9ca3af") : Color(hex: "#1a1a2e"))
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(status == .locked ? Color(hex: "#8A8277") : Color(hex: "#1C1A17"))
 
                 // İlerleme çubuğu
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule()
-                            .fill(Color(hex: "#e2e8f0"))
+                            .fill(Color(hex: "#E4DDD0"))
                             .frame(height: 6)
                         Capsule()
                             .fill(statusColor)
@@ -580,15 +561,15 @@ private struct UnitHeaderView: View {
                 .frame(height: 6)
 
                 Text(langManager.f(.pathLevelProgressFormat, completedLevels, totalLevels))
-                    .font(.custom("Feather-Bold", size: 11))
-                    .foregroundStyle(Color(hex: "#9ca3af"))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#8A8277"))
             }
 
             Spacer()
 
             // Sağ: durum badge
             Text(statusText)
-                .font(.custom("Feather-Bold", size: 11))
+                .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
@@ -598,7 +579,7 @@ private struct UnitHeaderView: View {
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(status == .locked ? Color(hex: "#f1f5f9") : Color.white)
+                .fill(status == .locked ? Color(hex: "#EFE9DE") : Color.white)
                 .shadow(color: statusColor.opacity(status == .locked ? 0 : 0.15), radius: 10, y: 3)
         )
         .padding(.horizontal, 16)
@@ -609,9 +590,9 @@ private struct UnitHeaderView: View {
 
     private var statusColor: Color {
         switch status {
-        case .completed:            return Color(hex: "#22c55e")
+        case .completed:            return Color(hex: "#3F7D58")
         case .inProgress, .unlocked: return AppTheme.Colors.primaryOrange
-        case .locked:               return Color(hex: "#9ca3af")
+        case .locked:               return Color(hex: "#8A8277")
         }
     }
 
@@ -652,20 +633,20 @@ private struct PathHeaderView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(langManager.f(.pathUnitFormat, currentUnit))
-                            .font(.custom("Feather-Bold", size: 20))
-                            .foregroundStyle(Color(hex: "#1a1a2e"))
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#1C1A17"))
                             .contentTransition(.numericText())
                             .animation(.easeInOut(duration: 0.2), value: currentUnit)
 
                         if totalUnits > 1 {
                             Text("/ \(totalUnits)")
-                                .font(.custom("Feather-Bold", size: 14))
-                                .foregroundStyle(Color(hex: "#94a3b8"))
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(Color(hex: "#8A8277"))
                         }
                     }
 
                     Text(course?.title ?? langManager.s(.pathSelectCourse))
-                        .font(.custom("Feather-Bold", size: 12))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
 
@@ -674,7 +655,7 @@ private struct PathHeaderView: View {
                 // Sağ: Streak + XP
                 HStack(spacing: 8) {
                     StatPill(icon: "flame.fill", value: "\(streak)", color: .orange)
-                    StatPill(icon: "bolt.fill", value: "\(xp) XP", color: Color(hex: "#FFD700"))
+                    StatPill(icon: "bolt.fill", value: "\(xp) XP", color: Color(hex: "#C8962E"))
                 }
             }
 
@@ -682,13 +663,13 @@ private struct PathHeaderView: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(Color(hex: "#e2e8f0"))
+                        .fill(Color(hex: "#E4DDD0"))
                         .frame(height: 10)
 
                     Capsule()
                         .fill(
                             LinearGradient(
-                                colors: [Color(hex: "#f97316"), Color(hex: "#f59e0b")],
+                                colors: [Color(hex: "#C2512F"), Color(hex: "#C8962E")],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -698,7 +679,7 @@ private struct PathHeaderView: View {
 
                     if progress > 0.08 {
                         Text("\(Int(progress * 100))%")
-                            .font(.custom("Feather-Bold", size: 8))
+                            .font(.system(size: 8, weight: .semibold))
                             .foregroundStyle(.white)
                             .offset(x: max(geo.size.width * CGFloat(progress) - 24, 4))
                     }
@@ -737,8 +718,8 @@ private struct StatPill: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(color)
             Text(value)
-                .font(.custom("Feather-Bold", size: 13))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -771,7 +752,7 @@ struct PathNodeView: View {
             // Level label above node
             if item.status == .unlocked || item.status == .inProgress {
                 Text(langManager.s(.pathStart))
-                    .font(.custom("Feather-Bold", size: 11))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 4)
@@ -793,9 +774,9 @@ struct PathNodeView: View {
                             .stroke(
                                 LinearGradient(
                                     colors: [
-                                        Color(hex: "#FFAA44").opacity(0.25),
-                                        Color(hex: "#E8409C").opacity(0.15),
-                                        Color(hex: "#6B22E0").opacity(0.08)
+                                        Color(hex: "#D9A441").opacity(0.25),
+                                        Color(hex: "#C2512F").opacity(0.15),
+                                        Color(hex: "#243B48").opacity(0.08)
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
@@ -815,9 +796,9 @@ struct PathNodeView: View {
                             .stroke(
                                 LinearGradient(
                                     colors: [
-                                        Color(hex: "#FFAA44"),
-                                        Color(hex: "#E8409C"),
-                                        Color(hex: "#6B22E0")
+                                        Color(hex: "#D9A441"),
+                                        Color(hex: "#C2512F"),
+                                        Color(hex: "#243B48")
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
@@ -878,15 +859,15 @@ struct PathNodeView: View {
 
             // Level title
             Text(item.level.localizedTitle(langCode: langManager.currentLanguageCode))
-                .font(.custom("Feather-Bold", size: 13))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(item.status == .locked
                     ? AppTheme.Colors.textSecondary.opacity(0.5)
-                    : Color(hex: "#1a1a2e"))
+                    : Color(hex: "#1C1A17"))
                 .multilineTextAlignment(.center)
 
             // XP badge
             Text("\(item.level.xpReward) XP")
-                .font(.custom("Feather-Bold", size: 11))
+                .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
 
             // Stars (completed)
@@ -914,7 +895,7 @@ struct PathNodeView: View {
         case .completed:
             return AnyShapeStyle(
                 LinearGradient(
-                    colors: [Color(hex: "#22c55e"), Color(hex: "#16a34a")],
+                    colors: [Color(hex: "#3F7D58"), Color(hex: "#336A4A")],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -922,7 +903,7 @@ struct PathNodeView: View {
         case .unlocked, .inProgress:
             return AnyShapeStyle(
                 LinearGradient(
-                    colors: [Color.white, Color(hex: "#fff7ed")],
+                    colors: [Color.white, Color(hex: "#F3E2D8")],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -930,7 +911,7 @@ struct PathNodeView: View {
         case .locked:
             return AnyShapeStyle(
                 LinearGradient(
-                    colors: [Color(hex: "#d1d5db"), Color(hex: "#9ca3af")],
+                    colors: [Color(hex: "#d1d5db"), Color(hex: "#8A8277")],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -942,14 +923,14 @@ struct PathNodeView: View {
         switch item.status {
         case .completed:   return Color(hex: "#15803d")
         case .unlocked, .inProgress: return AppTheme.Colors.primaryOrange
-        case .locked:      return Color(hex: "#9ca3af")
+        case .locked:      return Color(hex: "#8A8277")
         }
     }
 
     private var nodeShadow: Color {
         switch item.status {
-        case .completed:              return Color(hex: "#22c55e").opacity(0.35)
-        case .unlocked, .inProgress:  return Color(hex: "#E8409C").opacity(0.4)
+        case .completed:              return Color(hex: "#3F7D58").opacity(0.35)
+        case .unlocked, .inProgress:  return Color(hex: "#C2512F").opacity(0.4)
         case .locked:                 return Color.clear
         }
     }
@@ -1003,7 +984,7 @@ private struct PathConnectorView: View {
                 LinearGradient(
                     colors: [
                         AppTheme.Colors.primaryOrange.opacity(0.25),
-                        Color(hex: "#e2e8f0").opacity(0.5)
+                        Color(hex: "#E4DDD0").opacity(0.5)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -1109,8 +1090,8 @@ private struct PathRefreshOverlay: View {
     @State private var cardOpacity: Double     = 0
     @State private var dotOpacities: [Double]  = [1.0, 0.3, 0.3]
 
-    private let starColor = Color(hex: "#f59e0b")
-    private let gradColors: [Color] = [Color(hex: "#f97316"), Color(hex: "#ec4899"), Color(hex: "#8b5cf6")]
+    private let starColor = Color(hex: "#C8962E")
+    private let gradColors: [Color] = [Color(hex: "#C2512F"), Color(hex: "#C2512F"), Color(hex: "#2F4B5C")]
 
     var body: some View {
         ZStack {
@@ -1140,7 +1121,7 @@ private struct PathRefreshOverlay: View {
 
                 // Score
                 Text("\(score)%")
-                    .font(.custom("Feather-Bold", size: 26))
+                    .font(.system(size: 26, weight: .semibold, design: .serif))
                     .foregroundStyle(.white)
 
                 // Progress bar + label
@@ -1149,7 +1130,7 @@ private struct PathRefreshOverlay: View {
                     HStack(spacing: 4) {
                         Text(langManager.s(.pathUpdating)
                             .replacingOccurrences(of: "...", with: ""))
-                            .font(.custom("Feather-Bold", size: 13))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(Color.white.opacity(0.7))
                         ForEach(0..<3) { i in
                             Circle()
@@ -1241,7 +1222,7 @@ struct LevelCompletePopupView: View {
     @AppStorage("lastCompletedScore") private var lastScore: Int = 0
     @AppStorage("lastCompletedStars") private var lastStars: Int = 0
 
-    private let starColor = Color(hex: "#f59e0b")
+    private let starColor = Color(hex: "#C8962E")
 
     var body: some View {
         ZStack {
@@ -1274,17 +1255,17 @@ struct LevelCompletePopupView: View {
 
                 // Score badge
                 Text("\(lastScore)%")
-                    .font(.custom("Feather-Bold", size: 22))
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
                     .foregroundStyle(AppTheme.Colors.primaryOrange)
 
                 // Text Content
                 VStack(spacing: 6) {
                     Text(langManager.s(.pathWellDone))
-                        .font(.custom("Feather-Bold", size: 24))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                        .font(.system(size: 24, weight: .semibold, design: .serif))
+                        .foregroundStyle(Color(hex: "#1C1A17"))
 
                     Text(langManager.s(.pathWellDoneDesc))
-                        .font(.custom("Feather-Bold", size: 13))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
@@ -1293,7 +1274,7 @@ struct LevelCompletePopupView: View {
                 // Action Button
                 Button(action: dismiss) {
                     Text(langManager.s(.pathContinue))
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1356,11 +1337,11 @@ struct MistakesSavedPopupView: View {
 
                 VStack(spacing: 8) {
                     Text(langManager.s(.pathDontBeSad))
-                        .font(.custom("Feather-Bold", size: 24))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                        .font(.system(size: 24, weight: .semibold, design: .serif))
+                        .foregroundStyle(Color(hex: "#1C1A17"))
 
                     Text(langManager.s(.pathDontBeSadDesc))
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
@@ -1368,7 +1349,7 @@ struct MistakesSavedPopupView: View {
 
                 Button(action: dismiss) {
                     Text(langManager.s(.pathGotIt))
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1410,11 +1391,11 @@ struct MistakesClearedPopupView: View {
 
                 VStack(spacing: 8) {
                     Text(langManager.s(.pathGreatWork))
-                        .font(.custom("Feather-Bold", size: 24))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                        .font(.system(size: 24, weight: .semibold, design: .serif))
+                        .foregroundStyle(Color(hex: "#1C1A17"))
 
                     Text(langManager.s(.pathGreatWorkDesc))
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
@@ -1422,7 +1403,7 @@ struct MistakesClearedPopupView: View {
 
                 Button(action: dismiss) {
                     Text(langManager.s(.pathHooray))
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -1455,7 +1436,7 @@ private struct MistakesUrgentBanner: View {
             // Yukarı ok — mistakes butonuna işaret eder
             Image(systemName: "arrow.up.circle.fill")
                 .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(Color(hex: "#ff3b30"))
+                .foregroundStyle(Color(hex: "#B4423A"))
                 .offset(y: bouncing ? -4 : 0)
                 .animation(
                     .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
@@ -1463,8 +1444,8 @@ private struct MistakesUrgentBanner: View {
                 )
 
             Text(langManager.s(.pathMistakesUrgent))
-                .font(.custom("Feather-Bold", size: 13))
-                .foregroundStyle(Color(hex: "#ff3b30"))
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Color(hex: "#B4423A"))
                 .multilineTextAlignment(.leading)
 
             Spacer()
@@ -1473,10 +1454,10 @@ private struct MistakesUrgentBanner: View {
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(hex: "#ff3b30").opacity(0.1))
+                .fill(Color(hex: "#B4423A").opacity(0.1))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(Color(hex: "#ff3b30").opacity(0.35), lineWidth: 1)
+                        .strokeBorder(Color(hex: "#B4423A").opacity(0.35), lineWidth: 1)
                 )
         )
         .onAppear { bouncing = true }

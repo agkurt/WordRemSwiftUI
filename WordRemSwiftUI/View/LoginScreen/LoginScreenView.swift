@@ -20,58 +20,92 @@ struct LoginScreenView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                LinearBackgroundView()
-                if viewModel.isLoading {
-                    AnimationView()
-                } else {
-                    VStack {
-                        VStack(spacing: 0) {
-                            Spacer()
-                            LoginTextFields(emailText: $viewModel.email, passwordText: $viewModel.password)
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
+                    WordRemLogoText(size: 20)
+                        .padding(.top, 8)
+                        .padding(.bottom, 36)
 
-                            Button {
-                                Task { await viewModel.loginRequest() }
-                            } label: {
-                                Text(langManager.s(.loginButton))
-                                    .font(.custom("Feather-Bold", size: 16))
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .padding()
-                                    .background(
-                                        LinearGradient(
-                                            colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .foregroundColor(.white)
-                                    .cornerRadius(30)
-                            }
-                            .padding()
+                    Text(langManager.s(.loginTitle))
+                        .font(DS.Font.display(36, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                    Text(langManager.s(.loginSubtitle))
+                        .font(DS.Font.ui(16))
+                        .foregroundStyle(DS.Colors.muted)
+                        .padding(.top, 6)
+                        .padding(.bottom, 28)
 
-                            ForgotAndSignUpButtonView(onForgotPassword: sendPasswordReset)
-
-                            Spacer()
-                            GoogleAndAppleSignView()
-                            Spacer()
+                    // Apple / Google
+                    VStack(spacing: 12) {
+                        Button { authManager.handleAppleLogin() } label: {
+                            Label(langManager.s(.loginWithApple), systemImage: "apple.logo")
                         }
-                        .clipShape(.rect(cornerRadius: 20))
-                        .padding()
+                        .buttonStyle(InkButtonStyle())
+
+                        Button { authManager.handleGoogleSignIn(with: getRootViewController()) } label: {
+                            HStack(spacing: 10) {
+                                Image("google").resizable().scaledToFit().frame(width: 18, height: 18)
+                                Text(langManager.s(.loginWithGoogle))
+                            }
+                        }
+                        .buttonStyle(OutlineButtonStyle())
                     }
-                    .padding(.top, 25)
-                    .ignoresSafeArea(.keyboard, edges: .bottom)
+
+                    HStack(spacing: 12) {
+                        Rectangle().fill(DS.Colors.line).frame(height: 1)
+                        Text(langManager.s(.loginOr))
+                            .font(DS.Font.ui(13))
+                            .foregroundStyle(DS.Colors.muted)
+                        Rectangle().fill(DS.Colors.line).frame(height: 1)
+                    }
+                    .padding(.vertical, 24)
+
+                    // E-posta / şifre
+                    VStack(spacing: 12) {
+                        TextField(langManager.s(.loginEmail), text: $viewModel.email)
+                            .keyboardType(.emailAddress)
+                            .textContentType(.emailAddress)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .modifier(PaperFieldStyle())
+                        SecureField(langManager.s(.loginPassword), text: $viewModel.password)
+                            .textContentType(.password)
+                            .modifier(PaperFieldStyle())
+                    }
+
+                    Button {
+                        Task { await viewModel.loginRequest() }
+                    } label: {
+                        if viewModel.isLoading {
+                            ProgressView().tint(DS.Colors.paperRaised)
+                        } else {
+                            Text(langManager.s(.loginButton))
+                        }
+                    }
+                    .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                    .disabled(viewModel.isLoading || viewModel.email.isEmpty || viewModel.password.isEmpty)
+                    .opacity(viewModel.email.isEmpty || viewModel.password.isEmpty ? 0.4 : 1)
+                    .padding(.top, 16)
+
+                    ForgotAndSignUpButtonView(onForgotPassword: sendPasswordReset)
+                        .font(DS.Font.ui(15, weight: .medium))
+                        .tint(DS.Colors.inkSoft)
+                        .padding(.top, 16)
                 }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 32)
+                .frame(maxWidth: 520)
+                .frame(maxWidth: .infinity)
             }
+            .scrollDismissesKeyboard(.interactively)
+            .paperBackground()
             .toolbar {
                 if showsCloseButton {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button { dismiss() } label: {
                             Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(Color(hex: "#64748b"))
-                                .padding(8)
-                                .background(Color(hex: "#e2e8f0"))
-                                .clipShape(Circle())
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(DS.Colors.inkSoft)
                         }
                     }
                 }
@@ -149,3 +183,15 @@ struct LoginScreenView: View {
         .environmentObject(LanguageManager.shared)
 }
 
+/// Kâğıt üstünde ince çizgili metin alanı
+struct PaperFieldStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(DS.Font.ui(17))
+            .foregroundStyle(DS.Colors.ink)
+            .padding(.horizontal, 16)
+            .frame(height: 54)
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
+            .overlay(RoundedRectangle(cornerRadius: DS.Radius.button).stroke(DS.Colors.line, lineWidth: 1))
+    }
+}

@@ -28,45 +28,45 @@ struct AppTheme {
     // MARK: - Colors
     struct Colors {
         // Core Palette
-        static let backgroundStart = Color(hex: "#f4f6f9") // Light grayish blue
-        static let backgroundEnd = Color(hex: "#ffffff")   // Pure white
+        static let backgroundStart = DS.Colors.paper
+        static let backgroundEnd = DS.Colors.paper
         
-        static let cardBackground = Color.white
-        static let navBarBackground = Color.white.opacity(0.85)
+        static let cardBackground = DS.Colors.paperRaised
+        static let navBarBackground = DS.Colors.paper.opacity(0.92)
         
         // Accents
-        static let primaryOrange = Color(hex: "#f97316")
-        static let darkOrange = Color(hex: "#ea580c")
+        static let primaryOrange = DS.Colors.accent
+        static let darkOrange = DS.Colors.accentDeep
         
-        static let destructive = Color.red
-        static let destructiveSoft = Color.red.opacity(0.1)
+        static let destructive = DS.Colors.danger
+        static let destructiveSoft = DS.Colors.dangerSoft
         
         // Text
-        static let textPrimary = Color.black.opacity(0.85)
-        static let textSecondary = Color.gray
+        static let textPrimary = DS.Colors.ink
+        static let textSecondary = DS.Colors.muted
         
         // UI Elements
-        static let buttonBackground = Color.white
-        static let inputBackground = Color(hex: "#f8f9fa")
-        static let inputBorder = Color(hex: "#e2e8f0")
+        static let buttonBackground = DS.Colors.paperRaised
+        static let inputBackground = DS.Colors.paperSunken
+        static let inputBorder = DS.Colors.line
         
-        static let circularButtonBg = Color.white
-        static let circularButtonIcon = Color.black.opacity(0.7)
+        static let circularButtonBg = DS.Colors.paperRaised
+        static let circularButtonIcon = DS.Colors.inkSoft
     }
     
     // MARK: - Shadows
     struct Shadows {
         static let softRadius: CGFloat = 8
         static let softY: CGFloat = 4
-        static let softColor = Color.black.opacity(0.06)
+        static let softColor = Color.black.opacity(0.04)
         
         static let cardRadius: CGFloat = 14
         static let cardY: CGFloat = 6
-        static let cardColor = Color.black.opacity(0.08)
+        static let cardColor = Color.black.opacity(0.05)
         
         static let vibrantRadius: CGFloat = 12
         static let vibrantY: CGFloat = 6
-        static let vibrantColor = Colors.primaryOrange.opacity(0.3)
+        static let vibrantColor = Color.black.opacity(0.05)
     }
 }
 

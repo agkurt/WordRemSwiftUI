@@ -44,10 +44,10 @@ struct PlusView: View {
                         // MARK: Title & Subtitle
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Create a New Deck")
-                                .font(.custom("Feather-Bold", size: 30))
+                                .font(.system(size: 30, weight: .semibold, design: .serif))
                                 .foregroundStyle(AppTheme.Colors.textPrimary)
                             Text("Choose a flag and give your deck a memorable name.")
-                                .font(.custom("Feather-Bold", size: 15))
+                                .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                                 .padding(.trailing, 20)
                         }
@@ -94,17 +94,17 @@ struct PlusView: View {
                         // MARK: Deck Name
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Deck Name")
-                                .font(.custom("Feather-Bold", size: 16))
+                                .font(.system(size: 16, weight: .semibold))
                                 .foregroundStyle(AppTheme.Colors.textPrimary)
 
                             ZStack(alignment: .leading) {
                                 if viewModel.cardName.isEmpty {
                                     Text("E.g. Spanish Basics, Useful Verbs")
-                                        .font(.custom("Feather-Bold", size: 16))
+                                        .font(.system(size: 16, weight: .semibold))
                                         .foregroundStyle(AppTheme.Colors.textSecondary.opacity(0.6))
                                 }
                                 TextField("", text: $viewModel.cardName)
-                                    .font(.custom("Feather-Bold", size: 16))
+                                    .font(.system(size: 16, weight: .semibold))
                                     .foregroundStyle(AppTheme.Colors.textPrimary)
                                     .tint(AppTheme.Colors.primaryOrange)
                                     .autocorrectionDisabled()
@@ -131,7 +131,7 @@ struct PlusView: View {
                                 Image(systemName: "plus.circle.fill")
                                     .font(.system(size: 18))
                                 Text("Create Deck")
-                                    .font(.custom("Feather-Bold", size: 16))
+                                    .font(.system(size: 16, weight: .semibold))
                             }
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
@@ -192,7 +192,7 @@ private struct SectionLabel: View {
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(AppTheme.Colors.primaryOrange)
             Text(title)
-                .font(.custom("Feather-Bold", size: 13))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
     }
@@ -210,7 +210,7 @@ private struct LanguagePickerCard: View {
                     .font(.system(size: 9))
                     .foregroundStyle(AppTheme.Colors.primaryOrange)
                 Text(title)
-                    .font(.custom("Feather-Bold", size: 10))
+                    .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
             Picker("", selection: $selection) {

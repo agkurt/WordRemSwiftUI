@@ -39,64 +39,43 @@ struct ProficiencyResultView: View {
 
             Spacer()
 
-            // ── Speech Bubble ──────────────────────────────────────
-            VStack(spacing: 0) {
-                // Bubble body
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(hex: "#f1f5f9"))
-                        .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+            // ── Typographic statement ──────────────────────────────
+            VStack(alignment: .leading, spacing: 20) {
+                Eyebrow(text: levelLabel)
 
-                    (Text(langManager.s(.profResultItsOkay))
-                        .font(.custom("Feather-Bold", size: 20))
-                        .foregroundColor(Color(hex: "#1e293b"))
-                    + Text(percentage)
-                        .font(.custom("Feather-Bold", size: 20))
-                        .foregroundColor(AppTheme.Colors.primaryOrange)
-                    + Text(langManager.f(.profResultPeopleAre, levelLabel))
-                        .font(.custom("Feather-Bold", size: 20))
-                        .foregroundColor(Color(hex: "#1e293b")))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 20)
-                }
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 40)
+                Rectangle()
+                    .fill(DS.Colors.ink)
+                    .frame(width: 32, height: 2)
 
-                // Bubble tail — downward triangle
-                PRDownwardTriangle()
-                    .fill(Color(hex: "#f1f5f9"))
-                    .frame(width: 28, height: 18)
+                (Text(langManager.s(.profResultItsOkay))
+                    .foregroundColor(DS.Colors.ink)
+                + Text(percentage)
+                    .foregroundColor(DS.Colors.accent)
+                + Text(langManager.f(.profResultPeopleAre, levelLabel))
+                    .foregroundColor(DS.Colors.ink))
+                    .font(DS.Font.display(32, weight: .bold))
+                    .lineSpacing(4)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(.bottom, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 28)
+            .obContentWidth()
 
-           
-            MascotAnimationView(width: 260, height: 260)
-
+            Spacer()
             Spacer()
 
             // ── Continue Button ────────────────────────────────────
-            VStack(spacing: 0) {
-                Divider()
+            OBBottomBar {
                 Button(action: {
                     navigateToBenefits = true
                 }) {
                     Text(langManager.s(.continueButton))
-                        .font(.custom("Feather-Bold", size: 17))
-                        .foregroundStyle(Color.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(AppTheme.Colors.primaryOrange)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.4), radius: 8, y: 4)
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+                .buttonStyle(InkButtonStyle())
             }
-            .background(Color.white)
         }
-        .background(Color.white.ignoresSafeArea())
+        .paperBackground()
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToBenefits) {
             BenefitsView(
@@ -106,19 +85,6 @@ struct ProficiencyResultView: View {
                 nativeLangCode: nativeLangCode
             )
         }
-    }
-}
-
-// MARK: - Downward triangle shape for bubble tail
-
-private struct PRDownwardTriangle: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-        path.closeSubpath()
-        return path
     }
 }
 

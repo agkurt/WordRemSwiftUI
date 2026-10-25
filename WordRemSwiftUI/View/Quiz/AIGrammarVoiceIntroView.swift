@@ -62,10 +62,10 @@ struct AIGrammarVoiceIntroView: View {
     private var nativeLang:  String { OpenAIQuizService.shared.fullLangName(for: nativeLangCode) }
 
     private let dotColors: [Color] = [
-        Color(hex: "#3B5BDB"),
-        Color(hex: "#FF6B6B"),
-        Color(hex: "#FFD43B"),
-        Color(hex: "#3B5BDB")
+        Color(hex: "#2F4B5C"),
+        Color(hex: "#C9615A"),
+        Color(hex: "#D9A441"),
+        Color(hex: "#2F4B5C")
     ]
 
     // MARK: - Body
@@ -124,25 +124,25 @@ struct AIGrammarVoiceIntroView: View {
             Button { cleanup(); onProceed(topic) } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#64748b"))
+                    .foregroundStyle(Color(hex: "#6B645A"))
                     .frame(width: 36, height: 36)
-                    .background(Color(hex: "#f1f5f9"), in: Circle())
+                    .background(Color(hex: "#EFE9DE"), in: Circle())
             }
 
             Spacer()
 
             Text(topic.rawValue)
-                .font(.custom("Poppins-SemiBold", size: 15))
-                .foregroundStyle(Color(hex: "#1e293b"))
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
 
             Spacer()
 
             Button { showTranscript = true } label: {
                 Image(systemName: "list.bullet.rectangle.portrait")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color(hex: "#64748b"))
+                    .foregroundStyle(Color(hex: "#6B645A"))
                     .frame(width: 36, height: 36)
-                    .background(Color(hex: "#f1f5f9"), in: Circle())
+                    .background(Color(hex: "#EFE9DE"), in: Circle())
             }
         }
         .padding(.horizontal, 20)
@@ -155,8 +155,8 @@ struct AIGrammarVoiceIntroView: View {
     private func practiceCard(phrase: String) -> some View {
         VStack(spacing: 10) {
             Text(phrase)
-                .font(.custom("Poppins-Bold", size: 30))
-                .foregroundStyle(Color(hex: "#1e293b"))
+                .font(.system(size: 30, weight: .bold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.6)
                 .lineLimit(3)
@@ -166,7 +166,7 @@ struct AIGrammarVoiceIntroView: View {
             } label: {
                 Image(systemName: "speaker.wave.2.fill")
                     .font(.system(size: 20))
-                    .foregroundStyle(Color(hex: "#94a3b8"))
+                    .foregroundStyle(Color(hex: "#8A8277"))
             }
         }
         .padding(.horizontal, 36)
@@ -179,7 +179,7 @@ struct AIGrammarVoiceIntroView: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 24)
-                .stroke(Color(hex: "#e2e8f0"), lineWidth: 1)
+                .stroke(Color(hex: "#E4DDD0"), lineWidth: 1)
         )
         .padding(.horizontal, 24)
     }
@@ -205,8 +205,8 @@ struct AIGrammarVoiceIntroView: View {
             Group {
                 if phase == .generating {
                     Text(AL.s(.hcPreparingLesson))
-                        .font(.custom("Poppins-Regular", size: 15))
-                        .foregroundStyle(Color(hex: "#94a3b8"))
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color(hex: "#8A8277"))
                 } else if phase == .processing {
                     HStack(spacing: 7) {
                         ForEach(0..<3, id: \.self) { i in
@@ -215,8 +215,8 @@ struct AIGrammarVoiceIntroView: View {
                     }
                 } else if !displayedText.isEmpty {
                     Text(displayedText + (phase == .speaking ? "▋" : ""))
-                        .font(.custom("Poppins-Regular", size: 17))
-                        .foregroundStyle(Color(hex: "#1e293b"))
+                        .font(.system(size: 17))
+                        .foregroundStyle(Color(hex: "#1C1A17"))
                         .multilineTextAlignment(.center)
                         .lineSpacing(5)
                         .animation(nil, value: displayedText)
@@ -229,16 +229,16 @@ struct AIGrammarVoiceIntroView: View {
             switch phase {
             case .speaking:
                 Text(AL.s(.hcTapToInterrupt))
-                    .font(.custom("Poppins-Regular", size: 13))
-                    .foregroundStyle(Color(hex: "#cbd5e1"))
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(hex: "#D6CEBF"))
             case .idle:
                 Text(AL.s(.hcHoldToSpeak))
-                    .font(.custom("Poppins-Regular", size: 13))
-                    .foregroundStyle(Color(hex: "#94a3b8"))
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(hex: "#8A8277"))
             case .listening:
                 Text(srm.recognizedText.isEmpty ? AL.s(.hcListening) : srm.recognizedText)
-                    .font(.custom("Poppins-Italic", size: 13))
-                    .foregroundStyle(Color(hex: "#94a3b8"))
+                    .font(.system(size: 13).italic())
+                    .foregroundStyle(Color(hex: "#8A8277"))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 28)
             default:
@@ -271,11 +271,11 @@ struct AIGrammarVoiceIntroView: View {
 
                     // Mikrofon butonu — siyah daire
                     Circle()
-                        .fill(phase == .listening ? Color(hex: "#ef4444") : Color.black)
+                        .fill(phase == .listening ? Color(hex: "#B4423A") : Color.black)
                         .frame(width: 80, height: 80)
                         .scaleEffect(micIsPressed ? 0.92 : 1.0)
                         .shadow(
-                            color: (phase == .listening ? Color(hex: "#ef4444") : Color.black).opacity(0.25),
+                            color: (phase == .listening ? Color(hex: "#B4423A") : Color.black).opacity(0.25),
                             radius: 16, y: 6
                         )
                         .overlay(
@@ -309,15 +309,15 @@ struct AIGrammarVoiceIntroView: View {
             Button { cleanup(); onProceed(topic) } label: {
                 HStack(spacing: 8) {
                     Text(AL.s(.hcStartQuiz))
-                        .font(.custom("Poppins-SemiBold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                     Image(systemName: "arrow.right")
                         .font(.system(size: 14, weight: .semibold))
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 15)
-                .background(Color(hex: "#3B5BDB"), in: RoundedRectangle(cornerRadius: 18))
-                .shadow(color: Color(hex: "#3B5BDB").opacity(0.32), radius: 10, y: 5)
+                .background(Color(hex: "#2F4B5C"), in: RoundedRectangle(cornerRadius: 18))
+                .shadow(color: Color(hex: "#2F4B5C").opacity(0.32), radius: 10, y: 5)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 44)
@@ -602,7 +602,7 @@ private struct ThinkingDot: View {
 
     var body: some View {
         Circle()
-            .fill(Color(hex: "#94a3b8"))
+            .fill(Color(hex: "#8A8277"))
             .frame(width: 9, height: 9)
             .scaleEffect(on ? 1.0 : 0.5)
             .opacity(on ? 1.0 : 0.35)
@@ -630,8 +630,8 @@ private struct TranscriptSheet: View {
                                 Text(item.role == "user" ? "👤" : "🤖")
                                     .font(.system(size: 20))
                                 Text(item.content)
-                                    .font(.custom("Poppins-Regular", size: 14))
-                                    .foregroundStyle(Color(hex: "#1e293b"))
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(Color(hex: "#1C1A17"))
                                     .lineSpacing(4)
                             }
                             .padding(.horizontal, 20)
@@ -652,7 +652,7 @@ private struct TranscriptSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Kapat") { dismiss() }
-                        .font(.custom("Poppins-SemiBold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                 }
             }
         }

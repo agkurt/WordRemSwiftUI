@@ -37,10 +37,10 @@ struct QuizSessionView: View {
                     }
                     Spacer()
                     Text(mode.rawValue)
-                        .font(.custom("Feather-Bold", size: 15))
+                        .font(.system(size: 15, weight: .semibold))
                     Spacer()
                     Text("\(viewModel.currentIndex + 1)/\(viewModel.questions.count)")
-                        .font(.custom("Feather-Bold", size: 15))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 20)
@@ -53,7 +53,7 @@ struct QuizSessionView: View {
                             .fill(AppTheme.Colors.inputBorder)
                             .frame(height: 6)
                         Capsule()
-                            .fill(LinearGradient(colors: [Color(hex: "#f97316"), Color(hex: "#ea580c")],
+                            .fill(LinearGradient(colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
                                                  startPoint: .leading, endPoint: .trailing))
                             .frame(width: geo.size.width * viewModel.progress, height: 6)
                             .animation(.spring(response: 0.5), value: viewModel.progress)
@@ -150,11 +150,11 @@ struct QuizSessionView: View {
                                     }
                                 } label: {
                                     Text(viewModel.isLastQuestion ? "See Results" : "Next Question")
-                                        .font(.custom("Feather-Bold", size: 16))
+                                        .font(.system(size: 16, weight: .semibold))
                                         .foregroundStyle(.white)
                                         .frame(maxWidth: .infinity)
                                         .frame(height: 50)
-                                        .background(Color(hex: "#f97316"))
+                                        .background(Color(hex: "#C2512F"))
                                         .clipShape(RoundedRectangle(cornerRadius: 14))
                                 }
                                 .padding(.horizontal)
@@ -193,17 +193,17 @@ private struct QuizQuestionCard: View {
     var body: some View {
         VStack(spacing: 12) {
             Text("What is the meaning of")
-                .font(.custom("Feather-Bold", size: 14))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.secondary)
 
             Text(question.wordInfo.names)
-                .font(.custom("Feather-Bold", size: 32))
+                .font(.system(size: 32, weight: .semibold, design: .serif))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
 
             if !question.wordInfo.descriptions.isEmpty {
                 Text("\"\(question.wordInfo.descriptions)\"")
-                    .font(.custom("Feather-Bold", size: 13))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
@@ -264,7 +264,7 @@ private struct OptionRow: View {
         Button(action: onSelect) {
             HStack {
                 Text(option)
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(isAnswered ? (isCorrect ? .white : .secondary) : .primary)
                     .multilineTextAlignment(.leading)
                 Spacer()
@@ -324,7 +324,7 @@ private struct TFButton: View {
                 Image(systemName: icon)
                     .font(.system(size: 26, weight: .bold))
                 Text(title)
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
@@ -353,7 +353,7 @@ private struct WritingInput: View {
     var body: some View {
         VStack(spacing: 12) {
             TextField("Type the meaning...", text: $text)
-                .font(.custom("Feather-Bold", size: 16))
+                .font(.system(size: 16, weight: .semibold))
                 .padding(16)
                 .background(
                     RoundedRectangle(cornerRadius: 14)
@@ -371,14 +371,14 @@ private struct WritingInput: View {
                     onSubmit()
                 } label: {
                     Text("Check Answer")
-                        .font(.custom("Feather-Bold", size: 16))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background(
                             text.trimmingCharacters(in: .whitespaces).isEmpty
                                 ? Color.gray.opacity(0.4)
-                                : Color(hex: "#f97316")
+                                : Color(hex: "#C2512F")
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
@@ -410,13 +410,13 @@ private struct ListeningModeInput: View {
                     TTSManager.shared.speak(wordToPlay, langCode: langCode)
                 } label: {
                     Label("Play", systemImage: "play.fill")
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 12)
                         .background(
                             LinearGradient(
-                                colors: [Color(hex: "#f97316"), Color(hex: "#ea580c")],
+                                colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
                                 startPoint: .leading, endPoint: .trailing
                             ),
                             in: Capsule()
@@ -426,7 +426,7 @@ private struct ListeningModeInput: View {
                     TTSManager.shared.speakSlow(wordToPlay, langCode: langCode)
                 } label: {
                     Label("Slow", systemImage: "tortoise.fill")
-                        .font(.custom("Feather-Bold", size: 13))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 12)
@@ -471,16 +471,16 @@ private struct FillInTheBlankInput: View {
         VStack(spacing: 14) {
             // Gap sentence card
             Text(gapSentence)
-                .font(.custom("Feather-Bold", size: 18))
+                .font(.system(size: 18, weight: .semibold))
                 .multilineTextAlignment(.center)
                 .padding(16)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(hex: "#fff7ed"))
+                        .fill(Color(hex: "#F3E2D8"))
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color(hex: "#f97316").opacity(0.4), lineWidth: 1.5)
+                                .stroke(Color(hex: "#C2512F").opacity(0.4), lineWidth: 1.5)
                         )
                 )
 
@@ -491,7 +491,7 @@ private struct FillInTheBlankInput: View {
                         onSelect(word)
                     } label: {
                         Text(word)
-                            .font(.custom("Feather-Bold", size: 15))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(
                                 isAnswered
                                     ? (word == correctAnswer ? .white : .secondary)
@@ -541,7 +541,7 @@ private struct SentenceBuilderInput: View {
     var body: some View {
         VStack(spacing: 12) {
             Text("Tap the correct translation")
-                .font(.custom("Feather-Bold", size: 14))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.secondary)
 
             // Word bubble grid (flexible wrapping layout)
@@ -552,11 +552,11 @@ private struct SentenceBuilderInput: View {
                         onSelect(word)
                     } label: {
                         Text(word)
-                            .font(.custom("Feather-Bold", size: 14))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(
                                 isAnswered
                                     ? (word == correctAnswer ? .white : .secondary)
-                                    : Color(hex: "#f97316")
+                                    : Color(hex: "#C2512F")
                             )
                             .padding(.vertical, 10)
                             .padding(.horizontal, 6)
@@ -566,14 +566,14 @@ private struct SentenceBuilderInput: View {
                                     .fill(
                                         isAnswered
                                             ? (word == correctAnswer ? Color.green.opacity(0.8) : Color(.systemGray5))
-                                            : Color(hex: "#fff7ed")
+                                            : Color(hex: "#F3E2D8")
                                     )
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 20)
                                             .stroke(
                                                 isAnswered && word == correctAnswer
                                                     ? Color.green
-                                                    : Color(hex: "#f97316").opacity(0.4),
+                                                    : Color(hex: "#C2512F").opacity(0.4),
                                                 lineWidth: 1.5
                                             )
                                     )
@@ -598,10 +598,10 @@ private struct QuizFeedbackBanner: View {
                 .foregroundStyle(isCorrect ? .green : .orange)
             VStack(alignment: .leading, spacing: 2) {
                 Text(isCorrect ? "Correct! 🎉" : "Not quite...")
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.system(size: 14, weight: .semibold))
                 if !isCorrect {
                     Text("Answer: \(correctAnswer)")
-                        .font(.custom("Feather-Bold", size: 13))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
             }

@@ -185,6 +185,7 @@ final class GameQuizViewModel: ObservableObject {
                     languageCode: targetLangCode.uppercased(),
                     learnedAt: Date()
                 )], nativeLangCode: native)
+                Task { @MainActor in ReviewScheduler.shared.reload() }
             }
         } else {
             // Cümle sorularının word.id'si geçici bir UUID — hatalar listesine yazma (asla temizlenemez)

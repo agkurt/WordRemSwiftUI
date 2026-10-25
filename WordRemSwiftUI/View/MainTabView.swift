@@ -6,53 +6,63 @@
 import SwiftUI
 
 enum AppTab: Int, CaseIterable {
-    case home
+    case today
+    case words
     case path
-    case leaderboard
     case profile
+    /// Sekme çubuğunda yok; Bugün ekranındaki kupa butonundan sheet olarak açılır
+    case leaderboard
+
+    static let barTabs: [AppTab] = [.today, .words, .path, .profile]
 
     var icon: String {
         switch self {
-        case .home:        return "books.vertical.fill"
-        case .path:        return "map.fill"
-        case .leaderboard: return "trophy.fill"
-        case .profile:     return "person.fill"
+        case .today:       return "sun.horizon"
+        case .words:       return "text.book.closed"
+        case .path:        return "square.grid.2x2"
+        case .profile:     return "person"
+        case .leaderboard: return "trophy"
         }
     }
 
     var label: String {
         switch self {
-        case .home:        return AL.s(.tabDecks)
-        case .path:        return AL.s(.tabPath)
-        case .leaderboard: return AL.s(.tabRank)
+        case .today:       return AL.s(.tabToday)
+        case .words:       return AL.s(.tabWords)
+        case .path:        return AL.s(.tabPractice)
         case .profile:     return AL.s(.tabProfile)
+        case .leaderboard: return AL.s(.tabRank)
         }
     }
 }
 
 struct MainTabView: View {
     @EnvironmentObject var tabBarModifier: TabBarModifier
+    @EnvironmentObject var langManager: LanguageManager
     @StateObject private var homeVM = HomeScreenViewModel()
     @StateObject private var pathVM = PathMapViewModel()
-    @State private var selectedTab: AppTab = .path
+    @State private var selectedTab: AppTab = .today
+    @State private var wordsSegment: WordsView.Segment = .learned
     @State private var showCreateDeck = false
+    @State private var showLeaderboard = false
 
     var body: some View {
         Group {
             switch selectedTab {
-            case .home:
-                HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
+            case .today, .leaderboard:
+                TodayView(onLearnNew: { selectedTab = .path },
+                          onOpenLeaderboard: { showLeaderboard = true })
+            case .words:
+                WordsView(homeVM: homeVM, showCreateDeck: $showCreateDeck, segment: $wordsSegment)
             case .path:
                 PathMapView(vm: pathVM)
-            case .leaderboard:
-                LeaderboardView(selectedTab: $selectedTab)
             case .profile:
                 NavigationStack { ProfileView() }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            floatingBottomBar
+            bottomBar
         }
         .sheet(isPresented: $showCreateDeck) {
             PlusView(completion: {
@@ -61,62 +71,62 @@ struct MainTabView: View {
             .presentationDetents([.large])
             .presentationCornerRadius(28)
         }
+        .sheet(isPresented: $showLeaderboard) {
+            LeaderboardView(selectedTab: Binding(
+                get: { .leaderboard },
+                set: { tab in
+                    showLeaderboard = false
+                    selectedTab = tab
+                }
+            ))
+            .environmentObject(langManager)
+        }
     }
 
-    // MARK: - Floating Bottom Bar
-    private var floatingBottomBar: some View {
+    private var showsAddButton: Bool { selectedTab == .words && wordsSegment == .decks }
+
+    // MARK: - Bottom Bar
+    private var bottomBar: some View {
         VStack(spacing: 0) {
-            // + butonu sadece Decks tabında görünür
-            if selectedTab == .home {
-                Button {
-                    if let action = tabBarModifier.customAddAction {
-                        action()
-                    } else {
-                        showCreateDeck = true
-                    }
-                } label: {
-                    ZStack {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color(hex: "#f97316"), Color(hex: "#E8409C")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 54, height: 54)
-                            .shadow(color: Color(hex: "#f97316").opacity(0.45), radius: 12, y: 4)
+            if showsAddButton {
+                HStack {
+                    Spacer()
+                    Button {
+                        if let action = tabBarModifier.customAddAction {
+                            action()
+                        } else {
+                            showCreateDeck = true
+                        }
+                    } label: {
                         Image(systemName: "plus")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundStyle(.white)
+                            .font(.system(size: 22, weight: .semibold))
+                            .foregroundStyle(DS.Colors.paperRaised)
+                            .frame(width: 56, height: 56)
+                            .background(DS.Colors.ink, in: Circle())
                     }
+                    .padding(.trailing, 24)
+                    .padding(.bottom, 12)
                 }
-                .buttonStyle(ScaleButtonStyle())
-                .padding(.bottom, 10)
-                .transition(.scale(scale: 0.7).combined(with: .opacity))
+                .transition(.opacity)
             }
 
-            // Tab Bar
-            HStack(spacing: 0) {
-                ForEach(AppTab.allCases, id: \.rawValue) { tab in
-                    TabBarItem(tab: tab, isSelected: selectedTab == tab) {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+            VStack(spacing: 0) {
+                Rectangle().fill(DS.Colors.line).frame(height: 1)
+                HStack(spacing: 0) {
+                    ForEach(AppTab.barTabs, id: \.rawValue) { tab in
+                        TabBarItem(tab: tab, isSelected: selectedTab == tab) {
                             selectedTab = tab
                         }
                     }
                 }
+                .padding(.top, 8)
+                .padding(.bottom, 4)
+                .frame(maxWidth: 620)
+                .frame(maxWidth: .infinity)
             }
-            .padding(.vertical, 10)
-            .padding(.horizontal, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 28)
-                    .fill(Color.white)
-                    .shadow(color: .black.opacity(0.10), radius: 24, x: 0, y: -4)
-            )
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
+            .background(DS.Colors.paper.ignoresSafeArea(edges: .bottom))
         }
-        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: selectedTab)
+        .animation(.easeOut(duration: 0.2), value: showsAddButton)
     }
 }
 
@@ -130,37 +140,17 @@ private struct TabBarItem: View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: tab.icon)
-                    .font(.system(size: 20, weight: isSelected ? .bold : .medium))
-                    .foregroundStyle(
-                        isSelected
-                        ? Color(hex: "#f97316")
-                        : Color(hex: "#94a3b8")
-                    )
+                    .font(.system(size: 19, weight: isSelected ? .semibold : .regular))
                     .frame(height: 24)
-                    .scaleEffect(isSelected ? 1.12 : 1.0)
-
                 Text(tab.label)
-                    .font(.custom("Feather-Bold", size: 10))
-                    .foregroundStyle(
-                        isSelected
-                        ? Color(hex: "#f97316")
-                        : Color(hex: "#94a3b8")
-                    )
+                    .font(DS.Font.ui(11, weight: isSelected ? .semibold : .medium))
             }
+            .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.muted)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
         }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
-
-// MARK: - Scale Button Style
-private struct ScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.88 : 1.0)
-            .animation(.spring(response: 0.25), value: configuration.isPressed)
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -168,4 +158,5 @@ private struct ScaleButtonStyle: ButtonStyle {
     MainTabView()
         .environmentObject(TabBarModifier())
         .environmentObject(AuthManager())
+        .environmentObject(LanguageManager.shared)
 }

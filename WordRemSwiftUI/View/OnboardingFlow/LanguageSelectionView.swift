@@ -34,116 +34,59 @@ struct LanguageSelectionView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Top Progress Bar
-            HStack(spacing: 8) {
-                Capsule()
-                    .fill(AppTheme.Colors.primaryOrange)
-                    .frame(height: 12)
-                Capsule()
-                    .fill(Color(hex: "#e2e8f0"))
-                    .frame(height: 12)
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
+            OBProgressBar(total: 2, filled: 1)
 
-            // Character & Speech Bubble
-            HStack(alignment: .top, spacing: 16) {
-                MascotAnimationView(width: 70, height: 70)
-
-                Text(langManager.s(.whatToLearn))
-                    .font(.custom("Feather-Bold", size: 18))
-                    .foregroundStyle(Color(hex: "#1e293b"))
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
-                            .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
-                    )
-                    .overlay(
-                        Path { path in
-                            path.move(to: CGPoint(x: 0, y: 20))
-                            path.addLine(to: CGPoint(x: -10, y: 25))
-                            path.addLine(to: CGPoint(x: 0, y: 30))
-                        }
-                        .fill(Color.white)
-                    )
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 24)
-            .padding(.bottom, 20)
-
-            // Subtitle — seçilen anadile göre dinamik ("Türkçe bilenler için" vs.)
-            HStack {
-                Text(langManager.forSpeakersSubtitle(nativeLangCode: nativeLangCode))
-                    .font(.custom("Feather-Bold", size: 16))
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Image(systemName: "chevron.up")
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 8)
+            // Header — alt başlık seçilen anadile göre dinamik ("Türkçe bilenler için" vs.)
+            OBHeader(
+                title: langManager.s(.whatToLearn),
+                subtitle: langManager.forSpeakersSubtitle(nativeLangCode: nativeLangCode)
+            )
 
             // Language List — isimler telefon diline göre
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     ForEach(availableLanguages, id: \.code) { lang in
                         Button(action: {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 selectedLanguage = lang.name
                             }
                         }) {
-                            HStack(spacing: 16) {
+                            HStack(spacing: 14) {
                                 Text(lang.flag)
-                                    .font(.system(size: 28))
-                                    .frame(width: 40)
+                                    .font(.system(size: 26))
+                                    .frame(width: 36)
 
                                 Text(langManager.languageName(for: lang.code))
-                                    .font(.custom("Feather-Bold", size: 15))
-                                    .foregroundStyle(Color(hex: "#1e293b"))
+                                    .font(DS.Font.ui(17, weight: .medium))
+                                    .foregroundStyle(DS.Colors.ink)
                                     .multilineTextAlignment(.leading)
 
                                 Spacer()
+
+                                OBCheckmark(isSelected: selectedLanguage == lang.name)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 16)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(selectedLanguage == lang.name ? AppTheme.Colors.primaryOrange.opacity(0.1) : Color.white)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(selectedLanguage == lang.name ? AppTheme.Colors.primaryOrange : Color(hex: "#e2e8f0"), lineWidth: 2)
-                            )
+                            .modifier(OBSelectableCard(isSelected: selectedLanguage == lang.name))
                         }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 20)
+                .obContentWidth()
             }
 
             // Bottom Continue Button
-            VStack {
-                Divider()
+            OBBottomBar {
                 Button(action: {
                     navigateToProficiency = true
                 }) {
                     Text(langManager.s(.continueButton))
-                        .font(.custom("Feather-Bold", size: 17))
-                        .foregroundStyle(selectedLanguage == nil ? Color(hex: "#94a3b8") : .white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(selectedLanguage == nil ? Color(hex: "#e2e8f0") : AppTheme.Colors.primaryOrange)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: selectedLanguage == nil ? .clear : AppTheme.Colors.primaryOrange.opacity(0.4), radius: 8, y: 4)
                 }
-                .disabled(selectedLanguage == nil)
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+                .buttonStyle(InkButtonStyle())
+                .obDisabled(selectedLanguage == nil)
             }
-            .background(Color.white)
         }
-        .background(Color(hex: "#f8fafc").ignoresSafeArea())
+        .paperBackground()
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToProficiency) {
             let code = availableLanguages.first(where: { $0.name == selectedLanguage })?.code ?? "en"

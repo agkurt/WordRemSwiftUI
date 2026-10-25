@@ -71,7 +71,7 @@ struct StreakCelebrationView: View {
             LinearGradient(
                 colors: [
                     Color(hex: "#1e0a5e"),
-                    Color(hex: "#2d1b69"),
+                    Color(hex: "#1F313C"),
                     Color(hex: "#0d062a")
                 ],
                 startPoint: .top,
@@ -81,13 +81,13 @@ struct StreakCelebrationView: View {
 
             // Decorative blurred orbs
             Circle()
-                .fill(Color(hex: "#7c3aed").opacity(0.25))
+                .fill(Color(hex: "#243B48").opacity(0.25))
                 .frame(width: 320, height: 320)
                 .blur(radius: 60)
                 .offset(x: -80, y: -180)
 
             Circle()
-                .fill(Color(hex: "#E8409C").opacity(0.18))
+                .fill(Color(hex: "#C2512F").opacity(0.18))
                 .frame(width: 260, height: 260)
                 .blur(radius: 50)
                 .offset(x: 100, y: 200)
@@ -100,13 +100,13 @@ struct StreakCelebrationView: View {
             Text(streakDays == 1
                  ? langManager.s(.streakStartedTitle)
                  : langManager.f(.streakContinuedTitle, streakDays))
-                .font(.custom("Poppins-Bold", size: 30))
+                .font(.system(size: 30, weight: .bold))
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
 
             Text(langManager.s(.streakSubtitle))
-                .font(.custom("Poppins-Regular", size: 15))
+                .font(.system(size: 15))
                 .foregroundStyle(.white.opacity(0.75))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 36)
@@ -121,7 +121,7 @@ struct StreakCelebrationView: View {
             .frame(width: 200, height: 200)
             .scaleEffect(imageScale)
             .opacity(imageOpacity)
-            .shadow(color: Color(hex: "#FFD700").opacity(0.6), radius: glowRadius, y: 8)
+            .shadow(color: Color(hex: "#C8962E").opacity(0.6), radius: glowRadius, y: 8)
     }
 
     // MARK: - Week row
@@ -131,7 +131,7 @@ struct StreakCelebrationView: View {
                 VStack(spacing: 8) {
                     dayCircle(i)
                     Text(days[i])
-                        .font(.custom("Poppins-Bold", size: 10))
+                        .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(
                             dayState(i) == .future
                             ? Color.white.opacity(0.25)
@@ -177,7 +177,7 @@ struct StreakCelebrationView: View {
             case .streaked:
                 Image(systemName: "checkmark")
                     .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(Color(hex: "#FFD700"))
+                    .foregroundStyle(Color(hex: "#C8962E"))
                     .scaleEffect(dotAnimations[i] ? 1.0 : 0.0)
 
             default:
@@ -190,17 +190,17 @@ struct StreakCelebrationView: View {
 
     private func circleFill(_ state: DayState) -> Color {
         switch state {
-        case .today:    return Color(hex: "#FFD700")
-        case .streaked: return Color(hex: "#FFD700").opacity(0.15)
+        case .today:    return Color(hex: "#C8962E")
+        case .streaked: return Color(hex: "#C8962E").opacity(0.15)
         case .missed:   return Color.white.opacity(0.05)
-        case .future:   return Color(hex: "#2d1b69").opacity(0.6)
+        case .future:   return Color(hex: "#1F313C").opacity(0.6)
         }
     }
 
     private func circleBorder(_ state: DayState) -> Color {
         switch state {
-        case .today:    return Color(hex: "#FFD700")
-        case .streaked: return Color(hex: "#FFD700").opacity(0.55)
+        case .today:    return Color(hex: "#C8962E")
+        case .streaked: return Color(hex: "#C8962E").opacity(0.55)
         case .missed:   return Color.white.opacity(0.08)
         case .future:   return Color.white.opacity(0.08)
         }
@@ -210,19 +210,19 @@ struct StreakCelebrationView: View {
     private var continueButton: some View {
         Button(action: onContinue) {
             Text(langManager.s(.streakContinue))
-                .font(.custom("Poppins-Bold", size: 18))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
                 .background(
                     LinearGradient(
-                        colors: [Color(hex: "#E8409C"), Color(hex: "#9333ea")],
+                        colors: [Color(hex: "#C2512F"), Color(hex: "#9333ea")],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
                 .clipShape(Capsule())
-                .shadow(color: Color(hex: "#E8409C").opacity(0.45), radius: 14, y: 5)
+                .shadow(color: Color(hex: "#C2512F").opacity(0.45), radius: 14, y: 5)
         }
         .buttonStyle(ScaleButtonStyle())
     }

@@ -25,167 +25,110 @@ struct OnboardingPaywallView: View {
     @State private var showWelcomePro: Bool = false
     @State private var restoreMessage: String?
 
-    private let proColor     = Color(hex: "#8b5cf6")
-    private let proColorDark = Color(hex: "#7c3aed")
-
-    // (asset, title, subtitle)
+    // (SF Symbol, title, subtitle) — Pro'nun gerçekten açtığı özellikler
     private var features: [(String, String, String)] {[
-        ("paywall1", langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
-        ("paywall2", langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
-        ("paywall3", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
-        ("paywall4", langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
+        ("infinity",              langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
+        ("lightbulb",             langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
+        ("list.bullet.rectangle", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
+        ("waveform",              langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
     ]}
 
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background
-                LinearGradient(
-                    colors: [proColor.opacity(0.15), Color(hex: "#f8fafc")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-
-                if isLoading {
-                    Color.black.opacity(0.35).ignoresSafeArea()
-                        .overlay(ProgressView().tint(.white).scaleEffect(1.5))
-                }
+                DS.Colors.paper.ignoresSafeArea()
 
                 ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
 
                     // ── Hero ───────────────────────────────────────────
-                    VStack(spacing: 8) {
-                        MascotAnimationView(width: 110, height: 110)
-                            .padding(.top, 8)
-
-                        Text("WordRem Pro")
-                            .font(.custom("Feather-Bold", size: 26))
-                            .foregroundStyle(
-                                LinearGradient(colors: [proColor, proColorDark],
-                                               startPoint: .leading, endPoint: .trailing)
-                            )
+                    VStack(alignment: .leading, spacing: 10) {
+                        Eyebrow(text: "WordRem Pro")
                         Text(langManager.s(.paywallSubtitle))
-                            .font(.custom("Feather-Bold", size: 14))
-                            .foregroundStyle(Color(hex: "#64748b"))
-                            .multilineTextAlignment(.center)
+                            .font(DS.Font.display(34, weight: .bold))
+                            .foregroundStyle(DS.Colors.ink)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    .padding(.bottom, 24)
+                    .padding(.top, 16)
+                    .padding(.bottom, 28)
 
                     // ── Features ───────────────────────────────────────
-                    VStack(spacing: 16) {
-                        ForEach(features, id: \.0) { asset, title, subtitle in
-                            HStack(spacing: 16) {
-                                // Icon: white circle bg
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.white)
-                                        .frame(width: 52, height: 52)
-                                        .shadow(color: .black.opacity(0.07), radius: 6, y: 2)
-                                    Image(asset)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 30, height: 30)
-                                }
-
-                                VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(features, id: \.0) { symbol, title, subtitle in
+                            HStack(alignment: .top, spacing: 16) {
+                                Image(systemName: symbol)
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundStyle(DS.Colors.accent)
+                                    .frame(width: 24)
+                                    .padding(.top, 2)
+                                VStack(alignment: .leading, spacing: 3) {
                                     Text(title)
-                                        .font(.custom("Feather-Bold", size: 15))
-                                        .foregroundStyle(Color(hex: "#1e293b"))
+                                        .font(DS.Font.ui(17, weight: .semibold))
+                                        .foregroundStyle(DS.Colors.ink)
                                     Text(subtitle)
-                                        .font(.custom("Feather-Bold", size: 12))
-                                        .foregroundStyle(Color(hex: "#64748b"))
+                                        .font(DS.Font.ui(14))
+                                        .foregroundStyle(DS.Colors.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
                                 }
-
-                                Spacer()
+                                Spacer(minLength: 0)
+                            }
+                            .padding(.vertical, 14)
+                            if symbol != features.last?.0 {
+                                Rectangle().fill(DS.Colors.line).frame(height: 1)
                             }
                         }
                     }
-                    .padding(.horizontal, 28)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 28)
 
                     // ── Plan Card ──────────────────────────────────────
                     Group {
                         if let product = weeklyProduct {
-                            HStack {
+                            HStack(alignment: .center) {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(langManager.s(.paywallWeeklyPro))
-                                        .font(.custom("Feather-Bold", size: 17))
-                                        .foregroundStyle(.white)
-                                    Text(langManager.f(.paywallPerWeek, product.localizedPriceString))
-                                        .font(.custom("Feather-Bold", size: 14))
-                                        .foregroundStyle(.white.opacity(0.88))
+                                        .font(DS.Font.ui(17, weight: .semibold))
+                                        .foregroundStyle(DS.Colors.ink)
                                     Text(langManager.s(.paywallWeeklyTerm))
-                                        .font(.custom("Feather-Bold", size: 11))
-                                        .foregroundStyle(.white.opacity(0.7))
+                                        .font(DS.Font.ui(13))
+                                        .foregroundStyle(DS.Colors.muted)
                                 }
                                 Spacer()
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 24))
-                                    .foregroundStyle(.white)
+                                Text(langManager.f(.paywallPerWeek, product.localizedPriceString))
+                                    .font(DS.Font.display(20, weight: .bold))
+                                    .foregroundStyle(DS.Colors.ink)
                             }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 20)
-                            .background(
-                                LinearGradient(colors: [proColor, proColorDark],
-                                               startPoint: .topLeading, endPoint: .bottomTrailing)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .shadow(color: proColor.opacity(0.35), radius: 10, y: 5)
-                            .overlay(alignment: .topTrailing) {
-                                Text(langManager.s(.paywallRecommended))
-                                    .font(.custom("Feather-Bold", size: 10))
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 4)
-                                    .background(AppTheme.Colors.primaryOrange)
-                                    .clipShape(Capsule())
-                                    .offset(x: -14, y: -10)
-                            }
+                            .padding(20)
+                            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
+                            .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.ink, lineWidth: 1.5))
                         } else if fetchFailed {
                             VStack(spacing: 8) {
                                 Text(langManager.s(.paywallPriceFailed))
-                                    .font(.custom("Feather-Bold", size: 14))
-                                    .foregroundStyle(Color(hex: "#64748b"))
+                                    .font(DS.Font.ui(15, weight: .medium))
+                                    .foregroundStyle(DS.Colors.inkSoft)
                                 Button { fetchAttempts = 0; fetchPackage() } label: {
                                     Text(langManager.s(.paywallRetry))
-                                        .font(.custom("Feather-Bold", size: 13))
-                                        .foregroundStyle(proColor)
+                                        .font(DS.Font.ui(15, weight: .semibold))
+                                        .foregroundStyle(DS.Colors.accent)
                                 }
                             }
                             .frame(maxWidth: .infinity)
-                            .frame(height: 72)
-                            .background(proColor.opacity(0.08))
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .frame(height: 80)
+                            .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: DS.Radius.card))
                         } else {
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(proColor.opacity(0.1))
-                                .frame(height: 72)
-                                .overlay(ProgressView().tint(proColor))
+                            RoundedRectangle(cornerRadius: DS.Radius.card)
+                                .fill(DS.Colors.paperSunken)
+                                .frame(height: 80)
+                                .overlay(ProgressView().tint(DS.Colors.muted))
                         }
                     }
-                    .padding(.horizontal, 24)
                     .padding(.bottom, 16)
 
                     // ── Purchase Button ────────────────────────────────
-                    Button(action: purchaseWeekly) {
-                        Text(langManager.s(.paywallContinue))
-                            .font(.custom("Feather-Bold", size: 17))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .background(
-                                LinearGradient(colors: [proColor, proColorDark],
-                                               startPoint: .leading, endPoint: .trailing)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .shadow(color: proColor.opacity(0.4), radius: 10, y: 5)
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 12)
-                    .disabled(weeklyProduct == nil || isLoading)
-                    .opacity(weeklyProduct == nil ? 0.5 : 1)
+                    Button(langManager.s(.paywallContinue), action: purchaseWeekly)
+                        .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                        .disabled(weeklyProduct == nil || isLoading)
+                        .opacity(weeklyProduct == nil ? 0.4 : 1)
+                        .padding(.bottom, 16)
 
                     // ── Legal ──────────────────────────────────────────
                     HStack(spacing: 20) {
@@ -193,19 +136,25 @@ struct OnboardingPaywallView: View {
                         legalButton(langManager.s(.paywallTerms))   { showTerms = true }
                         legalButton(langManager.s(.paywallRestore)) { restorePurchases() }
                     }
-                    .padding(.bottom, 8)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 10)
 
                     // ── Auto-renewal Disclosure (Apple requirement) ─────
                     Text(langManager.s(.paywallDisclosure))
-                        .font(.system(size: 10))
-                        .foregroundStyle(Color(hex: "#94a3b8"))
+                        .font(DS.Font.ui(11))
+                        .foregroundStyle(DS.Colors.muted)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 24)
+                        .frame(maxWidth: .infinity)
                         .padding(.bottom, 16)
                 }
-                .padding(.top, 4)
+                .padding(.horizontal, 24)
                 .frame(maxWidth: 560)
                 .frame(maxWidth: .infinity)
+                }
+
+                if isLoading {
+                    Color.black.opacity(0.25).ignoresSafeArea()
+                        .overlay(ProgressView().tint(.white).scaleEffect(1.4))
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -218,11 +167,8 @@ struct OnboardingPaywallView: View {
                             onContinue()
                         } label: {
                             Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(Color(hex: "#64748b"))
-                                .padding(8)
-                                .background(Color(hex: "#e2e8f0"))
-                                .clipShape(Circle())
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(DS.Colors.inkSoft)
                         }
                     }
                 }
@@ -264,8 +210,9 @@ struct OnboardingPaywallView: View {
     private func legalButton(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.custom("Feather-Bold", size: 11))
-                .foregroundStyle(Color(hex: "#94a3b8"))
+                .font(DS.Font.ui(13, weight: .medium))
+                .foregroundStyle(DS.Colors.inkSoft)
+                .underline(color: DS.Colors.line)
         }
     }
 

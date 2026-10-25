@@ -42,7 +42,7 @@ struct HomeScreenView: View {
                             Image(systemName: "magnifyingglass")
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                             TextField(langManager.s(.homeSearchPlaceholder), text: $searchText)
-                                .font(.custom("Feather-Bold", size: 15))
+                                .font(.system(size: 15, weight: .semibold))
                                 .autocorrectionDisabled()
                                 .foregroundStyle(AppTheme.Colors.textPrimary)
                                 .tint(AppTheme.Colors.primaryOrange)
@@ -68,7 +68,7 @@ struct HomeScreenView: View {
                                     .font(.system(size: 36))
                                     .foregroundStyle(.secondary)
                                 Text(langManager.f(.homeNoResultsFormat, searchText))
-                                    .font(.custom("Feather-Bold", size: 15))
+                                    .font(.system(size: 15, weight: .semibold))
                                     .foregroundStyle(.secondary)
                             }
                             Spacer()
@@ -126,10 +126,10 @@ private struct HomeHeaderView: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(langManager.s(.homeMyDecks))
-                    .font(.custom("Feather-Bold", size: 28))
+                    .font(.system(size: 28, weight: .semibold, design: .serif))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
                 Text(langManager.s(.homeTapToStudy))
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
             }
             Spacer()
@@ -167,10 +167,10 @@ private struct EmptyDecksView: View {
 
             VStack(spacing: 8) {
                 Text(langManager.s(.homeCreateFirstDeck))
-                    .font(.custom("Feather-Bold", size: 22))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
                 Text(langManager.s(.homeCreateFirstDeckHint))
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
@@ -181,7 +181,7 @@ private struct EmptyDecksView: View {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 16, weight: .semibold))
                     Text(langManager.s(.homeCreateDeck))
-                        .font(.custom("Feather-Bold", size: 15))
+                        .font(.system(size: 15, weight: .semibold))
                 }
                 .foregroundStyle(.white)
                 .padding(.horizontal, 28)

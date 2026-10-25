@@ -82,7 +82,7 @@ struct InteractiveSentenceView: View {
                                     .tint(AppTheme.Colors.primaryOrange)
                                     .scaleEffect(0.8)
                                 Text("Translating...")
-                                    .font(.custom("Feather-Bold", size: 12))
+                                    .font(.system(size: 12, weight: .semibold))
                                     .foregroundStyle(AppTheme.Colors.textSecondary)
                             }
                             .padding(.leading, 4)
@@ -189,7 +189,7 @@ private struct AlignedSentenceText: View {
             } label: {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(word)
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(
                             isHighlighted
                             ? AppTheme.Colors.primaryOrange
@@ -209,7 +209,7 @@ private struct AlignedSentenceText: View {
                     // Show meaning below word
                     if showMeaning && !wordMeaning.isEmpty {
                         Text(wordMeaning)
-                            .font(.custom("Feather-Bold", size: 10))
+                            .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(AppTheme.Colors.primaryOrange)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 2)

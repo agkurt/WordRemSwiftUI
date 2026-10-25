@@ -26,15 +26,15 @@ struct RegisterScreenView: View {
                             VStack(alignment: .leading, spacing: 15) {
                                 Text(" Welcome")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .font(.custom("Feather-Bold", size: 25))
+                                    .font(.system(size: 25, weight: .semibold, design: .serif))
                                 Text(" Sign Up")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .font(.custom("Feather-Bold", size: 25))
+                                    .font(.system(size: 25, weight: .semibold, design: .serif))
                             }
                             .padding(.bottom, 30)
 
                             Text("Sign up with email")
-                                .font(.custom("Feather-Bold", size: 15))
+                                .font(.system(size: 15, weight: .semibold))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading)
 
@@ -56,7 +56,7 @@ struct RegisterScreenView: View {
                                     presentationMode.wrappedValue.dismiss()
                                 } label: {
                                     Text("I already have an account")
-                                        .font(.custom("Feather-Bold", size: 14))
+                                        .font(.system(size: 14, weight: .semibold))
                                         .foregroundColor(AppTheme.Colors.textSecondary)
                                 }
 
@@ -77,7 +77,7 @@ struct RegisterScreenView: View {
                                             .cornerRadius(30)
                                     } else {
                                         Text("Sign Up")
-                                            .font(.custom("Feather-Bold", size: 16))
+                                            .font(.system(size: 16, weight: .semibold))
                                             .frame(maxWidth: .infinity, alignment: .center)
                                             .padding()
                                             .background(
@@ -95,7 +95,7 @@ struct RegisterScreenView: View {
 
                                 if let err = viewModel.errorMessage {
                                     Text(err)
-                                        .font(.custom("Feather-Bold", size: 13))
+                                        .font(.system(size: 13, weight: .semibold))
                                         .foregroundStyle(.red)
                                         .multilineTextAlignment(.center)
                                         .padding(.horizontal)

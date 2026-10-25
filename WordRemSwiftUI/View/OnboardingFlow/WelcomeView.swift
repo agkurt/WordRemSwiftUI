@@ -2,7 +2,7 @@
 //  WelcomeView.swift
 //  WordRemSwiftUI
 //
-//  Duolingo-style welcome screen using App's Light & Alive theme colors.
+//  İlk açılış ekranı — yazı markası, değer önerisi ve örnek bir kelime kartı.
 //
 
 import SwiftUI
@@ -12,83 +12,76 @@ struct WelcomeView: View {
     @EnvironmentObject var langManager: LanguageManager
     @State private var navigateToLanguage = false
     @State private var navigateToLogin = false
-    
+
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background
-                LinearGradient(
-                    colors: [Color(hex: "#fdf4f4"), Color(hex: "#fff9f9"), Color.white],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    Spacer()
-                    
-                    // Logo Space
-                    VStack(spacing: 16) {
-                        WordRemLogoText(size: 42)
+            VStack(alignment: .leading, spacing: 0) {
+                WordRemLogoText(size: 22)
+                    .padding(.top, 12)
 
-                        Text(langManager.s(.welcomeTagline))
-                            .font(.custom("Feather-Bold", size: 18))
-                            .foregroundStyle(Color(hex: "#64748b"))
-                            .multilineTextAlignment(.center)
-                    }
-                    
-                    Spacer()
-                    
-                    // Buttons
-                    VStack(spacing: 16) {
-                        // Start Button
-                        Button(action: {
-                            navigateToLanguage = true
-                        }) {
-                            Text(langManager.s(.welcomeStart))
-                                .font(.custom("Feather-Bold", size: 17))
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 56)
-                                .background(AppTheme.Colors.primaryOrange)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.4), radius: 8, y: 4)
-                        }
-                        
-                        // Login Button
-                        Button(action: {
-                            navigateToLogin = true
-                        }) {
-                            Text(langManager.s(.welcomeHaveAccount))
-                                .font(.custom("Feather-Bold", size: 17))
-                                .foregroundStyle(AppTheme.Colors.primaryOrange)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 56)
-                                .background(Color.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(AppTheme.Colors.primaryOrange, lineWidth: 2)
-                                )
-                                .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 40)
+                Spacer(minLength: 24)
+
+                Text(langManager.s(.welcomeTagline))
+                    .font(DS.Font.display(40, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineSpacing(2)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                sampleCard
+                    .padding(.top, 32)
+
+                Spacer(minLength: 24)
+
+                VStack(spacing: 12) {
+                    Button(langManager.s(.welcomeStart)) { navigateToLanguage = true }
+                        .buttonStyle(InkButtonStyle())
+                    Button(langManager.s(.welcomeHaveAccount)) { navigateToLogin = true }
+                        .buttonStyle(OutlineButtonStyle())
                 }
+                .padding(.bottom, 24)
             }
-            // Logic for Navigation Links
+            .padding(.horizontal, 24)
+            .frame(maxWidth: 560)
+            .frame(maxWidth: .infinity)
+            .paperBackground()
             .navigationDestination(isPresented: $navigateToLanguage) {
                 NativeLanguageSelectionView()
             }
             .navigationDestination(isPresented: $navigateToLogin) {
                 LoginScreenView()
-                    .navigationBarBackButtonHidden(false) // Give access back if they cancel
+                    .navigationBarBackButtonHidden(false)
             }
         }
+    }
+
+    /// Uygulamanın ne yaptığını gösteren örnek kart (widget ile aynı dil)
+    private var sampleCard: some View {
+        PaperCard(padding: 22) {
+            VStack(alignment: .leading, spacing: 0) {
+                Eyebrow(text: Locale(identifier: langManager.currentLanguageCode)
+                    .localizedString(forLanguageCode: "es") ?? "Español")
+                Text("aprender")
+                    .font(DS.Font.display(34, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .padding(.top, 14)
+                Text("/a.pɾenˈdeɾ/")
+                    .font(.system(size: 14, design: .monospaced))
+                    .foregroundStyle(DS.Colors.muted)
+                    .padding(.top, 2)
+                Rectangle().fill(DS.Colors.accent).frame(width: 24, height: 2)
+                    .padding(.top, 16)
+                Text(Locale(identifier: langManager.currentLanguageCode).language.languageCode?.identifier == "tr"
+                     ? "öğrenmek" : "to learn")
+                    .font(DS.Font.ui(17, weight: .medium))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .padding(.top, 10)
+            }
+        }
+        .rotationEffect(.degrees(-1.5))
     }
 }
 
 #Preview {
     WelcomeView()
+        .environmentObject(LanguageManager.shared)
 }

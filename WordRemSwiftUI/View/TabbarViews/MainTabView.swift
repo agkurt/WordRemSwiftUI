@@ -201,9 +201,9 @@ private struct TabBarItem: View {
     let action: () -> Void
 
     private let gradientColors: [Color] = [
-        Color(hex: "#f97316"),
-        Color(hex: "#ec4899"),
-        Color(hex: "#8b5cf6")
+        Color(hex: "#C2512F"),
+        Color(hex: "#C2512F"),
+        Color(hex: "#2F4B5C")
     ]
 
     var body: some View {

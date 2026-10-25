@@ -132,6 +132,48 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case loginTitle = "login.title"
+        case loginSubtitle = "login.subtitle"
+        case loginEmail = "login.email"
+        case loginPassword = "login.password"
+        case loginWithApple = "login.with_apple"
+        case loginWithGoogle = "login.with_google"
+        case loginOr = "login.or"
+        case todayTitle = "today.title"
+        case todayDueCount = "today.due_count"
+        case todayDueMinutes = "today.due_minutes"
+        case todayStartReview = "today.start_review"
+        case todayAllDone = "today.all_done"
+        case todayAllDoneBody = "today.all_done_body"
+        case todayNoWords = "today.no_words"
+        case todayNoWordsBody = "today.no_words_body"
+        case todayLearnNew = "today.learn_new"
+        case todayStreak = "today.streak"
+        case todayKnown = "today.known"
+        case todayThisWeek = "today.this_week"
+        case todayWordOfDay = "today.word_of_day"
+        case todayMistakes = "today.mistakes"
+        case reviewShow = "review.show"
+        case reviewAgain = "review.again"
+        case reviewHard = "review.hard"
+        case reviewGood = "review.good"
+        case reviewEasy = "review.easy"
+        case reviewMinutes = "review.minutes"
+        case reviewDays = "review.days"
+        case reviewDoneTitle = "review.done_title"
+        case reviewDoneBody = "review.done_body"
+        case reviewClose = "review.close"
+        case wordsTitle = "words.title"
+        case wordsLearned = "words.learned"
+        case wordsDecks = "words.decks"
+        case wordsSearch = "words.search"
+        case wordsEmpty = "words.empty"
+        case wordsDue = "words.due"
+        case wordsDueIn = "words.due_in"
+        case wordsMastered = "words.mastered"
+        case tabToday = "tab.today"
+        case tabWords = "tab.words"
+        case tabPractice = "tab.practice"
         case registerCheckEmailTitle = "register.check_email_title"
         case registerCheckEmail = "register.check_email"
         case hcAccuracy = "hc.accuracy"
@@ -473,9 +515,9 @@ struct AL {
         // ─────────────────────────────────────────
         "tr": [
             // Welcome
-            .welcomeTagline:        "Ücretsiz öğren. Daima.",
-            .welcomeStart:          "BAŞLA",
-            .welcomeHaveAccount:    "ZATEN HESABIM VAR",
+            .welcomeTagline:        "Her gün birkaç kelime.\nKalıcı olarak.",
+            .welcomeStart:          "Başla",
+            .welcomeHaveAccount:    "Zaten hesabım var",
             // Paywall
             .paywallSubtitle:       "Öğrenmeyi bir üst seviyeye taşı",
             .paywallFeature1:       "Sınırsız günlük pratik",
@@ -500,6 +542,48 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .loginTitle: "Tekrar hoş geldin",
+            .loginSubtitle: "Kelimelerine kaldığın yerden devam et.",
+            .loginEmail: "E-posta",
+            .loginPassword: "Şifre",
+            .loginWithApple: "Apple ile devam et",
+            .loginWithGoogle: "Google ile devam et",
+            .loginOr: "veya",
+            .todayTitle: "Bugün",
+            .todayDueCount: "kelime tekrar bekliyor",
+            .todayDueMinutes: "Yaklaşık %d dk",
+            .todayStartReview: "Tekrara başla",
+            .todayAllDone: "Bugünlük tamam",
+            .todayAllDoneBody: "Güzel iş. Birkaç yeni kelime öğren ya da yarın tekrar gel.",
+            .todayNoWords: "İlk kelimelerin seni bekliyor",
+            .todayNoWordsBody: "Pratik sekmesinde bir ders bitir. Doğru bildiğin kelimeler, tam unutmak üzereyken burada karşına çıkar.",
+            .todayLearnNew: "Yeni kelime öğren",
+            .todayStreak: "Günlük seri",
+            .todayKnown: "Kelime",
+            .todayThisWeek: "Bu hafta",
+            .todayWordOfDay: "Günün kelimesi",
+            .todayMistakes: "Düzeltilecek kelimeler",
+            .reviewShow: "Cevabı göster",
+            .reviewAgain: "Tekrar",
+            .reviewHard: "Zor",
+            .reviewGood: "İyi",
+            .reviewEasy: "Kolay",
+            .reviewMinutes: "10 dk",
+            .reviewDays: "%d gün",
+            .reviewDoneTitle: "Bugünlük bitti",
+            .reviewDoneBody: "%d kelimeyi tekrar ettin. Yarın görüşürüz.",
+            .reviewClose: "Kapat",
+            .wordsTitle: "Kelimelerim",
+            .wordsLearned: "Öğrendiklerim",
+            .wordsDecks: "Destelerim",
+            .wordsSearch: "Kelime ara",
+            .wordsEmpty: "Öğrendiğin kelimeler burada görünecek.",
+            .wordsDue: "Sırada",
+            .wordsDueIn: "%d gün sonra",
+            .wordsMastered: "Kalıcı",
+            .tabToday: "Bugün",
+            .tabWords: "Kelimeler",
+            .tabPractice: "Pratik",
             .registerCheckEmailTitle: "E-postanı Doğrula",
             .registerCheckEmail: "E-postana bir doğrulama bağlantısı gönderdik. Doğruladıktan sonra e-posta ve şifrenle giriş yap.",
             .hcAccuracy: "Doğruluk",
@@ -522,7 +606,7 @@ struct AL {
             .hcMuteConfirm: "15 dk Sessiz Devam",
             .hcCancel: "İptal",
             .hcMuteMessage: "Önümüzdeki 15 dakika boyunca sesli soru sorulmayacak, diğer soru tipleriyle devam edeceğiz.",
-            .hcNewWord: "YENİ KELİME",
+            .hcNewWord:  "Yeni kelime",
             .hcTranslateSentence: "Aşağıdaki cümleyi çevir",
             .hcPreparingLesson: "Konu anlatımı hazırlanıyor...",
             .hcTapToInterrupt: "Kesmek için dokunun",
@@ -609,7 +693,7 @@ struct AL {
             .pathNoCourseForLang:   "Bu dil için henüz kurs yok",
             .pathNoCourseForLangHint: "Seçtiğin dilde içerik hazırlanıyor.\nBeklemede kal!",
             .pathSelectCourse:      "Kurs Seç",
-            .pathStart:             "BAŞLA",
+            .pathStart:             "Başla",
             .pathMotivation0:       "Devam et! Harikasın 🎯",
             .pathMotivation1:       "Büyük ilerleme! Muhteşemsin! 🌟",
             .pathMotivation2:       "Neredeyse bitti! Devam et! 💪",
@@ -791,9 +875,9 @@ struct AL {
         // ─────────────────────────────────────────
         "en": [
             // Welcome
-            .welcomeTagline:        "Learn for free. Always.",
-            .welcomeStart:          "GET STARTED",
-            .welcomeHaveAccount:    "I ALREADY HAVE AN ACCOUNT",
+            .welcomeTagline:        "A few words a day.\nRemembered for good.",
+            .welcomeStart:          "Get started",
+            .welcomeHaveAccount:    "I already have an account",
             // Paywall
             .paywallSubtitle:       "Take your learning to the next level",
             .paywallFeature1:       "Unlimited daily practice",
@@ -818,6 +902,48 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .loginTitle: "Welcome back",
+            .loginSubtitle: "Pick up your words where you left off.",
+            .loginEmail: "Email",
+            .loginPassword: "Password",
+            .loginWithApple: "Continue with Apple",
+            .loginWithGoogle: "Continue with Google",
+            .loginOr: "or",
+            .todayTitle: "Today",
+            .todayDueCount: "words to review",
+            .todayDueMinutes: "About %d min",
+            .todayStartReview: "Start review",
+            .todayAllDone: "All caught up",
+            .todayAllDoneBody: "Nice work. Learn a few new words, or come back tomorrow.",
+            .todayNoWords: "Your first words are waiting",
+            .todayNoWordsBody: "Finish a lesson in Practice. Words you get right come back here right before you'd forget them.",
+            .todayLearnNew: "Learn new words",
+            .todayStreak: "Day streak",
+            .todayKnown: "Words",
+            .todayThisWeek: "This week",
+            .todayWordOfDay: "Word of the day",
+            .todayMistakes: "Words to fix",
+            .reviewShow: "Show answer",
+            .reviewAgain: "Again",
+            .reviewHard: "Hard",
+            .reviewGood: "Good",
+            .reviewEasy: "Easy",
+            .reviewMinutes: "10 min",
+            .reviewDays: "%d d",
+            .reviewDoneTitle: "Done for today",
+            .reviewDoneBody: "You reviewed %d words. See you tomorrow.",
+            .reviewClose: "Close",
+            .wordsTitle: "My Words",
+            .wordsLearned: "Learned",
+            .wordsDecks: "Decks",
+            .wordsSearch: "Search words",
+            .wordsEmpty: "Words you learn will appear here.",
+            .wordsDue: "Due",
+            .wordsDueIn: "in %d d",
+            .wordsMastered: "Mastered",
+            .tabToday: "Today",
+            .tabWords: "Words",
+            .tabPractice: "Practice",
             .registerCheckEmailTitle: "Confirm Your Email",
             .registerCheckEmail: "We sent a confirmation link to your email. After confirming, log in with your email and password.",
             .hcAccuracy: "Accuracy",
@@ -840,7 +966,7 @@ struct AL {
             .hcMuteConfirm: "Mute for 15 min",
             .hcCancel: "Cancel",
             .hcMuteMessage: "No listening questions will be asked for the next 15 minutes; we'll continue with other question types.",
-            .hcNewWord: "NEW WORD",
+            .hcNewWord:  "New word",
             .hcTranslateSentence: "Translate the sentence below",
             .hcPreparingLesson: "Preparing the lesson...",
             .hcTapToInterrupt: "Tap to interrupt",
@@ -927,7 +1053,7 @@ struct AL {
             .pathNoCourseForLang:   "No courses for this language yet",
             .pathNoCourseForLangHint: "Content for your selected language\nis on the way. Stay tuned!",
             .pathSelectCourse:      "Select a Course",
-            .pathStart:             "START",
+            .pathStart:              "Start",
             .pathMotivation0:       "Keep going! You're doing great 🎯",
             .pathMotivation1:       "Great progress! You're doing amazing! 🌟",
             .pathMotivation2:       "Almost there! Keep it up! 💪",
@@ -1106,9 +1232,9 @@ struct AL {
         // ─────────────────────────────────────────
         "de": [
             // Welcome
-            .welcomeTagline:        "Kostenlos lernen. Immer.",
-            .welcomeStart:          "LOSLEGEN",
-            .welcomeHaveAccount:    "ICH HABE BEREITS EIN KONTO",
+            .welcomeTagline:        "Ein paar Wörter am Tag.\nFür immer gemerkt.",
+            .welcomeStart:          "Loslegen",
+            .welcomeHaveAccount:    "Ich habe bereits ein Konto",
             // Paywall
             .paywallSubtitle:       "Bringe dein Lernen auf die nächste Stufe",
             .paywallFeature1:       "Unbegrenztes tägliches Üben",
@@ -1189,7 +1315,7 @@ struct AL {
             .pathNoCourseForLang:   "Noch keine Kurse für diese Sprache",
             .pathNoCourseForLangHint: "Inhalte für deine Sprache\nkommen bald. Bleib dran!",
             .pathSelectCourse:      "Kurs auswählen",
-            .pathStart:             "START",
+            .pathStart:              "Start",
             .pathMotivation0:       "Weiter so! Du machst das toll 🎯",
             .pathMotivation1:       "Großartige Fortschritte! Du bist toll! 🌟",
             .pathMotivation2:       "Fast geschafft! Weiter so! 💪",
@@ -1311,9 +1437,9 @@ struct AL {
         // ─────────────────────────────────────────
         "fr": [
             // Welcome
-            .welcomeTagline:        "Apprends gratuitement. Toujours.",
-            .welcomeStart:          "COMMENCER",
-            .welcomeHaveAccount:    "J'AI DÉJÀ UN COMPTE",
+            .welcomeTagline:        "Quelques mots par jour.\nRetenus pour de bon.",
+            .welcomeStart:          "Commencer",
+            .welcomeHaveAccount:    "J'ai déjà un compte",
             // Paywall
             .paywallSubtitle:       "Passe ton apprentissage au niveau supérieur",
             .paywallFeature1:       "Pratique quotidienne illimitée",
@@ -1394,7 +1520,7 @@ struct AL {
             .pathNoCourseForLang:   "Pas encore de cours pour cette langue",
             .pathNoCourseForLangHint: "Le contenu pour ta langue\narrive bientôt. Reste connecté!",
             .pathSelectCourse:      "Choisir un cours",
-            .pathStart:             "DÉMARRER",
+            .pathStart:              "Démarrer",
             .pathMotivation0:       "Continue ! Tu es génial 🎯",
             .pathMotivation1:       "Super progrès ! Tu es incroyable ! 🌟",
             .pathMotivation2:       "Presque là ! Continue ! 💪",
@@ -1516,9 +1642,9 @@ struct AL {
         // ─────────────────────────────────────────
         "es": [
             // Welcome
-            .welcomeTagline:        "Aprende gratis. Siempre.",
-            .welcomeStart:          "EMPEZAR",
-            .welcomeHaveAccount:    "YA TENGO UNA CUENTA",
+            .welcomeTagline:        "Unas pocas palabras al día.\nPara siempre.",
+            .welcomeStart:          "Empezar",
+            .welcomeHaveAccount:    "Ya tengo una cuenta",
             // Paywall
             .paywallSubtitle:       "Lleva tu aprendizaje al siguiente nivel",
             .paywallFeature1:       "Práctica diaria ilimitada",
@@ -1599,7 +1725,7 @@ struct AL {
             .pathNoCourseForLang:   "Aún no hay cursos para este idioma",
             .pathNoCourseForLangHint: "El contenido para tu idioma\nestá en camino. ¡Permanece atento!",
             .pathSelectCourse:      "Seleccionar curso",
-            .pathStart:             "EMPEZAR",
+            .pathStart:             "Empezar",
             .pathMotivation0:       "¡Sigue adelante! Lo estás haciendo genial 🎯",
             .pathMotivation1:       "¡Gran progreso! ¡Eres increíble! 🌟",
             .pathMotivation2:       "¡Casi lo logras! ¡Sigue así! 💪",
@@ -1721,9 +1847,9 @@ struct AL {
         // ─────────────────────────────────────────
         "it": [
             // Welcome
-            .welcomeTagline:        "Impara gratis. Sempre.",
-            .welcomeStart:          "INIZIA",
-            .welcomeHaveAccount:    "HO GIÀ UN ACCOUNT",
+            .welcomeTagline:        "Poche parole al giorno.\nRicordate per sempre.",
+            .welcomeStart:          "Inizia",
+            .welcomeHaveAccount:    "Ho già un account",
             // Paywall
             .paywallSubtitle:       "Porta il tuo apprendimento al livello successivo",
             .paywallFeature1:       "Pratica giornaliera illimitata",
@@ -1804,7 +1930,7 @@ struct AL {
             .pathNoCourseForLang:   "Ancora nessun corso per questa lingua",
             .pathNoCourseForLangHint: "I contenuti per la tua lingua\nstanno arrivando. Resta aggiornato!",
             .pathSelectCourse:      "Seleziona un corso",
-            .pathStart:             "INIZIA",
+            .pathStart:             "Inizia",
             .pathMotivation0:       "Continua! Stai andando benissimo 🎯",
             .pathMotivation1:       "Ottimi progressi! Sei fantastico! 🌟",
             .pathMotivation2:       "Quasi arrivato! Continua! 💪",
@@ -1926,9 +2052,9 @@ struct AL {
         // ─────────────────────────────────────────
         "ru": [
             // Welcome
-            .welcomeTagline:        "Учись бесплатно. Всегда.",
-            .welcomeStart:          "НАЧАТЬ",
-            .welcomeHaveAccount:    "У МЕНЯ УЖЕ ЕСТЬ АККАУНТ",
+            .welcomeTagline:        "Несколько слов в день.\nНавсегда.",
+            .welcomeStart:          "Начать",
+            .welcomeHaveAccount:    "У меня уже есть аккаунт",
             // Paywall
             .paywallSubtitle:       "Подними своё обучение на новый уровень",
             .paywallFeature1:       "Безлимитная ежедневная практика",
@@ -2009,7 +2135,7 @@ struct AL {
             .pathNoCourseForLang:   "Пока нет курсов для этого языка",
             .pathNoCourseForLangHint: "Контент для твоего языка\nуже в пути. Следи за обновлениями!",
             .pathSelectCourse:      "Выбрать курс",
-            .pathStart:             "СТАРТ",
+            .pathStart:              "Старт",
             .pathMotivation0:       "Продолжай! Ты молодец 🎯",
             .pathMotivation1:       "Отличный прогресс! Ты потрясающий! 🌟",
             .pathMotivation2:       "Почти там! Продолжай! 💪",
@@ -2131,7 +2257,7 @@ struct AL {
         // ─────────────────────────────────────────
         "zh": [
             // Welcome
-            .welcomeTagline:        "免费学习。永远。",
+            .welcomeTagline:        "每天几个单词。\n牢记于心。",
             .welcomeStart:          "开始",
             .welcomeHaveAccount:    "我已有账户",
             // Paywall

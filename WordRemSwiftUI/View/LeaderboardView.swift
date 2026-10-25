@@ -15,7 +15,7 @@ struct LeaderboardView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "#f4f6f9").ignoresSafeArea()
+            Color(hex: "#F6F2EA").ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // ── Header (PathHeaderView ile aynı stil) ─────────
@@ -36,13 +36,13 @@ struct LeaderboardView: View {
                             .font(.system(size: 44))
                             .foregroundStyle(.secondary)
                         Text(err)
-                            .font(.custom("Feather-Bold", size: 13))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                         Button(langManager.s(.leaderboardTryAgain)) {
                             Task { await vm.loadLeaderboard() }
                         }
-                        .font(.custom("Feather-Bold", size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 28).padding(.vertical, 12)
                         .background(AppTheme.Colors.primaryOrange, in: Capsule())
@@ -54,9 +54,9 @@ struct LeaderboardView: View {
                     VStack(spacing: 12) {
                         Text("🏆").font(.system(size: 60))
                         Text(langManager.s(.leaderboardNoPlayers))
-                            .font(.custom("Feather-Bold", size: 17))
+                            .font(.system(size: 17, weight: .semibold))
                         Text(langManager.s(.leaderboardNoPlayersHint))
-                            .font(.custom("Feather-Bold", size: 13))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -81,7 +81,7 @@ struct LeaderboardView: View {
                                 Rectangle()
                                     .fill(
                                         LinearGradient(
-                                            colors: [Color.clear, Color(hex: "#e2e8f0"), Color.clear],
+                                            colors: [Color.clear, Color(hex: "#E4DDD0"), Color.clear],
                                             startPoint: .leading, endPoint: .trailing
                                         )
                                     )
@@ -117,7 +117,7 @@ struct LeaderboardView: View {
                        !vm.users.contains(where: { $0.id == uid }) {
                         VStack(spacing: 0) {
                             LinearGradient(
-                                colors: [Color.clear, Color(hex: "#e2e8f0")],
+                                colors: [Color.clear, Color(hex: "#E4DDD0")],
                                 startPoint: .top, endPoint: .bottom
                             )
                             .frame(height: 1)
@@ -144,11 +144,11 @@ struct LeaderboardView: View {
 
             VStack(spacing: 6) {
                 Text(langManager.s(.leaderboardJoinTitle))
-                    .font(.custom("Feather-Bold", size: 22))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
 
                 Text(langManager.s(.leaderboardJoinDesc))
-                    .font(.custom("Feather-Bold", size: 14))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
@@ -158,7 +158,7 @@ struct LeaderboardView: View {
                 selectedTab = .profile
             } label: {
                 Text(langManager.s(.leaderboardSignIn))
-                    .font(.custom("Feather-Bold", size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -179,10 +179,10 @@ struct LeaderboardView: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(langManager.s(.leaderboardTitle))
-                    .font(.custom("Feather-Bold", size: 22))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 22, weight: .semibold, design: .serif))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
                 Text(langManager.s(.leaderboardSubtitle))
-                    .font(.custom("Feather-Bold", size: 12))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -192,14 +192,14 @@ struct LeaderboardView: View {
                 HStack(spacing: 5) {
                     Image(systemName: "medal.fill")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#f59e0b"))
+                        .foregroundStyle(Color(hex: "#C8962E"))
                     Text("#\(rank)")
-                        .font(.custom("Feather-Bold", size: 15))
-                        .foregroundStyle(Color(hex: "#1a1a2e"))
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#1C1A17"))
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(Color(hex: "#f59e0b").opacity(0.13), in: Capsule())
+                .background(Color(hex: "#C8962E").opacity(0.13), in: Capsule())
             }
         }
         .padding(.horizontal, 20)
@@ -226,15 +226,15 @@ private struct PodiumView: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
             PodiumSlot(user: second, rank: 2, barHeight: 90,
-                       podiumColor: Color(hex: "#94a3b8"), crownColor: Color(hex: "#c0c0c0"),
+                       podiumColor: Color(hex: "#8A8277"), crownColor: Color(hex: "#c0c0c0"),
                        isCurrentUser: second.id == currentUserId)
 
             PodiumSlot(user: first, rank: 1, barHeight: 120,
-                       podiumColor: Color(hex: "#f59e0b"), crownColor: Color(hex: "#fbbf24"),
+                       podiumColor: Color(hex: "#C8962E"), crownColor: Color(hex: "#fbbf24"),
                        isCurrentUser: first.id == currentUserId)
 
             PodiumSlot(user: third, rank: 3, barHeight: 70,
-                       podiumColor: Color(hex: "#cd7f32"), crownColor: Color(hex: "#d97706"),
+                       podiumColor: Color(hex: "#cd7f32"), crownColor: Color(hex: "#A87A22"),
                        isCurrentUser: third.id == currentUserId)
         }
         .padding(.horizontal, 16)
@@ -272,7 +272,7 @@ private struct PodiumSlot: View {
                     Circle()
                         .stroke(
                             LinearGradient(
-                                colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C"), Color(hex: "#6B22E0")],
+                                colors: [Color(hex: "#D9A441"), Color(hex: "#C2512F"), Color(hex: "#243B48")],
                                 startPoint: .topLeading, endPoint: .bottomTrailing
                             ),
                             lineWidth: 3
@@ -291,19 +291,19 @@ private struct PodiumSlot: View {
                     .shadow(color: podiumColor.opacity(0.35), radius: 10, y: 5)
 
                 Text(user.username.prefix(1).uppercased())
-                    .font(.custom("Feather-Bold", size: rank == 1 ? 26 : 20))
+                    .font(.system(size: rank == 1 ? 26 : 20, weight: .semibold))
                     .foregroundStyle(.white)
             }
 
             // Username
             Text(user.username)
-                .font(.custom("Feather-Bold", size: 12))
-                .foregroundStyle(Color(hex: "#1a1a2e"))
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color(hex: "#1C1A17"))
                 .lineLimit(1)
 
             // XP
             Text("\(user.totalXp) XP")
-                .font(.custom("Feather-Bold", size: 11))
+                .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(podiumColor)
 
             // Podium bar
@@ -317,7 +317,7 @@ private struct PodiumSlot: View {
                     )
 
                 Text("#\(rank)")
-                    .font(.custom("Feather-Bold", size: rank == 1 ? 22 : 18))
+                    .font(.system(size: rank == 1 ? 22 : 18, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.85))
             }
             .frame(height: appeared ? barHeight : 4)
@@ -346,7 +346,7 @@ private struct RankRow: View {
         HStack(spacing: 14) {
             // Sıra numarası
             Text("\(rank)")
-                .font(.custom("Feather-Bold", size: 15))
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(rank <= 10 ? AppTheme.Colors.primaryOrange : .secondary)
                 .frame(width: 32, alignment: .center)
 
@@ -356,23 +356,23 @@ private struct RankRow: View {
                     .fill(
                         LinearGradient(
                             colors: isCurrentUser
-                                ? [Color(hex: "#FFAA44"), Color(hex: "#E8409C")]
-                                : [Color(hex: "#e2e8f0"), Color(hex: "#cbd5e1")],
+                                ? [Color(hex: "#D9A441"), Color(hex: "#C2512F")]
+                                : [Color(hex: "#E4DDD0"), Color(hex: "#D6CEBF")],
                             startPoint: .topLeading, endPoint: .bottomTrailing
                         )
                     )
                     .frame(width: 44, height: 44)
 
                 Text(user.username.prefix(1).uppercased())
-                    .font(.custom("Feather-Bold", size: 18))
-                    .foregroundStyle(isCurrentUser ? .white : Color(hex: "#64748b"))
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(isCurrentUser ? .white : Color(hex: "#6B645A"))
             }
 
             // İsim + streak
             VStack(alignment: .leading, spacing: 2) {
                 Text(user.username)
-                    .font(.custom("Feather-Bold", size: 14))
-                    .foregroundStyle(Color(hex: "#1a1a2e"))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color(hex: "#1C1A17"))
                     .lineLimit(1)
 
                 HStack(spacing: 4) {
@@ -380,7 +380,7 @@ private struct RankRow: View {
                         .font(.system(size: 10))
                         .foregroundStyle(.orange)
                     Text(langManager.f(.leaderboardDayStreak, user.streakDays))
-                        .font(.custom("Feather-Bold", size: 11))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -389,14 +389,14 @@ private struct RankRow: View {
 
             // XP badge
             Text("\(user.totalXp) XP")
-                .font(.custom("Feather-Bold", size: 13))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(isCurrentUser ? .white : AppTheme.Colors.primaryOrange)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(
                     isCurrentUser
                         ? AnyShapeStyle(LinearGradient(
-                            colors: [Color(hex: "#FFAA44"), Color(hex: "#E8409C")],
+                            colors: [Color(hex: "#D9A441"), Color(hex: "#C2512F")],
                             startPoint: .leading, endPoint: .trailing))
                         : AnyShapeStyle(AppTheme.Colors.primaryOrange.opacity(0.1)),
                     in: Capsule()
@@ -408,7 +408,7 @@ private struct RankRow: View {
             RoundedRectangle(cornerRadius: 16)
                 .fill(isCurrentUser
                       ? LinearGradient(
-                          colors: [Color(hex: "#FFAA44").opacity(0.06), Color(hex: "#E8409C").opacity(0.06)],
+                          colors: [Color(hex: "#D9A441").opacity(0.06), Color(hex: "#C2512F").opacity(0.06)],
                           startPoint: .leading, endPoint: .trailing)
                       : LinearGradient(colors: [Color.white], startPoint: .top, endPoint: .bottom))
                 .shadow(color: .black.opacity(0.04), radius: 5, y: 2)
@@ -418,7 +418,7 @@ private struct RankRow: View {
                 .stroke(
                     isCurrentUser
                         ? AnyShapeStyle(LinearGradient(
-                            colors: [Color(hex: "#FFAA44").opacity(0.4), Color(hex: "#E8409C").opacity(0.4)],
+                            colors: [Color(hex: "#D9A441").opacity(0.4), Color(hex: "#C2512F").opacity(0.4)],
                             startPoint: .leading, endPoint: .trailing))
                         : AnyShapeStyle(Color.clear),
                     lineWidth: 1.5

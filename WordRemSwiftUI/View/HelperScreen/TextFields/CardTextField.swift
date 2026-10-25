@@ -17,7 +17,7 @@ struct CardTextField: View {
         let isActive = focused || text.count > 0
         ZStack {
             TextField("", text: $text)
-                .font(.custom("Feather-Bold", size: 15))
+                .font(.system(size: 15, weight: .semibold))
                 .autocorrectionDisabled()
                 .padding()
                 .autocorrectionDisabled(true)

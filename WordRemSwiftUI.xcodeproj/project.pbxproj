@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1DEA63E43817BF863D3D219 /* ReviewScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEA63E43817BF863D3D219 /* ReviewScheduler.swift */; };
+		C1DE948193DAB5ED5CF05A3A /* WordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE948193DAB5ED5CF05A3A /* WordsView.swift */; };
+		C1DE6E7D14E32BAC993BE25F /* ReviewSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE6E7D14E32BAC993BE25F /* ReviewSessionView.swift */; };
+		C1DEB9507D0476F5EEF60D9B /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEB9507D0476F5EEF60D9B /* TodayView.swift */; };
+		C1DE28E8AD2831C9CC219FEE /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE28E8AD2831C9CC219FEE /* DesignSystem.swift */; };
 		B0B0C0DE000000000000000B /* WordRemWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000001 /* WordRemWidgetBundle.swift */; };
 		B0B0C0DE000000000000000C /* WordOfTheDayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000002 /* WordOfTheDayWidget.swift */; };
 		B0B0C0DE000000000000000D /* LearnedWordsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE0000000000000005 /* LearnedWordsStore.swift */; };
@@ -264,6 +269,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DEA63E43817BF863D3D219 /* ReviewScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewScheduler.swift; sourceTree = "<group>"; };
+		C0DE948193DAB5ED5CF05A3A /* WordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordsView.swift; sourceTree = "<group>"; };
+		C0DE6E7D14E32BAC993BE25F /* ReviewSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSessionView.swift; sourceTree = "<group>"; };
+		C0DEB9507D0476F5EEF60D9B /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		C0DE28E8AD2831C9CC219FEE /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		B0B0C0DE0000000000000001 /* WordRemWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordRemWidgetBundle.swift; sourceTree = "<group>"; };
 		B0B0C0DE0000000000000002 /* WordOfTheDayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOfTheDayWidget.swift; sourceTree = "<group>"; };
 		B0B0C0DE0000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -685,6 +695,7 @@
 				E8BEB93F2F5E65EB0053DBB3 /* GoogleService-Info.plist */,
 				E8D6F2972B8DFF310017A523 /* PoppinsFont */,
 				E8E1B4D92B7C98E900AE6CD0 /* LinearBackgroundView.swift */,
+				C0DE28E8AD2831C9CC219FEE /* DesignSystem.swift */,
 				BB11CC22DD33EE44FF550022 /* OnboardingLocalization.swift */,
 				CC22DD33EE44FF5500110022 /* AppLocalization.swift */,
 				E8E1B4E12B7CFF0800AE6CD0 /* KeyboardResponder.swift */,
@@ -740,6 +751,7 @@
 				E8BE726E2B93BA3E00900217 /* AuthManager */,
 				E8527C522B6EBD590047E4A6 /* FirebaseService */,
 				F0EB6F1DCEE89012C58E24A2 /* MistakesManager.swift */,
+				C0DEA63E43817BF863D3D219 /* ReviewScheduler.swift */,
 				B0B0C0DE0000000000000005 /* LearnedWordsStore.swift */,
 				BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */,
 				DD11EE22FF33AA4400DD0022 /* DailyLimitManager.swift */,
@@ -1048,6 +1060,9 @@
 			children = (
 				E82A492B2F6B176D0051A1AC /* SplashScreenView.swift */,
 				E81C0AF02F66094200ACF8BB /* MainTabView.swift */,
+				C0DE948193DAB5ED5CF05A3A /* WordsView.swift */,
+				C0DE6E7D14E32BAC993BE25F /* ReviewSessionView.swift */,
+				C0DEB9507D0476F5EEF60D9B /* TodayView.swift */,
 				E81C0AEA2F6607C600ACF8BB /* InteractiveSentenceView.swift */,
 				E8AEB0182BDACEBF004E8664 /* MotherTongueView */,
 				E8AEB02B2BDB209D004E8664 /* ProfileView */,
@@ -1495,6 +1510,11 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				C1DEA63E43817BF863D3D219 /* ReviewScheduler.swift in Sources */,
+				C1DE948193DAB5ED5CF05A3A /* WordsView.swift in Sources */,
+				C1DE6E7D14E32BAC993BE25F /* ReviewSessionView.swift in Sources */,
+				C1DEB9507D0476F5EEF60D9B /* TodayView.swift in Sources */,
+				C1DE28E8AD2831C9CC219FEE /* DesignSystem.swift in Sources */,
 				B0B0C0DE000000000000000E /* LearnedWordsStore.swift in Sources */,
 				BB11CC22DD33EE4400BB0011 /* PathMistakesDeckService.swift in Sources */,
 				DD11EE22FF33AA4400DD0011 /* DailyLimitManager.swift in Sources */,

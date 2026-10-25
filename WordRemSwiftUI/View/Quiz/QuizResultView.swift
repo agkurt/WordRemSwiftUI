@@ -45,11 +45,11 @@ struct QuizResultView: View {
 
                 // Title
                 Text(passed ? langManager.s(.resultLevelComplete) : langManager.s(.resultKeepPracticing))
-                    .font(.custom("Feather-Bold", size: 28))
+                    .font(.system(size: 28, weight: .semibold, design: .serif))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
 
                 Text(levelTitle)
-                    .font(.custom("Feather-Bold", size: 15))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textSecondary)
 
                
@@ -100,7 +100,7 @@ struct QuizResultView: View {
                 // Action button
                 Button(action: onDone) {
                     Text(passed ? langManager.s(.resultContinue) : langManager.s(.resultTryAgain))
-                        .font(.custom("Feather-Bold", size: 18))
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -144,10 +144,10 @@ private struct ResultChip: View {
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(color)
             Text(value)
-                .font(.custom("Feather-Bold", size: 20))
+                .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textPrimary)
             Text(label)
-                .font(.custom("Feather-Bold", size: 12))
+                .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(AppTheme.Colors.textSecondary)
         }
         .frame(width: 120, height: 96)
