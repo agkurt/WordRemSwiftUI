@@ -21,26 +21,29 @@ struct CardDetailView: View {
 
     var body: some View {
         ZStack {
-            LinearBackgroundView()
+            DS.Colors.paper.ignoresSafeArea()
                 VStack(spacing: 0) {
                     // Empty state
                     if viewModel.wordInfo.isEmpty {
-                        Spacer()
-                        VStack(spacing: 12) {
-                            Image(systemName: "rectangle.on.rectangle.slash")
-                                .font(.system(size: 48))
-                                .foregroundStyle(AppTheme.Colors.textSecondary)
+                        VStack(alignment: .leading, spacing: 8) {
                             Text("No words yet")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(AppTheme.Colors.textPrimary)
+                                .font(DS.Font.display(26, weight: .semibold))
+                                .foregroundStyle(DS.Colors.ink)
                             Text("Tap + to add your first word")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(AppTheme.Colors.textSecondary)
+                                .font(DS.Font.ui(16))
+                                .foregroundStyle(DS.Colors.muted)
+                            Spacer()
                         }
-                        Spacer()
+                        .padding(.horizontal, 24)
+                        .padding(.top, 16)
+                        .frame(maxWidth: 620, alignment: .leading)
+                        .frame(maxWidth: .infinity)
                     } else {
-                        ScrollView {
-                            VStack {
+                        ScrollView(showsIndicators: false) {
+                            VStack(spacing: 12) {
+                                Eyebrow(text: "\(viewModel.wordInfo.count) words", color: DS.Colors.muted)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.bottom, 4)
                                 ForEach(viewModel.wordInfo.indices, id: \.self) { index in
                                     CardFlipView(viewModel: viewModel,
                                                  isEditing: $isEditing,
@@ -49,12 +52,16 @@ struct CardDetailView: View {
                                                  index: index)
                                 }
                             }
-                            .padding(.bottom, 90)
+                            .padding(.horizontal, 24)
+                            .padding(.top, 8)
+                            .padding(.bottom, 110)
+                            .frame(maxWidth: 620)
+                            .frame(maxWidth: .infinity)
                         }
                     }
                 }
 
-                // Quiz FAB
+                // Quiz button
                 if !viewModel.wordInfo.isEmpty {
                     VStack {
                         Spacer()
@@ -64,19 +71,18 @@ struct CardDetailView: View {
                                 showQuizSheet = true
                             } label: {
                                 HStack(spacing: 8) {
-                                    Image(systemName: "brain.head.profile")
-                                        .font(.system(size: 16, weight: .semibold))
-                                    Text("Quiz")
+                                    Image(systemName: "checklist")
                                         .font(.system(size: 15, weight: .semibold))
+                                    Text("Quiz")
+                                        .font(DS.Font.ui(16, weight: .semibold))
                                 }
-                                .foregroundStyle(.white)
+                                .foregroundStyle(DS.Colors.paperRaised)
                                 .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .background(Color(hex: "#2F4B5C"))
-                                .clipShape(Capsule())
-                                .shadow(color: Color(hex: "#2F4B5C").opacity(0.28), radius: 12, y: 6)
+                                .frame(height: 48)
+                                .background(DS.Colors.ink, in: RoundedRectangle(cornerRadius: DS.Radius.button))
                             }
-                            .padding(.trailing, 20)
+                            .buttonStyle(.plain)
+                            .padding(.trailing, 24)
                             .padding(.bottom, 24)
                         }
                     }
@@ -102,7 +108,7 @@ struct CardDetailView: View {
                     } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(AppTheme.Colors.primaryOrange)
+                            .foregroundStyle(DS.Colors.ink)
                     }
                 }
                 
@@ -112,7 +118,7 @@ struct CardDetailView: View {
                     } label: {
                         Image(systemName: isEditing ? "checkmark" : "trash")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(isEditing ? Color.green : AppTheme.Colors.primaryOrange)
+                            .foregroundStyle(isEditing ? DS.Colors.danger : DS.Colors.inkSoft)
                     }
                 }
             }

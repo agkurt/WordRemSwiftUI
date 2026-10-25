@@ -3,10 +3,10 @@
 //  WordRemSwiftUI
 //
 //  Shown after a quiz is completed — displays score, stars, XP earned.
+//  "Paper & ink": big serif score, quiet gold stars, no celebration illustration.
 //
 
 import SwiftUI
-import Lottie
 
 struct QuizResultView: View {
 
@@ -17,172 +17,73 @@ struct QuizResultView: View {
     let levelTitle: String
     let onDone: () -> Void
 
-    @State private var starScale: CGFloat = 0.1
     @State private var showDetails = false
-    @State private var confettiCount = 0
 
     private var passed: Bool { stars > 0 }
 
     var body: some View {
-        ZStack {
-            AppTheme.Colors.backgroundStart.ignoresSafeArea()
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer()
 
-            // Confetti particles
-            if passed {
-                ForEach(0..<confettiCount, id: \.self) { i in
-                    ConfettiParticle(index: i)
+            Eyebrow(text: levelTitle)
+
+            // Title
+            Text(passed ? langManager.s(.resultLevelComplete) : langManager.s(.resultKeepPracticing))
+                .font(DS.Font.display(34, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 10)
+
+            Rectangle().fill(DS.Colors.line).frame(height: 1)
+                .padding(.vertical, 28)
+
+            // Score
+            Eyebrow(text: langManager.s(.resultScore), color: DS.Colors.muted)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text("\(score)")
+                    .font(DS.Font.display(88, weight: .bold).monospacedDigit())
+                    .foregroundStyle(DS.Colors.ink)
+                Text("%")
+                    .font(DS.Font.display(36, weight: .regular))
+                    .foregroundStyle(DS.Colors.inkSoft)
+            }
+            .padding(.top, 2)
+
+            // Stars
+            HStack(spacing: 10) {
+                ForEach(1...3, id: \.self) { i in
+                    Image(systemName: i <= stars ? "star.fill" : "star")
+                        .font(.system(size: 26, weight: .regular))
+                        .foregroundStyle(i <= stars ? DS.Colors.gold : DS.Colors.line)
                 }
             }
+            .padding(.top, 14)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(stars)/3")
 
-            VStack(spacing: 32) {
-                Spacer()
+            // XP
+            Text("+\(xpEarned) XP · \(langManager.s(.resultXPEarned))")
+                .font(DS.Font.ui(15, weight: .medium).monospacedDigit())
+                .foregroundStyle(DS.Colors.muted)
+                .padding(.top, 18)
+                .opacity(showDetails ? 1 : 0)
 
-                // Mascot animation
-                LottieView(animation: .named("reeny_waving"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 160, height: 160)
+            Spacer()
 
-                // Title
-                Text(passed ? langManager.s(.resultLevelComplete) : langManager.s(.resultKeepPracticing))
-                    .font(.system(size: 28, weight: .semibold, design: .serif))
-                    .foregroundStyle(AppTheme.Colors.textPrimary)
-
-                Text(levelTitle)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(AppTheme.Colors.textSecondary)
-
-               
-                HStack(spacing: 12) {
-                    ForEach(1...3, id: \.self) { i in
-                        Image(systemName: i <= stars ? "star.fill" : "star")
-                            .font(.system(size: 40))
-                            .foregroundStyle(i <= stars ? Color.yellow : AppTheme.Colors.inputBorder)
-                            .scaleEffect(starScale)
-                            .animation(
-                                .spring(response: 0.5, dampingFraction: 0.5)
-                                    .delay(Double(i) * 0.15),
-                                value: starScale
-                            )
-                    }
-                }
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        starScale = 1.0
-                        if passed { confettiCount = 30 }
-                        withAnimation(.easeIn(duration: 0.4).delay(0.7)) {
-                            showDetails = true
-                        }
-                    }
-                }
-
-                // Score chips
-                if showDetails {
-                    HStack(spacing: 16) {
-                        ResultChip(
-                            icon: "percent",
-                            label: langManager.s(.resultScore),
-                            value: "\(score)%",
-                            color: scoreColor
-                        )
-                        ResultChip(
-                            icon: "bolt.fill",
-                            label: langManager.s(.resultXPEarned),
-                            value: "+\(xpEarned)",
-                            color: .orange
-                        )
-                    }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-
-                Spacer()
-
-                // Action button
-                Button(action: onDone) {
-                    Text(passed ? langManager.s(.resultContinue) : langManager.s(.resultTryAgain))
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(
-                            LinearGradient(
-                                colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ),
-                            in: RoundedRectangle(cornerRadius: 16)
-                        )
-                        .shadow(color: AppTheme.Shadows.vibrantColor,
-                                radius: AppTheme.Shadows.vibrantRadius,
-                                y: AppTheme.Shadows.vibrantY)
-                }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 40)
+            // Action button
+            Button(passed ? langManager.s(.resultContinue) : langManager.s(.resultTryAgain), action: onDone)
+                .buttonStyle(InkButtonStyle())
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 24)
+        .frame(maxWidth: 620)
+        .frame(maxWidth: .infinity)
+        .paperBackground()
+        .onAppear {
+            if passed { UINotificationFeedbackGenerator().notificationOccurred(.success) }
+            withAnimation(.easeOut(duration: 0.4).delay(0.2)) {
+                showDetails = true
             }
         }
-    }
-
-    private var scoreColor: Color {
-        switch score {
-        case 90...100: return .green
-        case 70...89:  return AppTheme.Colors.primaryOrange
-        default:       return .red
-        }
-    }
-}
-
-// MARK: - Result Chip
-private struct ResultChip: View {
-    let icon: String
-    let label: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(color)
-            Text(value)
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textPrimary)
-            Text(label)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textSecondary)
-        }
-        .frame(width: 120, height: 96)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
-        .shadow(color: AppTheme.Shadows.cardColor,
-                radius: AppTheme.Shadows.cardRadius,
-                y: AppTheme.Shadows.cardY)
-    }
-}
-
-// MARK: - Confetti Particle
-private struct ConfettiParticle: View {
-    let index: Int
-    @State private var yOffset: CGFloat = -100
-    @State private var xOffset: CGFloat = CGFloat.random(in: -150...150)
-    @State private var opacity: Double = 1
-
-    private let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .pink]
-    private var color: Color { colors[index % colors.count] }
-    private var size: CGFloat { CGFloat.random(in: 6...12) }
-
-    var body: some View {
-        Circle()
-            .fill(color)
-            .frame(width: size, height: size)
-            .offset(x: xOffset, y: yOffset)
-            .opacity(opacity)
-            .onAppear {
-                withAnimation(.easeOut(duration: 1.8).delay(Double(index) * 0.04)) {
-                    yOffset = CGFloat.random(in: 300...700)
-                    xOffset = CGFloat.random(in: -180...180)
-                }
-                withAnimation(.easeIn(duration: 0.4).delay(Double(index) * 0.04 + 1.4)) {
-                    opacity = 0
-                }
-            }
     }
 }

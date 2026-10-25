@@ -20,30 +20,28 @@ struct ProfileView: View {
     @State private var showDeleteConfirm = false
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Color(hex: "#F6F2EA").ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                // ── Header (PathHeaderView ile aynı stil) ──────────
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 28) {
                 profileHeader
-
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        if authManager.isAnonymous { guestLoginBanner }
-                        heroCard
-                        statsOverviewRow
-                        streakCard
-                        learningProgressCard
-                        achievementsSection
-                        signOutButton
-                        deleteAccountButton
-                        Spacer(minLength: 40)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
+                if authManager.isAnonymous { guestLoginBanner }
+                heroCard
+                statsOverviewRow
+                streakCard
+                learningProgressCard
+                achievementsSection
+                VStack(spacing: 14) {
+                    signOutButton
+                    deleteAccountButton
                 }
+                .padding(.top, 4)
             }
+            .padding(.horizontal, 24)
+            .padding(.top, 12)
+            .padding(.bottom, 48)
+            .frame(maxWidth: 620)
+            .frame(maxWidth: .infinity)
         }
+        .paperBackground()
         .navigationBarHidden(true)
         .task { await vm.loadProfile() }
         // Login sonrası profili yenile + Supabase'den username_changes kontrolü
@@ -91,8 +89,13 @@ struct ProfileView: View {
         // Guest → Apple/Google girişi: loading + hata geri bildirimi
         .overlay {
             if authManager.isAuthenticating || authManager.isDeleting {
-                Color.black.opacity(0.35).ignoresSafeArea()
-                    .overlay(ProgressView().tint(.white).scaleEffect(1.5))
+                DS.Colors.ink.opacity(0.3).ignoresSafeArea()
+                    .overlay(
+                        ProgressView()
+                            .tint(DS.Colors.ink)
+                            .frame(width: 64, height: 64)
+                            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
+                    )
             }
         }
         .alert(langManager.s(.loginFailedTitle), isPresented: Binding(
@@ -105,281 +108,115 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Guest Login Banner
-    private var guestLoginBanner: some View {
-        Button { showGuestLoginSheet = true } label: {
-            HStack(spacing: 14) {
-                ZStack {
-                    Circle()
-                        .fill(Color(hex: "#F3E2D8"))
-                        .frame(width: 44, height: 44)
-                    Image(systemName: "person.badge.plus")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#C2512F"))
-                }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(langManager.s(.profileSaveProgress))
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#1C1A17"))
-                    Text(langManager.s(.profileSaveProgressHint))
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#D6CEBF"))
-            }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color(hex: "#EBC9B6"), lineWidth: 1.5)
-                    )
-                    .shadow(color: Color(hex: "#C2512F").opacity(0.08), radius: 8, y: 3)
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-
     // MARK: - Header
     private var profileHeader: some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(vm.username)
-                    .font(.system(size: 22, weight: .semibold, design: .serif))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-                Text(langManager.f(.profileLevelFormat, vm.userLevel))
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-
-            // XP pill
-            HStack(spacing: 5) {
-                Image(systemName: "bolt.fill")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#C8962E"))
-                Text("\(vm.user?.totalXp ?? 0) XP")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
-            .background(Color(hex: "#C8962E").opacity(0.13), in: Capsule())
-
-            // Streak pill
-            HStack(spacing: 5) {
-                Image(systemName: "flame.fill")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.orange)
-                Text("\(vm.user?.streakDays ?? 0)")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
-            .background(Color.orange.opacity(0.12), in: Capsule())
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-        .padding(.bottom, 14)
-        .background(
-            Color.clear
-                .background(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-        )
+        Text(langManager.s(.tabProfile))
+            .font(DS.Font.display(34, weight: .bold))
+            .foregroundStyle(DS.Colors.ink)
     }
 
-    // MARK: - Hero Card (avatar + isim + upgrade butonu)
+    // MARK: - Guest Login Banner
+    private var guestLoginBanner: some View {
+        PaperCard(padding: 24) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(langManager.s(.profileSaveProgress))
+                    .font(DS.Font.display(22))
+                    .foregroundStyle(DS.Colors.ink)
+                Text(langManager.s(.profileSaveProgressHint))
+                    .font(DS.Font.ui(15))
+                    .foregroundStyle(DS.Colors.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button(langManager.s(.leaderboardSignIn)) { showGuestLoginSheet = true }
+                    .buttonStyle(InkButtonStyle())
+                    .padding(.top, 6)
+            }
+        }
+    }
+
+    // MARK: - Hero (kimlik + Pro durumu)
     private var heroCard: some View {
-        VStack(spacing: 0) {
-            // Avatar + isim satırı
+        VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(Color(hex: "#EFE9DE"))
-                        .frame(width: 68, height: 68)
-                    if let char = vm.selectedCharacter {
-                        Image(char)
-                            .resizable().scaledToFill()
-                            .frame(width: 68, height: 68)
-                            .clipShape(Circle())
-                    } else {
-                        Text(vm.initials)
-                            .font(.system(size: 26, weight: .semibold, design: .serif))
-                            .foregroundStyle(Color(hex: "#6B645A"))
-                    }
-                }
-                .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
+                Text(vm.initials)
+                    .font(DS.Font.display(24))
+                    .foregroundStyle(DS.Colors.ink)
+                    .frame(width: 56, height: 56)
+                    .background(DS.Colors.paperSunken, in: Circle())
 
                 VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 6) {
+                    if iap.isPremium {
+                        Eyebrow(text: "WordRem Pro", color: DS.Colors.slate)
+                    }
+                    HStack(spacing: 8) {
                         Text(vm.username)
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#1C1A17"))
+                            .font(DS.Font.display(24))
+                            .foregroundStyle(DS.Colors.ink)
+                            .lineLimit(1)
 
                         if !authManager.isAnonymous, (vm.user?.usernameChanges ?? 0) == 1 {
                             Button { showUsernameSetup = true } label: {
                                 Image(systemName: "pencil")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundStyle(AppTheme.Colors.primaryOrange)
-                                    .padding(6)
-                                    .background(AppTheme.Colors.primaryOrange.opacity(0.1), in: Circle())
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundStyle(DS.Colors.inkSoft)
+                                    .frame(width: 28, height: 28)
+                                    .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
                             }
                         }
                     }
-
-                    // Level + XP + Streak inline
-                    HStack(spacing: 8) {
-                        Label(langManager.f(.profileLevelFormat, vm.userLevel), systemImage: "star.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#C8962E"))
-                        Label("\(vm.user?.totalXp ?? 0) XP", systemImage: "bolt.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#6B645A"))
-                        Label("\(vm.user?.streakDays ?? 0)", systemImage: "flame.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.orange)
-                    }
+                    Text("\(langManager.f(.profileLevelFormat, vm.userLevel)) · \(vm.user?.totalXp ?? 0) XP")
+                        .font(DS.Font.ui(13))
+                        .foregroundStyle(DS.Colors.muted)
                 }
-                Spacer()
+                Spacer(minLength: 0)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 16)
 
-            Divider().padding(.horizontal, 16)
-
-            if iap.isPremium {
-                // Premium badge
-                HStack(spacing: 8) {
-                    Image(systemName: "crown.fill")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#2F4B5C"))
-                    Text("WordRem Pro")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#2F4B5C"))
-                    Spacer()
-                    Text("✓ Aktif")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Color(hex: "#2F4B5C"), in: Capsule())
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-            } else {
+            if !iap.isPremium {
                 // Upgrade Pro butonu
                 Button {
                     EventManager.shared.logPaywallEvent("upgrade_tapped_profile")
                     showPaywall = true
                 } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                        Text(langManager.s(.profileUpgradePro))
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Color(hex: "#2F4B5C"), in: RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: Color(hex: "#2F4B5C").opacity(0.28), radius: 8, y: 4)
+                    Label(langManager.s(.profileUpgradePro), systemImage: "crown")
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
+                .buttonStyle(OutlineButtonStyle(tint: DS.Colors.slate))
             }
         }
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
-        .shadow(color: .black.opacity(0.06), radius: 12, y: 5)
     }
 
     // MARK: - Stats Overview Row
     private var statsOverviewRow: some View {
-        HStack(spacing: 12) {
-            StatOverviewTile(
-                icon: "checkmark.seal.fill",
-                color: Color(hex: "#2F4B5C"),
-                value: "\(vm.stats.totalAttempts)",
-                label: "Toplam Soru"
-            )
-            StatOverviewTile(
-                icon: "target",
-                color: Color(hex: "#C2512F"),
-                value: String(format: "%.0f%%", vm.stats.accuracy),
-                label: AL.s(.hcAccuracy)
-            )
-            StatOverviewTile(
-                icon: "flag.checkered",
-                color: Color(hex: "#3F7D58"),
-                value: "\(vm.stats.completedLevels)",
-                label: "Tamamlanan"
-            )
+        HStack(spacing: 0) {
+            ProfileStat(value: "\(vm.stats.totalAttempts)", label: AL.s(.profTotalQuestions))
+            ProfileHairline()
+            ProfileStat(value: String(format: "%.0f%%", vm.stats.accuracy), label: AL.s(.hcAccuracy))
+            ProfileHairline()
+            ProfileStat(value: "\(vm.stats.completedLevels)", label: AL.s(.profCompleted))
         }
+        .padding(.vertical, 4)
     }
 
     // MARK: - Streak Card
     private var streakCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Seri")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
+        PaperCard {
+            VStack(alignment: .leading, spacing: 20) {
+                Text(AL.s(.profStreak))
+                    .font(DS.Font.display(20))
+                    .foregroundStyle(DS.Colors.ink)
 
-            VStack(spacing: 10) {
-                // Günlük Seri
-                HStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(Color(hex: "#F3E2D8"))
-                            .frame(width: 38, height: 38)
-                        Text("🔥").font(.system(size: 20))
-                    }
-                    Text(AL.s(.hcDailyStreak))
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#9E3F22"))
-                    Spacer()
-                    Text("\(vm.user?.streakDays ?? 0)")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#9E3F22"))
-                        .frame(minWidth: 44, minHeight: 36)
-                        .background(Color(hex: "#F3E2D8"), in: RoundedRectangle(cornerRadius: 10))
+                HStack(spacing: 0) {
+                    ProfileStat(value: "\(vm.user?.streakDays ?? 0)",
+                                label: AL.s(.hcDailyStreak),
+                                tint: (vm.user?.streakDays ?? 0) > 0 ? DS.Colors.gold : DS.Colors.ink)
+                    ProfileHairline()
+                    ProfileStat(value: "\(vm.bestStreak)", label: AL.s(.hcBestStreak))
                 }
-                .padding(12)
-                .background(Color(hex: "#F3E2D8").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
 
-                // En İyi Seri
-                HStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(Color(hex: "#E3EEE6"))
-                            .frame(width: 38, height: 38)
-                        Text("🏆").font(.system(size: 20))
-                    }
-                    Text(AL.s(.hcBestStreak))
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#336A4A"))
-                    Spacer()
-                    Text("\(vm.bestStreak)")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#336A4A"))
-                        .frame(minWidth: 44, minHeight: 36)
-                        .background(Color(hex: "#E3EEE6"), in: RoundedRectangle(cornerRadius: 10))
-                }
-                .padding(12)
-                .background(Color(hex: "#E3EEE6").opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
+                Rectangle().fill(DS.Colors.line).frame(height: 1)
+
+                // Haftalık Takvim
+                weeklyCalendarView
             }
-
-            // Haftalık Takvim
-            weeklyCalendarView
         }
-        .padding(20)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
-        .shadow(color: .black.opacity(0.06), radius: 12, y: 4)
     }
 
     // MARK: - Weekly Calendar
@@ -411,23 +248,24 @@ struct ProfileView: View {
                 let isActive = daysSinceLastActive >= 0 && daysSinceLastActive < streak
                 let isToday = calendar.isDateInToday(day)
 
-                VStack(spacing: 6) {
+                VStack(spacing: 8) {
                     Text(dayNames[weekdayIdx])
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#8A8277"))
+                        .font(DS.Font.ui(11, weight: isToday ? .bold : .medium))
+                        .foregroundStyle(isToday ? DS.Colors.ink : DS.Colors.muted)
 
-                    Circle()
-                        .fill(isActive
-                            ? (isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#fb923c").opacity(0.75))
-                            : Color(hex: "#E4DDD0")
-                        )
-                        .frame(width: 32, height: 32)
-                        .overlay {
-                            if isActive {
-                                Text("🔥").font(.system(size: 14))
-                            }
+                    ZStack {
+                        Circle()
+                            .fill(isActive ? DS.Colors.ink : Color.clear)
+                        Circle()
+                            .stroke(isToday ? DS.Colors.gold : (isActive ? DS.Colors.ink : DS.Colors.line),
+                                    lineWidth: isToday ? 2 : 1)
+                        if isActive {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(DS.Colors.paperRaised)
                         }
-                        .shadow(color: isActive ? AppTheme.Colors.primaryOrange.opacity(0.3) : .clear, radius: 4, y: 2)
+                    }
+                    .frame(width: 30, height: 30)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -442,135 +280,88 @@ struct ProfileView: View {
         let xpInLevel = xp % xpPerLevel
         let xpProgress = Double(xpInLevel) / Double(xpPerLevel)
 
-        return VStack(alignment: .leading, spacing: 16) {
-            Text(AL.s(.hcProgress))
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
+        return PaperCard {
+            VStack(alignment: .leading, spacing: 18) {
+                Text(AL.s(.hcProgress))
+                    .font(DS.Font.display(20))
+                    .foregroundStyle(DS.Colors.ink)
 
-            // XP Level Progress
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    HStack(spacing: 6) {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#C8962E"))
-                        Text("Seviye \(currentLevel)")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#1C1A17"))
+                // XP Level Progress
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(AL.f(.profLevelN, currentLevel))
+                            .font(DS.Font.ui(15, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                        Spacer()
+                        Text("\(xp) XP")
+                            .font(DS.Font.ui(13, weight: .medium))
+                            .foregroundStyle(DS.Colors.muted)
+                            .monospacedDigit()
                     }
-                    Spacer()
-                    Text("\(xp) XP")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#6B645A"))
-                }
 
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(hex: "#EFE9DE"))
-                            .frame(height: 10)
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color(hex: "#C8962E"), Color(hex: "#C2512F")],
-                                    startPoint: .leading, endPoint: .trailing
-                                )
-                            )
-                            .frame(width: max(10, geo.size.width * xpProgress), height: 10)
-                            .shadow(color: Color(hex: "#C2512F").opacity(0.4), radius: 4, y: 2)
+                    ProfileProgressBar(progress: xpProgress)
+
+                    HStack {
+                        Text("\(xpInLevel)/\(xpPerLevel) XP")
+                        Spacer()
+                        Text(AL.s(.profNextLevel))
                     }
+                    .font(DS.Font.ui(12))
+                    .foregroundStyle(DS.Colors.muted)
                 }
-                .frame(height: 10)
 
-                HStack {
-                    Text("\(xpInLevel)/\(xpPerLevel) XP")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#8A8277"))
-                    Spacer()
-                    Text("Sonraki seviye")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#8A8277"))
+                Rectangle().fill(DS.Colors.line).frame(height: 1)
+
+                HStack(spacing: 0) {
+                    ProfileStat(value: "\(xp)", label: AL.s(.profTotalXP), size: 22)
+                    ProfileHairline(height: 32)
+                    ProfileStat(value: "\(vm.stats.completedLevels)", label: AL.s(.profLevels), size: 22)
+                    ProfileHairline(height: 32)
+                    ProfileStat(value: String(format: "%.0f%%", vm.stats.accuracy),
+                                label: AL.s(.hcAccuracy), size: 22)
                 }
-            }
-            .padding(16)
-            .background(Color(hex: "#F8F0E3").opacity(0.8), in: RoundedRectangle(cornerRadius: 14))
-
-            // 3 mini stat kutucukları
-            HStack(spacing: 10) {
-                MiniProgressTile(
-                    emoji: "⚡",
-                    value: "\(xp)",
-                    label: "Toplam XP",
-                    bg: Color(hex: "#F5ECD2")
-                )
-                MiniProgressTile(
-                    emoji: "📚",
-                    value: "\(vm.stats.completedLevels)",
-                    label: "Seviye",
-                    bg: Color(hex: "#dbeafe")
-                )
-                MiniProgressTile(
-                    emoji: "🎯",
-                    value: String(format: "%.0f%%", vm.stats.accuracy),
-                    label: AL.s(.hcAccuracy),
-                    bg: Color(hex: "#F3E2D8")
-                )
             }
         }
-        .padding(20)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 20))
-        .shadow(color: .black.opacity(0.06), radius: 12, y: 4)
     }
 
     // MARK: - Achievements
     private var achievementsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             // Header row
-            HStack {
+            HStack(alignment: .firstTextBaseline) {
                 Text(langManager.s(.profileAchievements))
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
+                    .font(DS.Font.display(20))
+                    .foregroundStyle(DS.Colors.ink)
 
-                Spacer()
-
-                // Unlocked count badge
                 let unlockedCount = achievementService.all.filter { $0.isUnlocked }.count
                 Text("\(unlockedCount)/\(achievementService.all.count)")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(AppTheme.Colors.primaryOrange)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(AppTheme.Colors.primaryOrange.opacity(0.12), in: Capsule())
+                    .font(DS.Font.ui(13, weight: .medium))
+                    .foregroundStyle(DS.Colors.muted)
+                    .monospacedDigit()
+
+                Spacer()
 
                 Button {
                     showAllAchievements = true
                 } label: {
                     Text(langManager.s(.achievementViewMore))
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(AppTheme.Colors.primaryOrange)
+                        .font(DS.Font.ui(14, weight: .semibold))
+                        .foregroundStyle(DS.Colors.accent)
                 }
             }
 
-            // First 5 achievements (unlocked first, then locked)
+            // İlk 8 rozet (önce açılanlar, sonra kilitliler)
             let sorted = achievementService.all.sorted {
                 if $0.isUnlocked != $1.isUnlocked { return $0.isUnlocked }
                 return false
             }
-            let preview = Array(sorted.prefix(5))
+            let preview = Array(sorted.prefix(8))
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 14) {
-                    ForEach(preview) { ach in
-                        AchievementBadge(
-                            icon: ach.icon,
-                            title: ach.title,
-                            isUnlocked: ach.isUnlocked,
-                            color: ach.color,
-                            rarity: ach.rarity
-                        )
-                    }
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
+                      alignment: .center, spacing: 18) {
+                ForEach(preview) { ach in
+                    ProfileAchievementCell(icon: ach.icon, title: ach.title, isUnlocked: ach.isUnlocked)
                 }
-                .padding(.vertical, 4)
             }
         }
         .sheet(isPresented: $showAllAchievements) {
@@ -581,35 +372,19 @@ struct ProfileView: View {
     // MARK: - Sign Out
     private var signOutButton: some View {
         Button { authManager.signOut() } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "rectangle.portrait.and.arrow.right")
-                    .font(.system(size: 14, weight: .semibold))
-                Text(langManager.s(.profileSignOut))
-                    .font(.system(size: 14, weight: .semibold))
-            }
-            .foregroundStyle(.red)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.red.opacity(0.07))
-                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.red.opacity(0.18), lineWidth: 1))
-            )
+            Label(langManager.s(.profileSignOut), systemImage: "rectangle.portrait.and.arrow.right")
         }
+        .buttonStyle(OutlineButtonStyle())
     }
 
     // MARK: - Delete Account
     private var deleteAccountButton: some View {
         Button { showDeleteConfirm = true } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "trash")
-                    .font(.system(size: 14, weight: .semibold))
-                Text(langManager.s(.profileDeleteAccount))
-                    .font(.system(size: 14, weight: .semibold))
-            }
-            .foregroundStyle(Color(hex: "#8A8277"))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            Text(langManager.s(.profileDeleteAccount))
+                .font(DS.Font.ui(13, weight: .medium))
+                .foregroundStyle(DS.Colors.danger)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity)
         }
         .alert(langManager.s(.profileDeleteTitle), isPresented: $showDeleteConfirm) {
             Button(langManager.s(.profileDeleteConfirm), role: .destructive) {
@@ -719,207 +494,104 @@ final class ProfileScreenViewModel: ObservableObject {
     }
 }
 
+
 // MARK: ═══════════════════════════════════════════════════════════
 // MARK: - Subviews
 // MARK: ═══════════════════════════════════════════════════════════
 
-// MARK: - StatOverviewTile
-private struct StatOverviewTile: View {
-    let icon: String
-    let color: Color
+/// Serif sayı + soluk etiket (TodayView istatistik satırı)
+private struct ProfileStat: View {
     let value: String
     let label: String
-
-    var body: some View {
-        VStack(spacing: 8) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.12))
-                    .frame(width: 42, height: 42)
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(color)
-            }
-            Text(value)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
-            Text(label)
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(Color(hex: "#8A8277"))
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
-    }
-}
-
-// MARK: - MiniProgressTile
-private struct MiniProgressTile: View {
-    let emoji: String
-    let value: String
-    let label: String
-    let bg: Color
+    var tint: Color = DS.Colors.ink
+    var size: CGFloat = 28
 
     var body: some View {
         VStack(spacing: 4) {
-            Text(emoji).font(.system(size: 22))
             Text(value)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
+                .font(DS.Font.display(size, weight: .bold))
+                .foregroundStyle(tint)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
             Text(label)
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(Color(hex: "#6B645A"))
+                .font(DS.Font.ui(12, weight: .medium))
+                .foregroundStyle(DS.Colors.muted)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .background(bg, in: RoundedRectangle(cornerRadius: 14))
     }
 }
 
-private struct CompactStatTile: View {
-    let icon: String
-    let color: Color
-    let label: String
-    let value: String
-
+/// Dikey ince ayraç
+private struct ProfileHairline: View {
+    var height: CGFloat = 40
     var body: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.12))
-                    .frame(width: 36, height: 36)
-                Image(systemName: icon)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(color)
-            }
-            VStack(alignment: .leading, spacing: 1) {
-                Text(value)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-                Text(label)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
+        Rectangle().fill(DS.Colors.line).frame(width: 1, height: height)
     }
 }
 
-private struct ProfileStatCard: View {
-    let icon: String
-    let iconColor: Color
-    let title: String
-    let value: String
-    let bgColors: [Color]
-
+/// 4pt ince ilerleme çubuğu
+private struct ProfileProgressBar: View {
+    let progress: Double
     var body: some View {
-        VStack(spacing: 10) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(iconColor)
-                Spacer()
-            }
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(value)
-                        .font(.system(size: 22, weight: .semibold, design: .serif))
-                        .foregroundStyle(Color(hex: "#1C1A17"))
-                    Text(title)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(DS.Colors.line)
+                Capsule()
+                    .fill(DS.Colors.ink)
+                    .frame(width: geo.size.width * min(max(progress, 0), 1))
             }
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(LinearGradient(colors: bgColors, startPoint: .topLeading, endPoint: .bottomTrailing))
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-        )
+        .frame(height: 4)
     }
 }
 
-private struct MiniStatCard: View {
-    let icon: String
-    let label: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundStyle(color)
-            Text(value)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
-            Text(label)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 3)
-        )
-    }
+/// Dolu SF Symbol yerine çizgisel varyantı (varsa)
+private func profileOutlineSymbol(_ name: String) -> String {
+    guard name.hasSuffix(".fill") else { return name }
+    let outline = name.replacingOccurrences(of: ".fill", with: "")
+    return UIImage(systemName: outline) != nil ? outline : name
 }
 
-private struct AchievementBadge: View {
+/// Rozet: çizgisel ikon (açık → mürekkep, kilitli → soluk + kilit)
+private struct ProfileAchievementCell: View {
     let icon: String
     let title: String
     let isUnlocked: Bool
-    let color: Color
-    var rarity: AchievementRarity = .common
+    var circle: CGFloat = 52
 
     var body: some View {
         VStack(spacing: 8) {
-            ZStack {
-                // Outer ring with rarity gradient when unlocked
-                Circle()
-                    .strokeBorder(
-                        isUnlocked
-                            ? LinearGradient(
-                                colors: rarity.gradientColors,
-                                startPoint: .topLeading, endPoint: .bottomTrailing
-                              )
-                            : LinearGradient(
-                                colors: [Color(hex: "#E4DDD0"), Color(hex: "#E4DDD0")],
-                                startPoint: .top, endPoint: .bottom
-                              ),
-                        lineWidth: isUnlocked ? 2.5 : 1.5
-                    )
-                    .frame(width: 62, height: 62)
+            ZStack(alignment: .bottomTrailing) {
+                Image(systemName: profileOutlineSymbol(icon))
+                    .font(.system(size: circle * 0.38, weight: .regular))
+                    .foregroundStyle(isUnlocked ? DS.Colors.ink : DS.Colors.muted.opacity(0.7))
+                    .frame(width: circle, height: circle)
+                    .background(isUnlocked ? DS.Colors.paperRaised : Color.clear, in: Circle())
+                    .overlay(Circle().stroke(isUnlocked ? DS.Colors.ink.opacity(0.85) : DS.Colors.line,
+                                             lineWidth: 1))
 
-                Circle()
-                    .fill(isUnlocked ? color.opacity(0.12) : Color(hex: "#EFE9DE"))
-                    .frame(width: 56, height: 56)
-
-                Image(systemName: icon)
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(isUnlocked ? color : Color(hex: "#D6CEBF"))
+                if !isUnlocked {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(DS.Colors.muted)
+                        .frame(width: 18, height: 18)
+                        .background(DS.Colors.paper, in: Circle())
+                        .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
+                        .offset(x: 2, y: 2)
+                }
             }
-            .shadow(color: isUnlocked ? color.opacity(0.25) : .clear, radius: 8, y: 3)
 
             Text(title)
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(isUnlocked ? Color(hex: "#1C1A17") : Color(hex: "#8A8277"))
+                .font(DS.Font.ui(11, weight: .medium))
+                .foregroundStyle(isUnlocked ? DS.Colors.inkSoft : DS.Colors.muted)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
-                .frame(width: 68)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .opacity(isUnlocked ? 1.0 : 0.5)
-        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: isUnlocked)
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 }
 
@@ -950,46 +622,48 @@ struct AllAchievementsSheet: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color(hex: "#F6F2EA").ignoresSafeArea()
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 32) {
+                    Text(langManager.s(.achievementAllTitle))
+                        .font(DS.Font.display(30, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
 
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 28) {
-                        ForEach(grouped, id: \.0) { groupName, items in
-                            VStack(alignment: .leading, spacing: 14) {
-                                // Section header
-                                HStack(spacing: 8) {
-                                    Text(groupName)
-                                        .font(.system(size: 15, weight: .bold))
-                                        .foregroundStyle(Color(hex: "#1C1A17"))
+                    ForEach(grouped, id: \.0) { groupName, items in
+                        VStack(alignment: .leading, spacing: 16) {
+                            // Section header
+                            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                                Eyebrow(text: groupName, color: DS.Colors.muted)
+                                let unlocked = items.filter { $0.isUnlocked }.count
+                                Text("\(unlocked)/\(items.count)")
+                                    .font(DS.Font.ui(12, weight: .medium))
+                                    .foregroundStyle(DS.Colors.muted)
+                                    .monospacedDigit()
+                            }
 
-                                    let unlocked = items.filter { $0.isUnlocked }.count
-                                    Text("\(unlocked)/\(items.count)")
-                                        .font(.system(size: 12))
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                LazyVGrid(columns: columns, spacing: 16) {
-                                    ForEach(items) { ach in
-                                        AchievementGridCell(achievement: ach)
-                                    }
+                            LazyVGrid(columns: columns, spacing: 20) {
+                                ForEach(items) { ach in
+                                    AchievementGridCell(achievement: ach)
                                 }
                             }
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                    .padding(.bottom, 32)
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
+                .padding(.bottom, 32)
+                .frame(maxWidth: 620)
+                .frame(maxWidth: .infinity)
             }
-            .navigationTitle(langManager.s(.achievementAllTitle))
+            .paperBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { dismiss() } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 22))
-                            .foregroundStyle(Color(hex: "#8A8277"))
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                            .frame(width: 32, height: 32)
+                            .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
                     }
                 }
             }
@@ -1002,68 +676,18 @@ private struct AchievementGridCell: View {
     let achievement: Achievement
 
     var body: some View {
-        VStack(spacing: 10) {
-            ZStack {
-                Circle()
-                    .fill(achievement.isUnlocked
-                          ? achievement.color.opacity(0.13)
-                          : Color(hex: "#EFE9DE"))
-                    .frame(width: 64, height: 64)
-
-                Circle()
-                    .strokeBorder(
-                        achievement.isUnlocked
-                            ? LinearGradient(
-                                colors: achievement.rarity.gradientColors,
-                                startPoint: .topLeading, endPoint: .bottomTrailing
-                              )
-                            : LinearGradient(
-                                colors: [Color(hex: "#E4DDD0"), Color(hex: "#E4DDD0")],
-                                startPoint: .top, endPoint: .bottom
-                              ),
-                        lineWidth: achievement.isUnlocked ? 2.5 : 1.5
-                    )
-                    .frame(width: 64, height: 64)
-
-                Image(systemName: achievement.icon)
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(achievement.isUnlocked
-                                     ? achievement.color
-                                     : Color(hex: "#D6CEBF"))
-            }
-            .shadow(color: achievement.isUnlocked ? achievement.color.opacity(0.3) : .clear,
-                    radius: 8, y: 3)
-
-            Text(achievement.title)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(achievement.isUnlocked
-                                  ? Color(hex: "#1C1A17")
-                                  : Color(hex: "#8A8277"))
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-
+        VStack(spacing: 6) {
+            ProfileAchievementCell(icon: achievement.icon,
+                                   title: achievement.title,
+                                   isUnlocked: achievement.isUnlocked,
+                                   circle: 60)
             if achievement.isUnlocked {
                 Text(langManager.s(.achievementUnlockedBadge))
-                    .font(.system(size: 10))
-                    .foregroundStyle(achievement.rarity.color)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(achievement.rarity.color.opacity(0.1), in: Capsule())
-            } else {
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 10))
-                    .foregroundStyle(Color(hex: "#D6CEBF"))
+                    .font(DS.Font.ui(10, weight: .medium))
+                    .foregroundStyle(DS.Colors.muted)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .padding(.horizontal, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 18)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
-        )
-        .opacity(achievement.isUnlocked ? 1.0 : 0.55)
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 }
 
@@ -1090,16 +714,13 @@ struct CharacterPickerSheet: View {
                 if characters.isEmpty {
                     // Placeholder — karakterler eklenince dolacak
                     Spacer()
-                    VStack(spacing: 16) {
-                        Image(systemName: "person.crop.circle.badge.plus")
-                            .font(.system(size: 56))
-                            .foregroundStyle(Color(hex: "#C2512F").opacity(0.6))
+                    VStack(spacing: 8) {
                         Text("Karakterler yakında!")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#1C1A17"))
+                            .font(DS.Font.display(22))
+                            .foregroundStyle(DS.Colors.ink)
                         Text("xcassets'e karakter görselleri eklenecek")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.secondary)
+                            .font(DS.Font.ui(14))
+                            .foregroundStyle(DS.Colors.muted)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.horizontal, 32)
@@ -1112,34 +733,16 @@ struct CharacterPickerSheet: View {
                                     selected = (selected == name) ? nil : name
                                     dismiss()
                                 } label: {
-                                    ZStack {
-                                        Circle()
-                                            .fill(Color(hex: "#EFE9DE"))
-                                            .frame(width: 90, height: 90)
-
-                                        Image(name)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 90, height: 90)
-                                            .clipShape(Circle())
-
-                                        if selected == name {
-                                            Circle()
-                                                .strokeBorder(
-                                                    LinearGradient(
-                                                        colors: [Color(hex: "#D9A441"), Color(hex: "#C2512F")],
-                                                        startPoint: .topLeading, endPoint: .bottomTrailing
-                                                    ),
-                                                    lineWidth: 3
-                                                )
-                                                .frame(width: 94, height: 94)
-
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .font(.system(size: 22))
-                                                .foregroundStyle(Color(hex: "#C2512F"))
-                                                .offset(x: 32, y: -32)
-                                        }
-                                    }
+                                    Image(name)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 88, height: 88)
+                                        .clipShape(Circle())
+                                        .background(DS.Colors.paperSunken, in: Circle())
+                                        .overlay(
+                                            Circle().stroke(selected == name ? DS.Colors.ink : DS.Colors.line,
+                                                            lineWidth: selected == name ? 2 : 1)
+                                        )
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
@@ -1152,11 +755,11 @@ struct CharacterPickerSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(langManager.s(.profileClose)) { dismiss() }
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#C2512F"))
+                        .font(DS.Font.ui(15, weight: .semibold))
+                        .foregroundStyle(DS.Colors.inkSoft)
                 }
             }
-            .background(Color(hex: "#F6F2EA").ignoresSafeArea())
+            .paperBackground()
         }
         .presentationDetents([.medium, .large])
         .presentationCornerRadius(24)
@@ -1180,90 +783,76 @@ struct GuestLoginSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 28) {
+                VStack(alignment: .leading, spacing: 32) {
                     // Header
-                    VStack(spacing: 12) {
-                        Image(systemName: "lock.shield.fill")
-                            .font(.system(size: 52))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [Color(hex: "#C2512F"), Color(hex: "#C2512F")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .padding(.top, 8)
-
+                    VStack(alignment: .leading, spacing: 12) {
                         Text(langManager.s(.profileSaveProgress))
-                            .font(.system(size: 22, weight: .semibold, design: .serif))
-                            .foregroundStyle(Color(hex: "#1C1A17"))
+                            .font(DS.Font.display(30, weight: .bold))
+                            .foregroundStyle(DS.Colors.ink)
+                            .fixedSize(horizontal: false, vertical: true)
 
                         Text(langManager.s(.profileSaveProgressDesc))
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
+                            .font(DS.Font.ui(16))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    .padding(.horizontal, 8)
+                    .padding(.top, 8)
 
                     // Buttons
                     VStack(spacing: 12) {
                         // Apple
-                        GuestLoginButton(
-                            icon: "apple.logo",
-                            label: langManager.s(.profileLoginApple),
-                            background: Color.black,
-                            foreground: .white
-                        ) {
+                        Button {
                             dismiss()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                                 authManager.handleAppleLogin()
                             }
+                        } label: {
+                            Label(langManager.s(.profileLoginApple), systemImage: "apple.logo")
                         }
+                        .buttonStyle(InkButtonStyle())
 
                         // Google
-                        GuestLoginButton(
-                            icon: "g.circle.fill",
-                            label: langManager.s(.profileLoginGoogle),
-                            background: Color(hex: "#EFE9DE"),
-                            foreground: Color(hex: "#1C1A17")
-                        ) {
+                        Button {
                             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                                   let vc = windowScene.windows.first?.rootViewController else { return }
                             dismiss()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                                 authManager.handleGoogleSignIn(with: vc)
                             }
+                        } label: {
+                            Label(langManager.s(.profileLoginGoogle), systemImage: "g.circle")
                         }
+                        .buttonStyle(OutlineButtonStyle())
 
                         // E-posta
-                        GuestLoginButton(
-                            icon: "envelope.fill",
-                            label: langManager.s(.profileLoginEmail),
-                            background: Color(hex: "#C2512F"),
-                            foreground: .white
-                        ) {
+                        Button {
                             onEmailSelected?()
+                        } label: {
+                            Label(langManager.s(.profileLoginEmail), systemImage: "envelope")
                         }
+                        .buttonStyle(OutlineButtonStyle())
                     }
 
                     if let err = errorMessage {
                         Text(err)
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.red)
-                            .multilineTextAlignment(.center)
+                            .font(DS.Font.ui(13, weight: .medium))
+                            .foregroundStyle(DS.Colors.danger)
+                            .multilineTextAlignment(.leading)
                     }
                 }
                 .padding(24)
+                .frame(maxWidth: 520)
+                .frame(maxWidth: .infinity)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(langManager.s(.profileClose)) { dismiss() }
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(DS.Font.ui(15, weight: .semibold))
+                        .foregroundStyle(DS.Colors.inkSoft)
                 }
             }
-            .background(Color(hex: "#F6F2EA").ignoresSafeArea())
+            .paperBackground()
         }
         .presentationDetents([.large])
         .presentationCornerRadius(28)
@@ -1272,30 +861,6 @@ struct GuestLoginSheet: View {
         }
     }
 
-}
-
-private struct GuestLoginButton: View {
-    let icon: String
-    let label: String
-    let background: Color
-    let foreground: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .medium))
-                Text(label)
-                    .font(.system(size: 15, weight: .semibold))
-            }
-            .foregroundStyle(foreground)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(background, in: RoundedRectangle(cornerRadius: 16))
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
 }
 
 // MARK: - Username Setup Popup (mandatory, kapatılamaz)
@@ -1316,88 +881,75 @@ private struct UsernameSetupPopup: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.5)
+            DS.Colors.ink.opacity(0.4)
                 .ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                // Close butonu — her zaman (ilk kurulumda da atlanabilir; Apple 4.8 / 5.1.1)
-                HStack {
-                    Spacer()
-                    Button {
-                        focused = false
-                        onDismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#6B645A"))
-                            .padding(10)
-                            .background(Color(hex: "#EFE9DE"), in: Circle())
+            PaperCard(padding: 24) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Close butonu — her zaman (ilk kurulumda da atlanabilir; Apple 4.8 / 5.1.1)
+                    HStack(alignment: .top) {
+                        Text(isFirstSetup ? langManager.s(.profileSetUsername) : langManager.s(.profileChangeUsername))
+                            .font(DS.Font.display(24))
+                            .foregroundStyle(DS.Colors.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 12)
+                        Button {
+                            focused = false
+                            onDismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(DS.Colors.inkSoft)
+                                .frame(width: 32, height: 32)
+                                .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
+                        }
+                        .accessibilityLabel(langManager.s(.usernameSkip))
                     }
-                    .accessibilityLabel(langManager.s(.usernameSkip))
-                }
-                .padding(.top, 16)
-                .padding(.trailing, 16)
 
-                MascotAnimationView(width: 110, height: 110)
+                    Text(isFirstSetup
+                         ? langManager.s(.profileUsernameLeaderboard)
+                         : langManager.s(.profileUsernameOneChange))
+                        .font(DS.Font.ui(14))
+                        .foregroundStyle(DS.Colors.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 8)
 
-                Text(isFirstSetup ? langManager.s(.profileSetUsername) : langManager.s(.profileChangeUsername))
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-                    .padding(.top, 6)
+                    TextField(langManager.s(.profileUsernamePlaceholder), text: $username)
+                        .font(DS.Font.ui(16, weight: .medium))
+                        .foregroundStyle(DS.Colors.ink)
+                        .tint(DS.Colors.accent)
+                        .padding(.horizontal, 16)
+                        .frame(height: 52)
+                        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DS.Radius.button)
+                                .stroke(focused ? DS.Colors.inkSoft : DS.Colors.line, lineWidth: 1)
+                        )
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .focused($focused)
+                        .padding(.top, 20)
 
-                Text(isFirstSetup
-                     ? langManager.s(.profileUsernameLeaderboard)
-                     : langManager.s(.profileUsernameOneChange))
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 4)
-
-                TextField(langManager.s(.profileUsernamePlaceholder), text: $username)
-                    .font(.system(size: 15, weight: .semibold))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 13)
-                    .background(Color(hex: "#F6F2EA"), in: RoundedRectangle(cornerRadius: 14))
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .focused($focused)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 18)
-
-                Button {
-                    guard isValid, !isSaving else { return }
-                    isSaving = true
-                    focused = false
-                    onSave(username.trimmingCharacters(in: .whitespaces))
-                } label: {
-                    Group {
+                    Button {
+                        guard isValid, !isSaving else { return }
+                        isSaving = true
+                        focused = false
+                        onSave(username.trimmingCharacters(in: .whitespaces))
+                    } label: {
                         if isSaving {
-                            ProgressView().tint(.white)
+                            ProgressView().tint(DS.Colors.paperRaised)
                         } else {
                             Text(langManager.s(.profileSave))
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(.white)
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(
-                        LinearGradient(
-                            colors: isValid
-                                ? [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange]
-                                : [Color.gray.opacity(0.4), Color.gray.opacity(0.4)],
-                            startPoint: .leading, endPoint: .trailing
-                        )
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .buttonStyle(InkButtonStyle())
+                    .opacity(isValid ? 1 : 0.4)
+                    .disabled(!isValid || isSaving)
+                    .padding(.top, 16)
                 }
-                .disabled(!isValid || isSaving)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 20)
             }
-            .background(Color.white, in: RoundedRectangle(cornerRadius: 28))
-            .padding(.horizontal, 28)
+            .frame(maxWidth: 440)
+            .padding(.horizontal, 24)
             // Keyboard popup'ı yukarı kaydırmasın
             .ignoresSafeArea(.keyboard)
         }

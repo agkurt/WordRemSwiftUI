@@ -2,8 +2,8 @@
 //  AIGrammarVoiceIntroView.swift
 //  WordRemSwiftUI
 //
-//  Beyaz arka plan. 4 renkli dot (yükleme/konuşma animasyonu).
-//  AI soru sorunca üstte practice kart açılır.
+//  Kâğıt zemin, serif ders metni (okuma yüzeyi).
+//  AI soru sorunca ders kartının altında practice kart açılır.
 //  Mikrofon: basılı tut → konuş → bırak → gönder.
 //
 
@@ -61,48 +61,50 @@ struct AIGrammarVoiceIntroView: View {
     private var targetLang: String { OpenAIQuizService.shared.fullLangName(for: targetLangCode) }
     private var nativeLang:  String { OpenAIQuizService.shared.fullLangName(for: nativeLangCode) }
 
-    private let dotColors: [Color] = [
-        Color(hex: "#2F4B5C"),
-        Color(hex: "#C9615A"),
-        Color(hex: "#D9A441"),
-        Color(hex: "#2F4B5C")
-    ]
-
     // MARK: - Body
 
     var body: some View {
         ZStack {
-            Color.white.ignoresSafeArea()
+            DS.Colors.paper.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 topBar
 
-                Spacer()
+                ScrollViewReader { proxy in
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            lessonCard
 
-                // Practice kart — AI soru sorduğunda üstte belirir
-                if let phrase = practicePhrase, phase == .idle || phase == .listening {
-                    practiceCard(phrase: phrase)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                        .padding(.bottom, 12)
+                            // Practice kart — AI soru sorduğunda belirir
+                            if let phrase = practicePhrase, phase == .idle || phase == .listening {
+                                practiceCard(phrase: phrase)
+                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            }
+
+                            Color.clear.frame(height: 1).id("aiLessonBottom")
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 8)
+                        .padding(.bottom, 16)
+                    }
+                    .onChange(of: displayedText) { _ in
+                        if phase == .speaking {
+                            proxy.scrollTo("aiLessonBottom", anchor: .bottom)
+                        }
+                    }
                 }
-
-                dotsSection
-
-                Spacer(minLength: 20)
-
-                textArea
-
-                Spacer()
 
                 bottomControls
             }
+            .frame(maxWidth: 620)
+            .frame(maxWidth: .infinity)
         }
-        .animation(.spring(response: 0.4), value: phase)
-        .animation(.spring(response: 0.45), value: practicePhrase)
+        .animation(.easeOut(duration: 0.25), value: phase)
+        .animation(.easeOut(duration: 0.3), value: practicePhrase)
         .task { await startIntro() }
         .onDisappear { cleanup() }
         .sheet(isPresented: $showTranscript) {
-            TranscriptSheet(history: history)
+            AITranscriptSheet(history: history)
         }
         .fullScreenCover(isPresented: $showPaywall) {
             OnboardingPaywallView(onContinue: { showPaywall = false })
@@ -120,207 +122,192 @@ struct AIGrammarVoiceIntroView: View {
     // MARK: - Top Bar
 
     private var topBar: some View {
-        HStack {
+        HStack(spacing: 12) {
             Button { cleanup(); onProceed(topic) } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#6B645A"))
-                    .frame(width: 36, height: 36)
-                    .background(Color(hex: "#EFE9DE"), in: Circle())
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .frame(width: 40, height: 40)
+                    .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
             }
 
             Spacer()
 
-            Text(topic.rawValue)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
+            VStack(spacing: 2) {
+                Eyebrow(text: topic.category.rawValue, color: DS.Colors.muted)
+                Text(topic.rawValue)
+                    .font(DS.Font.display(17))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineLimit(1)
+            }
 
             Spacer()
 
             Button { showTranscript = true } label: {
-                Image(systemName: "list.bullet.rectangle.portrait")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color(hex: "#6B645A"))
-                    .frame(width: 36, height: 36)
-                    .background(Color(hex: "#EFE9DE"), in: Circle())
+                Image(systemName: "text.bubble")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .frame(width: 40, height: 40)
+                    .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
             }
+            .accessibilityLabel(AL.s(.hcChatHistory))
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
-        .padding(.bottom, 20)
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+    }
+
+    // MARK: - Lesson Card
+
+    private var lessonCard: some View {
+        PaperCard(padding: 24) {
+            Group {
+                if phase == .generating {
+                    HStack(spacing: 10) {
+                        ProgressView().tint(DS.Colors.muted)
+                        Text(AL.s(.hcPreparingLesson))
+                            .font(DS.Font.ui(15))
+                            .foregroundStyle(DS.Colors.muted)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 120)
+                } else if phase == .processing {
+                    VStack(alignment: .leading, spacing: 18) {
+                        if !displayedText.isEmpty {
+                            lessonText(displayedText)
+                                .foregroundStyle(DS.Colors.muted)
+                        }
+                        ProgressView().tint(DS.Colors.muted)
+                    }
+                } else if !displayedText.isEmpty {
+                    lessonText(displayedText + (phase == .speaking ? "▍" : ""))
+                        .foregroundStyle(DS.Colors.ink)
+                } else {
+                    Color.clear.frame(height: 120)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func lessonText(_ text: String) -> some View {
+        Text(text)
+            .font(DS.Font.display(22, weight: .regular))
+            .lineSpacing(8)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .animation(nil, value: displayedText)
     }
 
     // MARK: - Practice Card
 
     private func practiceCard(phrase: String) -> some View {
-        VStack(spacing: 10) {
+        HStack(alignment: .center, spacing: 14) {
             Text(phrase)
-                .font(.system(size: 30, weight: .bold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
-                .multilineTextAlignment(.center)
+                .font(DS.Font.display(26))
+                .foregroundStyle(DS.Colors.ink)
                 .minimumScaleFactor(0.6)
                 .lineLimit(3)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Button {
                 TTSManager.shared.speak(phrase, langCode: targetLangCode)
             } label: {
-                Image(systemName: "speaker.wave.2.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(Color(hex: "#8A8277"))
+                Image(systemName: "speaker.wave.2")
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundStyle(DS.Colors.accent)
+                    .frame(width: 40, height: 40)
+                    .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
             }
         }
-        .padding(.horizontal, 36)
-        .padding(.vertical, 28)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.08), radius: 18, y: 4)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 24)
-                .stroke(Color(hex: "#E4DDD0"), lineWidth: 1)
-        )
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
+        .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: DS.Radius.card))
     }
 
-    // MARK: - 4 Colored Dots
+    // MARK: - Status Label
 
-    private var dotsSection: some View {
-        HStack(spacing: 16) {
-            ForEach(0..<4, id: \.self) { i in
-                RoundedRectangle(cornerRadius: 22)
-                    .fill(dotColors[i])
-                    .frame(width: 56, height: 72)
-                    .scaleEffect(y: dotBounce[i], anchor: .bottom)
-                    .shadow(color: dotColors[i].opacity(0.25), radius: 6, y: 3)
-            }
-        }
-    }
-
-    // MARK: - Text Area
-
-    private var textArea: some View {
-        VStack(spacing: 10) {
-            Group {
-                if phase == .generating {
-                    Text(AL.s(.hcPreparingLesson))
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color(hex: "#8A8277"))
-                } else if phase == .processing {
-                    HStack(spacing: 7) {
-                        ForEach(0..<3, id: \.self) { i in
-                            ThinkingDot(delay: Double(i) * 0.18)
-                        }
-                    }
-                } else if !displayedText.isEmpty {
-                    Text(displayedText + (phase == .speaking ? "▋" : ""))
-                        .font(.system(size: 17))
-                        .foregroundStyle(Color(hex: "#1C1A17"))
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(5)
-                        .animation(nil, value: displayedText)
-                        .padding(.horizontal, 28)
-                }
-            }
-            .frame(minHeight: 72)
-
-            // Alt ipucu
-            switch phase {
-            case .speaking:
-                Text(AL.s(.hcTapToInterrupt))
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#D6CEBF"))
-            case .idle:
-                Text(AL.s(.hcHoldToSpeak))
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#8A8277"))
-            case .listening:
-                Text(srm.recognizedText.isEmpty ? AL.s(.hcListening) : srm.recognizedText)
-                    .font(.system(size: 13).italic())
-                    .foregroundStyle(Color(hex: "#8A8277"))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 28)
-            default:
-                Color.clear.frame(height: 18)
-            }
+    @ViewBuilder
+    private var statusLabel: some View {
+        switch phase {
+        case .speaking:
+            Text(AL.s(.hcTapToInterrupt))
+                .font(DS.Font.ui(13))
+                .foregroundStyle(DS.Colors.muted)
+        case .idle:
+            Text(AL.s(.hcHoldToSpeak))
+                .font(DS.Font.ui(13))
+                .foregroundStyle(DS.Colors.muted)
+        case .listening:
+            Text(srm.recognizedText.isEmpty ? AL.s(.hcListening) : srm.recognizedText)
+                .font(DS.Font.ui(13).italic())
+                .foregroundStyle(DS.Colors.inkSoft)
+                .multilineTextAlignment(.center)
+                .lineLimit(3)
+        default:
+            Color.clear.frame(height: 16)
         }
     }
 
     // MARK: - Bottom Controls
 
     private var bottomControls: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
+            statusLabel
+                .padding(.horizontal, 24)
+
             if phase == .idle || phase == .listening {
-                // Basılı tut-bırak mikrofon
-                ZStack {
-                    // Pulse halkaları (idle'da)
-                    if phase == .idle {
+                // Basılı tut-bırak mikrofon — tek mürekkep daire
+                Circle()
+                    .fill(DS.Colors.ink)
+                    .frame(width: 72, height: 72)
+                    .overlay(
+                        Image(systemName: phase == .listening ? "stop.fill" : "mic.fill")
+                            .font(.system(size: 24, weight: .semibold))
+                            .foregroundStyle(DS.Colors.paperRaised)
+                    )
+                    .overlay(
                         Circle()
-                            .stroke(Color.black.opacity(0.12), lineWidth: 2.5)
-                            .frame(width: micPulse ? 112 : 80, height: micPulse ? 112 : 80)
-                            .opacity(micPulse ? 0 : 1)
-                            .animation(.easeOut(duration: 1.1).repeatForever(autoreverses: false), value: micPulse)
-
-                        Circle()
-                            .stroke(Color.black.opacity(0.06), lineWidth: 2)
-                            .frame(width: micPulse ? 140 : 80, height: micPulse ? 140 : 80)
-                            .opacity(micPulse ? 0 : 1)
-                            .animation(.easeOut(duration: 1.1).repeatForever(autoreverses: false).delay(0.3), value: micPulse)
-                    }
-
-                    // Mikrofon butonu — siyah daire
-                    Circle()
-                        .fill(phase == .listening ? Color(hex: "#B4423A") : Color.black)
-                        .frame(width: 80, height: 80)
-                        .scaleEffect(micIsPressed ? 0.92 : 1.0)
-                        .shadow(
-                            color: (phase == .listening ? Color(hex: "#B4423A") : Color.black).opacity(0.25),
-                            radius: 16, y: 6
-                        )
-                        .overlay(
-                            Image(systemName: phase == .listening ? "stop.fill" : "mic.fill")
-                                .font(.system(size: 28, weight: .semibold))
-                                .foregroundStyle(.white)
-                        )
-                        .animation(.spring(response: 0.25), value: micIsPressed)
-                        // Basılı tut-bırak
-                        .gesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { _ in
-                                    if !micIsPressed && phase == .idle {
-                                        micIsPressed = true
-                                        startListening()
+                            .stroke(DS.Colors.accent, lineWidth: 2)
+                            .padding(-6)
+                            .opacity(phase == .listening ? 1 : 0)
+                    )
+                    .scaleEffect(micIsPressed ? 0.94 : 1.0)
+                    .animation(.easeOut(duration: 0.15), value: micIsPressed)
+                    .padding(6)
+                    .contentShape(Circle())
+                    // Basılı tut-bırak
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { _ in
+                                if !micIsPressed && phase == .idle {
+                                    micIsPressed = true
+                                    startListening()
+                                }
+                            }
+                            .onEnded { _ in
+                                if micIsPressed {
+                                    micIsPressed = false
+                                    if phase == .listening {
+                                        stopListeningAndProcess()
                                     }
                                 }
-                                .onEnded { _ in
-                                    if micIsPressed {
-                                        micIsPressed = false
-                                        if phase == .listening {
-                                            stopListeningAndProcess()
-                                        }
-                                    }
-                                }
-                        )
-                }
-                .transition(.scale(scale: 0.8).combined(with: .opacity))
+                            }
+                    )
+                    .accessibilityLabel(AL.s(.hcHoldToSpeak))
+                    .transition(.opacity)
             }
 
             Button { cleanup(); onProceed(topic) } label: {
-                HStack(spacing: 8) {
-                    Text(AL.s(.hcStartQuiz))
-                        .font(.system(size: 16, weight: .semibold))
-                    Image(systemName: "arrow.right")
-                        .font(.system(size: 14, weight: .semibold))
-                }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 15)
-                .background(Color(hex: "#2F4B5C"), in: RoundedRectangle(cornerRadius: 18))
-                .shadow(color: Color(hex: "#2F4B5C").opacity(0.32), radius: 10, y: 5)
+                Text(AL.s(.hcStartQuiz))
             }
+            .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
             .padding(.horizontal, 24)
-            .padding(.bottom, 44)
+        }
+        .padding(.top, 12)
+        .padding(.bottom, 24)
+        .background(DS.Colors.paper)
+        .overlay(alignment: .top) {
+            Rectangle().fill(DS.Colors.line).frame(height: 1)
         }
     }
 
@@ -594,29 +581,9 @@ struct AIGrammarVoiceIntroView: View {
     }
 }
 
-// MARK: - Thinking Dot
-
-private struct ThinkingDot: View {
-    let delay: Double
-    @State private var on = false
-
-    var body: some View {
-        Circle()
-            .fill(Color(hex: "#8A8277"))
-            .frame(width: 9, height: 9)
-            .scaleEffect(on ? 1.0 : 0.5)
-            .opacity(on ? 1.0 : 0.35)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 0.48).repeatForever(autoreverses: true).delay(delay)) {
-                    on = true
-                }
-            }
-    }
-}
-
 // MARK: - Transcript Sheet
 
-private struct TranscriptSheet: View {
+private struct AITranscriptSheet: View {
     let history: [(role: String, content: String)]
     @Environment(\.dismiss) private var dismiss
 
@@ -624,21 +591,16 @@ private struct TranscriptSheet: View {
         NavigationStack {
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 18) {
+                    LazyVStack(spacing: 20) {
                         ForEach(Array(history.enumerated()), id: \.0) { idx, item in
-                            HStack(alignment: .top, spacing: 10) {
-                                Text(item.role == "user" ? "👤" : "🤖")
-                                    .font(.system(size: 20))
-                                Text(item.content)
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(Color(hex: "#1C1A17"))
-                                    .lineSpacing(4)
-                            }
-                            .padding(.horizontal, 20)
-                            .id(idx)
+                            AITranscriptRow(isUser: item.role == "user", content: item.content)
+                                .id(idx)
                         }
                     }
-                    .padding(.vertical, 20)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 24)
+                    .frame(maxWidth: 620)
+                    .frame(maxWidth: .infinity)
                 }
                 .onAppear {
                     if let last = history.indices.last {
@@ -646,15 +608,44 @@ private struct TranscriptSheet: View {
                     }
                 }
             }
-            .background(Color.white)
+            .paperBackground()
             .navigationTitle(AL.s(.hcChatHistory))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(DS.Colors.paper, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Kapat") { dismiss() }
-                        .font(.system(size: 14, weight: .semibold))
+                    Button(AL.s(.commonClose)) { dismiss() }
+                        .font(DS.Font.ui(15, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
                 }
             }
+        }
+    }
+}
+
+private struct AITranscriptRow: View {
+    let isUser: Bool
+    let content: String
+
+    var body: some View {
+        if isUser {
+            HStack {
+                Spacer(minLength: 48)
+                Text(content)
+                    .font(DS.Font.ui(15))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineSpacing(3)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 14))
+            }
+        } else {
+            Text(content)
+                .font(DS.Font.display(17, weight: .regular))
+                .foregroundStyle(DS.Colors.ink)
+                .lineSpacing(5)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.trailing, 24)
         }
     }
 }

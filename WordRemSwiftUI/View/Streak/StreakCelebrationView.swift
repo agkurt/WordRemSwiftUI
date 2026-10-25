@@ -2,8 +2,7 @@
 //  StreakCelebrationView.swift
 //  WordRemSwiftUI
 //
-//  Full-screen streak celebration shown once per day after the user
-//  opens the app following midnight.
+//  Günde bir kez, gece yarısından sonraki ilk açılışta gösterilen seri kutlaması.
 //
 
 import SwiftUI
@@ -15,12 +14,7 @@ struct StreakCelebrationView: View {
     let streakDays: Int
     let onContinue: () -> Void
 
-    // MARK: - Animation states
-    @State private var imageScale:     CGFloat = 0.5
-    @State private var imageOpacity:   CGFloat = 0
-    @State private var contentOpacity: CGFloat = 0
-    @State private var glowRadius:     CGFloat = 0
-    @State private var dotAnimations   = Array(repeating: false, count: 7)
+    @State private var appear = false
 
     // MARK: - Week helpers
     /// ISO weekday index: Mon=0 … Sun=6
@@ -40,88 +34,52 @@ struct StreakCelebrationView: View {
         return daysAgo < streakDays ? .streaked : .missed
     }
 
+    private var title: String {
+        plain(streakDays == 1
+              ? langManager.s(.streakStartedTitle)
+              : langManager.f(.streakContinuedTitle, streakDays))
+    }
+
     // MARK: - Body
     var body: some View {
         ZStack {
-            background
+            Color.black.opacity(0.25)
+                .ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                Spacer()
-                headerTexts
-                    .opacity(contentOpacity)
-                Spacer(minLength: 28)
-                energyImage
-                Spacer(minLength: 28)
-                weekRow
-                    .opacity(contentOpacity)
-                    .padding(.horizontal, 20)
-                Spacer(minLength: 44)
-                continueButton
-                    .opacity(contentOpacity)
-                    .padding(.horizontal, 24)
-                Spacer(minLength: 44)
+            PaperCard(padding: 28) {
+                VStack(alignment: .leading, spacing: 18) {
+                    Eyebrow(text: title, color: DS.Colors.gold)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(streakDays)")
+                            .font(DS.Font.display(80, weight: .bold).monospacedDigit())
+                            .foregroundStyle(DS.Colors.gold)
+                        Text(langManager.s(.todayStreak))
+                            .font(DS.Font.ui(15, weight: .medium))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                    }
+
+                    Text(langManager.s(.streakSubtitle))
+                        .font(DS.Font.ui(16))
+                        .foregroundStyle(DS.Colors.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    weekRow
+                        .padding(.vertical, 4)
+
+                    Button(langManager.s(.streakContinue), action: onContinue)
+                        .buttonStyle(InkButtonStyle())
+                }
             }
+            .frame(maxWidth: 420)
+            .padding(.horizontal, 24)
+            .offset(y: appear ? 0 : 12)
+            .opacity(appear ? 1 : 0)
         }
-        .onAppear { runEntrance() }
-    }
-
-    // MARK: - Background
-    private var background: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(hex: "#1e0a5e"),
-                    Color(hex: "#1F313C"),
-                    Color(hex: "#0d062a")
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            // Decorative blurred orbs
-            Circle()
-                .fill(Color(hex: "#243B48").opacity(0.25))
-                .frame(width: 320, height: 320)
-                .blur(radius: 60)
-                .offset(x: -80, y: -180)
-
-            Circle()
-                .fill(Color(hex: "#C2512F").opacity(0.18))
-                .frame(width: 260, height: 260)
-                .blur(radius: 50)
-                .offset(x: 100, y: 200)
+        .presentationBackground(.clear)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.3).delay(0.1)) { appear = true }
         }
-    }
-
-    // MARK: - Header
-    private var headerTexts: some View {
-        VStack(spacing: 10) {
-            Text(streakDays == 1
-                 ? langManager.s(.streakStartedTitle)
-                 : langManager.f(.streakContinuedTitle, streakDays))
-                .font(.system(size: 30, weight: .bold))
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
-
-            Text(langManager.s(.streakSubtitle))
-                .font(.system(size: 15))
-                .foregroundStyle(.white.opacity(0.75))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 36)
-        }
-    }
-
-    // MARK: - Energy image
-    private var energyImage: some View {
-        Image("energy")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 200, height: 200)
-            .scaleEffect(imageScale)
-            .opacity(imageOpacity)
-            .shadow(color: Color(hex: "#C8962E").opacity(0.6), radius: glowRadius, y: 8)
     }
 
     // MARK: - Week row
@@ -129,139 +87,44 @@ struct StreakCelebrationView: View {
         HStack(spacing: 0) {
             ForEach(0..<7, id: \.self) { i in
                 VStack(spacing: 8) {
-                    dayCircle(i)
+                    dot(dayState(i))
                     Text(days[i])
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(
-                            dayState(i) == .future
-                            ? Color.white.opacity(0.25)
-                            : Color.white.opacity(0.85)
-                        )
+                        .font(DS.Font.ui(11, weight: .semibold))
+                        .foregroundStyle(dayState(i) == .today ? DS.Colors.ink : DS.Colors.muted)
                 }
                 .frame(maxWidth: .infinity)
             }
         }
-        .padding(.vertical, 18)
-        .padding(.horizontal, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 22)
-                .fill(Color.white.opacity(0.07))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 22)
-                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                )
-        )
     }
 
     @ViewBuilder
-    private func dayCircle(_ i: Int) -> some View {
-        let state = dayState(i)
-
-        ZStack {
-            // Background circle
-            Circle()
-                .fill(circleFill(state))
-                .frame(width: 44, height: 44)
-                .overlay(
-                    Circle().stroke(circleBorder(state), lineWidth: 2)
-                )
-
-            // Icon
-            switch state {
-            case .today:
-                Image(systemName: "bolt.fill")
-                    .font(.system(size: 18, weight: .black))
-                    .foregroundStyle(Color(hex: "#1a0a4a"))
-                    .scaleEffect(dotAnimations[i] ? 1.0 : 0.3)
-
-            case .streaked:
-                Image(systemName: "checkmark")
-                    .font(.system(size: 15, weight: .black))
-                    .foregroundStyle(Color(hex: "#C8962E"))
-                    .scaleEffect(dotAnimations[i] ? 1.0 : 0.0)
-
-            default:
-                EmptyView()
-            }
-        }
-        .scaleEffect(state == .today && dotAnimations[i] ? 1.08 : 1.0)
-        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: dotAnimations[i])
-    }
-
-    private func circleFill(_ state: DayState) -> Color {
+    private func dot(_ state: DayState) -> some View {
         switch state {
-        case .today:    return Color(hex: "#C8962E")
-        case .streaked: return Color(hex: "#C8962E").opacity(0.15)
-        case .missed:   return Color.white.opacity(0.05)
-        case .future:   return Color(hex: "#1F313C").opacity(0.6)
+        case .today:
+            Circle().fill(DS.Colors.gold).frame(width: 14, height: 14)
+        case .streaked:
+            Circle().fill(DS.Colors.gold.opacity(0.45)).frame(width: 10, height: 10)
+                .frame(width: 14, height: 14)
+        case .missed, .future:
+            Circle().stroke(DS.Colors.line, lineWidth: 1.5).frame(width: 10, height: 10)
+                .frame(width: 14, height: 14)
         }
     }
 
-    private func circleBorder(_ state: DayState) -> Color {
-        switch state {
-        case .today:    return Color(hex: "#C8962E")
-        case .streaked: return Color(hex: "#C8962E").opacity(0.55)
-        case .missed:   return Color.white.opacity(0.08)
-        case .future:   return Color.white.opacity(0.08)
+    /// Yerelleştirilmiş metinlerdeki emojileri arayüzden ayıklar.
+    private func plain(_ s: String) -> String {
+        let scalars = s.unicodeScalars.filter { u in
+            let p = u.properties
+            if u.value == 0xFE0F || u.value == 0x200D { return false }
+            return !(p.isEmojiPresentation || (p.isEmoji && u.value > 0x238C))
         }
-    }
-
-    // MARK: - Continue button
-    private var continueButton: some View {
-        Button(action: onContinue) {
-            Text(langManager.s(.streakContinue))
-                .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                .background(
-                    LinearGradient(
-                        colors: [Color(hex: "#C2512F"), Color(hex: "#9333ea")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .clipShape(Capsule())
-                .shadow(color: Color(hex: "#C2512F").opacity(0.45), radius: 14, y: 5)
-        }
-        .buttonStyle(ScaleButtonStyle())
-    }
-
-    // MARK: - Entrance animations
-    private func runEntrance() {
-        // Image bounce in
-        withAnimation(.spring(response: 0.65, dampingFraction: 0.65).delay(0.1)) {
-            imageScale   = 1.0
-            imageOpacity = 1.0
-        }
-        // Glow pulse
-        withAnimation(.easeInOut(duration: 1.2).delay(0.5).repeatForever(autoreverses: true)) {
-            glowRadius = 40
-        }
-        // Text & week row fade in
-        withAnimation(.easeOut(duration: 0.45).delay(0.35)) {
-            contentOpacity = 1.0
-        }
-        // Staggered dot animations
-        for i in 0..<7 {
-            let state = dayState(i)
-            guard state == .streaked || state == .today else { continue }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55 + Double(i) * 0.08) {
-                dotAnimations[i] = true
-            }
-        }
-    }
-}
-
-// MARK: - Scale button style (local)
-private struct ScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.25), value: configuration.isPressed)
+        return String(String.UnicodeScalarView(scalars))
+            .replacingOccurrences(of: "  ", with: " ")
+            .trimmingCharacters(in: .whitespaces)
     }
 }
 
 #Preview {
     StreakCelebrationView(streakDays: 5) {}
+        .environmentObject(LanguageManager.shared)
 }

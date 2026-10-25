@@ -19,157 +19,91 @@ struct PlusView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background
-                LinearBackgroundView()
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 28) {
 
-                // Decorative blobs
-                Circle()
-                    .fill(AppTheme.Colors.primaryOrange.opacity(0.08))
-                    .frame(width: 260, height: 260)
-                    .blur(radius: 60)
-                    .offset(x: 120, y: -180)
-                    .allowsHitTesting(false)
-
-                Circle()
-                    .fill(AppTheme.Colors.primaryOrange.opacity(0.04))
-                    .frame(width: 200, height: 200)
-                    .blur(radius: 50)
-                    .offset(x: -130, y: 200)
-                    .allowsHitTesting(false)
-
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 28) {
-
-                        // MARK: Title & Subtitle
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Create a New Deck")
-                                .font(.system(size: 30, weight: .semibold, design: .serif))
-                                .foregroundStyle(AppTheme.Colors.textPrimary)
-                            Text("Choose a flag and give your deck a memorable name.")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(AppTheme.Colors.textSecondary)
-                                .padding(.trailing, 20)
-                        }
-                        .padding(.top, 8)
-                        .opacity(animateIn ? 1 : 0)
-                        .offset(y: animateIn ? 0 : 16)
-
-                        // MARK: Flag Selection
-                        VStack(alignment: .leading, spacing: 10) {
-                            SectionLabel(icon: "flag.fill", title: "Choose Flag")
-                            FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
-                                .padding(.horizontal, -4)
-                        }
-                        .opacity(animateIn ? 1 : 0)
-                        .offset(y: animateIn ? 0 : 16)
-
-                        // MARK: Language Cards
-                        VStack(alignment: .leading, spacing: 10) {
-                            SectionLabel(icon: "globe", title: "Translation Languages")
-
-                            HStack(spacing: 12) {
-                                // Source
-                                LanguagePickerCard(
-                                    title: "Source",
-                                    selection: $viewModel.sourceLanguage,
-                                    icon: "arrow.up.right"
-                                )
-                                // Arrow
-                                Image(systemName: "arrow.right")
-                                    .foregroundStyle(AppTheme.Colors.primaryOrange)
-                                    .font(.system(size: 16, weight: .semibold))
-
-                                // Target
-                                LanguagePickerCard(
-                                    title: "Target",
-                                    selection: $viewModel.targetLanguage,
-                                    icon: "arrow.down.left"
-                                )
-                            }
-                        }
-                        .opacity(animateIn ? 1 : 0)
-                        .offset(y: animateIn ? 0 : 16)
-
-                        // MARK: Deck Name
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("Deck Name")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(AppTheme.Colors.textPrimary)
-
-                            ZStack(alignment: .leading) {
-                                if viewModel.cardName.isEmpty {
-                                    Text("E.g. Spanish Basics, Useful Verbs")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundStyle(AppTheme.Colors.textSecondary.opacity(0.6))
-                                }
-                                TextField("", text: $viewModel.cardName)
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .foregroundStyle(AppTheme.Colors.textPrimary)
-                                    .tint(AppTheme.Colors.primaryOrange)
-                                    .autocorrectionDisabled()
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 14)
-                            .background(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(AppTheme.Colors.cardBackground)
-                                    .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
-                            )
-                        }
-                        .opacity(animateIn ? 1 : 0)
-                        .offset(y: animateIn ? 0 : 16)
-
-                        // MARK: Create Button
-                        Button {
-                            Task {
-                                await viewModel.addCardNameInfo()
-                            }
-                            dismiss()
-                        } label: {
-                            HStack(spacing: 10) {
-                                Image(systemName: "plus.circle.fill")
-                                    .font(.system(size: 18))
-                                Text("Create Deck")
-                                    .font(.system(size: 16, weight: .semibold))
-                            }
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 54)
-                            .background(
-                                viewModel.cardName.isEmpty
-                                    ? Color.gray.opacity(0.3)
-                                    : AppTheme.Colors.primaryOrange
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .shadow(
-                                color: viewModel.cardName.isEmpty ? .clear : AppTheme.Shadows.vibrantColor,
-                                radius: AppTheme.Shadows.vibrantRadius, y: AppTheme.Shadows.vibrantY
-                            )
-                        }
-                        .disabled(viewModel.cardName.isEmpty)
-                        .opacity(animateIn ? 1 : 0)
-                        .offset(y: animateIn ? 0 : 16)
-                        .animation(.spring(response: 0.35), value: viewModel.cardName.isEmpty)
+                    // MARK: Title & Subtitle
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Create a New Deck")
+                            .font(DS.Font.display(32, weight: .bold))
+                            .foregroundStyle(DS.Colors.ink)
+                        Text("Choose a flag and give your deck a memorable name.")
+                            .font(DS.Font.ui(16))
+                            .foregroundStyle(DS.Colors.muted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 40)
+                    .padding(.top, 8)
+
+                    // MARK: Flag Selection
+                    VStack(alignment: .leading, spacing: 12) {
+                        Eyebrow(text: "Choose Flag", color: DS.Colors.muted)
+                        FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
+                    }
+
+                    // MARK: Language Cards
+                    VStack(alignment: .leading, spacing: 12) {
+                        Eyebrow(text: "Translation Languages", color: DS.Colors.muted)
+
+                        HStack(spacing: 12) {
+                            LanguagePickerCard(title: "Source", selection: $viewModel.sourceLanguage)
+                            Image(systemName: "arrow.right")
+                                .foregroundStyle(DS.Colors.muted)
+                                .font(.system(size: 14, weight: .semibold))
+                            LanguagePickerCard(title: "Target", selection: $viewModel.targetLanguage)
+                        }
+                    }
+
+                    // MARK: Deck Name
+                    VStack(alignment: .leading, spacing: 12) {
+                        Eyebrow(text: "Deck Name", color: DS.Colors.muted)
+
+                        TextField("", text: $viewModel.cardName,
+                                  prompt: Text("E.g. Spanish Basics, Useful Verbs").foregroundStyle(DS.Colors.muted))
+                            .font(DS.Font.ui(17))
+                            .foregroundStyle(DS.Colors.ink)
+                            .tint(DS.Colors.accent)
+                            .autocorrectionDisabled()
+                            .padding(.horizontal, 16)
+                            .frame(height: 52)
+                            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(DS.Colors.line, lineWidth: 1))
+                    }
+
+                    // MARK: Create Button
+                    Button {
+                        Task {
+                            await viewModel.addCardNameInfo()
+                        }
+                        dismiss()
+                    } label: {
+                        Text("Create Deck")
+                    }
+                    .buttonStyle(InkButtonStyle(fill: viewModel.cardName.isEmpty ? DS.Colors.line : DS.Colors.ink,
+                                                foreground: viewModel.cardName.isEmpty ? DS.Colors.muted : DS.Colors.paperRaised))
+                    .disabled(viewModel.cardName.isEmpty)
+                    .padding(.top, 4)
                 }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
+                .frame(maxWidth: 620)
+                .frame(maxWidth: .infinity)
+                .opacity(animateIn ? 1 : 0)
+                .offset(y: animateIn ? 0 : 8)
             }
+            .paperBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .semibold))
-                            .padding(8)
-                            .background(Circle().fill(AppTheme.Colors.cardBackground.opacity(0.8)))
-                            .foregroundStyle(AppTheme.Colors.textSecondary)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                            .frame(width: 36, height: 36)
                     }
                 }
             }
             .onAppear {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1)) {
+                withAnimation(.easeOut(duration: 0.25)) {
                     animateIn = true
                 }
             }
@@ -183,51 +117,28 @@ struct PlusView: View {
 
 // MARK: - Helper Views
 
-private struct SectionLabel: View {
-    let icon: String
-    let title: String
-    var body: some View {
-        HStack(spacing: 7) {
-            Image(systemName: icon)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(AppTheme.Colors.primaryOrange)
-            Text(title)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textSecondary)
-        }
-    }
-}
-
 private struct LanguagePickerCard: View {
     let title: String
     @Binding var selection: Language
-    let icon: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 9))
-                    .foregroundStyle(AppTheme.Colors.primaryOrange)
-                Text(title)
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(AppTheme.Colors.textSecondary)
-            }
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(DS.Font.ui(12, weight: .medium))
+                .foregroundStyle(DS.Colors.muted)
             Picker("", selection: $selection) {
                 ForEach(Language.allCases, id: \.self) { lang in
                     Text(lang.rawValue).tag(lang)
                 }
             }
             .pickerStyle(.menu)
-            .tint(AppTheme.Colors.primaryOrange)
+            .tint(DS.Colors.ink)
             .labelsHidden()
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(AppTheme.Colors.cardBackground.opacity(0.5))
-        )
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(DS.Colors.line, lineWidth: 1))
     }
 }

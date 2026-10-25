@@ -4,7 +4,6 @@
 //
 
 import SwiftUI
-import Lottie
 
 struct LeaderboardView: View {
 
@@ -14,122 +13,59 @@ struct LeaderboardView: View {
     @EnvironmentObject var authManager: AuthManager
 
     var body: some View {
-        ZStack {
-            Color(hex: "#F6F2EA").ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                // ── Header (PathHeaderView ile aynı stil) ─────────
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 24) {
                 leaderboardHeader
 
                 // Guest kullanıcıya login yönlendirme
                 if authManager.isAnonymous {
-                    Spacer()
                     guestPromptView
-                    Spacer()
+
                 } else if vm.isLoading && vm.users.isEmpty {
-                    AppLoadingView()
+                    ProgressView()
+                        .tint(DS.Colors.ink)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 80)
 
                 } else if let err = vm.errorMessage {
-                    Spacer()
-                    VStack(spacing: 14) {
-                        Image(systemName: "wifi.slash")
-                            .font(.system(size: 44))
-                            .foregroundStyle(.secondary)
-                        Text(err)
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                        Button(langManager.s(.leaderboardTryAgain)) {
-                            Task { await vm.loadLeaderboard() }
-                        }
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 28).padding(.vertical, 12)
-                        .background(AppTheme.Colors.primaryOrange, in: Capsule())
-                    }
-                    Spacer()
+                    errorView(err)
 
                 } else if vm.users.isEmpty {
-                    Spacer()
-                    VStack(spacing: 12) {
-                        Text("🏆").font(.system(size: 60))
-                        Text(langManager.s(.leaderboardNoPlayers))
-                            .font(.system(size: 17, weight: .semibold))
-                        Text(langManager.s(.leaderboardNoPlayersHint))
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
+                    emptyView
 
                 } else {
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            // ── Top 3 Podium ───────────────────────
-                            if vm.users.count >= 3 {
-                                PodiumView(
-                                    first:  vm.users[0],
-                                    second: vm.users[1],
-                                    third:  vm.users[2],
-                                    currentUserId: vm.currentUserId
-                                )
-                                .padding(.top, 20)
-                                .padding(.bottom, 8)
-                            }
-
-                            // ── Divider ────────────────────────────
-                            HStack {
-                                Rectangle()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [Color.clear, Color(hex: "#E4DDD0"), Color.clear],
-                                            startPoint: .leading, endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(height: 1)
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 12)
-
-                            // ── Rankings 4th–20th ─────────────────
-                            LazyVStack(spacing: 8) {
-                                let startIndex = min(3, vm.users.count)
-                                ForEach(
-                                    Array(vm.users.dropFirst(startIndex).prefix(20 - startIndex).enumerated()),
-                                    id: \.element.id
-                                ) { index, user in
-                                    RankRow(
-                                        rank: startIndex + index + 1,
-                                        user: user,
-                                        isCurrentUser: user.id == vm.currentUserId
-                                    )
-                                }
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 20)
-                        }
+                    // ── Benim Sıram ───────────────────────────
+                    if let rank = vm.currentUserRank(), let me = vm.currentUser {
+                        BoardOwnRankCard(rank: rank, user: me)
                     }
-                    .refreshable { await vm.loadLeaderboard() }
 
-                    // ── Sticky "Benim Sıram" ───────────────────────
-                    if let uid = vm.currentUserId,
-                       let specificRank = vm.specificUserRank,
-                       let specificUser = vm.currentUser,
-                       !vm.users.contains(where: { $0.id == uid }) {
-                        VStack(spacing: 0) {
-                            LinearGradient(
-                                colors: [Color.clear, Color(hex: "#E4DDD0")],
-                                startPoint: .top, endPoint: .bottom
+                    // ── Sıralama (ilk 20) ─────────────────────
+                    LazyVStack(spacing: 0) {
+                        let top = Array(vm.users.prefix(20).enumerated())
+                        ForEach(top, id: \.element.id) { index, user in
+                            BoardRankRow(
+                                rank: index + 1,
+                                user: user,
+                                isCurrentUser: user.id == vm.currentUserId
                             )
-                            .frame(height: 1)
-                            RankRow(rank: specificRank, user: specificUser, isCurrentUser: true)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 10)
-                                .background(.ultraThinMaterial)
+                            if index < top.count - 1 {
+                                Rectangle().fill(DS.Colors.line).frame(height: 1)
+                            }
                         }
                     }
                 }
             }
+            .padding(.horizontal, 24)
+            .padding(.top, 12)
+            .padding(.bottom, 40)
+            .frame(maxWidth: 620)
+            .frame(maxWidth: .infinity)
         }
+        .refreshable {
+            guard !authManager.isAnonymous else { return }
+            await vm.loadLeaderboard()
+        }
+        .paperBackground()
         .navigationBarHidden(true)
         .onAppear {
             guard !authManager.isAnonymous else { return }
@@ -137,206 +73,132 @@ struct LeaderboardView: View {
         }
     }
 
-    // MARK: - Guest Prompt
-    private var guestPromptView: some View {
-        VStack(spacing: 20) {
-            MascotAnimationView(width: 130, height: 130)
-
-            VStack(spacing: 6) {
-                Text(langManager.s(.leaderboardJoinTitle))
-                    .font(.system(size: 22, weight: .semibold, design: .serif))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-
-                Text(langManager.s(.leaderboardJoinDesc))
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-            }
-
-            Button {
-                selectedTab = .profile
-            } label: {
-                Text(langManager.s(.leaderboardSignIn))
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(
-                        LinearGradient(
-                            colors: [AppTheme.Colors.primaryOrange, AppTheme.Colors.darkOrange],
-                            startPoint: .leading, endPoint: .trailing
-                        )
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
-            .padding(.horizontal, 40)
-        }
-    }
-
     // MARK: - Header
     private var leaderboardHeader: some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(langManager.s(.leaderboardTitle))
-                    .font(.system(size: 22, weight: .semibold, design: .serif))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-                Text(langManager.s(.leaderboardSubtitle))
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
+        VStack(alignment: .leading, spacing: 6) {
+            Text(langManager.s(.leaderboardTitle))
+                .font(DS.Font.display(34, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+            Text(langManager.s(.leaderboardSubtitle))
+                .font(DS.Font.ui(14))
+                .foregroundStyle(DS.Colors.muted)
+        }
+    }
 
-            // Kullanıcının kendi sırası
-            if let rank = vm.currentUserRank() {
-                HStack(spacing: 5) {
-                    Image(systemName: "medal.fill")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#C8962E"))
-                    Text("#\(rank)")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#1C1A17"))
+    // MARK: - Guest Prompt
+    private var guestPromptView: some View {
+        PaperCard(padding: 24) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(langManager.s(.leaderboardJoinTitle))
+                    .font(DS.Font.display(24))
+                    .foregroundStyle(DS.Colors.ink)
+                Text(langManager.s(.leaderboardJoinDesc))
+                    .font(DS.Font.ui(15))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button(langManager.s(.leaderboardSignIn)) {
+                    selectedTab = .profile
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(Color(hex: "#C8962E").opacity(0.13), in: Capsule())
+                .buttonStyle(InkButtonStyle())
+                .padding(.top, 6)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-        .padding(.bottom, 14)
-        .background(
-            Color.clear
-                .background(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-        )
     }
-}
 
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Podium
-// MARK: ═══════════════════════════════════════════════════════════
-
-private struct PodiumView: View {
-    let first: SBUser
-    let second: SBUser
-    let third: SBUser
-    let currentUserId: UUID?
-
-    var body: some View {
-        HStack(alignment: .bottom, spacing: 8) {
-            PodiumSlot(user: second, rank: 2, barHeight: 90,
-                       podiumColor: Color(hex: "#8A8277"), crownColor: Color(hex: "#c0c0c0"),
-                       isCurrentUser: second.id == currentUserId)
-
-            PodiumSlot(user: first, rank: 1, barHeight: 120,
-                       podiumColor: Color(hex: "#C8962E"), crownColor: Color(hex: "#fbbf24"),
-                       isCurrentUser: first.id == currentUserId)
-
-            PodiumSlot(user: third, rank: 3, barHeight: 70,
-                       podiumColor: Color(hex: "#cd7f32"), crownColor: Color(hex: "#A87A22"),
-                       isCurrentUser: third.id == currentUserId)
+    // MARK: - Error
+    private func errorView(_ err: String) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Image(systemName: "wifi.slash")
+                .font(.system(size: 22, weight: .regular))
+                .foregroundStyle(DS.Colors.muted)
+            Text(err)
+                .font(DS.Font.ui(15))
+                .foregroundStyle(DS.Colors.inkSoft)
+                .fixedSize(horizontal: false, vertical: true)
+            Button(langManager.s(.leaderboardTryAgain)) {
+                Task { await vm.loadLeaderboard() }
+            }
+            .buttonStyle(OutlineButtonStyle())
         }
-        .padding(.horizontal, 16)
+        .padding(.top, 24)
+    }
+
+    // MARK: - Empty
+    private var emptyView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(langManager.s(.leaderboardNoPlayers))
+                .font(DS.Font.display(24))
+                .foregroundStyle(DS.Colors.ink)
+            Text(langManager.s(.leaderboardNoPlayersHint))
+                .font(DS.Font.ui(15))
+                .foregroundStyle(DS.Colors.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.top, 24)
     }
 }
 
-private struct PodiumSlot: View {
-    let user: SBUser
+// MARK: ═══════════════════════════════════════════════════════════
+// MARK: - Components
+// MARK: ═══════════════════════════════════════════════════════════
+
+/// İlk harf dairesi
+private struct BoardInitials: View {
+    let name: String
+    var size: CGFloat = 40
+    var body: some View {
+        Text(name.prefix(1).uppercased())
+            .font(DS.Font.display(size * 0.42))
+            .foregroundStyle(DS.Colors.ink)
+            .frame(width: size, height: size)
+            .background(DS.Colors.paperSunken, in: Circle())
+    }
+}
+
+/// Sıra numarası rengi: ilk 3 vurgulu, gerisi soluk
+private func boardRankColor(_ rank: Int) -> Color {
+    switch rank {
+    case 1:    return DS.Colors.gold
+    case 2, 3: return DS.Colors.inkSoft
+    default:   return DS.Colors.muted
+    }
+}
+
+private struct BoardOwnRankCard: View {
+    @EnvironmentObject var langManager: LanguageManager
     let rank: Int
-    let barHeight: CGFloat
-    let podiumColor: Color
-    let crownColor: Color
-    let isCurrentUser: Bool
-
-    @State private var appeared = false
-
-    private var avatarSize: CGFloat { rank == 1 ? 68 : 54 }
+    let user: SBUser
 
     var body: some View {
-        VStack(spacing: 6) {
-            // Crown (1. yer)
-            if rank == 1 {
-                Image(systemName: "crown.fill")
-                    .font(.system(size: 26))
-                    .foregroundStyle(crownColor)
-                    .shadow(color: crownColor.opacity(0.6), radius: 6, y: 2)
-                    .offset(y: 4)
-            } else {
-                Color.clear.frame(height: 18)
-            }
-
-            // Avatar
-            ZStack {
-                if isCurrentUser {
-                    Circle()
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color(hex: "#D9A441"), Color(hex: "#C2512F"), Color(hex: "#243B48")],
-                                startPoint: .topLeading, endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 3
-                        )
-                        .frame(width: avatarSize + 8, height: avatarSize + 8)
+        PaperCard {
+            HStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("#\(rank)")
+                        .font(DS.Font.display(34, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
                 }
-
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [podiumColor, podiumColor.opacity(0.7)],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: avatarSize, height: avatarSize)
-                    .shadow(color: podiumColor.opacity(0.35), radius: 10, y: 5)
-
-                Text(user.username.prefix(1).uppercased())
-                    .font(.system(size: rank == 1 ? 26 : 20, weight: .semibold))
-                    .foregroundStyle(.white)
+                Rectangle().fill(DS.Colors.line).frame(width: 1, height: 40)
+                BoardInitials(name: user.username, size: 40)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(user.username)
+                        .font(DS.Font.ui(16, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .lineLimit(1)
+                    Text(langManager.f(.leaderboardDayStreak, user.streakDays))
+                        .font(DS.Font.ui(13))
+                        .foregroundStyle(DS.Colors.muted)
+                }
+                Spacer(minLength: 8)
+                Text("\(user.totalXp) XP")
+                    .font(DS.Font.ui(14, weight: .medium))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .monospacedDigit()
             }
-
-            // Username
-            Text(user.username)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
-                .lineLimit(1)
-
-            // XP
-            Text("\(user.totalXp) XP")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(podiumColor)
-
-            // Podium bar
-            ZStack {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(
-                        LinearGradient(
-                            colors: [podiumColor, podiumColor.opacity(0.55)],
-                            startPoint: .top, endPoint: .bottom
-                        )
-                    )
-
-                Text("#\(rank)")
-                    .font(.system(size: rank == 1 ? 22 : 18, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.85))
-            }
-            .frame(height: appeared ? barHeight : 4)
-            .animation(
-                .spring(response: 0.65, dampingFraction: 0.72)
-                    .delay(Double(4 - rank) * 0.12),
-                value: appeared
-            )
         }
-        .frame(maxWidth: .infinity)
-        .onAppear { appeared = true }
     }
 }
 
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Rank Row
-// MARK: ═══════════════════════════════════════════════════════════
-
-private struct RankRow: View {
+private struct BoardRankRow: View {
     @EnvironmentObject var langManager: LanguageManager
     let rank: Int
     let user: SBUser
@@ -344,86 +206,38 @@ private struct RankRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            // Sıra numarası
             Text("\(rank)")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(rank <= 10 ? AppTheme.Colors.primaryOrange : .secondary)
-                .frame(width: 32, alignment: .center)
+                .font(DS.Font.display(20, weight: rank <= 3 ? .bold : .semibold))
+                .foregroundStyle(boardRankColor(rank))
+                .monospacedDigit()
+                .frame(width: 30, alignment: .leading)
 
-            // Avatar
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: isCurrentUser
-                                ? [Color(hex: "#D9A441"), Color(hex: "#C2512F")]
-                                : [Color(hex: "#E4DDD0"), Color(hex: "#D6CEBF")],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 44, height: 44)
+            BoardInitials(name: user.username, size: 40)
 
-                Text(user.username.prefix(1).uppercased())
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(isCurrentUser ? .white : Color(hex: "#6B645A"))
-            }
-
-            // İsim + streak
             VStack(alignment: .leading, spacing: 2) {
                 Text(user.username)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
+                    .font(DS.Font.ui(16, weight: isCurrentUser ? .bold : .semibold))
+                    .foregroundStyle(DS.Colors.ink)
                     .lineLimit(1)
-
-                HStack(spacing: 4) {
-                    Image(systemName: "flame.fill")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.orange)
-                    Text(langManager.f(.leaderboardDayStreak, user.streakDays))
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                }
+                Text(langManager.f(.leaderboardDayStreak, user.streakDays))
+                    .font(DS.Font.ui(12))
+                    .foregroundStyle(DS.Colors.muted)
             }
 
-            Spacer()
+            Spacer(minLength: 8)
 
-            // XP badge
             Text("\(user.totalXp) XP")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isCurrentUser ? .white : AppTheme.Colors.primaryOrange)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(
-                    isCurrentUser
-                        ? AnyShapeStyle(LinearGradient(
-                            colors: [Color(hex: "#D9A441"), Color(hex: "#C2512F")],
-                            startPoint: .leading, endPoint: .trailing))
-                        : AnyShapeStyle(AppTheme.Colors.primaryOrange.opacity(0.1)),
-                    in: Capsule()
-                )
+                .font(DS.Font.ui(14, weight: .medium))
+                .foregroundStyle(DS.Colors.muted)
+                .monospacedDigit()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(isCurrentUser
-                      ? LinearGradient(
-                          colors: [Color(hex: "#D9A441").opacity(0.06), Color(hex: "#C2512F").opacity(0.06)],
-                          startPoint: .leading, endPoint: .trailing)
-                      : LinearGradient(colors: [Color.white], startPoint: .top, endPoint: .bottom))
-                .shadow(color: .black.opacity(0.04), radius: 5, y: 2)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(
-                    isCurrentUser
-                        ? AnyShapeStyle(LinearGradient(
-                            colors: [Color(hex: "#D9A441").opacity(0.4), Color(hex: "#C2512F").opacity(0.4)],
-                            startPoint: .leading, endPoint: .trailing))
-                        : AnyShapeStyle(Color.clear),
-                    lineWidth: 1.5
-                )
-        )
+        .padding(.vertical, 14)
+        .padding(.horizontal, isCurrentUser ? 12 : 0)
+        .background {
+            if isCurrentUser {
+                RoundedRectangle(cornerRadius: 12).fill(DS.Colors.paperSunken)
+            }
+        }
     }
 }
 

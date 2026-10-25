@@ -18,7 +18,7 @@ struct CardFlipView: View {
     @State private var showEditSheet = false
     
     var body: some View {
-        ZStack {
+        Group {
             // Front card view (Word + Description)
             CardDetailDesignView(
                 wordName: $viewModel.wordNames.indices.contains(index) ? $viewModel.wordNames[index] : .constant(nil),
@@ -43,9 +43,8 @@ struct CardFlipView: View {
                 axis: (x: 0.0, y: 1.0, z: 0.0),
                 perspective: 0.5
             )
-            .scaleEffect(isFlipped ? 1.0 : 0.95)
-            
-            // Back card view (Meaning only)
+            // Back card view (Meaning only) — ön yüzün boyutunu paylaşır
+            .overlay {
             CardDetailDesignView(
                 wordName: .constant(nil),
                 wordMean: viewModel.wordMeans.indices.contains(index) ? $viewModel.wordMeans[index] : .constant(nil),
@@ -68,10 +67,11 @@ struct CardFlipView: View {
                 axis: (x: 0.0, y: 1.0, z: 0.0),
                 perspective: 0.5
             )
-            .scaleEffect(isFlipped ? 0.95 : 1.0)
+            }
         }
+        .contentShape(Rectangle())
         .onTapGesture {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8, blendDuration: 0)) {
+            withAnimation(.easeInOut(duration: 0.35)) {
                 isFlipped.toggle()
             }
         }

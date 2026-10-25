@@ -8,34 +8,34 @@
 import SwiftUI
 
 struct FlagSelectionView: View {
-    
-    @Binding var selectedFlag:FlagModel
-    
+
+    @Binding var selectedFlag: FlagModel
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
+            HStack(spacing: 14) {
                 ForEach(FlagModel.allCases, id: \.self) { flag in
-                    VStack(spacing: 12) {
+                    let selected = selectedFlag == flag
+                    VStack(spacing: 8) {
                         Image(flag.rawValue)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 80, height: 80)
+                            .frame(width: 56, height: 56)
                             .clipShape(Circle())
+                            .padding(3)
                             .overlay(
-                                Circle()
-                                    .stroke(selectedFlag == flag ? AppTheme.Colors.primaryOrange : Color.clear, lineWidth: 3)
+                                Circle().stroke(selected ? DS.Colors.accent : DS.Colors.line,
+                                                lineWidth: selected ? 2 : 1)
                             )
-                            .shadow(color: selectedFlag == flag ? AppTheme.Colors.primaryOrange.opacity(0.4) : .clear, radius: 8, y: 4)
-                            .scaleEffect(selectedFlag == flag ? 1.05 : 0.95)
-                            .animation(.spring(response: 0.3), value: selectedFlag)
-                        
+
                         Text(flag.rawValue.capitalized)
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(selectedFlag == flag ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textSecondary)
+                            .font(DS.Font.ui(12, weight: selected ? .semibold : .regular))
+                            .foregroundStyle(selected ? DS.Colors.ink : DS.Colors.muted)
                     }
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 4)
+                    .contentShape(Rectangle())
                     .onTapGesture {
-                        withAnimation(.spring(response: 0.3)) {
+                        withAnimation(.easeOut(duration: 0.15)) {
                             selectedFlag = flag
                         }
                     }
@@ -52,4 +52,3 @@ struct FlagSelectionView_Previews: PreviewProvider {
         FlagSelectionView(selectedFlag: .constant(.chinese))
     }
 }
-

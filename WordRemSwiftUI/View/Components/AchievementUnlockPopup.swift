@@ -2,13 +2,11 @@
 //  AchievementUnlockPopup.swift
 //  WordRemSwiftUI
 //
-//  Full-screen overlay shown when the user earns a new achievement.
-//  Uses Lottie (reeny_waving) + achievement icon + rarity badge.
-//  Auto-dismisses after 4 seconds or on tap.
+//  Yeni bir başarım kazanıldığında gösterilen sade kâğıt modal.
+//  Dokununca ya da 4.5 sn sonra kapanır.
 //
 
 import SwiftUI
-import Lottie
 
 struct AchievementUnlockPopup: View {
 
@@ -17,120 +15,52 @@ struct AchievementUnlockPopup: View {
     let onDismiss: () -> Void
 
     @State private var appear = false
-    @State private var scale: CGFloat = 0.7
-    @State private var iconScale: CGFloat = 0.4
 
     var body: some View {
         ZStack {
-            // ── Dimmed background ─────────────────────────────────────
-            Color.black.opacity(0.55)
+            Color.black.opacity(0.25)
                 .ignoresSafeArea()
                 .onTapGesture { dismiss() }
 
-            // ── Card ─────────────────────────────────────────────────
-            VStack(spacing: 0) {
+            PaperCard(padding: 28) {
+                VStack(alignment: .leading, spacing: 16) {
+                    Image(systemName: outlineSymbol(achievement.icon))
+                        .font(.system(size: 34, weight: .regular))
+                        .foregroundStyle(DS.Colors.gold)
+                        .frame(width: 56, height: 56)
+                        .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
 
-                // Lottie mascot (compact, sits above the card)
-                LottieView(animation: .named("reeny_waving"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 130, height: 130)
-                    .offset(y: 10)
-                    .zIndex(1)
-
-                // Main card
-                VStack(spacing: 20) {
-
-                    // Rarity badge
-                    Text(achievement.rarity.label.uppercased())
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(.white)
-                        .tracking(1.5)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 5)
-                        .background(
-                            Capsule().fill(
-                                LinearGradient(
-                                    colors: achievement.rarity.gradientColors,
-                                    startPoint: .leading, endPoint: .trailing
-                                )
-                            )
-                        )
-
-                    // Achievement icon circle
-                    ZStack {
-                        Circle()
-                            .fill(achievement.color.opacity(0.15))
-                            .frame(width: 90, height: 90)
-
-                        Circle()
-                            .strokeBorder(
-                                LinearGradient(
-                                    colors: [achievement.color.opacity(0.6), achievement.color],
-                                    startPoint: .topLeading, endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 3
-                            )
-                            .frame(width: 90, height: 90)
-
-                        Image(systemName: achievement.icon)
-                            .font(.system(size: 38, weight: .bold))
-                            .foregroundStyle(achievement.color)
-                    }
-                    .shadow(color: achievement.color.opacity(0.45), radius: 16, y: 6)
-                    .scaleEffect(iconScale)
-                    .animation(
-                        .spring(response: 0.5, dampingFraction: 0.6).delay(0.15),
-                        value: iconScale
-                    )
-
-                    // "New Achievement!" header
-                    VStack(spacing: 4) {
-                        Text(langManager.s(.achievementNewUnlocked))
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(achievement.rarity.color)
-
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            Eyebrow(text: plain(langManager.s(.achievementNewUnlocked)), color: DS.Colors.gold)
+                            Text("·").foregroundStyle(DS.Colors.muted)
+                            Eyebrow(text: achievement.rarity.label, color: DS.Colors.muted)
+                        }
                         Text(achievement.title)
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(Color(hex: "#1C1A17"))
-                            .multilineTextAlignment(.center)
+                            .font(DS.Font.display(30, weight: .bold))
+                            .foregroundStyle(DS.Colors.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(achievement.description)
+                            .font(DS.Font.ui(16))
+                            .foregroundStyle(DS.Colors.muted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    // Description
-                    Text(achievement.description)
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: "#6B645A"))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 8)
-
-                    // Dismiss hint
                     Text(langManager.s(.achievementTapToDismiss))
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color(hex: "#8A8277"))
-                        .padding(.bottom, 4)
+                        .font(DS.Font.ui(13))
+                        .foregroundStyle(DS.Colors.muted)
+                        .padding(.top, 4)
                 }
-                .padding(.top, 28)
-                .padding(.horizontal, 24)
-                .padding(.bottom, 28)
-                .background(
-                    RoundedRectangle(cornerRadius: 28)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.18), radius: 32, y: 10)
-                )
-                .zIndex(0)
             }
-            .scaleEffect(scale)
-            .padding(.horizontal, 28)
+            .contentShape(Rectangle())
+            .onTapGesture { dismiss() }
+            .frame(maxWidth: 420)
+            .padding(.horizontal, 24)
+            .offset(y: appear ? 0 : 12)
         }
         .opacity(appear ? 1 : 0)
         .onAppear {
-            withAnimation(.spring(response: 0.45, dampingFraction: 0.72)) {
-                appear = true
-                scale = 1.0
-            }
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.1)) {
-                iconScale = 1.0
-            }
+            withAnimation(.easeOut(duration: 0.25)) { appear = true }
             // Auto-dismiss after 4.5 seconds
             Task {
                 try? await Task.sleep(nanoseconds: 4_500_000_000)
@@ -139,12 +69,27 @@ struct AchievementUnlockPopup: View {
         }
     }
 
-    private func dismiss() {
-        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-            appear = false
-            scale = 0.85
+    /// Dolgulu SF Symbol adlarını outline karşılığına indirger.
+    private func outlineSymbol(_ name: String) -> String {
+        let stripped = name.replacingOccurrences(of: ".fill", with: "")
+        return UIImage(systemName: stripped) != nil ? stripped : name
+    }
+
+    /// Yerelleştirilmiş metinlerdeki emojileri arayüzden ayıklar.
+    private func plain(_ s: String) -> String {
+        let scalars = s.unicodeScalars.filter { u in
+            let p = u.properties
+            if u.value == 0xFE0F || u.value == 0x200D { return false }
+            return !(p.isEmojiPresentation || (p.isEmoji && u.value > 0x238C))
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+        return String(String.UnicodeScalarView(scalars))
+            .replacingOccurrences(of: "  ", with: " ")
+            .trimmingCharacters(in: .whitespaces)
+    }
+
+    private func dismiss() {
+        withAnimation(.easeIn(duration: 0.2)) { appear = false }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             onDismiss()
         }
     }

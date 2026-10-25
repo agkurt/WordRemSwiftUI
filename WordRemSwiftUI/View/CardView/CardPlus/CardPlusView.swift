@@ -34,314 +34,262 @@ struct CardPlusView: View {
         self.completion = completion
     }
     
+    private var canSave: Bool { !(viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty) }
+
     var body: some View {
         NavigationStack {
-            ZStack {
-                LinearBackgroundView()
-                
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 24) {
-                        // MARK: - Title
-                        Text(editMode ? "Edit Your Word" : "Create Your Word")
-                            .font(.system(size: 28, weight: .semibold, design: .serif))
-                            .foregroundStyle(AppTheme.Colors.textPrimary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 8)
-                        
-                        // MARK: - Word Input Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            ModernTextField(text: $viewModel.wordName, placeholder: "Word (in your native language)", icon: "textformat.abc")
-                            
-                            // Translate Button
-                            if viewModel.isLoading {
-                                HStack {
-                                    ProgressView()
-                                        .tint(AppTheme.Colors.primaryOrange)
-                                    Text("Translating...")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(AppTheme.Colors.textSecondary)
-                                }
-                                .padding(.vertical, 8)
-                            } else {
-                                Button {
-                                    guard !viewModel.wordName.isEmpty else { return }
-                                    Task {
-                                        await viewModel.translateForWordName(
-                                            targetLang: viewModel.targetLang.first ?? "",
-                                            sourceLang: viewModel.sourceLang.first ?? "",
-                                            text: viewModel.wordName
-                                        )
-                                    }
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "arrow.left.arrow.right")
-                                            .font(.system(size: 14, weight: .semibold))
-                                        Text("Translate")
-                                            .font(.system(size: 15, weight: .semibold))
-                                    }
-                                    .foregroundStyle(viewModel.wordName.isEmpty ? AppTheme.Colors.textSecondary : AppTheme.Colors.primaryOrange)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 10)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(AppTheme.Colors.cardBackground)
-                                            .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 28) {
+                    // MARK: - Title
+                    Text(editMode ? "Edit Your Word" : "Create Your Word")
+                        .font(DS.Font.display(32, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 8)
+
+                    // MARK: - Word Input Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        PaperTextField(text: $viewModel.wordName, label: "Word (in your native language)", serif: true)
+
+                        if viewModel.isLoading {
+                            LoadingRow(text: "Translating...")
+                        } else {
+                            SmallOutlineButton(title: "Translate", icon: "arrow.left.arrow.right",
+                                               enabled: !viewModel.wordName.isEmpty) {
+                                guard !viewModel.wordName.isEmpty else { return }
+                                Task {
+                                    await viewModel.translateForWordName(
+                                        targetLang: viewModel.targetLang.first ?? "",
+                                        sourceLang: viewModel.sourceLang.first ?? "",
+                                        text: viewModel.wordName
                                     )
                                 }
-                                .disabled(viewModel.wordName.isEmpty)
                             }
-                            
-                            ModernTextField(text: $viewModel.wordMean, placeholder: "Translation (in learning language)", icon: "book.fill")
+                            .disabled(viewModel.wordName.isEmpty)
                         }
-                        
-                        // MARK: - Example Sentence Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            if viewModel.isLoadingSentence {
-                                HStack {
-                                    ProgressView()
-                                        .tint(AppTheme.Colors.primaryOrange)
-                                    Text("Generating sentence...")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(AppTheme.Colors.textSecondary)
+
+                        PaperTextField(text: $viewModel.wordMean, label: "Translation (in learning language)")
+                    }
+
+                    // MARK: - Example Sentence Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        if viewModel.isLoadingSentence {
+                            LoadingRow(text: "Generating sentence...")
+                        } else {
+                            SmallOutlineButton(title: "Generate Example Sentence", icon: "text.quote",
+                                               enabled: !viewModel.wordMean.isEmpty) {
+                                guard !viewModel.wordMean.isEmpty else { return }
+                                Task {
+                                    await viewModel.createSentenceUseToWord(name: viewModel.wordMean)
                                 }
-                                .padding(.vertical, 8)
-                            } else {
-                                Button {
-                                    guard !viewModel.wordMean.isEmpty else { return }
-                                    Task {
-                                        await viewModel.createSentenceUseToWord(name: viewModel.wordMean)
-                                    }
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "text.quote")
-                                            .font(.system(size: 14, weight: .semibold))
-                                        Text("Generate Example Sentence")
-                                            .font(.system(size: 15, weight: .semibold))
-                                    }
-                                    .foregroundStyle(
-                                        !viewModel.wordMean.isEmpty
-                                        ? AppTheme.Colors.primaryOrange
-                                        : AppTheme.Colors.textSecondary
-                                    )
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 10)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(AppTheme.Colors.cardBackground)
-                                            .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
-                                    )
-                                }
-                                .disabled(viewModel.wordName.isEmpty)
                             }
-                            
-                            ModernTextField(text: $viewModel.wordDescription, placeholder: "Example Sentence", icon: "text.alignleft")
+                            .disabled(viewModel.wordName.isEmpty)
                         }
-                        
-                        // MARK: - Reminder Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            Toggle(isOn: $isOnToggle) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "bell.fill")
-                                        .font(.system(size: 14))
-                                        .foregroundStyle(AppTheme.Colors.primaryOrange)
-                                    Text("Reminder")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundStyle(AppTheme.Colors.textPrimary)
-                                }
-                            }
-                            .tint(AppTheme.Colors.primaryOrange)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 14)
-                            .background(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(AppTheme.Colors.cardBackground)
-                                    .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
+
+                        PaperTextField(text: $viewModel.wordDescription, label: "Example Sentence")
+                    }
+
+                    // MARK: - Reminder Section
+                    VStack(alignment: .leading, spacing: 0) {
+                        Toggle(isOn: $isOnToggle) {
+                            Text("Reminder")
+                                .font(DS.Font.ui(16, weight: .semibold))
+                                .foregroundStyle(DS.Colors.ink)
+                        }
+                        .tint(DS.Colors.accent)
+                        .padding(.vertical, 14)
+
+                        if isOnToggle {
+                            Hairline()
+                            DatePicker(
+                                "Reminder Date & Time",
+                                selection: $reminderViewModel.date,
+                                in: Date()...,
+                                displayedComponents: [.date, .hourAndMinute]
                             )
-                            
-                            if isOnToggle {
-                                VStack(spacing: 16) {
-                                    // Date Picker
-                                    DatePicker(
-                                        "Reminder Date & Time",
-                                        selection: $reminderViewModel.date,
-                                        in: Date()...,
-                                        displayedComponents: [.date, .hourAndMinute]
-                                    )
-                                    .datePickerStyle(.compact)
-                                    .tint(AppTheme.Colors.primaryOrange)
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 14)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 14)
-                                            .fill(AppTheme.Colors.cardBackground)
-                                            .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
-                                    )
-                                    
-                                    // Repeat Options
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Repeat")
-                                            .font(.system(size: 14, weight: .semibold))
-                                            .foregroundStyle(AppTheme.Colors.textSecondary)
-                                        
-                                        Picker("Repeat", selection: $reminderViewModel.repeatOption) {
-                                            ForEach(reminderViewModel.repeatOptions, id: \.self) { option in
-                                                Text(option).tag(option)
-                                            }
-                                        }
-                                        .pickerStyle(.segmented)
-                                        .tint(AppTheme.Colors.primaryOrange)
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 14)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 14)
-                                            .fill(AppTheme.Colors.cardBackground)
-                                            .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
-                                    )
-                                    
-                                    // Repeat Value Stepper
-                                    if reminderViewModel.repeatOption != "None" {
-                                        VStack(alignment: .leading, spacing: 8) {
-                                            Text("Frequency")
-                                                .font(.system(size: 14, weight: .semibold))
-                                                .foregroundStyle(AppTheme.Colors.textSecondary)
-                                            
-                                            Stepper(
-                                                value: $reminderViewModel.repeatValue,
-                                                in: 1...5
-                                            ) {
-                                                Text("Repeat every \(reminderViewModel.repeatValue) \(reminderViewModel.repeatOption.lowercased())")
-                                                    .font(.system(size: 15, weight: .semibold))
-                                                    .foregroundStyle(AppTheme.Colors.textPrimary)
-                                            }
-                                            .tint(AppTheme.Colors.primaryOrange)
-                                        }
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 14)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 14)
-                                                .fill(AppTheme.Colors.cardBackground)
-                                                .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
-                                        )
+                            .datePickerStyle(.compact)
+                            .tint(DS.Colors.accent)
+                            .font(DS.Font.ui(15))
+                            .foregroundStyle(DS.Colors.ink)
+                            .padding(.vertical, 12)
+
+                            Hairline()
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Repeat")
+                                    .font(DS.Font.ui(13, weight: .medium))
+                                    .foregroundStyle(DS.Colors.muted)
+                                Picker("Repeat", selection: $reminderViewModel.repeatOption) {
+                                    ForEach(reminderViewModel.repeatOptions, id: \.self) { option in
+                                        Text(option).tag(option)
                                     }
                                 }
+                                .pickerStyle(.segmented)
+                            }
+                            .padding(.vertical, 14)
+
+                            if reminderViewModel.repeatOption != "None" {
+                                Hairline()
+                                Stepper(
+                                    value: $reminderViewModel.repeatValue,
+                                    in: 1...5
+                                ) {
+                                    Text("Repeat every \(reminderViewModel.repeatValue) \(reminderViewModel.repeatOption.lowercased())")
+                                        .font(DS.Font.ui(15))
+                                        .foregroundStyle(DS.Colors.ink)
+                                }
+                                .padding(.vertical, 12)
                             }
                         }
-                        
-                        Spacer(minLength: 40)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 40)
+                    .padding(.horizontal, 16)
+                    .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(DS.Colors.line, lineWidth: 1))
+
+                    // MARK: - Save
+                    VStack(spacing: 10) {
+                        Button(editMode ? "Save" : "Add Word") { save() }
+                            .buttonStyle(InkButtonStyle(fill: canSave ? DS.Colors.ink : DS.Colors.line,
+                                                        foreground: canSave ? DS.Colors.paperRaised : DS.Colors.muted))
+                            .disabled(!canSave)
+                        Button("Cancel") { dismiss() }
+                            .buttonStyle(OutlineButtonStyle())
+                    }
+                    .padding(.top, 4)
                 }
-                .onAppear {
-                    Task {
-                        await viewModel.fetchLanguageInfo(cardId: cardId)
-                        await reminderViewModel.notificationManager.request()
-                        
-                        // If edit mode, populate fields
-                        if editMode {
-                            viewModel.wordName = editWordName
-                            viewModel.wordMean = editWordMean
-                            viewModel.wordDescription = editWordDescription
-                        }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
+                .frame(maxWidth: 620)
+                .frame(maxWidth: .infinity)
+            }
+            .paperBackground()
+            .onAppear {
+                Task {
+                    await viewModel.fetchLanguageInfo(cardId: cardId)
+                    await reminderViewModel.notificationManager.request()
+
+                    // If edit mode, populate fields
+                    if editMode {
+                        viewModel.wordName = editWordName
+                        viewModel.wordMean = editWordMean
+                        viewModel.wordDescription = editWordDescription
                     }
                 }
-                .onDisappear {
-                    self.completion?()
+            }
+            .onDisappear {
+                self.completion?()
+            }
+            .alert("Error", isPresented: $viewModel.showError) {
+                Button("OK", role: .cancel) {
+                    viewModel.showError = false
                 }
-                .alert("Error", isPresented: $viewModel.showError) {
-                    Button("OK", role: .cancel) {
-                        viewModel.showError = false
-                    }
-                } message: {
-                    if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                    }
+            } message: {
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        Task {
-                            if editMode {
-                                // Update existing word
-                                await viewModel.updateWord(cardId: cardId, wordId: editWordId)
-                            } else {
-                                // Add new word
-                                await viewModel.addWordToCard(cardId: cardId)
-                            }
-                            
-                            if isOnToggle {
-                                await reminderViewModel.sendNotifications(
-                                    title: viewModel.wordName,
-                                    body: viewModel.wordDescription
-                                )
-                            }
-                            
-                            completion?()
-                        }
-                        dismiss()
-                    } label: {
+                    Button { save() } label: {
                         Text("Done")
-                            .foregroundStyle(
-                                viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty
-                                ? AppTheme.Colors.textSecondary
-                                : AppTheme.Colors.primaryOrange
-                            )
-                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(canSave ? DS.Colors.accent : DS.Colors.muted)
+                            .font(DS.Font.ui(16, weight: .semibold))
                     }
-                    .disabled(viewModel.wordName.isEmpty || viewModel.wordMean.isEmpty)
+                    .disabled(!canSave)
                 }
             }
         }
     }
+
+    private func save() {
+        Task {
+            if editMode {
+                // Update existing word
+                await viewModel.updateWord(cardId: cardId, wordId: editWordId)
+            } else {
+                // Add new word
+                await viewModel.addWordToCard(cardId: cardId)
+            }
+
+            if isOnToggle {
+                await reminderViewModel.sendNotifications(
+                    title: viewModel.wordName,
+                    body: viewModel.wordDescription
+                )
+            }
+
+            completion?()
+        }
+        dismiss()
+    }
 }
 
 
-// MARK: - Modern TextField Component
-private struct ModernTextField: View {
-    @Binding var text: String
-    let placeholder: String
-    let icon: String
-    @FocusState private var isFocused: Bool
-    
+// MARK: - Components
+
+private struct Hairline: View {
+    var body: some View { Rectangle().fill(DS.Colors.line).frame(height: 1) }
+}
+
+private struct LoadingRow: View {
+    let text: String
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(isFocused ? AppTheme.Colors.primaryOrange : AppTheme.Colors.textSecondary)
-                .frame(width: 20)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                if isFocused || !text.isEmpty {
-                    Text(placeholder)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(AppTheme.Colors.textSecondary)
-                }
-                
-                TextField(isFocused || !text.isEmpty ? "" : placeholder, text: $text)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(AppTheme.Colors.textPrimary)
-                    .tint(AppTheme.Colors.primaryOrange)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .focused($isFocused)
-            }
+        HStack(spacing: 10) {
+            ProgressView().tint(DS.Colors.muted)
+            Text(text)
+                .font(DS.Font.ui(14))
+                .foregroundStyle(DS.Colors.muted)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(AppTheme.Colors.cardBackground)
-                .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
+        .frame(height: 40)
+    }
+}
+
+private struct SmallOutlineButton: View {
+    let title: String
+    let icon: String
+    let enabled: Bool
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: icon).font(.system(size: 13, weight: .semibold))
+                Text(title).font(DS.Font.ui(15, weight: .semibold))
+            }
+            .foregroundStyle(enabled ? DS.Colors.ink : DS.Colors.muted)
+            .padding(.horizontal, 14)
+            .frame(height: 40)
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(DS.Colors.line, lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct PaperTextField: View {
+    @Binding var text: String
+    let label: String
+    var serif: Bool = false
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label)
+                .font(DS.Font.ui(13, weight: .medium))
+                .foregroundStyle(DS.Colors.muted)
+            TextField("", text: $text)
+                .font(serif ? DS.Font.display(20, weight: .regular) : DS.Font.ui(17))
+                .foregroundStyle(DS.Colors.ink)
+                .tint(DS.Colors.accent)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .focused($isFocused)
+                .padding(.horizontal, 16)
+                .frame(minHeight: 52)
+                .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(isFocused ? AppTheme.Colors.primaryOrange.opacity(0.3) : Color.clear, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(isFocused ? DS.Colors.inkSoft : DS.Colors.line, lineWidth: 1)
                 )
-        )
-        .animation(.easeInOut(duration: 0.2), value: isFocused)
+        }
     }
 }
 
@@ -350,5 +298,3 @@ struct CardPlusView_Previews: PreviewProvider {
         CardPlusView(cardId: "your_card_id_here", completion: {})
     }
 }
-
-

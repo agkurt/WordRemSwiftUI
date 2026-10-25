@@ -2,13 +2,12 @@
 //  PathMapView.swift
 //  WordRemSwiftUI
 //
-//  Duolingo-style gamified path map with zigzag layout,
-//  animated circular nodes, dashed connector path, and
-//  decorative background elements.
+//  "Pratik" sekmesi: kurs başlığı, ünitelere bölünmüş seviye zaman çizelgesi,
+//  hata tekrarı girişi ve seviye sonrası açılan kartlar.
+//  "Kâğıt & mürekkep" tasarım sistemi — serif başlıklar, ince çizgiler, tek imza rengi.
 //
 
 import SwiftUI
-import Lottie
 import StoreKit
 
 struct PathMapView: View {
@@ -37,8 +36,10 @@ struct PathMapView: View {
     @Environment(\.requestReview) private var requestReview
 
     // MARK: - Unit Grouping (her 5 level = 1 ünite)
+    private let levelsPerUnit = 5
+
     private var unitGroups: [[SBLevelWithProgress]] {
-        let perUnit = 5
+        let perUnit = levelsPerUnit
         return stride(from: 0, to: vm.levelsWithProgress.count, by: perUnit).map {
             Array(vm.levelsWithProgress[$0..<min($0 + perUnit, vm.levelsWithProgress.count)])
         }
@@ -47,8 +48,7 @@ struct PathMapView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // ── Gradient Background ────────────────────────────
-                pathBackground
+                DS.Colors.paper.ignoresSafeArea()
 
                 if vm.isLoading && vm.levelsWithProgress.isEmpty {
                     AppLoadingView(message: langManager.s(.gameLoading))
@@ -68,86 +68,25 @@ struct PathMapView: View {
                         PathHeaderView(
                             course: vm.selectedCourse,
                             progress: vm.courseProgress,
+                            completed: vm.completedCount,
+                            total: vm.levelsWithProgress.count,
                             xp: vm.totalXP,
                             streak: vm.streakDays,
                             currentUnit: currentUnitIndex + 1,
                             totalUnits: unitGroups.count
                         )
 
-                        // ── Mistakes Practice Button ───────────────
-                        if mistakes.hasMistakes {
-                            VStack(spacing: 6) {
-                                // 10+ hata uyarısı
-                                if mistakes.count > 10 {
-                                    MistakesUrgentBanner()
-                                }
-
-                                Button {
-                                    showMistakesQuiz = true
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundStyle(.white)
-                                        Text(langManager.f(.pathMistakesFormat, mistakes.count))
-                                            .font(.system(size: 14, weight: .semibold))
-                                            .foregroundStyle(.white)
-                                    }
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 12)
-                                    .frame(maxWidth: .infinity)
-                                    .background(
-                                        LinearGradient(
-                                            colors: [Color.red.opacity(0.8), Color.orange.opacity(0.8)],
-                                            startPoint: .leading, endPoint: .trailing
-                                        ),
-                                        in: RoundedRectangle(cornerRadius: 16)
-                                    )
-                                    .shadow(color: Color.red.opacity(0.3), radius: 6, y: 3)
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.top, 12)
-                            .transition(.scale.combined(with: .opacity))
-                        }
-
-                        // ── AI Quiz Button ─────────────────────────
-                        Button {
-                            showAIQuiz = true
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                Text("AI Grammar Quiz")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundStyle(.white.opacity(0.8))
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color(hex: "#2F4B5C"), Color(hex: "#2F4B5C")],
-                                    startPoint: .leading, endPoint: .trailing
-                                ),
-                                in: RoundedRectangle(cornerRadius: 16)
-                            )
-                            .shadow(color: Color(hex: "#2F4B5C").opacity(0.35), radius: 6, y: 3)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
-
-                        // ── Ünite Bazlı Level Map ─────────────────
+                        // ── Level Timeline ─────────────────────────
                         ScrollViewReader { proxy in
                             ScrollView(.vertical, showsIndicators: false) {
-                                VStack(spacing: 0) {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    practiceRows
+                                        .padding(.top, 20)
+
                                     ForEach(Array(unitGroups.enumerated()), id: \.offset) { unitIndex, unitLevels in
-                                        UnitSectionView(
+                                        PathUnitSection(
                                             unitNumber: unitIndex + 1,
+                                            firstLevelNumber: unitIndex * levelsPerUnit + 1,
                                             levels: unitLevels
                                         ) { level in
                                             if level.status != .locked {
@@ -165,7 +104,10 @@ struct PathMapView: View {
                                         )
                                     }
                                 }
+                                .padding(.horizontal, 24)
                                 .padding(.bottom, 40)
+                                .frame(maxWidth: 620)
+                                .frame(maxWidth: .infinity)
                             }
                             .coordinateSpace(name: "pathScroll")
                             .onPreferenceChange(UnitScrollKey.self) { positions in
@@ -191,23 +133,23 @@ struct PathMapView: View {
                         }
                     }
                 }
-                
+
                 // ── Overlays: Loading & Completion Popup ─────────────────
                 if isRefreshingAfterQuiz {
                     PathRefreshOverlay()
                         .zIndex(10)
                 }
-                
+
                 if showCompletionPopup {
                     LevelCompletePopupView(isPresented: $showCompletionPopup)
                         .zIndex(20)
                 }
-                
+
                 if showMistakesSavedPopup {
                     MistakesSavedPopupView(isPresented: $showMistakesSavedPopup)
                         .zIndex(21)
                 }
-                
+
                 if showMistakesClearedPopup {
                     MistakesClearedPopupView(isPresented: $showMistakesClearedPopup)
                         .zIndex(22)
@@ -283,85 +225,271 @@ struct PathMapView: View {
         }
     }
 
-    // MARK: - Background
-    private var pathBackground: some View {
-        ZStack {
-            DS.Colors.paper
-                .ignoresSafeArea()
+    // MARK: - Practice Rows (Mistakes + AI Quiz)
+    private var practiceRows: some View {
+        VStack(spacing: 0) {
+            if mistakes.hasMistakes {
+                Button {
+                    showMistakesQuiz = true
+                } label: {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(DS.Colors.inkSoft)
+                                .frame(width: 24)
+                            Text(langManager.s(.todayMistakes))
+                                .font(DS.Font.ui(16, weight: .medium))
+                                .foregroundStyle(DS.Colors.ink)
+                            Spacer()
+                            Text("\(mistakes.count)")
+                                .font(DS.Font.display(18, weight: .bold))
+                                .foregroundStyle(DS.Colors.danger)
+                                .contentTransition(.numericText())
+                            PathChevron()
+                        }
+                        // 10+ hata uyarısı
+                        if mistakes.count > 10 {
+                            Text(langManager.s(.pathMistakesUrgent))
+                                .font(DS.Font.ui(13))
+                                .foregroundStyle(DS.Colors.inkSoft)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.leading, 36)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(langManager.f(.pathMistakesFormat, mistakes.count))
+                .transition(.opacity)
+
+                Rectangle()
+                    .fill(DS.Colors.line)
+                    .frame(height: 1)
+                    .padding(.leading, 52)
+            }
+
+            Button {
+                showAIQuiz = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "text.book.closed")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(DS.Colors.slate)
+                        .frame(width: 24)
+                    Text(AL.s(.pathAIGrammarQuiz))
+                        .font(DS.Font.ui(16, weight: .medium))
+                        .foregroundStyle(DS.Colors.ink)
+                    Spacer()
+                    PathChevron()
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
+        .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.line, lineWidth: 1))
+        .animation(.easeOut(duration: 0.2), value: mistakes.hasMistakes)
     }
 
     // MARK: - Error State
     @ViewBuilder
     private func errorState(_ err: String) -> some View {
-        VStack(spacing: 16) {
-            Image(systemName: "wifi.slash")
-                .font(.system(size: 48))
-                .foregroundStyle(AppTheme.Colors.textSecondary)
-            Text(langManager.s(.pathSomethingWrong))
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textPrimary)
-            Text(err)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-            Button {
+        PathMessageState(
+            title: langManager.s(.pathSomethingWrong),
+            // Ham sistem hatası yerine kullanıcı dostu, çevrilmiş mesaj
+            message: AL.s(.loadFailedMessage)
+        ) {
+            Button(langManager.s(.pathTryAgain)) {
                 Task { await vm.loadCourses() }
-            } label: {
-                Text(langManager.s(.pathTryAgain))
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 12)
-                    .background(AppTheme.Colors.primaryOrange, in: Capsule())
             }
+            .buttonStyle(InkButtonStyle())
         }
     }
 
     // MARK: - No Course For Selected Language State
     private var noCoursesForLanguageState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "globe.slash")
-                .font(.system(size: 64))
-                .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
-            Text(langManager.s(.pathNoCourseForLang))
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textPrimary)
-                .multilineTextAlignment(.center)
-            Text(langManager.s(.pathNoCourseForLangHint))
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textSecondary)
-                .multilineTextAlignment(.center)
+        PathMessageState(
+            title: langManager.s(.pathNoCourseForLang),
+            message: langManager.s(.pathNoCourseForLangHint)
+        ) {
+            EmptyView()
         }
-        .padding()
     }
 
     // MARK: - Empty State
     private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "map")
-                .font(.system(size: 64))
-                .foregroundStyle(AppTheme.Colors.primaryOrange.opacity(0.7))
-            Text(langManager.s(.pathNoCourses))
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textPrimary)
-            Text(langManager.s(.pathNoCoursesHint))
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textSecondary)
-                .multilineTextAlignment(.center)
+        PathMessageState(
+            title: langManager.s(.pathNoCourses),
+            message: langManager.s(.pathNoCoursesHint)
+        ) {
             Button {
                 Task { await vm.loadCourses() }
             } label: {
                 Label(langManager.s(.pathRefresh), systemImage: "arrow.clockwise")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 28)
-                    .padding(.vertical, 12)
-                    .background(AppTheme.Colors.primaryOrange, in: Capsule())
+            }
+            .buttonStyle(OutlineButtonStyle())
+        }
+    }
+}
+
+// MARK: ═══════════════════════════════════════════════════════════
+// MARK: - Shared small pieces
+// MARK: ═══════════════════════════════════════════════════════════
+
+private struct PathChevron: View {
+    var body: some View {
+        Image(systemName: "chevron.right")
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(DS.Colors.muted)
+    }
+}
+
+/// Serif tek satır + soluk açıklama + isteğe bağlı buton
+private struct PathMessageState<Action: View>: View {
+    let title: String
+    let message: String
+    @ViewBuilder var action: Action
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Text(title)
+                .font(DS.Font.display(26))
+                .foregroundStyle(DS.Colors.ink)
+                .multilineTextAlignment(.center)
+            Text(message)
+                .font(DS.Font.ui(15))
+                .foregroundStyle(DS.Colors.muted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            action
+                .padding(.top, 12)
+        }
+        .padding(.horizontal, 32)
+        .frame(maxWidth: 440)
+    }
+}
+
+/// İnce 4pt ilerleme çizgisi (çizgi zemin / mürekkep dolgu)
+private struct PathProgressLine: View {
+    let progress: Double
+    var fill: Color = DS.Colors.ink
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(DS.Colors.line)
+                Capsule()
+                    .fill(fill)
+                    .frame(width: geo.size.width * CGFloat(min(max(progress, 0), 1)))
             }
         }
-        .padding()
+        .frame(height: 4)
+        .animation(.easeOut(duration: 0.4), value: progress)
+    }
+}
+
+/// Üç küçük yıldız (ödül → altın)
+private struct PathStars: View {
+    let stars: Int
+    var size: CGFloat = 10
+
+    var body: some View {
+        HStack(spacing: size * 0.25) {
+            ForEach(1...3, id: \.self) { i in
+                Image(systemName: "star.fill")
+                    .font(.system(size: size, weight: .semibold))
+                    .foregroundStyle(i <= stars ? DS.Colors.gold : DS.Colors.line)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(stars)/3")
+    }
+}
+
+// MARK: ═══════════════════════════════════════════════════════════
+// MARK: - Path Header
+// MARK: ═══════════════════════════════════════════════════════════
+
+private struct PathHeaderView: View {
+    @EnvironmentObject var langManager: LanguageManager
+    let course: SBCourse?
+    let progress: Double
+    let completed: Int
+    let total: Int
+    let xp: Int
+    let streak: Int
+    let currentUnit: Int
+    let totalUnits: Int
+
+    private var unitLabel: String {
+        let unit = langManager.f(.pathUnitFormat, currentUnit)
+        return totalUnits > 1 ? "\(unit) / \(totalUnits)" : unit
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Eyebrow(text: unitLabel)
+                    .contentTransition(.numericText())
+                    .animation(.easeInOut(duration: 0.2), value: currentUnit)
+
+                Spacer()
+
+                HStack(spacing: 14) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(streak > 0 ? DS.Colors.gold : DS.Colors.muted)
+                        Text("\(streak)")
+                            .font(DS.Font.ui(13, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                    }
+                    Text("\(xp) XP")
+                        .font(DS.Font.ui(13, weight: .medium))
+                        .foregroundStyle(DS.Colors.muted)
+                }
+            }
+
+            Text(course?.title ?? langManager.s(.pathSelectCourse))
+                .font(DS.Font.display(30, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+
+            VStack(alignment: .leading, spacing: 8) {
+                PathProgressLine(progress: progress)
+                HStack {
+                    Text(langManager.f(.pathLevelProgressFormat, completed, total))
+                    Spacer()
+                    Text("\(Int(progress * 100))%")
+                }
+                .font(DS.Font.ui(12, weight: .medium))
+                .foregroundStyle(DS.Colors.muted)
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+        .frame(maxWidth: 620)
+        .frame(maxWidth: .infinity)
+        .background(DS.Colors.paper)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(DS.Colors.line).frame(height: 1)
+        }
+    }
+}
+
+// MARK: - Unit Scroll Preference Key
+private struct UnitScrollKey: PreferenceKey {
+    static var defaultValue: [Int: CGFloat] = [:]
+    static func reduce(value: inout [Int: CGFloat], nextValue: () -> [Int: CGFloat]) {
+        value.merge(nextValue()) { _, new in new }
     }
 }
 
@@ -369,9 +497,10 @@ struct PathMapView: View {
 // MARK: - Unit Section (Ünite grupları)
 // MARK: ═══════════════════════════════════════════════════════════
 
-private struct UnitSectionView: View {
+private struct PathUnitSection: View {
     @EnvironmentObject var langManager: LanguageManager
     let unitNumber: Int
+    let firstLevelNumber: Int
     let levels: [SBLevelWithProgress]
     let onTap: (SBLevelWithProgress) -> Void
 
@@ -386,691 +515,219 @@ private struct UnitSectionView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // ── Ünite ayraç bandı ──────────────────────────────────
-            UnitDividerView(
-                unitNumber: unitNumber,
-                status: unitStatus,
-                completed: completedCount,
-                total: levels.count
-            )
-
-            // ── Level node'ları ────────────────────────────────────
-            ZStack {
-                PathConnectorView(items: levels)
-
-                VStack(spacing: 56) {
-                    ForEach(Array(levels.enumerated()), id: \.element.id) { index, item in
-                        PathNodeView(
-                            item: item,
-                            index: index,
-                            totalCount: levels.count
-                        ) {
-                            onTap(item)
-                        }
-                        .id(item.id)
-                    }
-                }
-                .padding(.vertical, 40)
-                .padding(.horizontal, 20)
-            }
-        }
-    }
-}
-
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Unit Divider (sade ayraç)
-// MARK: ═══════════════════════════════════════════════════════════
-
-private struct UnitDividerView: View {
-    @EnvironmentObject var langManager: LanguageManager
-    let unitNumber: Int
-    let status: SBLevelStatus
-    let completed: Int
-    let total: Int
-
-    private var accentColor: Color {
-        switch status {
-        case .completed:              return Color(hex: "#3F7D58")
-        case .inProgress, .unlocked:  return AppTheme.Colors.primaryOrange
-        case .locked:                 return Color(hex: "#D6CEBF")
-        }
-    }
-
-    private var progress: CGFloat {
-        total > 0 ? CGFloat(completed) / CGFloat(total) : 0
-    }
-
-    var body: some View {
-        VStack(spacing: 10) {
-            // Çizgi + pill
-            HStack(spacing: 12) {
-                // Sol çizgi
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.clear, accentColor.opacity(0.35)],
-                            startPoint: .leading, endPoint: .trailing
-                        )
-                    )
-                    .frame(height: 1.5)
-
-                // Ünite pill
-                HStack(spacing: 5) {
-                    if status == .completed {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(accentColor)
-                    } else if status == .locked {
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(accentColor)
-                    }
-                    Text(langManager.f(.pathUnitFormat, unitNumber))
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(status == .locked ? Color(hex: "#8A8277") : Color(hex: "#1C1A17"))
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
-                .background(
-                    Capsule()
-                        .fill(accentColor.opacity(status == .locked ? 0.07 : 0.12))
-                        .overlay(Capsule().stroke(accentColor.opacity(0.25), lineWidth: 1))
-                )
-
-                // Sağ çizgi
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [accentColor.opacity(0.35), Color.clear],
-                            startPoint: .leading, endPoint: .trailing
-                        )
-                    )
-                    .frame(height: 1.5)
-            }
-            .padding(.horizontal, 24)
-
-            // Mini progress bar (sadece aktif/tamamlanmış ünitelerde)
-            if status != .locked {
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(Color(hex: "#E4DDD0"))
-                            .frame(height: 3)
-                        Capsule()
-                            .fill(accentColor)
-                            .frame(width: geo.size.width * progress, height: 3)
-                            .animation(.spring(response: 0.7, dampingFraction: 0.8), value: progress)
-                    }
-                }
-                .frame(height: 3)
-                .padding(.horizontal, 48)
-
-                Text(langManager.f(.pathLevelProgressFormat, completed, total))
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#8A8277"))
-            }
-        }
-        .padding(.top, unitNumber == 1 ? 16 : 8)
-        .padding(.bottom, 4)
-        .opacity(status == .locked ? 0.7 : 1)
-    }
-}
-
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Unit Header
-// MARK: ═══════════════════════════════════════════════════════════
-
-private struct UnitHeaderView: View {
-    @EnvironmentObject var langManager: LanguageManager
-    let unitNumber: Int
-    let status: SBLevelStatus
-    let totalLevels: Int
-    let completedLevels: Int
-
-    var body: some View {
-        HStack(spacing: 14) {
-            // Sol: ikon dairesi
-            ZStack {
-                Circle()
-                    .fill(statusColor.opacity(0.15))
-                    .frame(width: 48, height: 48)
-                Image(systemName: statusIcon)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(statusColor)
-            }
-
-            // Orta: başlık + progress
-            VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 0) {
+            // ── Ünite başlığı ──────────────────────────────────────
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(langManager.f(.pathUnitFormat, unitNumber))
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(status == .locked ? Color(hex: "#8A8277") : Color(hex: "#1C1A17"))
-
-                // İlerleme çubuğu
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(Color(hex: "#E4DDD0"))
-                            .frame(height: 6)
-                        Capsule()
-                            .fill(statusColor)
-                            .frame(width: geo.size.width * CGFloat(completedLevels) / CGFloat(max(totalLevels, 1)), height: 6)
-                            .animation(.spring(response: 0.6), value: completedLevels)
-                    }
-                }
-                .frame(height: 6)
-
-                Text(langManager.f(.pathLevelProgressFormat, completedLevels, totalLevels))
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#8A8277"))
-            }
-
-            Spacer()
-
-            // Sağ: durum badge
-            Text(statusText)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(statusColor, in: Capsule())
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 18)
-                .fill(status == .locked ? Color(hex: "#EFE9DE") : Color.white)
-                .shadow(color: statusColor.opacity(status == .locked ? 0 : 0.15), radius: 10, y: 3)
-        )
-        .padding(.horizontal, 16)
-        .padding(.top, 20)
-        .padding(.bottom, 4)
-        .opacity(status == .locked ? 0.65 : 1.0)
-    }
-
-    private var statusColor: Color {
-        switch status {
-        case .completed:            return Color(hex: "#3F7D58")
-        case .inProgress, .unlocked: return AppTheme.Colors.primaryOrange
-        case .locked:               return Color(hex: "#8A8277")
-        }
-    }
-
-    private var statusIcon: String {
-        switch status {
-        case .completed:            return "checkmark.seal.fill"
-        case .inProgress, .unlocked: return "flame.fill"
-        case .locked:               return "lock.fill"
-        }
-    }
-
-    private var statusText: String {
-        switch status {
-        case .completed:            return langManager.s(.pathStatusCompleted)
-        case .inProgress, .unlocked: return langManager.s(.pathStatusInProgress)
-        case .locked:               return langManager.s(.pathStatusLocked)
-        }
-    }
-}
-
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Path Header
-// MARK: ═══════════════════════════════════════════════════════════
-
-private struct PathHeaderView: View {
-    @EnvironmentObject var langManager: LanguageManager
-    let course: SBCourse?
-    let progress: Double
-    let xp: Int
-    let streak: Int
-    let currentUnit: Int
-    let totalUnits: Int
-
-    var body: some View {
-        VStack(spacing: 10) {
-            HStack(alignment: .center) {
-                // Sol: Ünite bilgisi (scroll ile güncellenir)
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(langManager.f(.pathUnitFormat, currentUnit))
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#1C1A17"))
-                            .contentTransition(.numericText())
-                            .animation(.easeInOut(duration: 0.2), value: currentUnit)
-
-                        if totalUnits > 1 {
-                            Text("/ \(totalUnits)")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(Color(hex: "#8A8277"))
-                        }
-                    }
-
-                    Text(course?.title ?? langManager.s(.pathSelectCourse))
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                }
-
+                    .font(DS.Font.display(22))
+                    .foregroundStyle(unitStatus == .locked ? DS.Colors.muted : DS.Colors.ink)
                 Spacer()
-
-                // Sağ: Streak + XP
-                HStack(spacing: 8) {
-                    StatPill(icon: "flame.fill", value: "\(streak)", color: .orange)
-                    StatPill(icon: "bolt.fill", value: "\(xp) XP", color: Color(hex: "#C8962E"))
+                if unitStatus == .completed {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(DS.Colors.success)
                 }
+                Text(langManager.f(.pathLevelProgressFormat, completedCount, levels.count))
+                    .font(DS.Font.ui(12, weight: .medium))
+                    .foregroundStyle(DS.Colors.muted)
             }
+            .padding(.bottom, 10)
 
-            // İlerleme çubuğu (tüm kurs)
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(Color(hex: "#E4DDD0"))
-                        .frame(height: 10)
+            Rectangle()
+                .fill(DS.Colors.line)
+                .frame(height: 1)
+                .padding(.bottom, 12)
 
-                    Capsule()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(hex: "#C2512F"), Color(hex: "#C8962E")],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .frame(width: max(geo.size.width * CGFloat(progress), 10), height: 10)
-                        .animation(.spring(response: 0.6), value: progress)
-
-                    if progress > 0.08 {
-                        Text("\(Int(progress * 100))%")
-                            .font(.system(size: 8, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .offset(x: max(geo.size.width * CGFloat(progress) - 24, 4))
-                    }
+            // ── Seviye satırları ───────────────────────────────────
+            ForEach(Array(levels.enumerated()), id: \.element.id) { index, item in
+                PathLevelRow(
+                    item: item,
+                    number: firstLevelNumber + index,
+                    isFirst: index == 0,
+                    isLast: index == levels.count - 1
+                ) {
+                    onTap(item)
                 }
+                .id(item.id)
             }
-            .frame(height: 10)
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-        .padding(.bottom, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 0)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-        )
-    }
-}
-
-// MARK: - Unit Scroll Preference Key
-private struct UnitScrollKey: PreferenceKey {
-    static var defaultValue: [Int: CGFloat] = [:]
-    static func reduce(value: inout [Int: CGFloat], nextValue: () -> [Int: CGFloat]) {
-        value.merge(nextValue()) { _, new in new }
-    }
-}
-
-// MARK: - Stat Pill
-private struct StatPill: View {
-    let icon: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(color)
-            Text(value)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Color(hex: "#1C1A17"))
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(color.opacity(0.12), in: Capsule())
+        .padding(.top, 36)
     }
 }
 
 // MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Path Node (Duolingo-style circular button)
+// MARK: - Level Row (zaman çizelgesi satırı)
 // MARK: ═══════════════════════════════════════════════════════════
 
-struct PathNodeView: View {
+private struct PathLevelRow: View {
     @EnvironmentObject var langManager: LanguageManager
     let item: SBLevelWithProgress
-    let index: Int
-    let totalCount: Int
+    let number: Int
+    let isFirst: Bool
+    let isLast: Bool
     let onTap: () -> Void
 
-    @State private var pulse = false
-    @State private var appeared = false
+    private let markerSize: CGFloat = 32
 
-    // Zigzag X offset: even indices left, odd indices right
-    private var xOffset: CGFloat {
-        let amplitude: CGFloat = 70
-        return (index % 2 == 0) ? -amplitude : amplitude
+    private var isCurrent: Bool {
+        item.status == .unlocked || item.status == .inProgress
+    }
+
+    private var title: String {
+        item.level.localizedTitle(langCode: langManager.currentLanguageCode)
     }
 
     var body: some View {
-        VStack(spacing: 8) {
-            // Level label above node
-            if item.status == .unlocked || item.status == .inProgress {
-                Text(langManager.s(.pathStart))
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(AppTheme.Colors.primaryOrange)
-                            .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.4), radius: 6, y: 3)
-                    )
-                    .transition(.scale.combined(with: .opacity))
+        HStack(alignment: .top, spacing: 16) {
+            // ── Sol: işaret + bağlantı çizgisi ────────────────────
+            VStack(spacing: 0) {
+                Rectangle()
+                    .fill(isFirst ? Color.clear : DS.Colors.line)
+                    .frame(width: 1, height: isCurrent ? 22 : 8)
+                marker
+                Rectangle()
+                    .fill(isLast ? Color.clear : DS.Colors.line)
+                    .frame(width: 1)
+                    .frame(maxHeight: .infinity)
             }
+            .frame(width: markerSize)
 
-            // Main circular node
-            Button(action: onTap) {
-                ZStack {
-                    // Outer pulse ring — gradient for active, plain for others
-                    if item.status == .unlocked || item.status == .inProgress {
-                        // Second outer ring (softer, larger)
-                        Circle()
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        Color(hex: "#D9A441").opacity(0.25),
-                                        Color(hex: "#C2512F").opacity(0.15),
-                                        Color(hex: "#243B48").opacity(0.08)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 6
-                            )
-                            .frame(width: 96, height: 96)
-                            .scaleEffect(pulse ? 1.12 : 1.0)
-                            .opacity(pulse ? 0.4 : 0.9)
-                            .animation(
-                                .easeInOut(duration: 1.8).repeatForever(autoreverses: true),
-                                value: pulse
-                            )
-
-                        // Inner ring (sharper gradient border)
-                        Circle()
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        Color(hex: "#D9A441"),
-                                        Color(hex: "#C2512F"),
-                                        Color(hex: "#243B48")
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 3
-                            )
-                            .frame(width: 80, height: 80)
-                            .scaleEffect(pulse ? 1.08 : 1.0)
-                            .opacity(pulse ? 0.6 : 1.0)
-                            .animation(
-                                .easeInOut(duration: 1.5).repeatForever(autoreverses: true),
-                                value: pulse
-                            )
-                    }
-
-                    // Main circle (shadow only, image covers it)
-                    Circle()
-                        .fill(nodeFill)
-                        .frame(width: 72, height: 72)
-                        .shadow(color: nodeShadow, radius: pulse ? 18 : 8, y: 4)
-
-                    // Icon — starss fills the entire circle for active nodes
-                    Group {
-                        if item.status == .locked {
-                            Circle()
-                                .strokeBorder(nodeBorder, lineWidth: 3)
-                                .frame(width: 72, height: 72)
-                                .overlay {
-                                    Image(systemName: "lock.fill")
-                                        .font(.system(size: 22, weight: .bold))
-                                        .foregroundStyle(Color.white.opacity(0.8))
-                                }
-                        } else if item.status == .completed {
-                            Circle()
-                                .strokeBorder(nodeBorder, lineWidth: 3)
-                                .frame(width: 72, height: 72)
-                                .overlay {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 26, weight: .bold))
-                                        .foregroundStyle(Color.white)
-                                }
-                        } else {
-                            // starss covers the full circle — clip to circle shape
-                            Image("starss")
-                                .resizable()
-                                .renderingMode(.original)
-                                .scaledToFill()
-                                .frame(width: 72, height: 72)
-                                .clipShape(Circle())
-                        }
-                    }
+            // ── Sağ: içerik ───────────────────────────────────────
+            Group {
+                if isCurrent {
+                    currentCard
+                } else {
+                    plainRow
                 }
             }
-            .buttonStyle(BounceButtonStyle())
-            .disabled(item.status == .locked)
-            .scaleEffect(appeared ? 1.0 : 0.5)
-            .opacity(appeared ? 1.0 : 0)
-
-            // Level title
-            Text(item.level.localizedTitle(langCode: langManager.currentLanguageCode))
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(item.status == .locked
-                    ? AppTheme.Colors.textSecondary.opacity(0.5)
-                    : Color(hex: "#1C1A17"))
-                .multilineTextAlignment(.center)
-
-            // XP badge
-            Text("\(item.level.xpReward) XP")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(AppTheme.Colors.textSecondary)
-
-            // Stars (completed)
-            if item.status == .completed {
-                PathStarView(stars: item.stars)
-                    .transition(.scale.combined(with: .opacity))
-            }
+            .padding(.bottom, isLast ? 0 : 8)
         }
-        .offset(x: xOffset)
-        .opacity(item.status == .locked ? 0.5 : 1.0)
-        .onAppear {
-            if item.status == .unlocked || item.status == .inProgress {
-                pulse = true
-            }
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7).delay(Double(index) * 0.08)) {
-                appeared = true
-            }
-        }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
-    // MARK: - Styling
-
-    private var nodeFill: some ShapeStyle {
+    // MARK: Marker
+    @ViewBuilder
+    private var marker: some View {
         switch item.status {
         case .completed:
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [Color(hex: "#3F7D58"), Color(hex: "#336A4A")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+            Image(systemName: "checkmark")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(DS.Colors.success)
+                .frame(width: markerSize, height: markerSize)
+                .background(DS.Colors.successSoft, in: Circle())
         case .unlocked, .inProgress:
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [Color.white, Color(hex: "#F3E2D8")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            Text("\(number)")
+                .font(DS.Font.display(15, weight: .bold))
+                .foregroundStyle(DS.Colors.paperRaised)
+                .frame(width: markerSize, height: markerSize)
+                .background(DS.Colors.accent, in: Circle())
         case .locked:
-            return AnyShapeStyle(
-                LinearGradient(
-                    colors: [Color(hex: "#d1d5db"), Color(hex: "#8A8277")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+            Text("\(number)")
+                .font(DS.Font.display(15, weight: .semibold))
+                .foregroundStyle(DS.Colors.muted)
+                .frame(width: markerSize, height: markerSize)
+                .background(DS.Colors.paper, in: Circle())
+                .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
         }
     }
 
-    private var nodeBorder: Color {
-        switch item.status {
-        case .completed:   return Color(hex: "#15803d")
-        case .unlocked, .inProgress: return AppTheme.Colors.primaryOrange
-        case .locked:      return Color(hex: "#8A8277")
-        }
-    }
-
-    private var nodeShadow: Color {
-        switch item.status {
-        case .completed:              return Color(hex: "#3F7D58").opacity(0.35)
-        case .unlocked, .inProgress:  return Color(hex: "#C2512F").opacity(0.4)
-        case .locked:                 return Color.clear
-        }
-    }
-
-}
-
-// MARK: - Bounce Button Style
-private struct BounceButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.88 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
-    }
-}
-
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Path Connector (Dashed line between nodes)
-// MARK: ═══════════════════════════════════════════════════════════
-
-private struct PathConnectorView: View {
-    let items: [SBLevelWithProgress]
-
-    var body: some View {
-        GeometryReader { geo in
-            let width = geo.size.width
-            let nodeSpacing: CGFloat = 56 + 140 // VStack spacing + approx node height
-            let amplitude: CGFloat = 70
-
-            Path { path in
-                for i in 0..<items.count {
-                    let y = 40 + CGFloat(i) * nodeSpacing + 36 // centered on node
-                    let x = width / 2 + ((i % 2 == 0) ? -amplitude : amplitude)
-
-                    if i == 0 {
-                        path.move(to: CGPoint(x: x, y: y))
-                    } else {
-                        let prevX = width / 2 + (((i - 1) % 2 == 0) ? -amplitude : amplitude)
-                        let prevY = 40 + CGFloat(i - 1) * nodeSpacing + 36
-                        let midY = (prevY + y) / 2
-
-                        path.addCurve(
-                            to: CGPoint(x: x, y: y),
-                            control1: CGPoint(x: prevX, y: midY),
-                            control2: CGPoint(x: x, y: midY)
-                        )
-                    }
+    // MARK: Current level — vurgulu kart
+    private var currentCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 6) {
+                Eyebrow(text: item.status == .inProgress
+                        ? langManager.s(.pathStatusInProgress)
+                        : "\(item.level.xpReward) XP")
+                Text(title)
+                    .font(DS.Font.display(22))
+                    .foregroundStyle(DS.Colors.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let desc = item.level.description, !desc.isEmpty {
+                    Text(desc)
+                        .font(DS.Font.ui(14))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [8, 8]))
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [
-                        AppTheme.Colors.primaryOrange.opacity(0.25),
-                        Color(hex: "#E4DDD0").opacity(0.5)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            Button(langManager.s(.pathStart), action: onTap)
+                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
         }
-        .allowsHitTesting(false)
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
+        .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.accent, lineWidth: 1))
+        .padding(.bottom, 12)
     }
-}
 
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Star Rating
-// MARK: ═══════════════════════════════════════════════════════════
-
-private struct PathStarView: View {
-    let stars: Int
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(1...3, id: \.self) { i in
-                Image("starss")
-                    .resizable()
-                    .renderingMode(.original)
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .opacity(i <= stars ? 1.0 : 0.25)
-                    .scaleEffect(i <= stars ? 1.0 : 0.85)
+    // MARK: Completed / locked row
+    private var plainRow: some View {
+        Button(action: onTap) {
+            HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(DS.Font.display(18, weight: .medium))
+                        .foregroundStyle(item.status == .locked ? DS.Colors.muted : DS.Colors.ink)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                    statusLine
+                }
+                Spacer(minLength: 8)
+                if item.status == .completed {
+                    PathChevron()
+                }
             }
+            .padding(.top, 6)
+            .padding(.bottom, 18)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(item.status == .locked)
+    }
+
+    @ViewBuilder
+    private var statusLine: some View {
+        if item.status == .completed {
+            HStack(spacing: 8) {
+                PathStars(stars: item.stars)
+                Text("\(item.bestScore)%")
+                    .font(DS.Font.ui(13, weight: .medium))
+                    .foregroundStyle(DS.Colors.muted)
+            }
+        } else {
+            HStack(spacing: 5) {
+                Image(systemName: "lock")
+                    .font(.system(size: 11, weight: .semibold))
+                Text("\(langManager.s(.pathStatusLocked)) · \(item.level.xpReward) XP")
+                    .font(DS.Font.ui(13))
+            }
+            .foregroundStyle(DS.Colors.muted)
         }
     }
 }
 
 // MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Decorative Background Elements
+// MARK: - Overlay card shell
 // MARK: ═══════════════════════════════════════════════════════════
 
-private struct DecoElement: View {
-    let index: Int
-    let size: CGSize
-
-    @State private var floating = false
-
-    // Pseudo-random positions based on index
-    private var xPos: CGFloat {
-        let positions: [CGFloat] = [0.1, 0.85, 0.15, 0.9, 0.05, 0.92, 0.2, 0.8]
-        return size.width * positions[index % positions.count]
-    }
-
-    private var yPos: CGFloat {
-        let positions: [CGFloat] = [0.08, 0.18, 0.32, 0.45, 0.55, 0.68, 0.78, 0.9]
-        return size.height * positions[index % positions.count]
-    }
-
-    private var decoIcon: String {
-        let icons = ["cloud.fill", "sparkle", "star.fill", "cloud.fill",
-                      "sparkle", "leaf.fill", "star.fill", "cloud.fill"]
-        return icons[index % icons.count]
-    }
-
-    private var decoColor: Color {
-        let colors: [Color] = [
-            .blue.opacity(0.15), .orange.opacity(0.2), .yellow.opacity(0.25),
-            .blue.opacity(0.1), .purple.opacity(0.15), .green.opacity(0.15),
-            .orange.opacity(0.15), .blue.opacity(0.12)
-        ]
-        return colors[index % colors.count]
-    }
-
-    private var decoSize: CGFloat {
-        let sizes: [CGFloat] = [20, 14, 12, 24, 10, 16, 11, 22]
-        return sizes[index % sizes.count]
-    }
+/// Karartılmış zemin üstünde kâğıt kart
+private struct PathOverlayCard<Content: View>: View {
+    var onBackdropTap: (() -> Void)? = nil
+    @ViewBuilder var content: Content
 
     var body: some View {
-        Image(systemName: decoIcon)
-            .font(.system(size: decoSize))
-            .foregroundStyle(decoColor)
-            .position(x: xPos, y: yPos)
-            .offset(y: floating ? -6 : 6)
-            .animation(
-                .easeInOut(duration: Double.random(in: 2.5...4.0))
-                .repeatForever(autoreverses: true)
-                .delay(Double(index) * 0.3),
-                value: floating
-            )
-            .onAppear { floating = true }
+        ZStack {
+            DS.Colors.ink.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture { onBackdropTap?() }
+
+            content
+                .padding(28)
+                .frame(maxWidth: 420)
+                .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
+                .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.line, lineWidth: 1))
+                .padding(.horizontal, 32)
+        }
     }
 }
 
@@ -1084,117 +741,53 @@ private struct PathRefreshOverlay: View {
     @AppStorage("lastCompletedScore") private var score: Int  = 0
     @EnvironmentObject var langManager: LanguageManager
 
-    @State private var starScales: [CGFloat]   = [0.1, 0.1, 0.1]
-    @State private var barProgress: CGFloat    = 0
-    @State private var cardScale: CGFloat      = 0.85
+    @State private var barProgress: Double     = 0
     @State private var cardOpacity: Double     = 0
     @State private var dotOpacities: [Double]  = [1.0, 0.3, 0.3]
 
-    private let starColor = Color(hex: "#C8962E")
-    private let gradColors: [Color] = [Color(hex: "#C2512F"), Color(hex: "#C2512F"), Color(hex: "#2F4B5C")]
-
     var body: some View {
-        ZStack {
-            // ── Backdrop ──────────────────────────────────────────
-            Color.black.opacity(0.60)
-                .ignoresSafeArea()
+        PathOverlayCard {
+            VStack(spacing: 18) {
+                PathStars(stars: stars, size: 20)
 
-            // ── Card ──────────────────────────────────────────────
-            VStack(spacing: 20) {
-
-                // Mascot
-                LottieView(animation: .named("reeny_waving"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 100, height: 100)
-
-                // Stars row
-                HStack(spacing: 10) {
-                    ForEach(0..<3) { i in
-                        Image(systemName: i < stars ? "star.fill" : "star")
-                            .font(.system(size: 30, weight: .bold))
-                            .foregroundStyle(i < stars ? starColor : Color.white.opacity(0.25))
-                            .scaleEffect(starScales[i])
-                            .shadow(color: i < stars ? starColor.opacity(0.6) : .clear, radius: 6)
-                    }
-                }
-
-                // Score
                 Text("\(score)%")
-                    .font(.system(size: 26, weight: .semibold, design: .serif))
-                    .foregroundStyle(.white)
+                    .font(DS.Font.display(44, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
 
-                // Progress bar + label
-                VStack(spacing: 8) {
-                    // Animated dots label
+                VStack(spacing: 10) {
                     HStack(spacing: 4) {
                         Text(langManager.s(.pathUpdating)
                             .replacingOccurrences(of: "...", with: ""))
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color.white.opacity(0.7))
+                            .font(DS.Font.ui(13, weight: .medium))
+                            .foregroundStyle(DS.Colors.muted)
                         ForEach(0..<3) { i in
                             Circle()
-                                .fill(Color.white.opacity(dotOpacities[i]))
-                                .frame(width: 5, height: 5)
+                                .fill(DS.Colors.muted.opacity(dotOpacities[i]))
+                                .frame(width: 4, height: 4)
                         }
                     }
 
-                    // Gradient progress bar
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(Color.white.opacity(0.15))
-                            .frame(height: 7)
-                        Capsule()
-                            .fill(
-                                LinearGradient(colors: gradColors,
-                                               startPoint: .leading, endPoint: .trailing)
-                            )
-                            .frame(width: barProgress * 200, height: 7)
-                    }
-                    .frame(width: 200)
+                    PathProgressLine(progress: barProgress)
+                        .frame(width: 200)
                 }
             }
-            .padding(.horizontal, 36)
-            .padding(.vertical, 30)
-            .background(
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 28, style: .continuous)
-                            .stroke(Color.white.opacity(0.15), lineWidth: 1)
-                    )
-            )
-            .scaleEffect(cardScale)
-            .opacity(cardOpacity)
+            .frame(maxWidth: .infinity)
         }
+        .opacity(cardOpacity)
         .onAppear { animateEntrance() }
         .task { await animateDots() }
     }
 
     private func animateEntrance() {
-        // Card entrance
-        withAnimation(.spring(response: 0.45, dampingFraction: 0.72)) {
-            cardScale   = 1.0
+        withAnimation(.easeOut(duration: 0.25)) {
             cardOpacity = 1.0
         }
-        // Stars pop in one by one
-        for i in 0..<3 {
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.55)
-                .delay(0.2 + Double(i) * 0.18)) {
-                starScales[i] = i < stars ? 1.15 : 1.0
-            }
-            // Settle
-            withAnimation(.spring(response: 0.3).delay(0.5 + Double(i) * 0.18)) {
-                starScales[i] = 1.0
-            }
-        }
-        // Progress bar sweep
-        withAnimation(.easeInOut(duration: 0.9).delay(0.3)) {
+        withAnimation(.easeInOut(duration: 0.9).delay(0.2)) {
             barProgress = 1.0
         }
     }
 
-    // Bouncing dots animation — runs for the overlay's lifetime via .task
+    // Nokta animasyonu — overlay ömrü boyunca .task ile döner
     private func animateDots() async {
         var phase = 0
         while !Task.isCancelled {
@@ -1215,99 +808,49 @@ private struct PathRefreshOverlay: View {
 struct LevelCompletePopupView: View {
     @EnvironmentObject var langManager: LanguageManager
     @Binding var isPresented: Bool
-    @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0.0
-    @State private var starsScale: CGFloat = 0.3
 
     @AppStorage("lastCompletedScore") private var lastScore: Int = 0
     @AppStorage("lastCompletedStars") private var lastStars: Int = 0
 
-    private let starColor = Color(hex: "#C8962E")
-
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-                .onTapGesture { dismiss() }
-
+        PathOverlayCard(onBackdropTap: dismiss) {
             VStack(spacing: 20) {
-                // Mascot celebrating
-                LottieView(animation: .named("reeny_waving"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 110, height: 110)
-                    .padding(.top, 10)
-
-                // Stars row
-                HStack(spacing: 8) {
-                    ForEach(1...3, id: \.self) { i in
-                        Image(systemName: i <= lastStars ? "star.fill" : "star")
-                            .font(.system(size: 32, weight: .bold))
-                            .foregroundStyle(i <= lastStars ? starColor : Color.gray.opacity(0.3))
-                            .scaleEffect(starsScale)
-                    }
-                }
-                .onAppear {
-                    withAnimation(.spring(response: 0.5, dampingFraction: 0.5).delay(0.25)) {
-                        starsScale = 1.0
-                    }
+                VStack(spacing: 10) {
+                    PathStars(stars: lastStars, size: 22)
+                    Text("\(lastScore)%")
+                        .font(DS.Font.display(48, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
                 }
 
-                // Score badge
-                Text("\(lastScore)%")
-                    .font(.system(size: 22, weight: .semibold, design: .serif))
-                    .foregroundStyle(AppTheme.Colors.primaryOrange)
+                Rectangle().fill(DS.Colors.accent).frame(width: 24, height: 2)
 
-                // Text Content
-                VStack(spacing: 6) {
+                VStack(spacing: 8) {
                     Text(langManager.s(.pathWellDone))
-                        .font(.system(size: 24, weight: .semibold, design: .serif))
-                        .foregroundStyle(Color(hex: "#1C1A17"))
+                        .font(DS.Font.display(26))
+                        .foregroundStyle(DS.Colors.ink)
+                        .multilineTextAlignment(.center)
 
                     Text(langManager.s(.pathWellDoneDesc))
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(DS.Font.ui(15))
+                        .foregroundStyle(DS.Colors.inkSoft)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 10)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
-                // Action Button
-                Button(action: dismiss) {
-                    Text(langManager.s(.pathContinue))
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(
-                            Capsule()
-                                .fill(AppTheme.Colors.primaryOrange)
-                                .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.3), radius: 8, y: 4)
-                        )
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 10)
+                Button(langManager.s(.pathContinue), action: dismiss)
+                    .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                    .padding(.top, 4)
             }
-            .padding(24)
-            .background(
-                RoundedRectangle(cornerRadius: 30, style: .continuous)
-                    .fill(Color.white)
-                    .shadow(color: .black.opacity(0.1), radius: 20, y: 10)
-            )
-            .padding(.horizontal, 32)
-            .scaleEffect(scale)
-            .opacity(opacity)
-            .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
-                    scale = 1.0
-                    opacity = 1.0
-                }
-            }
+        }
+        .opacity(opacity)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.25)) { opacity = 1.0 }
         }
     }
 
     private func dismiss() {
         withAnimation(.easeIn(duration: 0.2)) {
-            scale = 0.8
             opacity = 0.0
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -1321,53 +864,42 @@ struct LevelCompletePopupView: View {
 struct MistakesSavedPopupView: View {
     @EnvironmentObject var langManager: LanguageManager
     @Binding var isPresented: Bool
-    @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0.0
 
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.4).ignoresSafeArea().onTapGesture { dismiss() }
-
-            VStack(spacing: 24) {
-                LottieView(animation: .named("reeny_waving"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 110, height: 110)
-                    .padding(.top, 10)
+        PathOverlayCard(onBackdropTap: dismiss) {
+            VStack(spacing: 20) {
+                Image(systemName: "arrow.uturn.backward")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(DS.Colors.danger)
+                    .frame(width: 40, height: 40)
+                    .background(DS.Colors.dangerSoft, in: Circle())
 
                 VStack(spacing: 8) {
                     Text(langManager.s(.pathDontBeSad))
-                        .font(.system(size: 24, weight: .semibold, design: .serif))
-                        .foregroundStyle(Color(hex: "#1C1A17"))
+                        .font(DS.Font.display(26))
+                        .foregroundStyle(DS.Colors.ink)
+                        .multilineTextAlignment(.center)
 
                     Text(langManager.s(.pathDontBeSadDesc))
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(DS.Font.ui(15))
+                        .foregroundStyle(DS.Colors.inkSoft)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 10)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Button(action: dismiss) {
-                    Text(langManager.s(.pathGotIt))
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Capsule().fill(Color.orange).shadow(color: Color.orange.opacity(0.3), radius: 8, y: 4))
-                }
-                .padding(.horizontal, 20).padding(.bottom, 10)
+                Button(langManager.s(.pathGotIt), action: dismiss)
+                    .buttonStyle(InkButtonStyle())
+                    .padding(.top, 4)
             }
-            .padding(24)
-            .background(RoundedRectangle(cornerRadius: 30).fill(Color.white).shadow(color: .black.opacity(0.1), radius: 20, y: 10))
-            .padding(.horizontal, 40)
-            .scaleEffect(scale).opacity(opacity)
-            .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) { scale = 1.0; opacity = 1.0 }
-            }
+        }
+        .opacity(opacity)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.25)) { opacity = 1.0 }
         }
     }
     private func dismiss() {
-        withAnimation(.easeIn(duration: 0.2)) { scale = 0.8; opacity = 0.0 }
+        withAnimation(.easeIn(duration: 0.2)) { opacity = 0.0 }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { isPresented = false }
     }
 }
@@ -1375,92 +907,43 @@ struct MistakesSavedPopupView: View {
 struct MistakesClearedPopupView: View {
     @EnvironmentObject var langManager: LanguageManager
     @Binding var isPresented: Bool
-    @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0.0
 
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.4).ignoresSafeArea().onTapGesture { dismiss() }
-
-            VStack(spacing: 24) {
-                LottieView(animation: .named("reeny_waving"))
-                    .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                    .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: 110, height: 110)
-                    .padding(.top, 10)
+        PathOverlayCard(onBackdropTap: dismiss) {
+            VStack(spacing: 20) {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(DS.Colors.success)
+                    .frame(width: 40, height: 40)
+                    .background(DS.Colors.successSoft, in: Circle())
 
                 VStack(spacing: 8) {
                     Text(langManager.s(.pathGreatWork))
-                        .font(.system(size: 24, weight: .semibold, design: .serif))
-                        .foregroundStyle(Color(hex: "#1C1A17"))
+                        .font(DS.Font.display(26))
+                        .foregroundStyle(DS.Colors.ink)
+                        .multilineTextAlignment(.center)
 
                     Text(langManager.s(.pathGreatWorkDesc))
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(DS.Font.ui(15))
+                        .foregroundStyle(DS.Colors.inkSoft)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 10)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Button(action: dismiss) {
-                    Text(langManager.s(.pathHooray))
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Capsule().fill(Color.green).shadow(color: Color.green.opacity(0.3), radius: 8, y: 4))
-                }
-                .padding(.horizontal, 20).padding(.bottom, 10)
+                Button(langManager.s(.pathHooray), action: dismiss)
+                    .buttonStyle(InkButtonStyle())
+                    .padding(.top, 4)
             }
-            .padding(24)
-            .background(RoundedRectangle(cornerRadius: 30).fill(Color.white).shadow(color: .black.opacity(0.1), radius: 20, y: 10))
-            .padding(.horizontal, 40)
-            .scaleEffect(scale).opacity(opacity)
-            .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) { scale = 1.0; opacity = 1.0 }
-            }
+        }
+        .opacity(opacity)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.25)) { opacity = 1.0 }
         }
     }
     private func dismiss() {
-        withAnimation(.easeIn(duration: 0.2)) { scale = 0.8; opacity = 0.0 }
+        withAnimation(.easeIn(duration: 0.2)) { opacity = 0.0 }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { isPresented = false }
-    }
-}
-
-// MARK: - Mistakes Urgent Banner
-private struct MistakesUrgentBanner: View {
-    @EnvironmentObject var langManager: LanguageManager
-    @State private var bouncing = false
-
-    var body: some View {
-        HStack(spacing: 8) {
-            // Yukarı ok — mistakes butonuna işaret eder
-            Image(systemName: "arrow.up.circle.fill")
-                .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(Color(hex: "#B4423A"))
-                .offset(y: bouncing ? -4 : 0)
-                .animation(
-                    .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
-                    value: bouncing
-                )
-
-            Text(langManager.s(.pathMistakesUrgent))
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Color(hex: "#B4423A"))
-                .multilineTextAlignment(.leading)
-
-            Spacer()
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(hex: "#B4423A").opacity(0.1))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(Color(hex: "#B4423A").opacity(0.35), lineWidth: 1)
-                )
-        )
-        .onAppear { bouncing = true }
     }
 }
 

@@ -18,80 +18,68 @@ struct QuizModeSelectionView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                LinearBackgroundView()
-
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 6) {
+            VStack(alignment: .leading, spacing: 0) {
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Header
+                        Eyebrow(text: "\(wordInfos.count) words")
                         Text("Quiz Mode")
-                            .font(.system(size: 28, weight: .semibold, design: .serif))
-                            .foregroundStyle(.primary)
+                            .font(DS.Font.display(34, weight: .bold))
+                            .foregroundStyle(DS.Colors.ink)
+                            .padding(.top, 6)
                         Text(cardName)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                        Text("\(wordInfos.count) words")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.top, 20)
+                            .font(DS.Font.ui(16))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                            .padding(.top, 4)
 
-                    // Mode Cards
-                    VStack(spacing: 16) {
+                        Rectangle().fill(DS.Colors.line).frame(height: 1)
+                            .padding(.top, 20)
+
+                        // Mode rows
                         ForEach(QuizMode.allCases) { mode in
-                            QuizModeCard(
+                            QuizModeRow(
                                 mode: mode,
                                 isSelected: selectedMode == mode,
                                 isAvailable: wordInfos.count >= mode.minimumWordCount
                             ) {
                                 if wordInfos.count >= mode.minimumWordCount {
-                                    withAnimation(.spring(response: 0.3)) {
+                                    withAnimation(.easeOut(duration: 0.15)) {
                                         selectedMode = mode
                                     }
                                 }
                             }
+                            Rectangle().fill(DS.Colors.line).frame(height: 1)
                         }
                     }
-                    .padding(.horizontal)
-
-                    Spacer()
-
-                    // Start Button
-                    Button {
-                        showQuiz = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "play.fill")
-                            Text("Start Quiz")
-                                .font(.system(size: 17, weight: .semibold))
-                        }
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 54)
-                        .background(
-                            selectedMode != nil
-                                ? LinearGradient(colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
-                                                 startPoint: .leading, endPoint: .trailing)
-                                : LinearGradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.4)],
-                                                 startPoint: .leading, endPoint: .trailing)
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: selectedMode != nil ? Color(hex: "#C2512F").opacity(0.4) : .clear,
-                                radius: 12, y: 6)
-                    }
-                    .disabled(selectedMode == nil)
-                    .padding(.horizontal)
-                    .padding(.bottom, 30)
-                    .animation(.easeInOut(duration: 0.2), value: selectedMode)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
+                    .padding(.bottom, 24)
                 }
+
+                // Start Button
+                Button {
+                    showQuiz = true
+                } label: {
+                    Label("Start Quiz", systemImage: "play.fill")
+                }
+                .buttonStyle(InkButtonStyle(fill: selectedMode != nil ? DS.Colors.ink : DS.Colors.line,
+                                            foreground: selectedMode != nil ? DS.Colors.paperRaised : DS.Colors.muted))
+                .disabled(selectedMode == nil)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
+                .animation(.easeOut(duration: 0.15), value: selectedMode)
             }
+            .frame(maxWidth: 620)
+            .frame(maxWidth: .infinity)
+            .paperBackground()
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
-                            .font(.headline)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(DS.Colors.inkSoft)
                     }
                 }
             }
@@ -116,9 +104,9 @@ struct QuizModeSelectionView: View {
     }
 }
 
-// MARK: - Mode Card
+// MARK: - Mode Row
 
-private struct QuizModeCard: View {
+private struct QuizModeRow: View {
     let mode: QuizMode
     let isSelected: Bool
     let isAvailable: Bool
@@ -126,53 +114,41 @@ private struct QuizModeCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
-                // Icon
-                ZStack {
-                    Circle()
-                        .fill(isSelected ? AppTheme.Colors.primaryOrange : Color.white)
-                        .frame(width: 50, height: 50)
-                        .shadow(color: AppTheme.Shadows.cardColor, radius: 4, y: 2)
-                    Image(systemName: mode.icon)
-                        .font(.system(size: 22, weight: .medium))
-                        .foregroundStyle(isSelected ? .white : AppTheme.Colors.primaryOrange)
-                }
+            HStack(alignment: .center, spacing: 14) {
+                Image(systemName: mode.icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(isSelected ? DS.Colors.paperRaised : DS.Colors.inkSoft)
+                    .frame(width: 40, height: 40)
+                    .background(isSelected ? DS.Colors.ink : DS.Colors.paperRaised, in: Circle())
+                    .overlay(Circle().stroke(isSelected ? DS.Colors.ink : DS.Colors.line, lineWidth: 1))
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(mode.rawValue)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(isAvailable ? .primary : .secondary)
+                        .font(DS.Font.display(20))
+                        .foregroundStyle(DS.Colors.ink)
                     Text(mode.description)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(DS.Font.ui(15))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                        .multilineTextAlignment(.leading)
                     if !isAvailable {
                         Text("Needs at least \(mode.minimumWordCount) words")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.orange)
+                            .font(DS.Font.ui(12, weight: .semibold))
+                            .foregroundStyle(DS.Colors.accent)
                     }
                 }
 
-                Spacer()
+                Spacer(minLength: 8)
 
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.orange)
-                        .font(.title3)
-                }
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 20, weight: .regular))
+                    .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.line)
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: isSelected ? AppTheme.Shadows.vibrantColor : AppTheme.Shadows.cardColor, radius: isSelected ? 8 : 4, y: isSelected ? 4 : 2)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(isSelected ? AppTheme.Colors.primaryOrange : AppTheme.Colors.inputBorder, lineWidth: isSelected ? 2 : 1)
-                    )
-            )
+            .padding(.vertical, 14)
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
         .opacity(isAvailable ? 1.0 : 0.5)
         .disabled(!isAvailable)
-        .animation(.spring(response: 0.3), value: isSelected)
+        .animation(.easeOut(duration: 0.15), value: isSelected)
     }
 }

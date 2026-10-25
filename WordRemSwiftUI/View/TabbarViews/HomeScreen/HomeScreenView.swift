@@ -2,9 +2,11 @@
 //  HomeScreenView.swift
 //  WordRemSwiftUI
 //
+//  Kullanıcının desteleri. "Kelimelerim → Desteler" segmentinin içinde gösterilir;
+//  sayfa başlığı ve zemin üst görünümde (WordsView).
+//
 
 import SwiftUI
-import Lottie
 
 struct HomeScreenView: View {
 
@@ -24,57 +26,56 @@ struct HomeScreenView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearBackgroundView()
+                DS.Colors.paper.ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    // MARK: Content
                     if viewModel.isLoading {
                         AppLoadingView(message: langManager.s(.homeLoadingDecks))
                     } else if viewModel.cardNames.isEmpty {
                         EmptyDecksView(onAdd: { showCreateDeck = true })
                     } else {
-                        // Header — sadece deste varken göster
-                        HomeHeaderView(isEditing: $isEditing)
-                            .padding(.top, 4)
+                        // Search + edit toggle
+                        HStack(spacing: 10) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "magnifyingglass").foregroundStyle(DS.Colors.muted)
+                                TextField(langManager.s(.homeSearchPlaceholder), text: $searchText)
+                                    .font(DS.Font.ui(16))
+                                    .foregroundStyle(DS.Colors.ink)
+                                    .tint(DS.Colors.accent)
+                                    .textInputAutocapitalization(.never)
+                                    .autocorrectionDisabled()
+                            }
+                            .padding(.horizontal, 14)
+                            .frame(height: 44)
+                            .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 12))
 
-                        // Search bar
-                        HStack(spacing: 12) {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundStyle(AppTheme.Colors.textSecondary)
-                            TextField(langManager.s(.homeSearchPlaceholder), text: $searchText)
-                                .font(.system(size: 15, weight: .semibold))
-                                .autocorrectionDisabled()
-                                .foregroundStyle(AppTheme.Colors.textPrimary)
-                                .tint(AppTheme.Colors.primaryOrange)
+                            Button {
+                                withAnimation(.easeOut(duration: 0.2)) { isEditing.toggle() }
+                            } label: {
+                                Image(systemName: isEditing ? "checkmark" : "trash")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundStyle(isEditing ? DS.Colors.danger : DS.Colors.inkSoft)
+                                    .frame(width: 44, height: 44)
+                                    .background(isEditing ? DS.Colors.dangerSoft : DS.Colors.paperSunken,
+                                                in: RoundedRectangle(cornerRadius: 12))
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 14)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(AppTheme.Colors.inputBackground)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(AppTheme.Colors.inputBorder, lineWidth: 1)
-                                )
-                                .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: AppTheme.Shadows.softY)
-                        )
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 12)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 4)
 
                         if filteredIndices.isEmpty {
-                            Spacer()
-                            VStack(spacing: 8) {
-                                Image(systemName: "magnifyingglass")
-                                    .font(.system(size: 36))
-                                    .foregroundStyle(.secondary)
+                            VStack(alignment: .leading, spacing: 8) {
                                 Text(langManager.f(.homeNoResultsFormat, searchText))
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(.secondary)
+                                    .font(DS.Font.ui(16))
+                                    .foregroundStyle(DS.Colors.muted)
+                                Spacer()
                             }
-                            Spacer()
+                            .padding(24)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         } else {
                             ScrollView(showsIndicators: false) {
-                                LazyVStack(spacing: 12) {
+                                LazyVStack(spacing: 0) {
                                     ForEach(filteredIndices, id: \.self) { index in
                                         NavigationLink(
                                             destination: CardDetailView(
@@ -96,9 +97,11 @@ struct HomeScreenView: View {
                                             )
                                         }
                                         .buttonStyle(PlainButtonStyle())
+                                        Rectangle().fill(DS.Colors.line).frame(height: 1)
                                     }
                                 }
-                                .padding(.horizontal, 16)
+                                .padding(.horizontal, 24)
+                                .padding(.top, 8)
                                 .padding(.bottom, 120)
                             }
                         }
@@ -117,88 +120,39 @@ struct HomeScreenView: View {
     }
 }
 
-// MARK: - Header
-private struct HomeHeaderView: View {
-    @EnvironmentObject var langManager: LanguageManager
-    @Binding var isEditing: Bool
-
-    var body: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(langManager.s(.homeMyDecks))
-                    .font(.system(size: 28, weight: .semibold, design: .serif))
-                    .foregroundStyle(AppTheme.Colors.textPrimary)
-                Text(langManager.s(.homeTapToStudy))
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(AppTheme.Colors.textSecondary)
-            }
-            Spacer()
-            // Edit/Delete Button
-            Button {
-                withAnimation(.spring()) { isEditing.toggle() }
-            } label: {
-                ZStack {
-                    Circle()
-                        .fill(isEditing ? AppTheme.Colors.destructiveSoft : AppTheme.Colors.circularButtonBg)
-                        .frame(width: 44, height: 44)
-                        .shadow(color: AppTheme.Shadows.softColor, radius: AppTheme.Shadows.softRadius, y: 3)
-                    Image(systemName: isEditing ? "checkmark" : "trash")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(isEditing ? AppTheme.Colors.destructive : AppTheme.Colors.circularButtonIcon)
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-    }
-}
-
 // MARK: - Empty State
 private struct EmptyDecksView: View {
     @EnvironmentObject var langManager: LanguageManager
     let onAdd: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
-            LottieView(animation: .named("reeny_waving"))
-                .configuration(LottieConfiguration(renderingEngine: .coreAnimation))
-                .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                .frame(width: 160, height: 160)
-
-            VStack(spacing: 8) {
-                Text(langManager.s(.homeCreateFirstDeck))
-                    .font(.system(size: 22, weight: .semibold, design: .serif))
-                    .foregroundStyle(Color(hex: "#1C1A17"))
-                Text(langManager.s(.homeCreateFirstDeckHint))
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(3)
-            }
+        VStack(alignment: .leading, spacing: 10) {
+            Text(langManager.s(.homeCreateFirstDeck))
+                .font(DS.Font.display(26, weight: .semibold))
+                .foregroundStyle(DS.Colors.ink)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(langManager.s(.homeCreateFirstDeckHint))
+                .font(DS.Font.ui(16))
+                .foregroundStyle(DS.Colors.muted)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
 
             Button(action: onAdd) {
-                HStack(spacing: 8) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 16, weight: .semibold))
-                    Text(langManager.s(.homeCreateDeck))
-                        .font(.system(size: 15, weight: .semibold))
-                }
-                .foregroundStyle(.white)
-                .padding(.horizontal, 28)
-                .padding(.vertical, 13)
-                .background(AppTheme.Colors.primaryOrange, in: Capsule())
-                .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.35), radius: 12, y: 5)
+                Label(langManager.s(.homeCreateDeck), systemImage: "plus")
             }
+            .buttonStyle(InkButtonStyle())
+            .frame(maxWidth: 320)
+            .padding(.top, 14)
+
+            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.horizontal, 32)
-        .padding(.bottom, 60)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
     }
 }
 
 #Preview {
     EmptyDecksView(onAdd: {})
+        .environmentObject(LanguageManager.shared)
 }
-
-
-

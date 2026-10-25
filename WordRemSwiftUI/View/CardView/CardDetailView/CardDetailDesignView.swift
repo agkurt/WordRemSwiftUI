@@ -26,7 +26,7 @@ struct CardDetailDesignView: View {
     func highlightMatches(word: String?, in text: String?) -> Text {
         guard let word = word, let text = text else {
             return Text(text ?? "")
-                .foregroundColor(AppTheme.Colors.textSecondary)
+                .foregroundColor(DS.Colors.inkSoft)
         }
         
         let words = text.split(separator: " ")
@@ -35,166 +35,91 @@ struct CardDetailDesignView: View {
         for currentWord in words {
             if currentWord.contains(word) {
                 highlightedText = highlightedText + Text(currentWord)
-                    .foregroundColor(AppTheme.Colors.primaryOrange)
+                    .foregroundColor(DS.Colors.accent)
                     .fontWeight(.semibold) + Text(" ")
             } else {
                 highlightedText = highlightedText + Text(currentWord)
-                    .foregroundColor(AppTheme.Colors.textSecondary) + Text(" ")
+                    .foregroundColor(DS.Colors.inkSoft) + Text(" ")
             }
         }
         
         return highlightedText
     }
+
+    private var isFront: Bool { (wordName ?? "").isEmpty == false }
+
+    private var languageLabel: String {
+        let code = (isFront ? targetLanguageCode : nativeLanguageCode).lowercased()
+        return Locale.current.localizedString(forLanguageCode: code) ?? code.uppercased()
+    }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                // Modern gradient background - Light and colorful
-                RoundedRectangle(cornerRadius: 24)
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                AppTheme.Colors.cardBackground,
-                                AppTheme.Colors.cardBackground.opacity(0.95),
-                                Color.white.opacity(0.1)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 24)
-                            .stroke(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        AppTheme.Colors.primaryOrange.opacity(0.2),
-                                        AppTheme.Colors.inputBorder
-                                    ]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1.5
-                            )
-                    )
-                    .shadow(color: AppTheme.Shadows.cardColor.opacity(0.3), radius: 12, y: 6)
-                
-                // Decorative orange accent - More subtle
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            gradient: Gradient(colors: [
-                                AppTheme.Colors.primaryOrange.opacity(0.15),
-                                AppTheme.Colors.primaryOrange.opacity(0.05),
-                                Color.clear
-                            ]),
-                            center: .center,
-                            startRadius: 10,
-                            endRadius: 80
-                        )
-                    )
-                    .frame(width: 140, height: 140)
-                    .offset(x: 70, y: -40)
-                
-                VStack(alignment: .center, spacing: 12) {
-                    // Word/Meaning display
-                    ZStack {
-                        if let name = wordName, !name.isEmpty {
-                            Text(name)
-                                .font(.system(size: 32, weight: .semibold, design: .serif))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [
-                                            AppTheme.Colors.textPrimary,
-                                            AppTheme.Colors.textPrimary.opacity(0.8)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                        }
-                        if let mean = wordMean, !mean.isEmpty {
-                            Text(mean)
-                                .font(.system(size: 32, weight: .semibold, design: .serif))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [
-                                            AppTheme.Colors.textPrimary,
-                                            AppTheme.Colors.textPrimary.opacity(0.8)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                        }
+        VStack(alignment: .leading, spacing: 0) {
+            // Eyebrow + actions
+            HStack(alignment: .center, spacing: 4) {
+                Eyebrow(text: languageLabel, color: isFront ? DS.Colors.accent : DS.Colors.muted)
+                Spacer()
+                if let onEdit = onEdit {
+                    Button(action: onEdit) {
+                        Image(systemName: "pencil")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                            .frame(width: 34, height: 34)
                     }
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.7)
-                    
-                    // Interactive sentence with audio
-                    if let desc = wordDescription, !desc.isEmpty, let word = wordName, !word.isEmpty {
-                        InteractiveSentenceView(
-                            sentence: desc,
-                            highlightedWord: sentenceHighlightWord ?? word,
-                            targetLanguageCode: targetLanguageCode,
-                            nativeLanguageCode: nativeLanguageCode
-                        )
-                        .padding(.horizontal, 16)
-                        .padding(.top, 4)
-                    }
+                    .buttonStyle(.plain)
                 }
-                .padding(.vertical, 20)
-                .padding(.horizontal, 16)
-                
-                // Edit and Delete buttons
-                VStack {
-                    HStack {
-                        Spacer()
-                        
-                        // Edit button (always visible)
-                        if let onEdit = onEdit {
-                            Button(action: onEdit) {
-                                ZStack {
-                                    Circle()
-                                        .fill(AppTheme.Colors.primaryOrange)
-                                        .frame(width: 32, height: 32)
-                                        .shadow(color: AppTheme.Colors.primaryOrange.opacity(0.5), radius: 8, y: 2)
-                                    
-                                    Image(systemName: "pencil")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundStyle(.white)
-                                }
-                            }
-                            .padding(.trailing, isEditing ? 8 : 16)
-                            .padding(.top, 16)
-                        }
-                        
-                        // Delete button (only when editing)
-                        if isEditing {
-                            Button(action: onDelete) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.red)
-                                        .frame(width: 32, height: 32)
-                                        .shadow(color: Color.red.opacity(0.5), radius: 8, y: 2)
-                                    
-                                    Image(systemName: "xmark")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundStyle(.white)
-                                }
-                            }
-                            .padding(.trailing, 16)
-                            .padding(.top, 16)
-                        }
+                if isEditing {
+                    Button(action: onDelete) {
+                        Image(systemName: "minus.circle")
+                            .font(.system(size: 18, weight: .regular))
+                            .foregroundStyle(DS.Colors.danger)
+                            .frame(width: 34, height: 34)
                     }
-                    Spacer()
+                    .buttonStyle(.plain)
                 }
             }
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 145)  // Min height, content grows as needed
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .frame(height: 34)
+
+            // Word / meaning
+            Group {
+                if let name = wordName, !name.isEmpty {
+                    Text(name)
+                        .font(DS.Font.display(34, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                }
+                if let mean = wordMean, !mean.isEmpty {
+                    Text(mean)
+                        .font(DS.Font.display(30, weight: .regular))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                }
+            }
+            .lineLimit(2)
+            .minimumScaleFactor(0.6)
+            .padding(.top, 10)
+
+            Rectangle()
+                .fill(isFront ? DS.Colors.accent : DS.Colors.line)
+                .frame(width: 32, height: 2)
+                .padding(.top, 14)
+
+            // Interactive sentence with audio
+            if let desc = wordDescription, !desc.isEmpty, let word = wordName, !word.isEmpty {
+                InteractiveSentenceView(
+                    sentence: desc,
+                    highlightedWord: sentenceHighlightWord ?? word,
+                    targetLanguageCode: targetLanguageCode,
+                    nativeLanguageCode: nativeLanguageCode
+                )
+                .padding(.top, 14)
+            }
         }
+        .padding(.horizontal, 22)
+        .padding(.top, 16)
+        .padding(.bottom, 22)
+        .frame(maxWidth: .infinity, minHeight: 160, maxHeight: .infinity, alignment: .topLeading)
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(DS.Colors.line, lineWidth: 1))
+        .contentShape(RoundedRectangle(cornerRadius: 24))
     }
 }
 

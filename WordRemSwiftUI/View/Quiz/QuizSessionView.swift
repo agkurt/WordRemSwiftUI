@@ -20,7 +20,7 @@ struct QuizSessionView: View {
 
     var body: some View {
         ZStack {
-            LinearBackgroundView()
+            DS.Colors.paper.ignoresSafeArea()
 
             if case .finished = viewModel.state {
                 // Auto-open result
@@ -29,51 +29,41 @@ struct QuizSessionView: View {
 
             VStack(spacing: 0) {
                 // MARK: Top Bar
-                HStack {
+                HStack(spacing: 16) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                            .frame(width: 36, height: 36)
                     }
-                    Spacer()
-                    Text(mode.rawValue)
-                        .font(.system(size: 15, weight: .semibold))
-                    Spacer()
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(DS.Colors.line)
+                            Capsule().fill(DS.Colors.ink)
+                                .frame(width: geo.size.width * min(1, viewModel.progress))
+                                .animation(.easeOut(duration: 0.35), value: viewModel.progress)
+                        }
+                    }
+                    .frame(height: 4)
                     Text("\(viewModel.currentIndex + 1)/\(viewModel.questions.count)")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(DS.Font.ui(13, weight: .medium).monospacedDigit())
+                        .foregroundStyle(DS.Colors.muted)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-
-                // MARK: Progress Bar
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(AppTheme.Colors.inputBorder)
-                            .frame(height: 6)
-                        Capsule()
-                            .fill(LinearGradient(colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
-                                                 startPoint: .leading, endPoint: .trailing))
-                            .frame(width: geo.size.width * viewModel.progress, height: 6)
-                            .animation(.spring(response: 0.5), value: viewModel.progress)
-                    }
-                }
-                .frame(height: 6)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
 
                 // MARK: Question Content
                 if let question = viewModel.currentQuestion {
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 20) {
-                            QuizQuestionCard(question: question)
+                            QuizQuestionCard(question: question, modeTitle: mode.rawValue)
 
                             // Feedback banner
                             if case .answered(let isCorrect) = viewModel.state {
                                 QuizFeedbackBanner(isCorrect: isCorrect,
                                                    correctAnswer: question.correctAnswer)
-                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                                    .transition(.opacity)
                             }
 
                             // Mode-specific input
@@ -144,28 +134,23 @@ struct QuizSessionView: View {
 
                             // Next button
                             if case .answered = viewModel.state {
-                                Button {
+                                Button(viewModel.isLastQuestion ? "See Results" : "Next Question") {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         viewModel.nextQuestion()
                                     }
-                                } label: {
-                                    Text(viewModel.isLastQuestion ? "See Results" : "Next Question")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundStyle(.white)
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: 50)
-                                        .background(Color(hex: "#C2512F"))
-                                        .clipShape(RoundedRectangle(cornerRadius: 14))
                                 }
-                                .padding(.horizontal)
-                                .transition(.move(edge: .bottom).combined(with: .opacity))
+                                .buttonStyle(InkButtonStyle())
+                                .transition(.opacity)
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 24)
+                        .padding(.top, 8)
                         .padding(.bottom, 30)
                     }
                 }
             }
+            .frame(maxWidth: 620)
+            .frame(maxWidth: .infinity)
         }
         .onAppear {
             viewModel.setup(wordInfos: wordInfos, mode: mode, cardId: cardId)
@@ -186,43 +171,63 @@ struct QuizSessionView: View {
     }
 }
 
+// MARK: - Shared answer styling
+
+private enum QuizChoiceStatus { case idle, correct, wrong, dimmed }
+
+private func quizChoiceStatus(_ option: String, correct: String, answered: Bool, picked: String?) -> QuizChoiceStatus {
+    guard answered else { return .idle }
+    if option == correct { return .correct }
+    if let picked, option == picked { return .wrong }
+    return .dimmed
+}
+
+private extension View {
+    /// paperRaised yüzey, 1pt çizgi; cevaptan sonra başarı/hata tonu
+    func quizChoiceSurface(_ status: QuizChoiceStatus, radius: CGFloat = DS.Radius.button) -> some View {
+        let fill: Color = status == .correct ? DS.Colors.successSoft
+            : status == .wrong ? DS.Colors.dangerSoft : DS.Colors.paperRaised
+        let border: Color = status == .correct ? DS.Colors.success
+            : status == .wrong ? DS.Colors.danger : DS.Colors.line
+        let width: CGFloat = (status == .correct || status == .wrong) ? 1.5 : 1
+        return self
+            .background(fill, in: RoundedRectangle(cornerRadius: radius))
+            .overlay(RoundedRectangle(cornerRadius: radius).strokeBorder(border, lineWidth: width))
+            .opacity(status == .dimmed ? 0.5 : 1)
+            .contentShape(RoundedRectangle(cornerRadius: radius))
+    }
+}
+
 // MARK: - Question Card
 private struct QuizQuestionCard: View {
     let question: QuizQuestion
+    let modeTitle: String
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            Eyebrow(text: modeTitle)
+
             Text("What is the meaning of")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.secondary)
+                .font(DS.Font.ui(15, weight: .medium))
+                .foregroundStyle(DS.Colors.muted)
 
             Text(question.wordInfo.names)
-                .font(.system(size: 32, weight: .semibold, design: .serif))
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.center)
+                .font(DS.Font.display(question.wordInfo.names.contains(" ") ? 28 : 44, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .lineLimit(3)
+                .minimumScaleFactor(0.5)
 
             if !question.wordInfo.descriptions.isEmpty {
-                Text("\"\(question.wordInfo.descriptions)\"")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+                Text(question.wordInfo.descriptions)
+                    .font(DS.Font.display(17, weight: .regular).italic())
+                    .foregroundStyle(DS.Colors.inkSoft)
                     .lineLimit(2)
             }
         }
         .padding(24)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(Color.white)
-                .shadow(color: AppTheme.Shadows.cardColor, radius: 12, y: 6)
-                .overlay(alignment: .topTrailing) {
-                    RoundedRectangle(cornerRadius: 16)
-                        .trim(from: 0.82, to: 1)
-                        .frame(width: 120, height: 110)
-                        .foregroundStyle(.orange.opacity(0.7))
-                }
-        )
-        .padding(.top, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(DS.Colors.line, lineWidth: 1))
     }
 }
 
@@ -232,6 +237,8 @@ private struct MultipleChoiceOptions: View {
     let correctAnswer: String
     let state: QuizViewModel.QuizState
     let onSelect: (String) -> Void
+
+    @State private var picked: String? = nil
 
     var isAnswered: Bool {
         if case .answered = state { return true }
@@ -243,49 +250,48 @@ private struct MultipleChoiceOptions: View {
             ForEach(options, id: \.self) { option in
                 OptionRow(
                     option: option,
-                    isCorrect: option == correctAnswer,
-                    isAnswered: isAnswered,
-                    onSelect: { onSelect(option) }
+                    status: quizChoiceStatus(option, correct: correctAnswer, answered: isAnswered, picked: picked),
+                    onSelect: {
+                        picked = option
+                        onSelect(option)
+                    }
                 )
                 .disabled(isAnswered)
-                .animation(.easeInOut(duration: 0.2), value: isAnswered)
+                .animation(.easeOut(duration: 0.15), value: isAnswered)
             }
         }
+        .onChange(of: options) { _ in picked = nil }
     }
 }
 
 private struct OptionRow: View {
     let option: String
-    let isCorrect: Bool
-    let isAnswered: Bool
+    let status: QuizChoiceStatus
     let onSelect: () -> Void
 
     var body: some View {
         Button(action: onSelect) {
-            HStack {
+            HStack(spacing: 12) {
                 Text(option)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(isAnswered ? (isCorrect ? .white : .secondary) : .primary)
+                    .font(DS.Font.ui(17, weight: .medium))
+                    .foregroundStyle(DS.Colors.ink)
                     .multilineTextAlignment(.leading)
-                Spacer()
-                if isAnswered {
-                    Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle")
-                        .foregroundStyle(isCorrect ? .green : .red)
+                Spacer(minLength: 8)
+                if status == .correct {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(DS.Colors.success)
+                } else if status == .wrong {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(DS.Colors.danger)
                 }
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(isAnswered
-                          ? (isCorrect ? Color.green.opacity(0.15) : Color.red.opacity(0.1))
-                          : Color.white)
-                    .shadow(color: isAnswered ? .clear : AppTheme.Shadows.softColor, radius: 4, y: 2)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(isAnswered && isCorrect ? Color.green : AppTheme.Colors.inputBorder, lineWidth: 2)
-                    )
-            )
+            .padding(.horizontal, 16)
+            .frame(minHeight: 56)
+            .quizChoiceSurface(status)
         }
+        .buttonStyle(.plain)
     }
 }
 
@@ -300,11 +306,11 @@ private struct TrueFalseButtons: View {
     }
 
     var body: some View {
-        HStack(spacing: 14) {
-            TFButton(title: "True", icon: "checkmark", color: .green, disabled: isAnswered) {
+        HStack(spacing: 12) {
+            TFButton(title: "True", icon: "checkmark", tint: DS.Colors.success, disabled: isAnswered) {
                 onAnswer(true)
             }
-            TFButton(title: "False", icon: "xmark", color: .red, disabled: isAnswered) {
+            TFButton(title: "False", icon: "xmark", tint: DS.Colors.danger, disabled: isAnswered) {
                 onAnswer(false)
             }
         }
@@ -314,7 +320,7 @@ private struct TrueFalseButtons: View {
 private struct TFButton: View {
     let title: String
     let icon: String
-    let color: Color
+    let tint: Color
     let disabled: Bool
     let action: () -> Void
 
@@ -322,19 +328,19 @@ private struct TFButton: View {
         Button(action: action) {
             VStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 26, weight: .bold))
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(tint)
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(DS.Font.display(20, weight: .semibold))
+                    .foregroundStyle(DS.Colors.ink)
             }
-            .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 90)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(disabled ? Color.gray.opacity(0.3) : color.opacity(0.9))
-                    .shadow(color: disabled ? .clear : color.opacity(0.3), radius: 6, y: 4)
-            )
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
+            .overlay(RoundedRectangle(cornerRadius: DS.Radius.button).stroke(DS.Colors.line, lineWidth: 1))
+            .opacity(disabled ? 0.5 : 1)
         }
+        .buttonStyle(.plain)
         .disabled(disabled)
     }
 }
@@ -350,39 +356,30 @@ private struct WritingInput: View {
         return false
     }
 
+    private var isEmpty: Bool { text.trimmingCharacters(in: .whitespaces).isEmpty }
+
     var body: some View {
         VStack(spacing: 12) {
             TextField("Type the meaning...", text: $text)
-                .font(.system(size: 16, weight: .semibold))
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.white)
-                        .shadow(color: AppTheme.Shadows.softColor, radius: 4, y: 2)
-                )
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(AppTheme.Colors.inputBorder))
+                .font(DS.Font.ui(17, weight: .medium))
+                .foregroundStyle(DS.Colors.ink)
+                .tint(DS.Colors.accent)
+                .padding(.horizontal, 16)
+                .frame(height: 56)
+                .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
+                .overlay(RoundedRectangle(cornerRadius: DS.Radius.button).stroke(DS.Colors.line, lineWidth: 1))
                 .disabled(isAnswered)
                 .autocorrectionDisabled()
                 .autocapitalization(.none)
 
             if !isAnswered {
-                Button {
+                Button("Check Answer") {
                     UIApplication.shared.hideKeyboard()
                     onSubmit()
-                } label: {
-                    Text("Check Answer")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(
-                            text.trimmingCharacters(in: .whitespaces).isEmpty
-                                ? Color.gray.opacity(0.4)
-                                : Color(hex: "#C2512F")
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
-                .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
+                .buttonStyle(InkButtonStyle(fill: isEmpty ? DS.Colors.line : DS.Colors.ink,
+                                            foreground: isEmpty ? DS.Colors.muted : DS.Colors.paperRaised))
+                .disabled(isEmpty)
             }
         }
     }
@@ -397,41 +394,39 @@ private struct ListeningModeInput: View {
     let state: QuizViewModel.QuizState
     let onSelect: (String) -> Void
 
+    @State private var picked: String? = nil
+
     var isAnswered: Bool {
         if case .answered = state { return true }
         return false
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
             // Audio buttons
-            HStack(spacing: 12) {
+            HStack(spacing: 10) {
                 Button {
                     TTSManager.shared.speak(wordToPlay, langCode: langCode)
                 } label: {
                     Label("Play", systemImage: "play.fill")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(hex: "#C2512F"), Color(hex: "#9E3F22")],
-                                startPoint: .leading, endPoint: .trailing
-                            ),
-                            in: Capsule()
-                        )
+                        .font(DS.Font.ui(14, weight: .semibold))
+                        .foregroundStyle(DS.Colors.paperRaised)
+                        .padding(.horizontal, 18)
+                        .frame(height: 40)
+                        .background(DS.Colors.ink, in: Capsule())
                 }
+                .buttonStyle(.plain)
                 Button {
                     TTSManager.shared.speakSlow(wordToPlay, langCode: langCode)
                 } label: {
-                    Label("Slow", systemImage: "tortoise.fill")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 12)
-                        .background(Color(.systemGray5), in: Capsule())
+                    Label("Slow", systemImage: "tortoise")
+                        .font(DS.Font.ui(14, weight: .semibold))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                        .padding(.horizontal, 16)
+                        .frame(height: 40)
+                        .overlay(Capsule().stroke(DS.Colors.line, lineWidth: 1))
                 }
+                .buttonStyle(.plain)
             }
 
             // Options
@@ -439,15 +434,18 @@ private struct ListeningModeInput: View {
                 ForEach(options, id: \.self) { option in
                     OptionRow(
                         option: option,
-                        isCorrect: option == correctAnswer,
-                        isAnswered: isAnswered,
-                        onSelect: { onSelect(option) }
+                        status: quizChoiceStatus(option, correct: correctAnswer, answered: isAnswered, picked: picked),
+                        onSelect: {
+                            picked = option
+                            onSelect(option)
+                        }
                     )
                     .disabled(isAnswered)
-                    .animation(.easeInOut(duration: 0.2), value: isAnswered)
+                    .animation(.easeOut(duration: 0.15), value: isAnswered)
                 }
             }
         }
+        .onChange(of: options) { _ in picked = nil }
         .onAppear {
             TTSManager.shared.speak(wordToPlay, langCode: langCode)
         }
@@ -462,6 +460,8 @@ private struct FillInTheBlankInput: View {
     let state: QuizViewModel.QuizState
     let onSelect: (String) -> Void
 
+    @State private var picked: String? = nil
+
     var isAnswered: Bool {
         if case .answered = state { return true }
         return false
@@ -469,60 +469,37 @@ private struct FillInTheBlankInput: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            // Gap sentence card
+            // Gap sentence
             Text(gapSentence)
-                .font(.system(size: 18, weight: .semibold))
-                .multilineTextAlignment(.center)
-                .padding(16)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(hex: "#F3E2D8"))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color(hex: "#C2512F").opacity(0.4), lineWidth: 1.5)
-                        )
-                )
+                .font(DS.Font.display(24, weight: .medium))
+                .foregroundStyle(DS.Colors.ink)
+                .lineSpacing(4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(20)
+                .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: DS.Radius.card))
 
             // Word options grid (2 columns)
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
                 ForEach(sentenceWords, id: \.self) { word in
                     Button {
+                        picked = word
                         onSelect(word)
                     } label: {
                         Text(word)
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(
-                                isAnswered
-                                    ? (word == correctAnswer ? .white : .secondary)
-                                    : .primary
-                            )
+                            .font(DS.Font.ui(17, weight: .medium))
+                            .foregroundStyle(DS.Colors.ink)
                             .padding(.vertical, 12)
                             .padding(.horizontal, 8)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(
-                                        isAnswered
-                                            ? (word == correctAnswer ? Color.green.opacity(0.8) : Color(.systemGray5))
-                                            : Color.white
-                                    )
-                                    .shadow(color: isAnswered ? .clear : AppTheme.Shadows.softColor, radius: 4, y: 2)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(
-                                                isAnswered && word == correctAnswer
-                                                    ? Color.green
-                                                    : AppTheme.Colors.inputBorder,
-                                                lineWidth: 1.5
-                                            )
-                                    )
-                            )
+                            .frame(maxWidth: .infinity, minHeight: 52)
+                            .quizChoiceSurface(quizChoiceStatus(word, correct: correctAnswer,
+                                                                answered: isAnswered, picked: picked))
                     }
+                    .buttonStyle(.plain)
                     .disabled(isAnswered)
                 }
             }
         }
+        .onChange(of: sentenceWords) { _ in picked = nil }
     }
 }
 
@@ -533,56 +510,42 @@ private struct SentenceBuilderInput: View {
     let state: QuizViewModel.QuizState
     let onSelect: (String) -> Void
 
+    @State private var picked: String? = nil
+
     var isAnswered: Bool {
         if case .answered = state { return true }
         return false
     }
 
     var body: some View {
-        VStack(spacing: 12) {
-            Text("Tap the correct translation")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 12) {
+            Eyebrow(text: "Tap the correct translation", color: DS.Colors.muted)
 
-            // Word bubble grid (flexible wrapping layout)
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())],
+            // Word chips (flexible grid)
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10),
+                                GridItem(.flexible(), spacing: 10)],
                       spacing: 10) {
                 ForEach(sentenceWords, id: \.self) { word in
                     Button {
+                        picked = word
                         onSelect(word)
                     } label: {
                         Text(word)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(
-                                isAnswered
-                                    ? (word == correctAnswer ? .white : .secondary)
-                                    : Color(hex: "#C2512F")
-                            )
+                            .font(DS.Font.ui(16, weight: .medium))
+                            .foregroundStyle(DS.Colors.ink)
                             .padding(.vertical, 10)
                             .padding(.horizontal, 6)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(
-                                        isAnswered
-                                            ? (word == correctAnswer ? Color.green.opacity(0.8) : Color(.systemGray5))
-                                            : Color(hex: "#F3E2D8")
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(
-                                                isAnswered && word == correctAnswer
-                                                    ? Color.green
-                                                    : Color(hex: "#C2512F").opacity(0.4),
-                                                lineWidth: 1.5
-                                            )
-                                    )
-                            )
+                            .frame(maxWidth: .infinity, minHeight: 46)
+                            .quizChoiceSurface(quizChoiceStatus(word, correct: correctAnswer,
+                                                                answered: isAnswered, picked: picked),
+                                               radius: 12)
                     }
+                    .buttonStyle(.plain)
                     .disabled(isAnswered)
                 }
             }
         }
+        .onChange(of: sentenceWords) { _ in picked = nil }
     }
 }
 
@@ -592,29 +555,26 @@ private struct QuizFeedbackBanner: View {
     let correctAnswer: String
 
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: isCorrect ? "checkmark.circle.fill" : "lightbulb.fill")
-                .font(.title3)
-                .foregroundStyle(isCorrect ? .green : .orange)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(isCorrect ? "Correct! 🎉" : "Not quite...")
-                    .font(.system(size: 14, weight: .semibold))
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: isCorrect ? "checkmark" : "xmark")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(isCorrect ? DS.Colors.success : DS.Colors.danger)
+                .frame(width: 28, height: 28)
+                .overlay(Circle().stroke((isCorrect ? DS.Colors.success : DS.Colors.danger).opacity(0.5), lineWidth: 1))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(isCorrect ? "Correct!" : "Not quite...")
+                    .font(DS.Font.display(20, weight: .bold))
+                    .foregroundStyle(isCorrect ? DS.Colors.success : DS.Colors.danger)
                 if !isCorrect {
                     Text("Answer: \(correctAnswer)")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(DS.Font.ui(16, weight: .medium))
+                        .foregroundStyle(DS.Colors.ink)
                 }
             }
-            Spacer()
+            Spacer(minLength: 0)
         }
-        .padding(14)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(isCorrect ? Color.green.opacity(0.15) : Color.orange.opacity(0.15))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(isCorrect ? Color.green.opacity(0.4) : Color.orange.opacity(0.4), lineWidth: 1.5)
-                )
-        )
+        .padding(16)
+        .background(isCorrect ? DS.Colors.successSoft : DS.Colors.dangerSoft,
+                    in: RoundedRectangle(cornerRadius: DS.Radius.button))
     }
 }

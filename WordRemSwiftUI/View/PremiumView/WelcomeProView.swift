@@ -12,116 +12,89 @@ struct WelcomeProView: View {
     @EnvironmentObject var langManager: LanguageManager
     var onContinue: () -> Void
 
-    private let proColor     = Color(hex: "#2F4B5C")
-    private let proColorDark = Color(hex: "#243B48")
+    @State private var appear = false
 
     private var features: [(String, String)] {[
-        ("infinity",     langManager.s(.welcomeProFeature1)),
-        ("lightbulb",    langManager.s(.welcomeProFeature2)),
-        ("cpu",          langManager.s(.welcomeProFeature3)),
+        (langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
+        (langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
+        (langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
+        (langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
     ]}
 
     var body: some View {
         ZStack {
-            // Gradient background
-            LinearGradient(
-                colors: [proColor.opacity(0.18), Color(hex: "#F6F2EA")],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            Color.black.opacity(0.25)
+                .ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                Spacer()
-
-                // Crown + Mascot
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [proColor, proColorDark],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 100, height: 100)
-                        .shadow(color: proColor.opacity(0.4), radius: 20, y: 8)
-
-                    Text("👑")
-                        .font(.system(size: 48))
-                }
-                .padding(.bottom, 28)
-
-                // Title
-                Text(langManager.s(.welcomeProTitle))
-                    .font(.system(size: 26, weight: .semibold, design: .serif))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [proColor, proColorDark],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
-
-                // Subtitle
-                Text(langManager.s(.welcomeProSubtitle))
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#6B645A"))
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 8)
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 36)
-
-                // Feature list
-                VStack(spacing: 16) {
-                    ForEach(features, id: \.0) { icon, text in
-                        HStack(spacing: 16) {
-                            ZStack {
-                                Circle()
-                                    .fill(proColor.opacity(0.12))
-                                    .frame(width: 44, height: 44)
-                                Image(systemName: icon)
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundStyle(proColor)
-                            }
-                            Text(text)
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(Color(hex: "#1C1A17"))
-                            Spacer()
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 20))
-                                .foregroundStyle(proColor)
+            GeometryReader { geo in
+            ScrollView(showsIndicators: false) {
+                PaperCard(padding: 28) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Eyebrow(text: plain(langManager.s(.welcomeProTitle)), color: DS.Colors.slate)
+                            Text("WordRem Pro")
+                                .font(DS.Font.display(34, weight: .bold))
+                                .foregroundStyle(DS.Colors.ink)
+                            Text(plain(langManager.s(.welcomeProSubtitle)))
+                                .font(DS.Font.ui(16))
+                                .foregroundStyle(DS.Colors.muted)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
-                        .padding(.horizontal, 28)
+
+                        VStack(spacing: 0) {
+                            Rectangle().fill(DS.Colors.line).frame(height: 1)
+                            ForEach(features, id: \.0) { title, sub in
+                                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 13, weight: .bold))
+                                        .foregroundStyle(DS.Colors.accent)
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(title)
+                                            .font(DS.Font.ui(16, weight: .semibold))
+                                            .foregroundStyle(DS.Colors.ink)
+                                        Text(sub)
+                                            .font(DS.Font.ui(14))
+                                            .foregroundStyle(DS.Colors.muted)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                    Spacer(minLength: 0)
+                                }
+                                .padding(.vertical, 12)
+                                Rectangle().fill(DS.Colors.line).frame(height: 1)
+                            }
+                        }
+
+                        Button(plain(langManager.s(.welcomeProCTA)), action: onContinue)
+                            .buttonStyle(InkButtonStyle())
+                            .padding(.top, 8)
                     }
                 }
-                .padding(.bottom, 44)
-
-                Spacer()
-
-                // CTA button
-                Button(action: onContinue) {
-                    Text(langManager.s(.welcomeProCTA))
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [proColor, proColorDark],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: proColor.opacity(0.4), radius: 10, y: 5)
-                }
+                .frame(maxWidth: 440)
                 .padding(.horizontal, 24)
-                .padding(.bottom, 40)
+                .padding(.vertical, 40)
+                .frame(maxWidth: .infinity, minHeight: geo.size.height)
             }
+            .scrollBounceBehavior(.basedOnSize)
+            }
+            .offset(y: appear ? 0 : 12)
+            .opacity(appear ? 1 : 0)
         }
+        .presentationBackground(.clear)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.3).delay(0.1)) { appear = true }
+        }
+    }
+
+    /// Yerelleştirilmiş metinlerdeki emojileri arayüzden ayıklar.
+    private func plain(_ s: String) -> String {
+        let scalars = s.unicodeScalars.filter { u in
+            let p = u.properties
+            if u.value == 0xFE0F || u.value == 0x200D { return false }
+            return !(p.isEmojiPresentation || (p.isEmoji && u.value > 0x238C))
+        }
+        return String(String.UnicodeScalarView(scalars))
+            .replacingOccurrences(of: "  ", with: " ")
+            .trimmingCharacters(in: .whitespaces)
     }
 }
 

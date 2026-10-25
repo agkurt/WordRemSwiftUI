@@ -63,7 +63,8 @@ struct Eyebrow: View {
     let text: String
     var color: Color = DS.Colors.accent
     var body: some View {
-        Text(text.uppercased())
+        // Dile duyarlı büyük harf (Türkçe: i → İ)
+        Text(text.uppercased(with: Locale(identifier: AL.currentCode)))
             .font(DS.Font.eyebrow)
             .tracking(1.4)
             .foregroundStyle(color)

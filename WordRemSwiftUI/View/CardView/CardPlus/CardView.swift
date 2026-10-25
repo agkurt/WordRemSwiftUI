@@ -2,6 +2,8 @@
 //  CardView.swift
 //  WordRemSwiftUI
 //
+//  Deste listesi satırı: bayrak, serif deste adı, kelime sayısı, chevron.
+//
 
 import SwiftUI
 
@@ -12,82 +14,46 @@ struct CardView: View {
     var wordCount: Int = 0
     var onDelete: () -> Void
 
-    @State private var isPressed = false
-
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            RoundedRectangle(cornerRadius: AppTheme.Shadows.cardRadius)
-                .fill(AppTheme.Colors.cardBackground)
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppTheme.Shadows.cardRadius)
-                        .stroke(AppTheme.Colors.inputBorder, lineWidth: 1)
-                )
-
-            // Orange glow blob (subdued for light theme)
-            Circle()
-                .fill(AppTheme.Colors.primaryOrange.opacity(0.08))
-                .frame(width: 140, height: 140)
-                .blur(radius: 25)
-                .offset(x: 60, y: -20)
-
-            // Row content
-            HStack(spacing: 16) {
-                // Flag circle
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.08))
-                        .frame(width: 68, height: 68)
-                    Image(image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 52, height: 52)
-                        .clipShape(Circle())
-                        .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
-                }
-
-                // Texts
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(title)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(AppTheme.Colors.textPrimary)
-                        .lineLimit(1)
-
-                    HStack(spacing: 5) {
-                        Image(systemName: "rectangle.stack.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(AppTheme.Colors.primaryOrange)
-                        Text(wordCount == 0 ? "No words yet" : "\(wordCount) word\(wordCount == 1 ? "" : "s")")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(AppTheme.Colors.textSecondary)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#C2512F").opacity(0.7))
+        HStack(spacing: 14) {
+            if !image.isEmpty, UIImage(named: image) != nil {
+                Image(image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 18)
 
-            // Delete badge
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(DS.Font.display(20))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineLimit(1)
+                Text(wordCount == 0 ? "No words yet" : "\(wordCount) word\(wordCount == 1 ? "" : "s")")
+                    .font(DS.Font.ui(14))
+                    .foregroundStyle(DS.Colors.muted)
+            }
+
+            Spacer(minLength: 8)
+
             if isEditing {
                 Button(action: onDelete) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.red.opacity(0.9))
-                            .frame(width: 26, height: 26)
-                        Image(systemName: "xmark")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(.white)
-                    }
+                    Image(systemName: "minus.circle")
+                        .font(.system(size: 20, weight: .regular))
+                        .foregroundStyle(DS.Colors.danger)
+                        .frame(width: 36, height: 36)
                 }
-                .offset(x: 10, y: -10)
-                .transition(.scale.combined(with: .opacity))
+                .buttonStyle(.plain)
+                .transition(.opacity)
+            } else {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(DS.Colors.muted)
             }
         }
+        .padding(.vertical, 14)
         .frame(maxWidth: .infinity)
-        .shadow(color: AppTheme.Shadows.cardColor, radius: AppTheme.Shadows.cardRadius, x: 0, y: AppTheme.Shadows.cardY)
+        .contentShape(Rectangle())
     }
 }

@@ -132,6 +132,27 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case aiQuizTitle = "aiq.title"
+        case aiQuizSubtitle = "aiq.subtitle"
+        case aiQuizHowMany = "aiq.how_many"
+        case aiQuizGenerate = "aiq.generate"
+        case aiQuizPreparing = "aiq.preparing"
+        case aiQuizAbout = "aiq.about"
+        case aiQuizError = "aiq.error"
+        case aiQuizTryAgain = "aiq.try_again"
+        case aiQuizTopicsCount = "aiq.topics_count"
+        case aiQuizQuestionsUnit = "aiq.questions_unit"
+        case commonSkip = "common.skip"
+        case commonClose = "common.close"
+        case pathAIGrammarQuiz = "path.ai_grammar_quiz"
+        case profTotalQuestions = "prof.total_questions"
+        case profCompleted = "prof.completed"
+        case profStreak = "prof.streak"
+        case profLevelN = "prof.level_n"
+        case profNextLevel = "prof.next_level"
+        case profTotalXP = "prof.total_xp"
+        case profLevels = "prof.levels"
+        case quizAnalyzing = "quiz.analyzing"
         case loginTitle = "login.title"
         case loginSubtitle = "login.subtitle"
         case loginEmail = "login.email"
@@ -542,6 +563,27 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .aiQuizTitle: "AI Quiz",
+            .aiQuizSubtitle: "Gramer ve kelime pratiği",
+            .aiQuizHowMany: "Kaç soru olsun?",
+            .aiQuizGenerate: "Quiz oluştur",
+            .aiQuizPreparing: "Quiz hazırlanıyor...",
+            .aiQuizAbout: "%d soru:",
+            .aiQuizError: "Bir şeyler ters gitti",
+            .aiQuizTryAgain: "Tekrar dene",
+            .aiQuizTopicsCount: "%d konu",
+            .aiQuizQuestionsUnit: "soru",
+            .commonSkip: "Atla",
+            .commonClose: "Kapat",
+            .pathAIGrammarQuiz: "AI gramer quizi",
+            .profTotalQuestions: "Toplam soru",
+            .profCompleted: "Tamamlanan",
+            .profStreak: "Seri",
+            .profLevelN: "Seviye %d",
+            .profNextLevel: "Sonraki seviye",
+            .profTotalXP: "Toplam XP",
+            .profLevels: "Seviye",
+            .quizAnalyzing: "Analiz ediliyor...",
             .loginTitle: "Tekrar hoş geldin",
             .loginSubtitle: "Kelimelerine kaldığın yerden devam et.",
             .loginEmail: "E-posta",
@@ -902,6 +944,27 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .aiQuizTitle: "AI Quiz",
+            .aiQuizSubtitle: "Grammar & vocabulary practice",
+            .aiQuizHowMany: "How many questions?",
+            .aiQuizGenerate: "Create quiz",
+            .aiQuizPreparing: "Preparing your quiz...",
+            .aiQuizAbout: "%d questions about",
+            .aiQuizError: "Something went wrong",
+            .aiQuizTryAgain: "Try again",
+            .aiQuizTopicsCount: "%d topics",
+            .aiQuizQuestionsUnit: "questions",
+            .commonSkip: "Skip",
+            .commonClose: "Close",
+            .pathAIGrammarQuiz: "AI grammar quiz",
+            .profTotalQuestions: "Questions",
+            .profCompleted: "Completed",
+            .profStreak: "Streak",
+            .profLevelN: "Level %d",
+            .profNextLevel: "Next level",
+            .profTotalXP: "Total XP",
+            .profLevels: "Levels",
+            .quizAnalyzing: "Analyzing...",
             .loginTitle: "Welcome back",
             .loginSubtitle: "Pick up your words where you left off.",
             .loginEmail: "Email",
