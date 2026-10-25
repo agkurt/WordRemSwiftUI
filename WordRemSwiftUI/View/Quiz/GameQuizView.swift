@@ -373,8 +373,8 @@ struct GameQuizView: View {
                 QuizPromptText(text: wordToSay)
 
                 // ── Phonetic ──────────────────────────────────────
-                if let phonetic = question.word.phonetic {
-                    Text("/\(phonetic)/")
+                if let phonetic = question.word.pronunciation {
+                    Text(phonetic)
                         .font(.system(size: 15, design: .monospaced))
                         .foregroundStyle(DS.Colors.muted)
                 }
@@ -610,8 +610,8 @@ struct GameQuizView: View {
 
             // Phonetic only makes sense when showing the target-language word
             if question.questionDirection == .targetToNative,
-               let phonetic = question.word.phonetic {
-                Text("/\(phonetic)/")
+               let phonetic = question.word.pronunciation {
+                Text(phonetic)
                     .font(.system(size: 15, design: .monospaced))
                     .foregroundStyle(DS.Colors.muted)
             }

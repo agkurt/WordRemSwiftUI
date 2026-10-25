@@ -1,0 +1,4743 @@
+{
+  "target": "IT",
+  "title": {
+    "TR": "İtalyanca",
+    "EN": "Italian",
+    "DE": "Italienisch",
+    "FR": "Italien",
+    "ES": "Italiano",
+    "IT": "Italiano",
+    "RU": "Итальянский",
+    "ZH": "意大利语"
+  },
+  "description": {
+    "TR": "İtalyancayı adım adım, günlük kelimelerle öğrenin.",
+    "EN": "Learn Italian step by step with everyday words.",
+    "DE": "Lerne Italienisch Schritt für Schritt mit Alltagswörtern.",
+    "FR": "Apprenez l'italien pas à pas avec des mots du quotidien.",
+    "ES": "Aprende italiano paso a paso con palabras cotidianas.",
+    "IT": "Impara l'italiano passo dopo passo con parole di tutti i giorni.",
+    "RU": "Учите итальянский шаг за шагом на повседневных словах.",
+    "ZH": "通过日常词汇循序渐进地学习意大利语。"
+  },
+  "units": [
+    {
+      "title": {
+        "TR": "Başlangıç",
+        "EN": "Getting started",
+        "DE": "Erste Schritte",
+        "FR": "Premiers pas",
+        "ES": "Primeros pasos",
+        "IT": "Primi passi",
+        "RU": "Первые шаги",
+        "ZH": "入门"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Selamlaşma",
+            "EN": "Greetings",
+            "DE": "Begrüßungen",
+            "FR": "Salutations",
+            "ES": "Saludos",
+            "IT": "Saluti",
+            "RU": "Приветствия",
+            "ZH": "问候"
+          },
+          "description": {
+            "TR": "Merhaba deyin ve kendinizi tanıtın",
+            "EN": "Say hello and introduce yourself",
+            "DE": "Hallo sagen und sich vorstellen",
+            "FR": "Dire bonjour et se présenter",
+            "ES": "Saluda y preséntate",
+            "IT": "Saluta e presentati",
+            "RU": "Здоровайтесь и представляйтесь",
+            "ZH": "打招呼和自我介绍"
+          },
+          "icon": "hand.wave",
+          "words": [
+            {
+              "term": "ciao",
+              "romanization": null,
+              "phonetic": "/ˈtʃa.o/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Merhaba",
+                "EN": "hi",
+                "DE": "hallo",
+                "FR": "salut",
+                "ES": "hola",
+                "RU": "привет",
+                "ZH": "你好"
+              },
+              "example": "Ciao, Marco! Come stai?"
+            },
+            {
+              "term": "buongiorno",
+              "romanization": null,
+              "phonetic": "/bwonˈdʒor.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Günaydın",
+                "EN": "good morning",
+                "DE": "guten Morgen",
+                "FR": "bonjour",
+                "ES": "buenos días",
+                "RU": "доброе утро",
+                "ZH": "早上好"
+              },
+              "example": "Buongiorno, signora Rossi!"
+            },
+            {
+              "term": "buonasera",
+              "romanization": null,
+              "phonetic": "/ˌbwɔ.naˈse.ra/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "İyi akşamlar",
+                "EN": "good evening",
+                "DE": "guten Abend",
+                "FR": "bonsoir",
+                "ES": "buenas tardes",
+                "RU": "добрый вечер",
+                "ZH": "晚上好"
+              },
+              "example": "Buonasera, come va?"
+            },
+            {
+              "term": "arrivederci",
+              "romanization": null,
+              "phonetic": "/ar.ri.veˈder.tʃi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Hoşça kalın",
+                "EN": "goodbye",
+                "DE": "auf Wiedersehen",
+                "FR": "au revoir",
+                "ES": "adiós",
+                "RU": "до свидания",
+                "ZH": "再见"
+              },
+              "example": "Grazie di tutto, arrivederci!"
+            },
+            {
+              "term": "grazie",
+              "romanization": null,
+              "phonetic": "/ˈɡrat.tsje/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Teşekkürler",
+                "EN": "thank you",
+                "DE": "danke",
+                "FR": "merci",
+                "ES": "gracias",
+                "RU": "спасибо",
+                "ZH": "谢谢"
+              },
+              "example": "Grazie mille per l'aiuto!"
+            },
+            {
+              "term": "per favore",
+              "romanization": null,
+              "phonetic": "/per faˈvo.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "lütfen",
+                "EN": "please",
+                "DE": "bitte",
+                "FR": "s'il vous plaît",
+                "ES": "por favor",
+                "RU": "пожалуйста",
+                "ZH": "请"
+              },
+              "example": "Un caffè, per favore."
+            },
+            {
+              "term": "prego",
+              "romanization": null,
+              "phonetic": "/ˈprɛ.ɡo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Rica ederim",
+                "EN": "you're welcome",
+                "DE": "gern geschehen",
+                "FR": "de rien",
+                "ES": "de nada",
+                "RU": "не за что",
+                "ZH": "不客气"
+              },
+              "example": "«Grazie!» «Prego!»"
+            },
+            {
+              "term": "scusi",
+              "romanization": null,
+              "phonetic": "/ˈsku.zi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Affedersiniz",
+                "EN": "excuse me",
+                "DE": "Entschuldigung",
+                "FR": "excusez-moi",
+                "ES": "perdone",
+                "RU": "извините",
+                "ZH": "打扰一下"
+              },
+              "example": "Scusi, che ore sono?"
+            },
+            {
+              "term": "mi chiamo",
+              "romanization": null,
+              "phonetic": "/mi ˈkja.mo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "benim adım",
+                "EN": "my name is",
+                "DE": "ich heiße",
+                "FR": "je m'appelle",
+                "ES": "me llamo",
+                "RU": "меня зовут",
+                "ZH": "我叫"
+              },
+              "example": "Mi chiamo Giulia."
+            },
+            {
+              "term": "piacere",
+              "romanization": null,
+              "phonetic": "/pjaˈtʃe.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Memnun oldum",
+                "EN": "nice to meet you",
+                "DE": "freut mich",
+                "FR": "enchanté",
+                "ES": "encantado",
+                "RU": "очень приятно",
+                "ZH": "很高兴认识你"
+              },
+              "example": "Piacere, io sono Luca."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Sayılar",
+            "EN": "Numbers",
+            "DE": "Zahlen",
+            "FR": "Les nombres",
+            "ES": "Los números",
+            "IT": "I numeri",
+            "RU": "Числа",
+            "ZH": "数字"
+          },
+          "description": {
+            "TR": "Birden ona kadar sayın",
+            "EN": "Count from one to ten",
+            "DE": "Von eins bis zehn zählen",
+            "FR": "Compter de un à dix",
+            "ES": "Cuenta del uno al diez",
+            "IT": "Conta da uno a dieci",
+            "RU": "Считаем от одного до десяти",
+            "ZH": "从一数到十"
+          },
+          "icon": "number",
+          "words": [
+            {
+              "term": "uno",
+              "romanization": null,
+              "phonetic": "/ˈu.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "bir",
+                "EN": "one",
+                "DE": "eins",
+                "FR": "un",
+                "ES": "uno",
+                "RU": "один",
+                "ZH": "一"
+              },
+              "example": "Ne prendo uno, grazie."
+            },
+            {
+              "term": "due",
+              "romanization": null,
+              "phonetic": "/ˈdu.e/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "iki",
+                "EN": "two",
+                "DE": "zwei",
+                "FR": "deux",
+                "ES": "dos",
+                "RU": "два",
+                "ZH": "二"
+              },
+              "example": "Ho due gatti."
+            },
+            {
+              "term": "tre",
+              "romanization": null,
+              "phonetic": "/tre/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "üç",
+                "EN": "three",
+                "DE": "drei",
+                "FR": "trois",
+                "ES": "tres",
+                "RU": "три",
+                "ZH": "三"
+              },
+              "example": "Siamo in tre."
+            },
+            {
+              "term": "quattro",
+              "romanization": null,
+              "phonetic": "/ˈkwat.tro/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dört",
+                "EN": "four",
+                "DE": "vier",
+                "FR": "quatre",
+                "ES": "cuatro",
+                "RU": "четыре",
+                "ZH": "四"
+              },
+              "example": "Ci sono quattro sedie."
+            },
+            {
+              "term": "cinque",
+              "romanization": null,
+              "phonetic": "/ˈtʃiŋ.kwe/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "beş",
+                "EN": "five",
+                "DE": "fünf",
+                "FR": "cinq",
+                "ES": "cinco",
+                "RU": "пять",
+                "ZH": "五"
+              },
+              "example": "Sono le cinque."
+            },
+            {
+              "term": "sei",
+              "romanization": null,
+              "phonetic": "/ˈsɛi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "altı",
+                "EN": "six",
+                "DE": "sechs",
+                "FR": "six",
+                "ES": "seis",
+                "RU": "шесть",
+                "ZH": "六"
+              },
+              "example": "Mio figlio ha sei anni."
+            },
+            {
+              "term": "sette",
+              "romanization": null,
+              "phonetic": "/ˈsɛt.te/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yedi",
+                "EN": "seven",
+                "DE": "sieben",
+                "FR": "sept",
+                "ES": "siete",
+                "RU": "семь",
+                "ZH": "七"
+              },
+              "example": "La settimana ha sette giorni."
+            },
+            {
+              "term": "otto",
+              "romanization": null,
+              "phonetic": "/ˈɔt.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sekiz",
+                "EN": "eight",
+                "DE": "acht",
+                "FR": "huit",
+                "ES": "ocho",
+                "RU": "восемь",
+                "ZH": "八"
+              },
+              "example": "Lavoro otto ore al giorno."
+            },
+            {
+              "term": "nove",
+              "romanization": null,
+              "phonetic": "/ˈnɔ.ve/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dokuz",
+                "EN": "nine",
+                "DE": "neun",
+                "FR": "neuf",
+                "ES": "nueve",
+                "RU": "девять",
+                "ZH": "九"
+              },
+              "example": "Ho nove euro."
+            },
+            {
+              "term": "dieci",
+              "romanization": null,
+              "phonetic": "/ˈdjɛ.tʃi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "on",
+                "EN": "ten",
+                "DE": "zehn",
+                "FR": "dix",
+                "ES": "diez",
+                "RU": "десять",
+                "ZH": "十"
+              },
+              "example": "Conto fino a dieci."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Aile",
+            "EN": "Family",
+            "DE": "Familie",
+            "FR": "La famille",
+            "ES": "La familia",
+            "IT": "La famiglia",
+            "RU": "Семья",
+            "ZH": "家庭"
+          },
+          "description": {
+            "TR": "Ailenizden bahsedin",
+            "EN": "Talk about your family",
+            "DE": "Über die Familie sprechen",
+            "FR": "Parler de sa famille",
+            "ES": "Habla de tu familia",
+            "IT": "Parla della tua famiglia",
+            "RU": "Расскажите о своей семье",
+            "ZH": "谈论你的家人"
+          },
+          "icon": "person.3",
+          "words": [
+            {
+              "term": "la famiglia",
+              "romanization": null,
+              "phonetic": "/la faˈmiʎ.ʎa/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "aile",
+                "EN": "family",
+                "DE": "die Familie",
+                "FR": "la famille",
+                "ES": "la familia",
+                "RU": "семья",
+                "ZH": "家庭"
+              },
+              "example": "La mia famiglia è grande."
+            },
+            {
+              "term": "la madre",
+              "romanization": null,
+              "phonetic": "/la ˈma.dre/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "anne",
+                "EN": "mother",
+                "DE": "die Mutter",
+                "FR": "la mère",
+                "ES": "la madre",
+                "RU": "мать",
+                "ZH": "母亲"
+              },
+              "example": "Mia madre lavora in ospedale."
+            },
+            {
+              "term": "il padre",
+              "romanization": null,
+              "phonetic": "/il ˈpa.dre/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "baba",
+                "EN": "father",
+                "DE": "der Vater",
+                "FR": "le père",
+                "ES": "el padre",
+                "RU": "отец",
+                "ZH": "父亲"
+              },
+              "example": "Mio padre è medico."
+            },
+            {
+              "term": "il fratello",
+              "romanization": null,
+              "phonetic": "/il fraˈtɛl.lo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "erkek kardeş",
+                "EN": "brother",
+                "DE": "der Bruder",
+                "FR": "le frère",
+                "ES": "el hermano",
+                "RU": "брат",
+                "ZH": "兄弟"
+              },
+              "example": "Ho un fratello più grande."
+            },
+            {
+              "term": "la sorella",
+              "romanization": null,
+              "phonetic": "/la soˈrɛl.la/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kız kardeş",
+                "EN": "sister",
+                "DE": "die Schwester",
+                "FR": "la sœur",
+                "ES": "la hermana",
+                "RU": "сестра",
+                "ZH": "姐妹"
+              },
+              "example": "Mia sorella vive a Roma."
+            },
+            {
+              "term": "il figlio",
+              "romanization": null,
+              "phonetic": "/il ˈfiʎ.ʎo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "oğul",
+                "EN": "son",
+                "DE": "der Sohn",
+                "FR": "le fils",
+                "ES": "el hijo",
+                "RU": "сын",
+                "ZH": "儿子"
+              },
+              "example": "Il figlio di Marta è molto alto."
+            },
+            {
+              "term": "la figlia",
+              "romanization": null,
+              "phonetic": "/la ˈfiʎ.ʎa/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kız evlat",
+                "EN": "daughter",
+                "DE": "die Tochter",
+                "FR": "la fille",
+                "ES": "la hija",
+                "RU": "дочь",
+                "ZH": "女儿"
+              },
+              "example": "Abbiamo una figlia di cinque anni."
+            },
+            {
+              "term": "il nonno",
+              "romanization": null,
+              "phonetic": "/il ˈnɔn.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dede",
+                "EN": "grandfather",
+                "DE": "der Großvater",
+                "FR": "le grand-père",
+                "ES": "el abuelo",
+                "RU": "дедушка",
+                "ZH": "爷爷"
+              },
+              "example": "Il nonno racconta sempre storie."
+            },
+            {
+              "term": "la nonna",
+              "romanization": null,
+              "phonetic": "/la ˈnɔn.na/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "büyükanne",
+                "EN": "grandmother",
+                "DE": "die Großmutter",
+                "FR": "la grand-mère",
+                "ES": "la abuela",
+                "RU": "бабушка",
+                "ZH": "奶奶"
+              },
+              "example": "La nonna cucina benissimo."
+            },
+            {
+              "term": "il marito",
+              "romanization": null,
+              "phonetic": "/il maˈri.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "koca",
+                "EN": "husband",
+                "DE": "der Ehemann",
+                "FR": "le mari",
+                "ES": "el marido",
+                "RU": "муж",
+                "ZH": "丈夫"
+              },
+              "example": "Mio marito lavora in banca."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Yiyecek ve içecek",
+            "EN": "Food and drink",
+            "DE": "Essen und Trinken",
+            "FR": "Manger et boire",
+            "ES": "Comida y bebida",
+            "IT": "Cibo e bevande",
+            "RU": "Еда и напитки",
+            "ZH": "食物和饮料"
+          },
+          "description": {
+            "TR": "Temel yiyecek ve içecekler",
+            "EN": "Basic foods and drinks",
+            "DE": "Grundlegende Lebensmittel und Getränke",
+            "FR": "Aliments et boissons de base",
+            "ES": "Alimentos y bebidas básicos",
+            "IT": "Cibi e bevande di base",
+            "RU": "Основные продукты и напитки",
+            "ZH": "基本的食物和饮料"
+          },
+          "icon": "fork.knife",
+          "words": [
+            {
+              "term": "l'acqua",
+              "romanization": null,
+              "phonetic": "/ˈlak.kwa/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "su",
+                "EN": "water",
+                "DE": "das Wasser",
+                "FR": "l'eau",
+                "ES": "el agua",
+                "RU": "вода",
+                "ZH": "水"
+              },
+              "example": "L'acqua è fresca."
+            },
+            {
+              "term": "il pane",
+              "romanization": null,
+              "phonetic": "/il ˈpa.ne/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ekmek",
+                "EN": "bread",
+                "DE": "das Brot",
+                "FR": "le pain",
+                "ES": "el pan",
+                "RU": "хлеб",
+                "ZH": "面包"
+              },
+              "example": "Il pane è ancora caldo."
+            },
+            {
+              "term": "il formaggio",
+              "romanization": null,
+              "phonetic": "/il forˈmad.dʒo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "peynir",
+                "EN": "cheese",
+                "DE": "der Käse",
+                "FR": "le fromage",
+                "ES": "el queso",
+                "RU": "сыр",
+                "ZH": "奶酪"
+              },
+              "example": "Mi piace molto il formaggio."
+            },
+            {
+              "term": "la mela",
+              "romanization": null,
+              "phonetic": "/la ˈme.la/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "elma",
+                "EN": "apple",
+                "DE": "der Apfel",
+                "FR": "la pomme",
+                "ES": "la manzana",
+                "RU": "яблоко",
+                "ZH": "苹果"
+              },
+              "example": "Mangio una mela ogni giorno."
+            },
+            {
+              "term": "il latte",
+              "romanization": null,
+              "phonetic": "/il ˈlat.te/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "süt",
+                "EN": "milk",
+                "DE": "die Milch",
+                "FR": "le lait",
+                "ES": "la leche",
+                "RU": "молоко",
+                "ZH": "牛奶"
+              },
+              "example": "Il latte è nel frigo."
+            },
+            {
+              "term": "il vino",
+              "romanization": null,
+              "phonetic": "/il ˈvi.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "şarap",
+                "EN": "wine",
+                "DE": "der Wein",
+                "FR": "le vin",
+                "ES": "el vino",
+                "RU": "вино",
+                "ZH": "葡萄酒"
+              },
+              "example": "Un bicchiere di vino rosso, per favore."
+            },
+            {
+              "term": "la pasta",
+              "romanization": null,
+              "phonetic": "/la ˈpa.sta/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "makarna",
+                "EN": "pasta",
+                "DE": "die Nudeln",
+                "FR": "les pâtes",
+                "ES": "la pasta",
+                "RU": "макароны",
+                "ZH": "意大利面"
+              },
+              "example": "Stasera mangiamo la pasta."
+            },
+            {
+              "term": "la carne",
+              "romanization": null,
+              "phonetic": "/la ˈkar.ne/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "et",
+                "EN": "meat",
+                "DE": "das Fleisch",
+                "FR": "la viande",
+                "ES": "la carne",
+                "RU": "мясо",
+                "ZH": "肉"
+              },
+              "example": "Non mangio carne."
+            },
+            {
+              "term": "il pesce",
+              "romanization": null,
+              "phonetic": "/il ˈpeʃ.ʃe/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "balık",
+                "EN": "fish",
+                "DE": "der Fisch",
+                "FR": "le poisson",
+                "ES": "el pescado",
+                "RU": "рыба",
+                "ZH": "鱼"
+              },
+              "example": "Qui il pesce è buonissimo."
+            },
+            {
+              "term": "la verdura",
+              "romanization": null,
+              "phonetic": "/la verˈdu.ra/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sebze",
+                "EN": "vegetables",
+                "DE": "das Gemüse",
+                "FR": "les légumes",
+                "ES": "la verdura",
+                "RU": "овощи",
+                "ZH": "蔬菜"
+              },
+              "example": "Compro la verdura al mercato."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Kafede",
+            "EN": "At the café",
+            "DE": "Im Café",
+            "FR": "Au café",
+            "ES": "En la cafetería",
+            "IT": "Al bar",
+            "RU": "В кафе",
+            "ZH": "在咖啡馆"
+          },
+          "description": {
+            "TR": "Kahve ve atıştırmalık sipariş edin",
+            "EN": "Order coffee and a snack",
+            "DE": "Kaffee und einen Snack bestellen",
+            "FR": "Commander un café et un en-cas",
+            "ES": "Pide un café y algo de picar",
+            "IT": "Ordina un caffè e uno spuntino",
+            "RU": "Закажите кофе и перекус",
+            "ZH": "点咖啡和小吃"
+          },
+          "icon": "cup.and.saucer",
+          "words": [
+            {
+              "term": "il caffè",
+              "romanization": null,
+              "phonetic": "/il kafˈfɛ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kahve",
+                "EN": "coffee",
+                "DE": "der Kaffee",
+                "FR": "le café",
+                "ES": "el café",
+                "RU": "кофе",
+                "ZH": "咖啡"
+              },
+              "example": "Prendo un caffè."
+            },
+            {
+              "term": "il cappuccino",
+              "romanization": null,
+              "phonetic": "/il kap.putˈtʃi.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kapuçino",
+                "EN": "cappuccino",
+                "DE": "der Cappuccino",
+                "FR": "le cappuccino",
+                "ES": "el capuchino",
+                "RU": "капучино",
+                "ZH": "卡布奇诺"
+              },
+              "example": "Il cappuccino si beve la mattina."
+            },
+            {
+              "term": "il tè",
+              "romanization": null,
+              "phonetic": "/il ˈtɛ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "çay",
+                "EN": "tea",
+                "DE": "der Tee",
+                "FR": "le thé",
+                "ES": "el té",
+                "RU": "чай",
+                "ZH": "茶"
+              },
+              "example": "Preferisco il tè al caffè."
+            },
+            {
+              "term": "lo zucchero",
+              "romanization": null,
+              "phonetic": "/lo ˈtsuk.ke.ro/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "şeker",
+                "EN": "sugar",
+                "DE": "der Zucker",
+                "FR": "le sucre",
+                "ES": "el azúcar",
+                "RU": "сахар",
+                "ZH": "糖"
+              },
+              "example": "Senza zucchero, grazie."
+            },
+            {
+              "term": "il cornetto",
+              "romanization": null,
+              "phonetic": "/il korˈnet.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kruvasan",
+                "EN": "croissant",
+                "DE": "das Croissant",
+                "FR": "le croissant",
+                "ES": "el cruasán",
+                "RU": "круассан",
+                "ZH": "羊角面包"
+              },
+              "example": "La mattina mangio un cornetto."
+            },
+            {
+              "term": "il bicchiere",
+              "romanization": null,
+              "phonetic": "/il bikˈkjɛ.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "bardak",
+                "EN": "glass",
+                "DE": "das Glas",
+                "FR": "le verre",
+                "ES": "el vaso",
+                "RU": "стакан",
+                "ZH": "玻璃杯"
+              },
+              "example": "Un bicchiere d'acqua, per favore."
+            },
+            {
+              "term": "il conto",
+              "romanization": null,
+              "phonetic": "/il ˈkon.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "hesap",
+                "EN": "bill",
+                "DE": "die Rechnung",
+                "FR": "l'addition",
+                "ES": "la cuenta",
+                "RU": "счёт",
+                "ZH": "账单"
+              },
+              "example": "Ci porta il conto?"
+            },
+            {
+              "term": "vorrei",
+              "romanization": null,
+              "phonetic": "/vorˈrɛi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "isterim",
+                "EN": "I'd like",
+                "DE": "ich hätte gern",
+                "FR": "je voudrais",
+                "ES": "quisiera",
+                "RU": "я бы хотел",
+                "ZH": "我想要"
+              },
+              "example": "Vorrei un tè caldo."
+            },
+            {
+              "term": "quanto costa",
+              "romanization": null,
+              "phonetic": "/ˈkwan.to ˈkɔ.sta/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ne kadar?",
+                "EN": "how much is it?",
+                "DE": "was kostet das?",
+                "FR": "combien ça coûte ?",
+                "ES": "¿cuánto cuesta?",
+                "RU": "сколько стоит?",
+                "ZH": "多少钱？"
+              },
+              "example": "Quanto costa un caffè?"
+            },
+            {
+              "term": "il tavolo",
+              "romanization": null,
+              "phonetic": "/il ˈta.vo.lo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "masa",
+                "EN": "table",
+                "DE": "der Tisch",
+                "FR": "la table",
+                "ES": "la mesa",
+                "RU": "стол",
+                "ZH": "桌子"
+              },
+              "example": "Questo tavolo è libero?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Günlük hayat",
+        "EN": "Everyday life",
+        "DE": "Alltag",
+        "FR": "La vie quotidienne",
+        "ES": "La vida diaria",
+        "IT": "La vita quotidiana",
+        "RU": "Повседневная жизнь",
+        "ZH": "日常生活"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Evde",
+            "EN": "At home",
+            "DE": "Zu Hause",
+            "FR": "À la maison",
+            "ES": "En casa",
+            "IT": "A casa",
+            "RU": "Дома",
+            "ZH": "在家"
+          },
+          "description": {
+            "TR": "Odalar ve eşyalar",
+            "EN": "Rooms and furniture",
+            "DE": "Zimmer und Möbel",
+            "FR": "Pièces et meubles",
+            "ES": "Habitaciones y muebles",
+            "IT": "Stanze e mobili",
+            "RU": "Комнаты и мебель",
+            "ZH": "房间和家具"
+          },
+          "icon": "house",
+          "words": [
+            {
+              "term": "la casa",
+              "romanization": null,
+              "phonetic": "/la ˈka.sa/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ev",
+                "EN": "house",
+                "DE": "das Haus",
+                "FR": "la maison",
+                "ES": "la casa",
+                "RU": "дом",
+                "ZH": "房子"
+              },
+              "example": "La mia casa è piccola ma bella."
+            },
+            {
+              "term": "la cucina",
+              "romanization": null,
+              "phonetic": "/la kuˈtʃi.na/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "mutfak",
+                "EN": "kitchen",
+                "DE": "die Küche",
+                "FR": "la cuisine",
+                "ES": "la cocina",
+                "RU": "кухня",
+                "ZH": "厨房"
+              },
+              "example": "Siamo in cucina."
+            },
+            {
+              "term": "la camera da letto",
+              "romanization": null,
+              "phonetic": "/la ˈka.me.ra da ˈlɛt.to/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yatak odası",
+                "EN": "bedroom",
+                "DE": "das Schlafzimmer",
+                "FR": "la chambre",
+                "ES": "el dormitorio",
+                "RU": "спальня",
+                "ZH": "卧室"
+              },
+              "example": "La camera da letto è al primo piano."
+            },
+            {
+              "term": "il bagno",
+              "romanization": null,
+              "phonetic": "/il ˈbaɲ.ɲo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "banyo",
+                "EN": "bathroom",
+                "DE": "das Badezimmer",
+                "FR": "la salle de bains",
+                "ES": "el baño",
+                "RU": "ванная",
+                "ZH": "浴室"
+              },
+              "example": "Dov'è il bagno?"
+            },
+            {
+              "term": "il soggiorno",
+              "romanization": null,
+              "phonetic": "/il sodˈdʒor.no/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "oturma odası",
+                "EN": "living room",
+                "DE": "das Wohnzimmer",
+                "FR": "le salon",
+                "ES": "el salón",
+                "RU": "гостиная",
+                "ZH": "客厅"
+              },
+              "example": "La sera guardiamo la TV in soggiorno."
+            },
+            {
+              "term": "il letto",
+              "romanization": null,
+              "phonetic": "/il ˈlɛt.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yatak",
+                "EN": "bed",
+                "DE": "das Bett",
+                "FR": "le lit",
+                "ES": "la cama",
+                "RU": "кровать",
+                "ZH": "床"
+              },
+              "example": "Il letto è molto comodo."
+            },
+            {
+              "term": "la sedia",
+              "romanization": null,
+              "phonetic": "/la ˈsɛ.dja/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sandalye",
+                "EN": "chair",
+                "DE": "der Stuhl",
+                "FR": "la chaise",
+                "ES": "la silla",
+                "RU": "стул",
+                "ZH": "椅子"
+              },
+              "example": "Prendi una sedia!"
+            },
+            {
+              "term": "la finestra",
+              "romanization": null,
+              "phonetic": "/la fiˈnɛ.stra/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pencere",
+                "EN": "window",
+                "DE": "das Fenster",
+                "FR": "la fenêtre",
+                "ES": "la ventana",
+                "RU": "окно",
+                "ZH": "窗户"
+              },
+              "example": "Apri la finestra, per favore."
+            },
+            {
+              "term": "la porta",
+              "romanization": null,
+              "phonetic": "/la ˈpɔr.ta/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kapı",
+                "EN": "door",
+                "DE": "die Tür",
+                "FR": "la porte",
+                "ES": "la puerta",
+                "RU": "дверь",
+                "ZH": "门"
+              },
+              "example": "Chiudi la porta!"
+            },
+            {
+              "term": "la chiave",
+              "romanization": null,
+              "phonetic": "/la ˈkja.ve/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "anahtar",
+                "EN": "key",
+                "DE": "der Schlüssel",
+                "FR": "la clé",
+                "ES": "la llave",
+                "RU": "ключ",
+                "ZH": "钥匙"
+              },
+              "example": "Non trovo la chiave di casa."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Günlük rutin",
+            "EN": "Daily routine",
+            "DE": "Tagesablauf",
+            "FR": "La routine",
+            "ES": "La rutina diaria",
+            "IT": "La routine quotidiana",
+            "RU": "Распорядок дня",
+            "ZH": "日常作息"
+          },
+          "description": {
+            "TR": "Sabahtan akşama kadar",
+            "EN": "From morning to night",
+            "DE": "Von morgens bis abends",
+            "FR": "Du matin au soir",
+            "ES": "De la mañana a la noche",
+            "IT": "Dalla mattina alla sera",
+            "RU": "С утра до вечера",
+            "ZH": "从早到晚"
+          },
+          "icon": "alarm",
+          "words": [
+            {
+              "term": "svegliarsi",
+              "romanization": null,
+              "phonetic": "/zveʎˈʎar.si/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uyanmak",
+                "EN": "to wake up",
+                "DE": "aufwachen",
+                "FR": "se réveiller",
+                "ES": "despertarse",
+                "RU": "просыпаться",
+                "ZH": "醒来"
+              },
+              "example": "Domani devo svegliarmi presto."
+            },
+            {
+              "term": "alzarsi",
+              "romanization": null,
+              "phonetic": "/alˈtsar.si/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kalkmak",
+                "EN": "to get up",
+                "DE": "aufstehen",
+                "FR": "se lever",
+                "ES": "levantarse",
+                "RU": "вставать",
+                "ZH": "起床"
+              },
+              "example": "Mi alzo sempre alle sei e mezza."
+            },
+            {
+              "term": "fare colazione",
+              "romanization": null,
+              "phonetic": "/ˈfa.re ko.latˈtsjo.ne/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kahvaltı yapmak",
+                "EN": "to have breakfast",
+                "DE": "frühstücken",
+                "FR": "prendre le petit-déjeuner",
+                "ES": "desayunar",
+                "RU": "завтракать",
+                "ZH": "吃早饭"
+              },
+              "example": "Facciamo colazione insieme?"
+            },
+            {
+              "term": "la doccia",
+              "romanization": null,
+              "phonetic": "/la ˈdot.tʃa/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "duş",
+                "EN": "shower",
+                "DE": "die Dusche",
+                "FR": "la douche",
+                "ES": "la ducha",
+                "RU": "душ",
+                "ZH": "淋浴"
+              },
+              "example": "Faccio la doccia ogni mattina."
+            },
+            {
+              "term": "lavorare",
+              "romanization": null,
+              "phonetic": "/la.voˈra.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "çalışmak",
+                "EN": "to work",
+                "DE": "arbeiten",
+                "FR": "travailler",
+                "ES": "trabajar",
+                "RU": "работать",
+                "ZH": "工作"
+              },
+              "example": "Lavoro in un ufficio."
+            },
+            {
+              "term": "pranzare",
+              "romanization": null,
+              "phonetic": "/pranˈdza.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "öğle yemeği yemek",
+                "EN": "to have lunch",
+                "DE": "zu Mittag essen",
+                "FR": "déjeuner",
+                "ES": "almorzar",
+                "RU": "обедать",
+                "ZH": "吃午饭"
+              },
+              "example": "Di solito pranzo all'una."
+            },
+            {
+              "term": "cenare",
+              "romanization": null,
+              "phonetic": "/tʃeˈna.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "akşam yemeği yemek",
+                "EN": "to have dinner",
+                "DE": "zu Abend essen",
+                "FR": "dîner",
+                "ES": "cenar",
+                "RU": "ужинать",
+                "ZH": "吃晚饭"
+              },
+              "example": "Ceniamo alle otto."
+            },
+            {
+              "term": "dormire",
+              "romanization": null,
+              "phonetic": "/dorˈmi.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "uyumak",
+                "EN": "to sleep",
+                "DE": "schlafen",
+                "FR": "dormir",
+                "ES": "dormir",
+                "RU": "спать",
+                "ZH": "睡觉"
+              },
+              "example": "Dormo otto ore a notte."
+            },
+            {
+              "term": "la mattina",
+              "romanization": null,
+              "phonetic": "/la matˈti.na/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sabah",
+                "EN": "morning",
+                "DE": "der Morgen",
+                "FR": "le matin",
+                "ES": "la mañana",
+                "RU": "утро",
+                "ZH": "早上"
+              },
+              "example": "La mattina bevo un caffè."
+            },
+            {
+              "term": "la sera",
+              "romanization": null,
+              "phonetic": "/la ˈse.ra/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "akşam",
+                "EN": "evening",
+                "DE": "der Abend",
+                "FR": "le soir",
+                "ES": "la noche",
+                "RU": "вечер",
+                "ZH": "晚上"
+              },
+              "example": "La sera leggo un libro."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Hava durumu",
+            "EN": "Weather",
+            "DE": "Wetter",
+            "FR": "La météo",
+            "ES": "El tiempo",
+            "IT": "Il tempo",
+            "RU": "Погода",
+            "ZH": "天气"
+          },
+          "description": {
+            "TR": "Hava ve mevsimlerden bahsedin",
+            "EN": "Talk about weather and seasons",
+            "DE": "Über Wetter und Jahreszeiten sprechen",
+            "FR": "Parler du temps et des saisons",
+            "ES": "Habla del tiempo y las estaciones",
+            "IT": "Parla del tempo e delle stagioni",
+            "RU": "Говорим о погоде и временах года",
+            "ZH": "谈论天气和季节"
+          },
+          "icon": "cloud.sun",
+          "words": [
+            {
+              "term": "il tempo",
+              "romanization": null,
+              "phonetic": "/il ˈtɛm.po/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "hava",
+                "EN": "weather",
+                "DE": "das Wetter",
+                "FR": "le temps",
+                "ES": "el tiempo",
+                "RU": "погода",
+                "ZH": "天气"
+              },
+              "example": "Che tempo fa oggi?"
+            },
+            {
+              "term": "il sole",
+              "romanization": null,
+              "phonetic": "/il ˈso.le/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "güneş",
+                "EN": "sun",
+                "DE": "die Sonne",
+                "FR": "le soleil",
+                "ES": "el sol",
+                "RU": "солнце",
+                "ZH": "太阳"
+              },
+              "example": "Oggi c'è il sole."
+            },
+            {
+              "term": "la pioggia",
+              "romanization": null,
+              "phonetic": "/la ˈpjɔd.dʒa/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yağmur",
+                "EN": "rain",
+                "DE": "der Regen",
+                "FR": "la pluie",
+                "ES": "la lluvia",
+                "RU": "дождь",
+                "ZH": "雨"
+              },
+              "example": "Non mi piace la pioggia."
+            },
+            {
+              "term": "piove",
+              "romanization": null,
+              "phonetic": "/ˈpjɔ.ve/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yağmur yağıyor",
+                "EN": "it's raining",
+                "DE": "es regnet",
+                "FR": "il pleut",
+                "ES": "llueve",
+                "RU": "идёт дождь",
+                "ZH": "下雨了"
+              },
+              "example": "Piove da stamattina."
+            },
+            {
+              "term": "la neve",
+              "romanization": null,
+              "phonetic": "/la ˈne.ve/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kar",
+                "EN": "snow",
+                "DE": "der Schnee",
+                "FR": "la neige",
+                "ES": "la nieve",
+                "RU": "снег",
+                "ZH": "雪"
+              },
+              "example": "In montagna c'è la neve."
+            },
+            {
+              "term": "il vento",
+              "romanization": null,
+              "phonetic": "/il ˈvɛn.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "rüzgâr",
+                "EN": "wind",
+                "DE": "der Wind",
+                "FR": "le vent",
+                "ES": "el viento",
+                "RU": "ветер",
+                "ZH": "风"
+              },
+              "example": "Oggi c'è molto vento."
+            },
+            {
+              "term": "fa caldo",
+              "romanization": null,
+              "phonetic": "/fa ˈkal.do/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hava sıcak",
+                "EN": "it's hot",
+                "DE": "es ist heiß",
+                "FR": "il fait chaud",
+                "ES": "hace calor",
+                "RU": "жарко",
+                "ZH": "天气很热"
+              },
+              "example": "Ad agosto fa molto caldo."
+            },
+            {
+              "term": "fa freddo",
+              "romanization": null,
+              "phonetic": "/fa ˈfred.do/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hava soğuk",
+                "EN": "it's cold",
+                "DE": "es ist kalt",
+                "FR": "il fait froid",
+                "ES": "hace frío",
+                "RU": "холодно",
+                "ZH": "天气很冷"
+              },
+              "example": "Fa freddo, mettiti la giacca."
+            },
+            {
+              "term": "l'estate",
+              "romanization": null,
+              "phonetic": "/leˈsta.te/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yaz",
+                "EN": "summer",
+                "DE": "der Sommer",
+                "FR": "l'été",
+                "ES": "el verano",
+                "RU": "лето",
+                "ZH": "夏天"
+              },
+              "example": "L'estate è la mia stagione preferita."
+            },
+            {
+              "term": "l'inverno",
+              "romanization": null,
+              "phonetic": "/linˈvɛr.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kış",
+                "EN": "winter",
+                "DE": "der Winter",
+                "FR": "l'hiver",
+                "ES": "el invierno",
+                "RU": "зима",
+                "ZH": "冬天"
+              },
+              "example": "Qui l'inverno è lungo."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Zaman ve tarihler",
+            "EN": "Time and dates",
+            "DE": "Zeit und Datum",
+            "FR": "L'heure et les dates",
+            "ES": "La hora y las fechas",
+            "IT": "Ore e date",
+            "RU": "Время и даты",
+            "ZH": "时间和日期"
+          },
+          "description": {
+            "TR": "Günler, aylar ve saatler",
+            "EN": "Days, months and hours",
+            "DE": "Tage, Monate und Uhrzeiten",
+            "FR": "Jours, mois et heures",
+            "ES": "Días, meses y horas",
+            "IT": "Giorni, mesi e ore",
+            "RU": "Дни, месяцы и часы",
+            "ZH": "日子、月份和钟点"
+          },
+          "icon": "calendar",
+          "words": [
+            {
+              "term": "il giorno",
+              "romanization": null,
+              "phonetic": "/il ˈdʒor.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "gün",
+                "EN": "day",
+                "DE": "der Tag",
+                "FR": "le jour",
+                "ES": "el día",
+                "RU": "день",
+                "ZH": "天"
+              },
+              "example": "Che giorno è oggi?"
+            },
+            {
+              "term": "la settimana",
+              "romanization": null,
+              "phonetic": "/la set.tiˈma.na/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "hafta",
+                "EN": "week",
+                "DE": "die Woche",
+                "FR": "la semaine",
+                "ES": "la semana",
+                "RU": "неделя",
+                "ZH": "星期"
+              },
+              "example": "Ci vediamo la settimana prossima."
+            },
+            {
+              "term": "il mese",
+              "romanization": null,
+              "phonetic": "/il ˈme.se/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ay",
+                "EN": "month",
+                "DE": "der Monat",
+                "FR": "le mois",
+                "ES": "el mes",
+                "RU": "месяц",
+                "ZH": "月份"
+              },
+              "example": "Questo mese lavoro molto."
+            },
+            {
+              "term": "l'anno",
+              "romanization": null,
+              "phonetic": "/ˈlan.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yıl",
+                "EN": "year",
+                "DE": "das Jahr",
+                "FR": "l'année",
+                "ES": "el año",
+                "RU": "год",
+                "ZH": "年"
+              },
+              "example": "È stato un anno difficile."
+            },
+            {
+              "term": "oggi",
+              "romanization": null,
+              "phonetic": "/ˈɔd.dʒi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "bugün",
+                "EN": "today",
+                "DE": "heute",
+                "FR": "aujourd'hui",
+                "ES": "hoy",
+                "RU": "сегодня",
+                "ZH": "今天"
+              },
+              "example": "Oggi non lavoro."
+            },
+            {
+              "term": "domani",
+              "romanization": null,
+              "phonetic": "/doˈma.ni/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yarın",
+                "EN": "tomorrow",
+                "DE": "morgen",
+                "FR": "demain",
+                "ES": "mañana",
+                "RU": "завтра",
+                "ZH": "明天"
+              },
+              "example": "A domani!"
+            },
+            {
+              "term": "ieri",
+              "romanization": null,
+              "phonetic": "/ˈjɛ.ri/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dün",
+                "EN": "yesterday",
+                "DE": "gestern",
+                "FR": "hier",
+                "ES": "ayer",
+                "RU": "вчера",
+                "ZH": "昨天"
+              },
+              "example": "Ieri era domenica."
+            },
+            {
+              "term": "lunedì",
+              "romanization": null,
+              "phonetic": "/lu.neˈdi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pazartesi",
+                "EN": "Monday",
+                "DE": "der Montag",
+                "FR": "lundi",
+                "ES": "el lunes",
+                "RU": "понедельник",
+                "ZH": "星期一"
+              },
+              "example": "Il lunedì vado in palestra."
+            },
+            {
+              "term": "il fine settimana",
+              "romanization": null,
+              "phonetic": "/il ˈfi.ne set.tiˈma.na/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hafta sonu",
+                "EN": "weekend",
+                "DE": "das Wochenende",
+                "FR": "le week-end",
+                "ES": "el fin de semana",
+                "RU": "выходные",
+                "ZH": "周末"
+              },
+              "example": "Questo fine settimana vado al mare."
+            },
+            {
+              "term": "l'ora",
+              "romanization": null,
+              "phonetic": "/ˈlo.ra/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "saat",
+                "EN": "hour",
+                "DE": "die Stunde",
+                "FR": "l'heure",
+                "ES": "la hora",
+                "RU": "час",
+                "ZH": "小时"
+              },
+              "example": "Il film dura un'ora."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Alışveriş",
+            "EN": "Shopping",
+            "DE": "Einkaufen",
+            "FR": "Les courses",
+            "ES": "De compras",
+            "IT": "Fare spese",
+            "RU": "Покупки",
+            "ZH": "购物"
+          },
+          "description": {
+            "TR": "Fiyat sorun ve alışveriş yapın",
+            "EN": "Ask prices and buy things",
+            "DE": "Nach Preisen fragen und einkaufen",
+            "FR": "Demander les prix et acheter",
+            "ES": "Pregunta precios y compra",
+            "IT": "Chiedi i prezzi e compra",
+            "RU": "Спрашивайте цены и делайте покупки",
+            "ZH": "询问价格并购物"
+          },
+          "icon": "cart",
+          "words": [
+            {
+              "term": "il negozio",
+              "romanization": null,
+              "phonetic": "/il neˈɡɔt.tsjo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "mağaza",
+                "EN": "shop",
+                "DE": "der Laden",
+                "FR": "le magasin",
+                "ES": "la tienda",
+                "RU": "магазин",
+                "ZH": "商店"
+              },
+              "example": "Il negozio chiude alle otto."
+            },
+            {
+              "term": "il prezzo",
+              "romanization": null,
+              "phonetic": "/il ˈprɛt.tso/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "fiyat",
+                "EN": "price",
+                "DE": "der Preis",
+                "FR": "le prix",
+                "ES": "el precio",
+                "RU": "цена",
+                "ZH": "价格"
+              },
+              "example": "Il prezzo è giusto."
+            },
+            {
+              "term": "caro",
+              "romanization": null,
+              "phonetic": "/ˈka.ro/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pahalı",
+                "EN": "expensive",
+                "DE": "teuer",
+                "FR": "cher",
+                "ES": "caro",
+                "RU": "дорогой",
+                "ZH": "贵"
+              },
+              "example": "Questa giacca è troppo cara."
+            },
+            {
+              "term": "economico",
+              "romanization": null,
+              "phonetic": "/e.koˈnɔ.mi.ko/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ucuz",
+                "EN": "cheap",
+                "DE": "billig",
+                "FR": "bon marché",
+                "ES": "barato",
+                "RU": "дешёвый",
+                "ZH": "便宜"
+              },
+              "example": "Questo ristorante è economico."
+            },
+            {
+              "term": "comprare",
+              "romanization": null,
+              "phonetic": "/komˈpra.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "satın almak",
+                "EN": "to buy",
+                "DE": "kaufen",
+                "FR": "acheter",
+                "ES": "comprar",
+                "RU": "покупать",
+                "ZH": "买"
+              },
+              "example": "Devo comprare il latte."
+            },
+            {
+              "term": "pagare",
+              "romanization": null,
+              "phonetic": "/paˈɡa.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ödemek",
+                "EN": "to pay",
+                "DE": "bezahlen",
+                "FR": "payer",
+                "ES": "pagar",
+                "RU": "платить",
+                "ZH": "付款"
+              },
+              "example": "Stasera pago io!"
+            },
+            {
+              "term": "la taglia",
+              "romanization": null,
+              "phonetic": "/la ˈtaʎ.ʎa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "beden",
+                "EN": "size",
+                "DE": "die Größe",
+                "FR": "la taille",
+                "ES": "la talla",
+                "RU": "размер",
+                "ZH": "尺码"
+              },
+              "example": "Che taglia porta?"
+            },
+            {
+              "term": "i soldi",
+              "romanization": null,
+              "phonetic": "/i ˈsɔl.di/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "para",
+                "EN": "money",
+                "DE": "das Geld",
+                "FR": "l'argent",
+                "ES": "el dinero",
+                "RU": "деньги",
+                "ZH": "钱"
+              },
+              "example": "Non ho abbastanza soldi."
+            },
+            {
+              "term": "il supermercato",
+              "romanization": null,
+              "phonetic": "/il su.per.merˈka.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "süpermarket",
+                "EN": "supermarket",
+                "DE": "der Supermarkt",
+                "FR": "le supermarché",
+                "ES": "el supermercado",
+                "RU": "супермаркет",
+                "ZH": "超市"
+              },
+              "example": "Vado al supermercato."
+            },
+            {
+              "term": "lo sconto",
+              "romanization": null,
+              "phonetic": "/lo ˈskon.to/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "indirim",
+                "EN": "discount",
+                "DE": "der Rabatt",
+                "FR": "la réduction",
+                "ES": "el descuento",
+                "RU": "скидка",
+                "ZH": "折扣"
+              },
+              "example": "C'è uno sconto del venti per cento."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Dışarıda",
+        "EN": "Out and about",
+        "DE": "Unterwegs",
+        "FR": "En ville et en voyage",
+        "ES": "De aquí para allá",
+        "IT": "In giro",
+        "RU": "В городе и в пути",
+        "ZH": "外出"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Şehirde yön bulma",
+            "EN": "Getting around town",
+            "DE": "Orientierung in der Stadt",
+            "FR": "Se repérer en ville",
+            "ES": "Moverse por la ciudad",
+            "IT": "Orientarsi in città",
+            "RU": "Ориентирование в городе",
+            "ZH": "在城里找路"
+          },
+          "description": {
+            "TR": "Yol sorun ve tarif edin",
+            "EN": "Ask for and give directions",
+            "DE": "Nach dem Weg fragen und ihn erklären",
+            "FR": "Demander et indiquer le chemin",
+            "ES": "Pide y da indicaciones",
+            "IT": "Chiedi e dai indicazioni",
+            "RU": "Спрашивайте и объясняйте дорогу",
+            "ZH": "问路和指路"
+          },
+          "icon": "map",
+          "words": [
+            {
+              "term": "la strada",
+              "romanization": null,
+              "phonetic": "/la ˈstra.da/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sokak",
+                "EN": "street",
+                "DE": "die Straße",
+                "FR": "la rue",
+                "ES": "la calle",
+                "RU": "улица",
+                "ZH": "街道"
+              },
+              "example": "Attraversa la strada con attenzione."
+            },
+            {
+              "term": "la piazza",
+              "romanization": null,
+              "phonetic": "/la ˈpjat.tsa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "meydan",
+                "EN": "square",
+                "DE": "der Platz",
+                "FR": "la place",
+                "ES": "la plaza",
+                "RU": "площадь",
+                "ZH": "广场"
+              },
+              "example": "Ci vediamo in piazza."
+            },
+            {
+              "term": "a destra",
+              "romanization": null,
+              "phonetic": "/a ˈdɛ.stra/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sağa",
+                "EN": "to the right",
+                "DE": "rechts",
+                "FR": "à droite",
+                "ES": "a la derecha",
+                "RU": "направо",
+                "ZH": "向右"
+              },
+              "example": "Al semaforo giri a destra."
+            },
+            {
+              "term": "a sinistra",
+              "romanization": null,
+              "phonetic": "/a siˈni.stra/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sola",
+                "EN": "to the left",
+                "DE": "links",
+                "FR": "à gauche",
+                "ES": "a la izquierda",
+                "RU": "налево",
+                "ZH": "向左"
+              },
+              "example": "La farmacia è a sinistra."
+            },
+            {
+              "term": "dritto",
+              "romanization": null,
+              "phonetic": "/ˈdrit.to/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "düz",
+                "EN": "straight ahead",
+                "DE": "geradeaus",
+                "FR": "tout droit",
+                "ES": "recto",
+                "RU": "прямо",
+                "ZH": "直走"
+              },
+              "example": "Vada sempre dritto."
+            },
+            {
+              "term": "vicino",
+              "romanization": null,
+              "phonetic": "/viˈtʃi.no/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yakın",
+                "EN": "near",
+                "DE": "in der Nähe",
+                "FR": "près",
+                "ES": "cerca",
+                "RU": "близко",
+                "ZH": "附近"
+              },
+              "example": "La stazione è qui vicino."
+            },
+            {
+              "term": "lontano",
+              "romanization": null,
+              "phonetic": "/lonˈta.no/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uzak",
+                "EN": "far",
+                "DE": "weit",
+                "FR": "loin",
+                "ES": "lejos",
+                "RU": "далеко",
+                "ZH": "远"
+              },
+              "example": "Il museo è lontano?"
+            },
+            {
+              "term": "la stazione",
+              "romanization": null,
+              "phonetic": "/la statˈtsjo.ne/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "istasyon",
+                "EN": "station",
+                "DE": "der Bahnhof",
+                "FR": "la gare",
+                "ES": "la estación",
+                "RU": "вокзал",
+                "ZH": "车站"
+              },
+              "example": "La stazione è in centro."
+            },
+            {
+              "term": "il semaforo",
+              "romanization": null,
+              "phonetic": "/il seˈma.fo.ro/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "trafik ışığı",
+                "EN": "traffic light",
+                "DE": "die Ampel",
+                "FR": "le feu",
+                "ES": "el semáforo",
+                "RU": "светофор",
+                "ZH": "红绿灯"
+              },
+              "example": "Il semaforo è rosso."
+            },
+            {
+              "term": "l'incrocio",
+              "romanization": null,
+              "phonetic": "/linˈkro.tʃo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kavşak",
+                "EN": "crossroads",
+                "DE": "die Kreuzung",
+                "FR": "le carrefour",
+                "ES": "el cruce",
+                "RU": "перекрёсток",
+                "ZH": "十字路口"
+              },
+              "example": "Dopo l'incrocio c'è una banca."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Seyahat",
+            "EN": "Travel",
+            "DE": "Reisen",
+            "FR": "Les voyages",
+            "ES": "Los viajes",
+            "IT": "I viaggi",
+            "RU": "Путешествия",
+            "ZH": "旅行"
+          },
+          "description": {
+            "TR": "Havalimanı, otel ve biletler",
+            "EN": "Airport, hotel and tickets",
+            "DE": "Flughafen, Hotel und Tickets",
+            "FR": "Aéroport, hôtel et billets",
+            "ES": "Aeropuerto, hotel y billetes",
+            "IT": "Aeroporto, hotel e biglietti",
+            "RU": "Аэропорт, отель и билеты",
+            "ZH": "机场、酒店和票"
+          },
+          "icon": "airplane",
+          "words": [
+            {
+              "term": "il viaggio",
+              "romanization": null,
+              "phonetic": "/il ˈvjad.dʒo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yolculuk",
+                "EN": "trip",
+                "DE": "die Reise",
+                "FR": "le voyage",
+                "ES": "el viaje",
+                "RU": "поездка",
+                "ZH": "旅行"
+              },
+              "example": "Buon viaggio!"
+            },
+            {
+              "term": "l'aeroporto",
+              "romanization": null,
+              "phonetic": "/la.e.roˈpɔr.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "havalimanı",
+                "EN": "airport",
+                "DE": "der Flughafen",
+                "FR": "l'aéroport",
+                "ES": "el aeropuerto",
+                "RU": "аэропорт",
+                "ZH": "机场"
+              },
+              "example": "Andiamo all'aeroporto in taxi."
+            },
+            {
+              "term": "il biglietto",
+              "romanization": null,
+              "phonetic": "/il biʎˈʎet.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "bilet",
+                "EN": "ticket",
+                "DE": "das Ticket",
+                "FR": "le billet",
+                "ES": "el billete",
+                "RU": "билет",
+                "ZH": "票"
+              },
+              "example": "Ho già il biglietto del treno."
+            },
+            {
+              "term": "il passaporto",
+              "romanization": null,
+              "phonetic": "/il pas.saˈpɔr.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pasaport",
+                "EN": "passport",
+                "DE": "der Reisepass",
+                "FR": "le passeport",
+                "ES": "el pasaporte",
+                "RU": "паспорт",
+                "ZH": "护照"
+              },
+              "example": "Ecco il mio passaporto."
+            },
+            {
+              "term": "la valigia",
+              "romanization": null,
+              "phonetic": "/la vaˈli.dʒa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "valiz",
+                "EN": "suitcase",
+                "DE": "der Koffer",
+                "FR": "la valise",
+                "ES": "la maleta",
+                "RU": "чемодан",
+                "ZH": "行李箱"
+              },
+              "example": "La mia valigia è pesante."
+            },
+            {
+              "term": "il treno",
+              "romanization": null,
+              "phonetic": "/il ˈtrɛ.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "tren",
+                "EN": "train",
+                "DE": "der Zug",
+                "FR": "le train",
+                "ES": "el tren",
+                "RU": "поезд",
+                "ZH": "火车"
+              },
+              "example": "Prendo il treno per andare al lavoro."
+            },
+            {
+              "term": "l'albergo",
+              "romanization": null,
+              "phonetic": "/lalˈbɛr.ɡo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "otel",
+                "EN": "hotel",
+                "DE": "das Hotel",
+                "FR": "l'hôtel",
+                "ES": "el hotel",
+                "RU": "гостиница",
+                "ZH": "酒店"
+              },
+              "example": "L'albergo è vicino al mare."
+            },
+            {
+              "term": "la prenotazione",
+              "romanization": null,
+              "phonetic": "/la pre.no.tatˈtsjo.ne/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "rezervasyon",
+                "EN": "reservation",
+                "DE": "die Reservierung",
+                "FR": "la réservation",
+                "ES": "la reserva",
+                "RU": "бронирование",
+                "ZH": "预订"
+              },
+              "example": "Ho una prenotazione a nome Bianchi."
+            },
+            {
+              "term": "il volo",
+              "romanization": null,
+              "phonetic": "/il ˈvo.lo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uçuş",
+                "EN": "flight",
+                "DE": "der Flug",
+                "FR": "le vol",
+                "ES": "el vuelo",
+                "RU": "рейс",
+                "ZH": "航班"
+              },
+              "example": "Il volo è in ritardo."
+            },
+            {
+              "term": "partire",
+              "romanization": null,
+              "phonetic": "/parˈti.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yola çıkmak",
+                "EN": "to leave",
+                "DE": "abreisen",
+                "FR": "partir",
+                "ES": "salir",
+                "RU": "уезжать",
+                "ZH": "出发"
+              },
+              "example": "Partiamo domani mattina."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Restoranda",
+            "EN": "At the restaurant",
+            "DE": "Im Restaurant",
+            "FR": "Au restaurant",
+            "ES": "En el restaurante",
+            "IT": "Al ristorante",
+            "RU": "В ресторане",
+            "ZH": "在餐厅"
+          },
+          "description": {
+            "TR": "Masa ayırtın ve yemek sipariş edin",
+            "EN": "Book a table and order a meal",
+            "DE": "Einen Tisch reservieren und bestellen",
+            "FR": "Réserver une table et commander",
+            "ES": "Reserva mesa y pide la comida",
+            "IT": "Prenota un tavolo e ordina",
+            "RU": "Забронируйте столик и закажите еду",
+            "ZH": "订座和点菜"
+          },
+          "icon": "fork.knife.circle",
+          "words": [
+            {
+              "term": "il ristorante",
+              "romanization": null,
+              "phonetic": "/il ri.stoˈran.te/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "restoran",
+                "EN": "restaurant",
+                "DE": "das Restaurant",
+                "FR": "le restaurant",
+                "ES": "el restaurante",
+                "RU": "ресторан",
+                "ZH": "餐厅"
+              },
+              "example": "Conosco un buon ristorante."
+            },
+            {
+              "term": "il menù",
+              "romanization": null,
+              "phonetic": "/il meˈnu/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "menü",
+                "EN": "menu",
+                "DE": "die Speisekarte",
+                "FR": "la carte",
+                "ES": "la carta",
+                "RU": "меню",
+                "ZH": "菜单"
+              },
+              "example": "Posso vedere il menù?"
+            },
+            {
+              "term": "prenotare",
+              "romanization": null,
+              "phonetic": "/pre.noˈta.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "rezervasyon yapmak",
+                "EN": "to book",
+                "DE": "reservieren",
+                "FR": "réserver",
+                "ES": "reservar",
+                "RU": "бронировать",
+                "ZH": "预订"
+              },
+              "example": "Devo prenotare il volo."
+            },
+            {
+              "term": "il cameriere",
+              "romanization": null,
+              "phonetic": "/il ka.meˈrjɛ.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "garson",
+                "EN": "waiter",
+                "DE": "der Kellner",
+                "FR": "le serveur",
+                "ES": "el camarero",
+                "RU": "официант",
+                "ZH": "服务员"
+              },
+              "example": "Il cameriere è molto gentile."
+            },
+            {
+              "term": "l'antipasto",
+              "romanization": null,
+              "phonetic": "/lan.tiˈpa.sto/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "başlangıç",
+                "EN": "starter",
+                "DE": "die Vorspeise",
+                "FR": "l'entrée",
+                "ES": "el entrante",
+                "RU": "закуска",
+                "ZH": "开胃菜"
+              },
+              "example": "Come antipasto prendo la bruschetta."
+            },
+            {
+              "term": "il dolce",
+              "romanization": null,
+              "phonetic": "/il ˈdol.tʃe/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tatlı",
+                "EN": "dessert",
+                "DE": "der Nachtisch",
+                "FR": "le dessert",
+                "ES": "el postre",
+                "RU": "десерт",
+                "ZH": "甜点"
+              },
+              "example": "Per dolce, il tiramisù!"
+            },
+            {
+              "term": "ordinare",
+              "romanization": null,
+              "phonetic": "/or.diˈna.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sipariş vermek",
+                "EN": "to order",
+                "DE": "bestellen",
+                "FR": "commander",
+                "ES": "pedir",
+                "RU": "заказывать",
+                "ZH": "点菜"
+              },
+              "example": "Siete pronti per ordinare?"
+            },
+            {
+              "term": "la forchetta",
+              "romanization": null,
+              "phonetic": "/la forˈket.ta/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "çatal",
+                "EN": "fork",
+                "DE": "die Gabel",
+                "FR": "la fourchette",
+                "ES": "el tenedor",
+                "RU": "вилка",
+                "ZH": "叉子"
+              },
+              "example": "Mi porta una forchetta pulita?"
+            },
+            {
+              "term": "buon appetito",
+              "romanization": null,
+              "phonetic": "/bwɔn ap.peˈti.to/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "afiyet olsun",
+                "EN": "enjoy your meal",
+                "DE": "guten Appetit",
+                "FR": "bon appétit",
+                "ES": "buen provecho",
+                "RU": "приятного аппетита",
+                "ZH": "请慢用"
+              },
+              "example": "Ecco la pasta, buon appetito!"
+            },
+            {
+              "term": "la mancia",
+              "romanization": null,
+              "phonetic": "/la ˈman.tʃa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bahşiş",
+                "EN": "tip",
+                "DE": "das Trinkgeld",
+                "FR": "le pourboire",
+                "ES": "la propina",
+                "RU": "чаевые",
+                "ZH": "小费"
+              },
+              "example": "Lasciamo la mancia?"
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Sağlık",
+            "EN": "Health",
+            "DE": "Gesundheit",
+            "FR": "La santé",
+            "ES": "La salud",
+            "IT": "La salute",
+            "RU": "Здоровье",
+            "ZH": "健康"
+          },
+          "description": {
+            "TR": "Vücut ve doktorda",
+            "EN": "The body and at the doctor's",
+            "DE": "Körper und Arztbesuch",
+            "FR": "Le corps et chez le médecin",
+            "ES": "El cuerpo y en el médico",
+            "IT": "Il corpo e dal medico",
+            "RU": "Тело и визит к врачу",
+            "ZH": "身体和看病"
+          },
+          "icon": "cross.case",
+          "words": [
+            {
+              "term": "la testa",
+              "romanization": null,
+              "phonetic": "/la ˈtɛ.sta/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "baş",
+                "EN": "head",
+                "DE": "der Kopf",
+                "FR": "la tête",
+                "ES": "la cabeza",
+                "RU": "голова",
+                "ZH": "头"
+              },
+              "example": "Mi gira la testa."
+            },
+            {
+              "term": "lo stomaco",
+              "romanization": null,
+              "phonetic": "/lo ˈstɔ.ma.ko/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "mide",
+                "EN": "stomach",
+                "DE": "der Magen",
+                "FR": "l'estomac",
+                "ES": "el estómago",
+                "RU": "желудок",
+                "ZH": "胃"
+              },
+              "example": "Ho mal di stomaco."
+            },
+            {
+              "term": "la mano",
+              "romanization": null,
+              "phonetic": "/la ˈma.no/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "el",
+                "EN": "hand",
+                "DE": "die Hand",
+                "FR": "la main",
+                "ES": "la mano",
+                "RU": "рука",
+                "ZH": "手"
+              },
+              "example": "Dammi la mano."
+            },
+            {
+              "term": "il medico",
+              "romanization": null,
+              "phonetic": "/il ˈmɛ.di.ko/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "doktor",
+                "EN": "doctor",
+                "DE": "der Arzt",
+                "FR": "le médecin",
+                "ES": "el médico",
+                "RU": "врач",
+                "ZH": "医生"
+              },
+              "example": "Il medico dice che non è niente."
+            },
+            {
+              "term": "la farmacia",
+              "romanization": null,
+              "phonetic": "/la far.maˈtʃi.a/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "eczane",
+                "EN": "pharmacy",
+                "DE": "die Apotheke",
+                "FR": "la pharmacie",
+                "ES": "la farmacia",
+                "RU": "аптека",
+                "ZH": "药店"
+              },
+              "example": "La farmacia apre alle nove."
+            },
+            {
+              "term": "la febbre",
+              "romanization": null,
+              "phonetic": "/la ˈfɛb.bre/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ateş",
+                "EN": "fever",
+                "DE": "das Fieber",
+                "FR": "la fièvre",
+                "ES": "la fiebre",
+                "RU": "температура",
+                "ZH": "发烧"
+              },
+              "example": "Ho la febbre alta."
+            },
+            {
+              "term": "il raffreddore",
+              "romanization": null,
+              "phonetic": "/il raf.fredˈdo.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "soğuk algınlığı",
+                "EN": "cold",
+                "DE": "die Erkältung",
+                "FR": "le rhume",
+                "ES": "el resfriado",
+                "RU": "простуда",
+                "ZH": "感冒"
+              },
+              "example": "Ho un brutto raffreddore."
+            },
+            {
+              "term": "la medicina",
+              "romanization": null,
+              "phonetic": "/la me.diˈtʃi.na/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ilaç",
+                "EN": "medicine",
+                "DE": "das Medikament",
+                "FR": "le médicament",
+                "ES": "la medicina",
+                "RU": "лекарство",
+                "ZH": "药"
+              },
+              "example": "Prendi questa medicina dopo i pasti."
+            },
+            {
+              "term": "stare male",
+              "romanization": null,
+              "phonetic": "/ˈsta.re ˈma.le/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kendini kötü hissetmek",
+                "EN": "to feel ill",
+                "DE": "sich schlecht fühlen",
+                "FR": "se sentir mal",
+                "ES": "encontrarse mal",
+                "RU": "плохо себя чувствовать",
+                "ZH": "不舒服"
+              },
+              "example": "Oggi sto male, resto a casa."
+            },
+            {
+              "term": "mi fa male",
+              "romanization": null,
+              "phonetic": "/mi fa ˈma.le/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ağrıyor",
+                "EN": "it hurts",
+                "DE": "es tut weh",
+                "FR": "ça me fait mal",
+                "ES": "me duele",
+                "RU": "болит",
+                "ZH": "疼"
+              },
+              "example": "Mi fa male la schiena."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Hobiler",
+            "EN": "Hobbies",
+            "DE": "Hobbys",
+            "FR": "Les loisirs",
+            "ES": "Los pasatiempos",
+            "IT": "Gli hobby",
+            "RU": "Хобби",
+            "ZH": "爱好"
+          },
+          "description": {
+            "TR": "Boş zamanınızda ne yaparsınız",
+            "EN": "What you do in your free time",
+            "DE": "Was man in der Freizeit macht",
+            "FR": "Que faire de son temps libre",
+            "ES": "Lo que haces en tu tiempo libre",
+            "IT": "Cosa fai nel tempo libero",
+            "RU": "Чем заняться в свободное время",
+            "ZH": "空闲时间做什么"
+          },
+          "icon": "paintpalette",
+          "words": [
+            {
+              "term": "leggere",
+              "romanization": null,
+              "phonetic": "/ˈlɛd.dʒe.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "okumak",
+                "EN": "to read",
+                "DE": "lesen",
+                "FR": "lire",
+                "ES": "leer",
+                "RU": "читать",
+                "ZH": "读书"
+              },
+              "example": "Mi piace leggere prima di dormire."
+            },
+            {
+              "term": "cucinare",
+              "romanization": null,
+              "phonetic": "/ku.tʃiˈna.re/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yemek yapmak",
+                "EN": "to cook",
+                "DE": "kochen",
+                "FR": "cuisiner",
+                "ES": "cocinar",
+                "RU": "готовить",
+                "ZH": "做饭"
+              },
+              "example": "Mio padre ama cucinare."
+            },
+            {
+              "term": "nuotare",
+              "romanization": null,
+              "phonetic": "/nwoˈta.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yüzmek",
+                "EN": "to swim",
+                "DE": "schwimmen",
+                "FR": "nager",
+                "ES": "nadar",
+                "RU": "плавать",
+                "ZH": "游泳"
+              },
+              "example": "Sai nuotare?"
+            },
+            {
+              "term": "ballare",
+              "romanization": null,
+              "phonetic": "/balˈla.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "dans etmek",
+                "EN": "to dance",
+                "DE": "tanzen",
+                "FR": "danser",
+                "ES": "bailar",
+                "RU": "танцевать",
+                "ZH": "跳舞"
+              },
+              "example": "Andiamo a ballare sabato?"
+            },
+            {
+              "term": "la musica",
+              "romanization": null,
+              "phonetic": "/la ˈmu.zi.ka/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "müzik",
+                "EN": "music",
+                "DE": "die Musik",
+                "FR": "la musique",
+                "ES": "la música",
+                "RU": "музыка",
+                "ZH": "音乐"
+              },
+              "example": "Ascolto musica in macchina."
+            },
+            {
+              "term": "il calcio",
+              "romanization": null,
+              "phonetic": "/il ˈkal.tʃo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "futbol",
+                "EN": "football",
+                "DE": "der Fußball",
+                "FR": "le football",
+                "ES": "el fútbol",
+                "RU": "футбол",
+                "ZH": "足球"
+              },
+              "example": "Giochiamo a calcio il sabato."
+            },
+            {
+              "term": "la chitarra",
+              "romanization": null,
+              "phonetic": "/la kiˈtar.ra/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "gitar",
+                "EN": "guitar",
+                "DE": "die Gitarre",
+                "FR": "la guitare",
+                "ES": "la guitarra",
+                "RU": "гитара",
+                "ZH": "吉他"
+              },
+              "example": "Suono la chitarra da dieci anni."
+            },
+            {
+              "term": "il tempo libero",
+              "romanization": null,
+              "phonetic": "/il ˈtɛm.po ˈli.be.ro/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "boş zaman",
+                "EN": "free time",
+                "DE": "die Freizeit",
+                "FR": "le temps libre",
+                "ES": "el tiempo libre",
+                "RU": "свободное время",
+                "ZH": "空闲时间"
+              },
+              "example": "Cosa fai nel tempo libero?"
+            },
+            {
+              "term": "la passeggiata",
+              "romanization": null,
+              "phonetic": "/la pas.sedˈdʒa.ta/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yürüyüş",
+                "EN": "walk",
+                "DE": "der Spaziergang",
+                "FR": "la promenade",
+                "ES": "el paseo",
+                "RU": "прогулка",
+                "ZH": "散步"
+              },
+              "example": "Facciamo una passeggiata nel parco?"
+            },
+            {
+              "term": "il film",
+              "romanization": null,
+              "phonetic": "/il ˈfilm/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "film",
+                "EN": "movie",
+                "DE": "der Film",
+                "FR": "le film",
+                "ES": "la película",
+                "RU": "фильм",
+                "ZH": "电影"
+              },
+              "example": "Stasera guardiamo un film."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Daha ileri",
+        "EN": "Going further",
+        "DE": "Weiter geht's",
+        "FR": "Aller plus loin",
+        "ES": "Un paso más",
+        "IT": "Andare oltre",
+        "RU": "Идём дальше",
+        "ZH": "更进一步"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "İş hayatı",
+            "EN": "Work",
+            "DE": "Arbeit",
+            "FR": "Le travail",
+            "ES": "El trabajo",
+            "IT": "Il lavoro",
+            "RU": "Работа",
+            "ZH": "工作"
+          },
+          "description": {
+            "TR": "Meslekler ve ofis",
+            "EN": "Jobs and the office",
+            "DE": "Berufe und Büro",
+            "FR": "Métiers et bureau",
+            "ES": "Profesiones y oficina",
+            "IT": "Professioni e ufficio",
+            "RU": "Профессии и офис",
+            "ZH": "职业和办公室"
+          },
+          "icon": "briefcase",
+          "words": [
+            {
+              "term": "il lavoro",
+              "romanization": null,
+              "phonetic": "/il laˈvo.ro/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "iş",
+                "EN": "job",
+                "DE": "die Arbeit",
+                "FR": "le travail",
+                "ES": "el trabajo",
+                "RU": "работа",
+                "ZH": "工作"
+              },
+              "example": "Cerco un nuovo lavoro."
+            },
+            {
+              "term": "l'ufficio",
+              "romanization": null,
+              "phonetic": "/lufˈfi.tʃo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ofis",
+                "EN": "office",
+                "DE": "das Büro",
+                "FR": "le bureau",
+                "ES": "la oficina",
+                "RU": "офис",
+                "ZH": "办公室"
+              },
+              "example": "Arrivo in ufficio alle nove."
+            },
+            {
+              "term": "il collega",
+              "romanization": null,
+              "phonetic": "/il kolˈlɛ.ɡa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "iş arkadaşı",
+                "EN": "colleague",
+                "DE": "der Kollege",
+                "FR": "le collègue",
+                "ES": "el compañero de trabajo",
+                "RU": "коллега",
+                "ZH": "同事"
+              },
+              "example": "Il mio collega è molto simpatico."
+            },
+            {
+              "term": "la riunione",
+              "romanization": null,
+              "phonetic": "/la ri.uˈnjo.ne/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "toplantı",
+                "EN": "meeting",
+                "DE": "die Besprechung",
+                "FR": "la réunion",
+                "ES": "la reunión",
+                "RU": "совещание",
+                "ZH": "会议"
+              },
+              "example": "La riunione è alle dieci."
+            },
+            {
+              "term": "il capo",
+              "romanization": null,
+              "phonetic": "/il ˈka.po/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "patron",
+                "EN": "boss",
+                "DE": "der Chef",
+                "FR": "le chef",
+                "ES": "el jefe",
+                "RU": "начальник",
+                "ZH": "老板"
+              },
+              "example": "Il mio capo è in vacanza."
+            },
+            {
+              "term": "lo stipendio",
+              "romanization": null,
+              "phonetic": "/lo stiˈpɛn.djo/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "maaş",
+                "EN": "salary",
+                "DE": "das Gehalt",
+                "FR": "le salaire",
+                "ES": "el sueldo",
+                "RU": "зарплата",
+                "ZH": "工资"
+              },
+              "example": "Lo stipendio arriva a fine mese."
+            },
+            {
+              "term": "il colloquio di lavoro",
+              "romanization": null,
+              "phonetic": "/il kolˈlɔ.kwjo di laˈvo.ro/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "iş görüşmesi",
+                "EN": "job interview",
+                "DE": "das Vorstellungsgespräch",
+                "FR": "l'entretien d'embauche",
+                "ES": "la entrevista de trabajo",
+                "RU": "собеседование",
+                "ZH": "面试"
+              },
+              "example": "Domani ho un colloquio di lavoro."
+            },
+            {
+              "term": "l'azienda",
+              "romanization": null,
+              "phonetic": "/latˈtsjɛn.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "şirket",
+                "EN": "company",
+                "DE": "das Unternehmen",
+                "FR": "l'entreprise",
+                "ES": "la empresa",
+                "RU": "компания",
+                "ZH": "公司"
+              },
+              "example": "Lavoro in un'azienda di moda."
+            },
+            {
+              "term": "la scadenza",
+              "romanization": null,
+              "phonetic": "/la skaˈdɛn.tsa/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "son tarih",
+                "EN": "deadline",
+                "DE": "die Frist",
+                "FR": "la date limite",
+                "ES": "la fecha límite",
+                "RU": "срок",
+                "ZH": "截止日期"
+              },
+              "example": "La scadenza è venerdì."
+            },
+            {
+              "term": "il cliente",
+              "romanization": null,
+              "phonetic": "/il kliˈɛn.te/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "müşteri",
+                "EN": "client",
+                "DE": "der Kunde",
+                "FR": "le client",
+                "ES": "el cliente",
+                "RU": "клиент",
+                "ZH": "客户"
+              },
+              "example": "Ho un appuntamento con un cliente."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Duygular",
+            "EN": "Feelings",
+            "DE": "Gefühle",
+            "FR": "Les émotions",
+            "ES": "Los sentimientos",
+            "IT": "I sentimenti",
+            "RU": "Чувства",
+            "ZH": "情感"
+          },
+          "description": {
+            "TR": "Nasıl hissettiğinizi söyleyin",
+            "EN": "Say how you feel",
+            "DE": "Sagen, wie man sich fühlt",
+            "FR": "Dire ce qu'on ressent",
+            "ES": "Di cómo te sientes",
+            "IT": "Di' come ti senti",
+            "RU": "Расскажите, что вы чувствуете",
+            "ZH": "表达你的感受"
+          },
+          "icon": "heart",
+          "words": [
+            {
+              "term": "felice",
+              "romanization": null,
+              "phonetic": "/feˈli.tʃe/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "mutlu",
+                "EN": "happy",
+                "DE": "glücklich",
+                "FR": "heureux",
+                "ES": "feliz",
+                "RU": "счастливый",
+                "ZH": "开心"
+              },
+              "example": "Sono felice di vederti."
+            },
+            {
+              "term": "triste",
+              "romanization": null,
+              "phonetic": "/ˈtri.ste/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "üzgün",
+                "EN": "sad",
+                "DE": "traurig",
+                "FR": "triste",
+                "ES": "triste",
+                "RU": "грустный",
+                "ZH": "难过"
+              },
+              "example": "Perché sei triste?"
+            },
+            {
+              "term": "stanco",
+              "romanization": null,
+              "phonetic": "/ˈstaŋ.ko/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yorgun",
+                "EN": "tired",
+                "DE": "müde",
+                "FR": "fatigué",
+                "ES": "cansado",
+                "RU": "уставший",
+                "ZH": "累"
+              },
+              "example": "Stasera sono molto stanco."
+            },
+            {
+              "term": "arrabbiato",
+              "romanization": null,
+              "phonetic": "/ar.rabˈbja.to/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kızgın",
+                "EN": "angry",
+                "DE": "wütend",
+                "FR": "en colère",
+                "ES": "enfadado",
+                "RU": "сердитый",
+                "ZH": "生气"
+              },
+              "example": "Perché sei arrabbiato con me?"
+            },
+            {
+              "term": "preoccupato",
+              "romanization": null,
+              "phonetic": "/pre.ok.kuˈpa.to/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "endişeli",
+                "EN": "worried",
+                "DE": "besorgt",
+                "FR": "inquiet",
+                "ES": "preocupado",
+                "RU": "обеспокоенный",
+                "ZH": "担心"
+              },
+              "example": "Mia madre è sempre preoccupata per me."
+            },
+            {
+              "term": "emozionato",
+              "romanization": null,
+              "phonetic": "/e.mot.tsjoˈna.to/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "heyecanlı",
+                "EN": "excited",
+                "DE": "aufgeregt",
+                "FR": "tout excité",
+                "ES": "emocionado",
+                "RU": "взволнованный",
+                "ZH": "激动"
+              },
+              "example": "Sono emozionato per il viaggio."
+            },
+            {
+              "term": "la paura",
+              "romanization": null,
+              "phonetic": "/la paˈu.ra/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "korku",
+                "EN": "fear",
+                "DE": "die Angst",
+                "FR": "la peur",
+                "ES": "el miedo",
+                "RU": "страх",
+                "ZH": "害怕"
+              },
+              "example": "Ho paura dei cani."
+            },
+            {
+              "term": "annoiato",
+              "romanization": null,
+              "phonetic": "/an.noˈja.to/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "sıkılmış",
+                "EN": "bored",
+                "DE": "gelangweilt",
+                "FR": "ennuyé",
+                "ES": "aburrido",
+                "RU": "скучающий",
+                "ZH": "无聊"
+              },
+              "example": "Il bambino sembra annoiato."
+            },
+            {
+              "term": "sorpreso",
+              "romanization": null,
+              "phonetic": "/sorˈpre.so/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "şaşırmış",
+                "EN": "surprised",
+                "DE": "überrascht",
+                "FR": "surpris",
+                "ES": "sorprendido",
+                "RU": "удивлённый",
+                "ZH": "惊讶"
+              },
+              "example": "Sono sorpreso dalla notizia."
+            },
+            {
+              "term": "sentirsi",
+              "romanization": null,
+              "phonetic": "/senˈtir.si/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hissetmek",
+                "EN": "to feel",
+                "DE": "sich fühlen",
+                "FR": "se sentir",
+                "ES": "sentirse",
+                "RU": "чувствовать себя",
+                "ZH": "感觉"
+              },
+              "example": "Come ti senti oggi?"
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Geçmiş olaylar",
+            "EN": "Past events",
+            "DE": "Vergangenes",
+            "FR": "Le passé",
+            "ES": "El pasado",
+            "IT": "Il passato",
+            "RU": "Прошлые события",
+            "ZH": "过去的事"
+          },
+          "description": {
+            "TR": "Ne yaptığınızı anlatın",
+            "EN": "Tell what you did",
+            "DE": "Erzählen, was man gemacht hat",
+            "FR": "Raconter ce qu'on a fait",
+            "ES": "Cuenta lo que hiciste",
+            "IT": "Racconta cosa hai fatto",
+            "RU": "Расскажите, что вы делали",
+            "ZH": "讲述你做过的事"
+          },
+          "icon": "clock.arrow.circlepath",
+          "words": [
+            {
+              "term": "la settimana scorsa",
+              "romanization": null,
+              "phonetic": "/la set.tiˈma.na ˈskor.sa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "geçen hafta",
+                "EN": "last week",
+                "DE": "letzte Woche",
+                "FR": "la semaine dernière",
+                "ES": "la semana pasada",
+                "RU": "на прошлой неделе",
+                "ZH": "上周"
+              },
+              "example": "La settimana scorsa sono stato a Napoli."
+            },
+            {
+              "term": "tre giorni fa",
+              "romanization": null,
+              "phonetic": "/tre ˈdʒor.ni ˈfa/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "üç gün önce",
+                "EN": "three days ago",
+                "DE": "vor drei Tagen",
+                "FR": "il y a trois jours",
+                "ES": "hace tres días",
+                "RU": "три дня назад",
+                "ZH": "三天前"
+              },
+              "example": "Sono tornato tre giorni fa."
+            },
+            {
+              "term": "l'anno scorso",
+              "romanization": null,
+              "phonetic": "/ˈlan.no ˈskor.so/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "geçen yıl",
+                "EN": "last year",
+                "DE": "letztes Jahr",
+                "FR": "l'année dernière",
+                "ES": "el año pasado",
+                "RU": "в прошлом году",
+                "ZH": "去年"
+              },
+              "example": "L'anno scorso ho cambiato casa."
+            },
+            {
+              "term": "il ricordo",
+              "romanization": null,
+              "phonetic": "/il riˈkɔr.do/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "anı",
+                "EN": "memory",
+                "DE": "die Erinnerung",
+                "FR": "le souvenir",
+                "ES": "el recuerdo",
+                "RU": "воспоминание",
+                "ZH": "回忆"
+              },
+              "example": "È un bel ricordo della mia infanzia."
+            },
+            {
+              "term": "da bambino",
+              "romanization": null,
+              "phonetic": "/da bamˈbi.no/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "çocukken",
+                "EN": "as a child",
+                "DE": "als Kind",
+                "FR": "quand j'étais petit",
+                "ES": "de niño",
+                "RU": "в детстве",
+                "ZH": "小时候"
+              },
+              "example": "Da bambino giocavo sempre a calcio."
+            },
+            {
+              "term": "succedere",
+              "romanization": null,
+              "phonetic": "/sutˈtʃɛ.de.re/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "olmak, yaşanmak",
+                "EN": "to happen",
+                "DE": "passieren",
+                "FR": "arriver",
+                "ES": "pasar",
+                "RU": "случаться",
+                "ZH": "发生"
+              },
+              "example": "Cos'è successo?"
+            },
+            {
+              "term": "dimenticare",
+              "romanization": null,
+              "phonetic": "/di.men.tiˈka.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "unutmak",
+                "EN": "to forget",
+                "DE": "vergessen",
+                "FR": "oublier",
+                "ES": "olvidar",
+                "RU": "забывать",
+                "ZH": "忘记"
+              },
+              "example": "Ho dimenticato le chiavi a casa."
+            },
+            {
+              "term": "ricordare",
+              "romanization": null,
+              "phonetic": "/ri.korˈda.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hatırlamak",
+                "EN": "to remember",
+                "DE": "sich erinnern",
+                "FR": "se souvenir",
+                "ES": "recordar",
+                "RU": "помнить",
+                "ZH": "记得"
+              },
+              "example": "Non ricordo il suo nome."
+            },
+            {
+              "term": "la vacanza",
+              "romanization": null,
+              "phonetic": "/la vaˈkan.tsa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tatil",
+                "EN": "holiday",
+                "DE": "der Urlaub",
+                "FR": "les vacances",
+                "ES": "las vacaciones",
+                "RU": "отпуск",
+                "ZH": "假期"
+              },
+              "example": "Com'è andata la vacanza?"
+            },
+            {
+              "term": "appena",
+              "romanization": null,
+              "phonetic": "/apˈpe.na/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "az önce",
+                "EN": "just",
+                "DE": "gerade",
+                "FR": "venir de",
+                "ES": "acabar de",
+                "RU": "только что",
+                "ZH": "刚"
+              },
+              "example": "Sono appena arrivato."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Planlar ve gelecek",
+            "EN": "Plans and the future",
+            "DE": "Pläne und Zukunft",
+            "FR": "Projets et avenir",
+            "ES": "Planes y futuro",
+            "IT": "Progetti e futuro",
+            "RU": "Планы и будущее",
+            "ZH": "计划和未来"
+          },
+          "description": {
+            "TR": "Gelecekten bahsedin",
+            "EN": "Talk about the future",
+            "DE": "Über die Zukunft sprechen",
+            "FR": "Parler de l'avenir",
+            "ES": "Habla del futuro",
+            "IT": "Parla del futuro",
+            "RU": "Говорим о будущем",
+            "ZH": "谈论未来"
+          },
+          "icon": "calendar.badge.plus",
+          "words": [
+            {
+              "term": "il progetto",
+              "romanization": null,
+              "phonetic": "/il proˈdʒɛt.to/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "proje",
+                "EN": "project",
+                "DE": "das Projekt",
+                "FR": "le projet",
+                "ES": "el proyecto",
+                "RU": "проект",
+                "ZH": "项目"
+              },
+              "example": "Abbiamo un nuovo progetto al lavoro."
+            },
+            {
+              "term": "il futuro",
+              "romanization": null,
+              "phonetic": "/il fuˈtu.ro/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "gelecek",
+                "EN": "future",
+                "DE": "die Zukunft",
+                "FR": "l'avenir",
+                "ES": "el futuro",
+                "RU": "будущее",
+                "ZH": "未来"
+              },
+              "example": "In futuro vorrei vivere al mare."
+            },
+            {
+              "term": "prossimo",
+              "romanization": null,
+              "phonetic": "/ˈprɔs.si.mo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sonraki",
+                "EN": "next",
+                "DE": "nächste",
+                "FR": "prochain",
+                "ES": "próximo",
+                "RU": "следующий",
+                "ZH": "下一个"
+              },
+              "example": "Il prossimo treno parte alle dieci."
+            },
+            {
+              "term": "sperare",
+              "romanization": null,
+              "phonetic": "/speˈra.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "umut etmek",
+                "EN": "to hope",
+                "DE": "hoffen",
+                "FR": "espérer",
+                "ES": "esperar",
+                "RU": "надеяться",
+                "ZH": "希望"
+              },
+              "example": "Spero di vederti presto."
+            },
+            {
+              "term": "il sogno",
+              "romanization": null,
+              "phonetic": "/il ˈsoɲ.ɲo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hayal",
+                "EN": "dream",
+                "DE": "der Traum",
+                "FR": "le rêve",
+                "ES": "el sueño",
+                "RU": "мечта",
+                "ZH": "梦想"
+              },
+              "example": "Il mio sogno è viaggiare in Giappone."
+            },
+            {
+              "term": "decidere",
+              "romanization": null,
+              "phonetic": "/deˈtʃi.de.re/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "karar vermek",
+                "EN": "to decide",
+                "DE": "entscheiden",
+                "FR": "décider",
+                "ES": "decidir",
+                "RU": "решать",
+                "ZH": "决定"
+              },
+              "example": "Devo decidere entro domani."
+            },
+            {
+              "term": "organizzare",
+              "romanization": null,
+              "phonetic": "/or.ɡa.nidˈdza.re/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "düzenlemek",
+                "EN": "to organize",
+                "DE": "organisieren",
+                "FR": "organiser",
+                "ES": "organizar",
+                "RU": "организовывать",
+                "ZH": "组织"
+              },
+              "example": "Organizziamo una festa per sabato."
+            },
+            {
+              "term": "tra un mese",
+              "romanization": null,
+              "phonetic": "/tra un ˈme.se/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "bir ay sonra",
+                "EN": "in a month",
+                "DE": "in einem Monat",
+                "FR": "dans un mois",
+                "ES": "dentro de un mes",
+                "RU": "через месяц",
+                "ZH": "一个月后"
+              },
+              "example": "Tra un mese parto per il Brasile."
+            },
+            {
+              "term": "l'anno prossimo",
+              "romanization": null,
+              "phonetic": "/ˈlan.no ˈprɔs.si.mo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "gelecek yıl",
+                "EN": "next year",
+                "DE": "nächstes Jahr",
+                "FR": "l'année prochaine",
+                "ES": "el año que viene",
+                "RU": "в следующем году",
+                "ZH": "明年"
+              },
+              "example": "L'anno prossimo farò un corso di cucina."
+            },
+            {
+              "term": "il matrimonio",
+              "romanization": null,
+              "phonetic": "/il ma.triˈmɔ.njo/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "düğün",
+                "EN": "wedding",
+                "DE": "die Hochzeit",
+                "FR": "le mariage",
+                "ES": "la boda",
+                "RU": "свадьба",
+                "ZH": "婚礼"
+              },
+              "example": "Il matrimonio sarà a giugno."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Fikirler",
+            "EN": "Opinions",
+            "DE": "Meinungen",
+            "FR": "Les opinions",
+            "ES": "Las opiniones",
+            "IT": "Le opinioni",
+            "RU": "Мнения",
+            "ZH": "观点"
+          },
+          "description": {
+            "TR": "Katılın, itiraz edin, tartışın",
+            "EN": "Agree, disagree and discuss",
+            "DE": "Zustimmen, widersprechen, diskutieren",
+            "FR": "Être d'accord ou non, débattre",
+            "ES": "Estar de acuerdo o no y debatir",
+            "IT": "Essere d'accordo o no, discutere",
+            "RU": "Соглашайтесь, спорьте, обсуждайте",
+            "ZH": "同意、反对和讨论"
+          },
+          "icon": "bubble.left.and.bubble.right",
+          "words": [
+            {
+              "term": "secondo me",
+              "romanization": null,
+              "phonetic": "/seˈkon.do ˈme/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bence",
+                "EN": "in my opinion",
+                "DE": "meiner Meinung nach",
+                "FR": "à mon avis",
+                "ES": "en mi opinión",
+                "RU": "по-моему",
+                "ZH": "我认为"
+              },
+              "example": "Secondo me, il centro è più bello."
+            },
+            {
+              "term": "pensare",
+              "romanization": null,
+              "phonetic": "/penˈsa.re/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "düşünmek",
+                "EN": "to think",
+                "DE": "denken",
+                "FR": "penser",
+                "ES": "pensar",
+                "RU": "думать",
+                "ZH": "想"
+              },
+              "example": "Penso che sia una buona idea."
+            },
+            {
+              "term": "essere d'accordo",
+              "romanization": null,
+              "phonetic": "/ˈɛs.se.re dakˈkɔr.do/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "aynı fikirde olmak",
+                "EN": "to agree",
+                "DE": "einverstanden sein",
+                "FR": "être d'accord",
+                "ES": "estar de acuerdo",
+                "RU": "соглашаться",
+                "ZH": "同意"
+              },
+              "example": "Sono d'accordo con te."
+            },
+            {
+              "term": "avere ragione",
+              "romanization": null,
+              "phonetic": "/aˈve.re raˈdʒo.ne/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "haklı olmak",
+                "EN": "to be right",
+                "DE": "recht haben",
+                "FR": "avoir raison",
+                "ES": "tener razón",
+                "RU": "быть правым",
+                "ZH": "说得对"
+              },
+              "example": "Hai ragione tu."
+            },
+            {
+              "term": "l'idea",
+              "romanization": null,
+              "phonetic": "/liˈdɛ.a/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "fikir",
+                "EN": "idea",
+                "DE": "die Idee",
+                "FR": "l'idée",
+                "ES": "la idea",
+                "RU": "идея",
+                "ZH": "主意"
+              },
+              "example": "Che bella idea!"
+            },
+            {
+              "term": "però",
+              "romanization": null,
+              "phonetic": "/peˈrɔ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ama",
+                "EN": "but",
+                "DE": "aber",
+                "FR": "mais",
+                "ES": "pero",
+                "RU": "но",
+                "ZH": "但是"
+              },
+              "example": "È bello, però è caro."
+            },
+            {
+              "term": "invece",
+              "romanization": null,
+              "phonetic": "/inˈve.tʃe/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "oysa",
+                "EN": "on the other hand",
+                "DE": "dagegen",
+                "FR": "en revanche",
+                "ES": "en cambio",
+                "RU": "а вот",
+                "ZH": "而"
+              },
+              "example": "Io amo il mare, mia sorella invece preferisce la montagna."
+            },
+            {
+              "term": "dipende",
+              "romanization": null,
+              "phonetic": "/diˈpɛn.de/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "duruma bağlı",
+                "EN": "it depends",
+                "DE": "es kommt darauf an",
+                "FR": "ça dépend",
+                "ES": "depende",
+                "RU": "смотря как",
+                "ZH": "看情况"
+              },
+              "example": "«Vieni stasera?» «Dipende.»"
+            },
+            {
+              "term": "convincere",
+              "romanization": null,
+              "phonetic": "/konˈvin.tʃe.re/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "ikna etmek",
+                "EN": "to convince",
+                "DE": "überzeugen",
+                "FR": "convaincre",
+                "ES": "convencer",
+                "RU": "убеждать",
+                "ZH": "说服"
+              },
+              "example": "Non mi hai convinto."
+            },
+            {
+              "term": "importante",
+              "romanization": null,
+              "phonetic": "/im.porˈtan.te/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "önemli",
+                "EN": "important",
+                "DE": "wichtig",
+                "FR": "important",
+                "ES": "importante",
+                "RU": "важный",
+                "ZH": "重要"
+              },
+              "example": "È importante dormire bene."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sentences": [
+    {
+      "level": 1,
+      "target_text": "Buongiorno, mi chiamo Anna.",
+      "translations": {
+        "TR": "Günaydın, benim adım Anna.",
+        "EN": "Good morning, my name is Anna.",
+        "DE": "Guten Morgen, ich heiße Anna.",
+        "FR": "Bonjour, je m'appelle Anna.",
+        "ES": "Buenos días, me llamo Anna.",
+        "RU": "Доброе утро, меня зовут Анна.",
+        "ZH": "早上好，我叫安娜。"
+      },
+      "key_word": "Buongiorno",
+      "key_word_translations": {
+        "TR": "günaydın",
+        "EN": "good morning",
+        "DE": "guten Morgen",
+        "FR": "bonjour",
+        "ES": "buenos días",
+        "RU": "доброе утро",
+        "ZH": "早上好"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 1,
+      "target_text": "Piacere, io sono Marco.",
+      "translations": {
+        "TR": "Memnun oldum, ben Marco.",
+        "EN": "Nice to meet you, I'm Marco.",
+        "DE": "Freut mich, ich bin Marco.",
+        "FR": "Enchanté, je suis Marco.",
+        "ES": "Encantado, soy Marco.",
+        "RU": "Очень приятно, я Марко.",
+        "ZH": "很高兴认识你，我是马可。"
+      },
+      "key_word": "Piacere",
+      "key_word_translations": {
+        "TR": "memnun oldum",
+        "EN": "nice to meet you",
+        "DE": "freut mich",
+        "FR": "enchanté",
+        "ES": "encantado",
+        "RU": "очень приятно",
+        "ZH": "很高兴认识你"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 2,
+      "target_text": "Ho due fratelli.",
+      "translations": {
+        "TR": "İki erkek kardeşim var.",
+        "EN": "I have two brothers.",
+        "DE": "Ich habe zwei Brüder.",
+        "FR": "J'ai deux frères.",
+        "ES": "Tengo dos hermanos.",
+        "RU": "У меня два брата.",
+        "ZH": "我有两个兄弟。"
+      },
+      "key_word": "due",
+      "key_word_translations": {
+        "TR": "iki",
+        "EN": "two",
+        "DE": "zwei",
+        "FR": "deux",
+        "ES": "dos",
+        "RU": "два",
+        "ZH": "两"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 2,
+      "target_text": "Il caffè costa tre euro.",
+      "translations": {
+        "TR": "Kahve üç euro.",
+        "EN": "The coffee costs three euros.",
+        "DE": "Der Kaffee kostet drei Euro.",
+        "FR": "Le café coûte trois euros.",
+        "ES": "El café cuesta tres euros.",
+        "RU": "Кофе стоит три евро.",
+        "ZH": "咖啡三欧元。"
+      },
+      "key_word": "tre",
+      "key_word_translations": {
+        "TR": "üç",
+        "EN": "three",
+        "DE": "drei",
+        "FR": "trois",
+        "ES": "tres",
+        "RU": "три",
+        "ZH": "三"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 3,
+      "target_text": "Mia madre si chiama Laura.",
+      "translations": {
+        "TR": "Annemin adı Laura.",
+        "EN": "My mother's name is Laura.",
+        "DE": "Meine Mutter heißt Laura.",
+        "FR": "Ma mère s'appelle Laura.",
+        "ES": "Mi madre se llama Laura.",
+        "RU": "Мою маму зовут Лаура.",
+        "ZH": "我妈妈叫劳拉。"
+      },
+      "key_word": "madre",
+      "key_word_translations": {
+        "TR": "anne",
+        "EN": "mother",
+        "DE": "Mutter",
+        "FR": "mère",
+        "ES": "madre",
+        "RU": "мама",
+        "ZH": "妈妈"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 3,
+      "target_text": "Mia sorella ha dieci anni.",
+      "translations": {
+        "TR": "Kız kardeşim on yaşında.",
+        "EN": "My sister is ten years old.",
+        "DE": "Meine Schwester ist zehn Jahre alt.",
+        "FR": "Ma sœur a dix ans.",
+        "ES": "Mi hermana tiene diez años.",
+        "RU": "Моей сестре десять лет.",
+        "ZH": "我妹妹十岁。"
+      },
+      "key_word": "sorella",
+      "key_word_translations": {
+        "TR": "kız kardeş",
+        "EN": "sister",
+        "DE": "Schwester",
+        "FR": "sœur",
+        "ES": "hermana",
+        "RU": "сестра",
+        "ZH": "妹妹"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 4,
+      "target_text": "Mangio il pane con il formaggio.",
+      "translations": {
+        "TR": "Ekmeği peynirle yerim.",
+        "EN": "I eat bread with cheese.",
+        "DE": "Ich esse Brot mit Käse.",
+        "FR": "Je mange du pain avec du fromage.",
+        "ES": "Como pan con queso.",
+        "RU": "Я ем хлеб с сыром.",
+        "ZH": "我吃面包配奶酪。"
+      },
+      "key_word": "formaggio",
+      "key_word_translations": {
+        "TR": "peynir",
+        "EN": "cheese",
+        "DE": "Käse",
+        "FR": "fromage",
+        "ES": "queso",
+        "RU": "сыр",
+        "ZH": "奶酪"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 4,
+      "target_text": "Bevo sempre molta acqua.",
+      "translations": {
+        "TR": "Her zaman çok su içerim.",
+        "EN": "I always drink a lot of water.",
+        "DE": "Ich trinke immer viel Wasser.",
+        "FR": "Je bois toujours beaucoup d'eau.",
+        "ES": "Siempre bebo mucha agua.",
+        "RU": "Я всегда пью много воды.",
+        "ZH": "我总是喝很多水。"
+      },
+      "key_word": "acqua",
+      "key_word_translations": {
+        "TR": "su",
+        "EN": "water",
+        "DE": "Wasser",
+        "FR": "eau",
+        "ES": "agua",
+        "RU": "вода",
+        "ZH": "水"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 5,
+      "target_text": "Un cappuccino e un cornetto, per favore.",
+      "translations": {
+        "TR": "Bir kapuçino ve bir kruvasan, lütfen.",
+        "EN": "A cappuccino and a croissant, please.",
+        "DE": "Einen Cappuccino und ein Croissant, bitte.",
+        "FR": "Un cappuccino et un croissant, s'il vous plaît.",
+        "ES": "Un capuchino y un cruasán, por favor.",
+        "RU": "Капучино и круассан, пожалуйста.",
+        "ZH": "请给我一杯卡布奇诺和一个羊角面包。"
+      },
+      "key_word": "cornetto",
+      "key_word_translations": {
+        "TR": "kruvasan",
+        "EN": "croissant",
+        "DE": "Croissant",
+        "FR": "croissant",
+        "ES": "cruasán",
+        "RU": "круассан",
+        "ZH": "羊角面包"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 5,
+      "target_text": "Scusi, il conto per favore.",
+      "translations": {
+        "TR": "Affedersiniz, hesap lütfen.",
+        "EN": "Excuse me, the bill, please.",
+        "DE": "Entschuldigung, die Rechnung, bitte.",
+        "FR": "Excusez-moi, l'addition, s'il vous plaît.",
+        "ES": "Perdone, la cuenta, por favor.",
+        "RU": "Извините, счёт, пожалуйста.",
+        "ZH": "打扰一下，请结账。"
+      },
+      "key_word": "conto",
+      "key_word_translations": {
+        "TR": "hesap",
+        "EN": "bill",
+        "DE": "Rechnung",
+        "FR": "addition",
+        "ES": "cuenta",
+        "RU": "счёт",
+        "ZH": "账单"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 6,
+      "target_text": "La cucina è piccola ma luminosa.",
+      "translations": {
+        "TR": "Mutfak küçük ama aydınlık.",
+        "EN": "The kitchen is small but bright.",
+        "DE": "Die Küche ist klein, aber hell.",
+        "FR": "La cuisine est petite mais lumineuse.",
+        "ES": "La cocina es pequeña pero luminosa.",
+        "RU": "Кухня маленькая, но светлая.",
+        "ZH": "厨房很小，但很明亮。"
+      },
+      "key_word": "cucina",
+      "key_word_translations": {
+        "TR": "mutfak",
+        "EN": "kitchen",
+        "DE": "Küche",
+        "FR": "cuisine",
+        "ES": "cocina",
+        "RU": "кухня",
+        "ZH": "厨房"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 6,
+      "target_text": "Le chiavi sono sul tavolo.",
+      "translations": {
+        "TR": "Anahtarlar masanın üstünde.",
+        "EN": "The keys are on the table.",
+        "DE": "Die Schlüssel liegen auf dem Tisch.",
+        "FR": "Les clés sont sur la table.",
+        "ES": "Las llaves están en la mesa.",
+        "RU": "Ключи на столе.",
+        "ZH": "钥匙在桌子上。"
+      },
+      "key_word": "chiavi",
+      "key_word_translations": {
+        "TR": "anahtarlar",
+        "EN": "keys",
+        "DE": "Schlüssel",
+        "FR": "clés",
+        "ES": "llaves",
+        "RU": "ключи",
+        "ZH": "钥匙"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 7,
+      "target_text": "Mi sveglio alle sette ogni mattina.",
+      "translations": {
+        "TR": "Her sabah yedide uyanırım.",
+        "EN": "I wake up at seven every morning.",
+        "DE": "Ich wache jeden Morgen um sieben auf.",
+        "FR": "Je me réveille à sept heures tous les matins.",
+        "ES": "Me despierto a las siete todas las mañanas.",
+        "RU": "Я просыпаюсь в семь каждое утро.",
+        "ZH": "我每天早上七点醒来。"
+      },
+      "key_word": "sveglio",
+      "key_word_translations": {
+        "TR": "uyanırım",
+        "EN": "I wake up",
+        "DE": "ich wache auf",
+        "FR": "je me réveille",
+        "ES": "me despierto",
+        "RU": "просыпаюсь",
+        "ZH": "醒来"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 7,
+      "target_text": "La sera ceniamo in famiglia.",
+      "translations": {
+        "TR": "Akşamları ailecek yemek yeriz.",
+        "EN": "In the evening we have dinner as a family.",
+        "DE": "Abends essen wir mit der Familie.",
+        "FR": "Le soir, nous dînons en famille.",
+        "ES": "Por la noche cenamos en familia.",
+        "RU": "Вечером мы ужинаем всей семьёй.",
+        "ZH": "晚上我们全家一起吃晚饭。"
+      },
+      "key_word": "ceniamo",
+      "key_word_translations": {
+        "TR": "akşam yemeği yeriz",
+        "EN": "we have dinner",
+        "DE": "wir essen zu Abend",
+        "FR": "nous dînons",
+        "ES": "cenamos",
+        "RU": "ужинаем",
+        "ZH": "吃晚饭"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 8,
+      "target_text": "Oggi fa freddo e piove.",
+      "translations": {
+        "TR": "Bugün hava soğuk ve yağmur yağıyor.",
+        "EN": "Today it's cold and it's raining.",
+        "DE": "Heute ist es kalt und es regnet.",
+        "FR": "Aujourd'hui, il fait froid et il pleut.",
+        "ES": "Hoy hace frío y llueve.",
+        "RU": "Сегодня холодно и идёт дождь.",
+        "ZH": "今天很冷，还在下雨。"
+      },
+      "key_word": "piove",
+      "key_word_translations": {
+        "TR": "yağmur yağıyor",
+        "EN": "it's raining",
+        "DE": "es regnet",
+        "FR": "il pleut",
+        "ES": "llueve",
+        "RU": "идёт дождь",
+        "ZH": "下雨"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 8,
+      "target_text": "In estate andiamo al mare.",
+      "translations": {
+        "TR": "Yazın denize gideriz.",
+        "EN": "In summer we go to the seaside.",
+        "DE": "Im Sommer fahren wir ans Meer.",
+        "FR": "En été, nous allons à la mer.",
+        "ES": "En verano vamos a la playa.",
+        "RU": "Летом мы ездим на море.",
+        "ZH": "夏天我们去海边。"
+      },
+      "key_word": "estate",
+      "key_word_translations": {
+        "TR": "yaz",
+        "EN": "summer",
+        "DE": "Sommer",
+        "FR": "été",
+        "ES": "verano",
+        "RU": "лето",
+        "ZH": "夏天"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 9,
+      "target_text": "Domani è sabato.",
+      "translations": {
+        "TR": "Yarın cumartesi.",
+        "EN": "Tomorrow is Saturday.",
+        "DE": "Morgen ist Samstag.",
+        "FR": "Demain, c'est samedi.",
+        "ES": "Mañana es sábado.",
+        "RU": "Завтра суббота.",
+        "ZH": "明天是星期六。"
+      },
+      "key_word": "Domani",
+      "key_word_translations": {
+        "TR": "yarın",
+        "EN": "tomorrow",
+        "DE": "morgen",
+        "FR": "demain",
+        "ES": "mañana",
+        "RU": "завтра",
+        "ZH": "明天"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 9,
+      "target_text": "Che ore sono? Sono le tre.",
+      "translations": {
+        "TR": "Saat kaç? Saat üç.",
+        "EN": "What time is it? It's three o'clock.",
+        "DE": "Wie spät ist es? Es ist drei Uhr.",
+        "FR": "Quelle heure est-il ? Il est trois heures.",
+        "ES": "¿Qué hora es? Son las tres.",
+        "RU": "Который час? Три часа.",
+        "ZH": "现在几点？三点。"
+      },
+      "key_word": "ore",
+      "key_word_translations": {
+        "TR": "saat",
+        "EN": "hours",
+        "DE": "Uhr",
+        "FR": "heures",
+        "ES": "horas",
+        "RU": "часы",
+        "ZH": "点"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 10,
+      "target_text": "Quanto costa questa giacca?",
+      "translations": {
+        "TR": "Bu ceket ne kadar?",
+        "EN": "How much is this jacket?",
+        "DE": "Was kostet diese Jacke?",
+        "FR": "Combien coûte cette veste ?",
+        "ES": "¿Cuánto cuesta esta chaqueta?",
+        "RU": "Сколько стоит эта куртка?",
+        "ZH": "这件夹克多少钱？"
+      },
+      "key_word": "giacca",
+      "key_word_translations": {
+        "TR": "ceket",
+        "EN": "jacket",
+        "DE": "Jacke",
+        "FR": "veste",
+        "ES": "chaqueta",
+        "RU": "куртка",
+        "ZH": "夹克"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 10,
+      "target_text": "Posso pagare con la carta?",
+      "translations": {
+        "TR": "Kartla ödeyebilir miyim?",
+        "EN": "Can I pay by card?",
+        "DE": "Kann ich mit Karte bezahlen?",
+        "FR": "Je peux payer par carte ?",
+        "ES": "¿Puedo pagar con tarjeta?",
+        "RU": "Можно оплатить картой?",
+        "ZH": "可以刷卡吗？"
+      },
+      "key_word": "pagare",
+      "key_word_translations": {
+        "TR": "ödemek",
+        "EN": "to pay",
+        "DE": "bezahlen",
+        "FR": "payer",
+        "ES": "pagar",
+        "RU": "платить",
+        "ZH": "付款"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 11,
+      "target_text": "Scusi, dov'è la stazione?",
+      "translations": {
+        "TR": "Affedersiniz, istasyon nerede?",
+        "EN": "Excuse me, where is the station?",
+        "DE": "Entschuldigung, wo ist der Bahnhof?",
+        "FR": "Excusez-moi, où est la gare ?",
+        "ES": "Perdone, ¿dónde está la estación?",
+        "RU": "Извините, где вокзал?",
+        "ZH": "打扰一下，车站在哪里？"
+      },
+      "key_word": "stazione",
+      "key_word_translations": {
+        "TR": "istasyon",
+        "EN": "station",
+        "DE": "Bahnhof",
+        "FR": "gare",
+        "ES": "estación",
+        "RU": "вокзал",
+        "ZH": "车站"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 11,
+      "target_text": "Vada dritto e poi giri a destra.",
+      "translations": {
+        "TR": "Düz gidin, sonra sağa dönün.",
+        "EN": "Go straight on and then turn right.",
+        "DE": "Gehen Sie geradeaus und dann nach rechts.",
+        "FR": "Allez tout droit, puis tournez à droite.",
+        "ES": "Siga recto y luego gire a la derecha.",
+        "RU": "Идите прямо, а потом поверните направо.",
+        "ZH": "一直走，然后右转。"
+      },
+      "key_word": "destra",
+      "key_word_translations": {
+        "TR": "sağ",
+        "EN": "right",
+        "DE": "rechts",
+        "FR": "droite",
+        "ES": "derecha",
+        "RU": "направо",
+        "ZH": "右"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 12,
+      "target_text": "Il treno per Roma parte alle nove.",
+      "translations": {
+        "TR": "Roma treni dokuzda kalkıyor.",
+        "EN": "The train to Rome leaves at nine.",
+        "DE": "Der Zug nach Rom fährt um neun ab.",
+        "FR": "Le train pour Rome part à neuf heures.",
+        "ES": "El tren a Roma sale a las nueve.",
+        "RU": "Поезд в Рим отправляется в девять.",
+        "ZH": "去罗马的火车九点出发。"
+      },
+      "key_word": "treno",
+      "key_word_translations": {
+        "TR": "tren",
+        "EN": "train",
+        "DE": "Zug",
+        "FR": "train",
+        "ES": "tren",
+        "RU": "поезд",
+        "ZH": "火车"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 12,
+      "target_text": "Ho una prenotazione per due notti.",
+      "translations": {
+        "TR": "İki gecelik rezervasyonum var.",
+        "EN": "I have a reservation for two nights.",
+        "DE": "Ich habe eine Reservierung für zwei Nächte.",
+        "FR": "J'ai une réservation pour deux nuits.",
+        "ES": "Tengo una reserva para dos noches.",
+        "RU": "У меня бронь на две ночи.",
+        "ZH": "我预订了两晚。"
+      },
+      "key_word": "prenotazione",
+      "key_word_translations": {
+        "TR": "rezervasyon",
+        "EN": "reservation",
+        "DE": "Reservierung",
+        "FR": "réservation",
+        "ES": "reserva",
+        "RU": "бронь",
+        "ZH": "预订"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 13,
+      "target_text": "Vorrei prenotare un tavolo per quattro.",
+      "translations": {
+        "TR": "Dört kişilik bir masa ayırtmak istiyorum.",
+        "EN": "I'd like to book a table for four.",
+        "DE": "Ich möchte einen Tisch für vier Personen reservieren.",
+        "FR": "Je voudrais réserver une table pour quatre.",
+        "ES": "Quisiera reservar una mesa para cuatro.",
+        "RU": "Я хотел бы забронировать столик на четверых.",
+        "ZH": "我想订一张四人桌。"
+      },
+      "key_word": "tavolo",
+      "key_word_translations": {
+        "TR": "masa",
+        "EN": "table",
+        "DE": "Tisch",
+        "FR": "table",
+        "ES": "mesa",
+        "RU": "столик",
+        "ZH": "桌子"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 13,
+      "target_text": "Per secondo prendo il pesce.",
+      "translations": {
+        "TR": "Ana yemek olarak balık alıyorum.",
+        "EN": "For the main course I'll have the fish.",
+        "DE": "Als Hauptgericht nehme ich den Fisch.",
+        "FR": "Comme plat principal, je prends le poisson.",
+        "ES": "De segundo tomo el pescado.",
+        "RU": "На второе я возьму рыбу.",
+        "ZH": "主菜我要鱼。"
+      },
+      "key_word": "pesce",
+      "key_word_translations": {
+        "TR": "balık",
+        "EN": "fish",
+        "DE": "Fisch",
+        "FR": "poisson",
+        "ES": "pescado",
+        "RU": "рыба",
+        "ZH": "鱼"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 14,
+      "target_text": "Ho mal di testa e un po' di febbre.",
+      "translations": {
+        "TR": "Başım ağrıyor ve biraz ateşim var.",
+        "EN": "I have a headache and a slight fever.",
+        "DE": "Ich habe Kopfschmerzen und etwas Fieber.",
+        "FR": "J'ai mal à la tête et un peu de fièvre.",
+        "ES": "Me duele la cabeza y tengo un poco de fiebre.",
+        "RU": "У меня болит голова и небольшая температура.",
+        "ZH": "我头疼，还有点发烧。"
+      },
+      "key_word": "febbre",
+      "key_word_translations": {
+        "TR": "ateş",
+        "EN": "fever",
+        "DE": "Fieber",
+        "FR": "fièvre",
+        "ES": "fiebre",
+        "RU": "температура",
+        "ZH": "发烧"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 14,
+      "target_text": "Se stai male, devi andare dal medico.",
+      "translations": {
+        "TR": "Kendini kötü hissediyorsan doktora gitmelisin.",
+        "EN": "If you feel ill, you should see a doctor.",
+        "DE": "Wenn es dir schlecht geht, musst du zum Arzt gehen.",
+        "FR": "Si tu te sens mal, tu dois aller chez le médecin.",
+        "ES": "Si te encuentras mal, tienes que ir al médico.",
+        "RU": "Если тебе плохо, нужно сходить к врачу.",
+        "ZH": "如果你不舒服，就该去看医生。"
+      },
+      "key_word": "medico",
+      "key_word_translations": {
+        "TR": "doktor",
+        "EN": "doctor",
+        "DE": "Arzt",
+        "FR": "médecin",
+        "ES": "médico",
+        "RU": "врач",
+        "ZH": "医生"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 15,
+      "target_text": "Nel tempo libero suono la chitarra.",
+      "translations": {
+        "TR": "Boş zamanımda gitar çalarım.",
+        "EN": "In my free time I play the guitar.",
+        "DE": "In meiner Freizeit spiele ich Gitarre.",
+        "FR": "Pendant mon temps libre, je joue de la guitare.",
+        "ES": "En mi tiempo libre toco la guitarra.",
+        "RU": "В свободное время я играю на гитаре.",
+        "ZH": "空闲时我弹吉他。"
+      },
+      "key_word": "chitarra",
+      "key_word_translations": {
+        "TR": "gitar",
+        "EN": "guitar",
+        "DE": "Gitarre",
+        "FR": "guitare",
+        "ES": "guitarra",
+        "RU": "гитара",
+        "ZH": "吉他"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 15,
+      "target_text": "Ti piace ballare?",
+      "translations": {
+        "TR": "Dans etmeyi sever misin?",
+        "EN": "Do you like dancing?",
+        "DE": "Tanzt du gern?",
+        "FR": "Tu aimes danser ?",
+        "ES": "¿Te gusta bailar?",
+        "RU": "Ты любишь танцевать?",
+        "ZH": "你喜欢跳舞吗？"
+      },
+      "key_word": "ballare",
+      "key_word_translations": {
+        "TR": "dans etmek",
+        "EN": "to dance",
+        "DE": "tanzen",
+        "FR": "danser",
+        "ES": "bailar",
+        "RU": "танцевать",
+        "ZH": "跳舞"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 16,
+      "target_text": "A settembre ho cominciato un nuovo lavoro.",
+      "translations": {
+        "TR": "Eylülde yeni bir işe başladım.",
+        "EN": "I started a new job in September.",
+        "DE": "Im September habe ich eine neue Stelle angefangen.",
+        "FR": "En septembre, j'ai commencé un nouveau travail.",
+        "ES": "En septiembre empecé un nuevo trabajo.",
+        "RU": "В сентябре я вышел на новую работу.",
+        "ZH": "我九月开始了一份新工作。"
+      },
+      "key_word": "lavoro",
+      "key_word_translations": {
+        "TR": "iş",
+        "EN": "job",
+        "DE": "Stelle",
+        "FR": "travail",
+        "ES": "trabajo",
+        "RU": "работа",
+        "ZH": "工作"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 16,
+      "target_text": "La riunione con il cliente è durata due ore.",
+      "translations": {
+        "TR": "Müşteriyle toplantı iki saat sürdü.",
+        "EN": "The meeting with the client lasted two hours.",
+        "DE": "Die Besprechung mit dem Kunden hat zwei Stunden gedauert.",
+        "FR": "La réunion avec le client a duré deux heures.",
+        "ES": "La reunión con el cliente duró dos horas.",
+        "RU": "Встреча с клиентом длилась два часа.",
+        "ZH": "和客户的会议开了两个小时。"
+      },
+      "key_word": "riunione",
+      "key_word_translations": {
+        "TR": "toplantı",
+        "EN": "meeting",
+        "DE": "Besprechung",
+        "FR": "réunion",
+        "ES": "reunión",
+        "RU": "встреча",
+        "ZH": "会议"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 17,
+      "target_text": "Sono un po' preoccupato per l'esame.",
+      "translations": {
+        "TR": "Sınav için biraz endişeliyim.",
+        "EN": "I'm a bit worried about the exam.",
+        "DE": "Ich mache mir etwas Sorgen wegen der Prüfung.",
+        "FR": "Je suis un peu inquiet pour l'examen.",
+        "ES": "Estoy un poco preocupado por el examen.",
+        "RU": "Я немного волнуюсь из-за экзамена.",
+        "ZH": "我有点担心考试。"
+      },
+      "key_word": "preoccupato",
+      "key_word_translations": {
+        "TR": "endişeli",
+        "EN": "worried",
+        "DE": "besorgt",
+        "FR": "inquiet",
+        "ES": "preocupado",
+        "RU": "волнуюсь",
+        "ZH": "担心"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 17,
+      "target_text": "Mi sento felice quando sto con i miei amici.",
+      "translations": {
+        "TR": "Arkadaşlarımlayken kendimi mutlu hissediyorum.",
+        "EN": "I feel happy when I'm with my friends.",
+        "DE": "Ich fühle mich glücklich, wenn ich mit meinen Freunden zusammen bin.",
+        "FR": "Je me sens heureux quand je suis avec mes amis.",
+        "ES": "Me siento feliz cuando estoy con mis amigos.",
+        "RU": "Я чувствую себя счастливым, когда я с друзьями.",
+        "ZH": "和朋友在一起时我觉得很开心。"
+      },
+      "key_word": "felice",
+      "key_word_translations": {
+        "TR": "mutlu",
+        "EN": "happy",
+        "DE": "glücklich",
+        "FR": "heureux",
+        "ES": "feliz",
+        "RU": "счастливым",
+        "ZH": "开心"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 18,
+      "target_text": "Ieri sono andato al cinema con mia sorella.",
+      "translations": {
+        "TR": "Dün kız kardeşimle sinemaya gittim.",
+        "EN": "Yesterday I went to the cinema with my sister.",
+        "DE": "Gestern bin ich mit meiner Schwester ins Kino gegangen.",
+        "FR": "Hier, je suis allé au cinéma avec ma sœur.",
+        "ES": "Ayer fui al cine con mi hermana.",
+        "RU": "Вчера я ходил в кино с сестрой.",
+        "ZH": "昨天我和妹妹去看了电影。"
+      },
+      "key_word": "andato",
+      "key_word_translations": {
+        "TR": "gittim",
+        "EN": "went",
+        "DE": "gegangen",
+        "FR": "allé",
+        "ES": "fui",
+        "RU": "ходил",
+        "ZH": "去了"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 18,
+      "target_text": "L'anno scorso abbiamo visitato Firenze.",
+      "translations": {
+        "TR": "Geçen yıl Floransa'yı gezdik.",
+        "EN": "Last year we visited Florence.",
+        "DE": "Letztes Jahr haben wir Florenz besucht.",
+        "FR": "L'année dernière, nous avons visité Florence.",
+        "ES": "El año pasado visitamos Florencia.",
+        "RU": "В прошлом году мы побывали во Флоренции.",
+        "ZH": "去年我们游览了佛罗伦萨。"
+      },
+      "key_word": "visitato",
+      "key_word_translations": {
+        "TR": "gezdik",
+        "EN": "visited",
+        "DE": "besucht",
+        "FR": "visité",
+        "ES": "visitamos",
+        "RU": "побывали",
+        "ZH": "游览"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 19,
+      "target_text": "Domani andrò al mare con gli amici.",
+      "translations": {
+        "TR": "Yarın arkadaşlarımla denize gideceğim.",
+        "EN": "Tomorrow I'll go to the seaside with my friends.",
+        "DE": "Morgen fahre ich mit Freunden ans Meer.",
+        "FR": "Demain, j'irai à la mer avec des amis.",
+        "ES": "Mañana iré a la playa con mis amigos.",
+        "RU": "Завтра я поеду на море с друзьями.",
+        "ZH": "明天我要和朋友去海边。"
+      },
+      "key_word": "andrò",
+      "key_word_translations": {
+        "TR": "gideceğim",
+        "EN": "I'll go",
+        "DE": "ich fahre",
+        "FR": "j'irai",
+        "ES": "iré",
+        "RU": "поеду",
+        "ZH": "要去"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 19,
+      "target_text": "Un giorno parlerò l'italiano benissimo.",
+      "translations": {
+        "TR": "Bir gün İtalyancayı çok iyi konuşacağım.",
+        "EN": "One day I'll speak Italian really well.",
+        "DE": "Eines Tages werde ich sehr gut Italienisch sprechen.",
+        "FR": "Un jour, je parlerai très bien italien.",
+        "ES": "Algún día hablaré italiano muy bien.",
+        "RU": "Однажды я буду отлично говорить по-итальянски.",
+        "ZH": "总有一天我会说一口流利的意大利语。"
+      },
+      "key_word": "parlerò",
+      "key_word_translations": {
+        "TR": "konuşacağım",
+        "EN": "I'll speak",
+        "DE": "ich werde sprechen",
+        "FR": "je parlerai",
+        "ES": "hablaré",
+        "RU": "буду говорить",
+        "ZH": "会说"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 20,
+      "target_text": "Secondo me, questo film è troppo lungo.",
+      "translations": {
+        "TR": "Bence bu film çok uzun.",
+        "EN": "In my opinion, this film is too long.",
+        "DE": "Meiner Meinung nach ist dieser Film zu lang.",
+        "FR": "À mon avis, ce film est trop long.",
+        "ES": "En mi opinión, esta película es demasiado larga.",
+        "RU": "По-моему, этот фильм слишком длинный.",
+        "ZH": "我觉得这部电影太长了。"
+      },
+      "key_word": "Secondo me",
+      "key_word_translations": {
+        "TR": "bence",
+        "EN": "in my opinion",
+        "DE": "meiner Meinung nach",
+        "FR": "à mon avis",
+        "ES": "en mi opinión",
+        "RU": "по-моему",
+        "ZH": "我觉得"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 20,
+      "target_text": "Non sono d'accordo, però rispetto la tua idea.",
+      "translations": {
+        "TR": "Katılmıyorum ama fikrine saygı duyuyorum.",
+        "EN": "I don't agree, but I respect your idea.",
+        "DE": "Ich bin nicht einverstanden, aber ich respektiere deine Idee.",
+        "FR": "Je ne suis pas d'accord, mais je respecte ton idée.",
+        "ES": "No estoy de acuerdo, pero respeto tu idea.",
+        "RU": "Я не согласен, но уважаю твоё мнение.",
+        "ZH": "我不同意，但我尊重你的想法。"
+      },
+      "key_word": "d'accordo",
+      "key_word_translations": {
+        "TR": "aynı fikirde",
+        "EN": "in agreement",
+        "DE": "einverstanden",
+        "FR": "d'accord",
+        "ES": "de acuerdo",
+        "RU": "согласен",
+        "ZH": "同意"
+      },
+      "difficulty": 3
+    }
+  ]
+}

@@ -9,6 +9,13 @@
 
 import Foundation
 
+// MARK: - Localized map helper
+/// Kodu büyük harf ISO olan çeviri sözlüğünden ana dile göre metin seçer (yoksa EN).
+func localized(_ map: [String: String]?, _ code: String = OL.nativeLangCode) -> String? {
+    guard let map else { return nil }
+    return map[code.uppercased()] ?? map["EN"]
+}
+
 // MARK: - Language
 struct SBLanguage: Codable, Identifiable {
     let id: Int
@@ -35,9 +42,14 @@ struct SBCourse: Codable, Identifiable {
     let description: String?
     let totalXp: Int
     let isActive: Bool
+    let titles: [String: String]?
+    let descriptions: [String: String]?
+
+    var localizedTitle: String { localized(titles) ?? title }
+    var localizedDescription: String? { localized(descriptions) ?? description }
 
     enum CodingKeys: String, CodingKey {
-        case id, title, description
+        case id, title, description, titles, descriptions
         case nativeLangId = "native_lang_id"
         case targetLangId = "target_lang_id"
         case totalXp      = "total_xp"
@@ -73,142 +85,27 @@ struct SBLevel: Codable, Identifiable {
     let requiredScore: Int
     let iconName: String?
     let isCheckpoint: Bool
+    let titles: [String: String]?
+    let descriptions: [String: String]?
+    let unitIndex: Int?
+    let unitTitles: [String: String]?
 
     enum CodingKeys: String, CodingKey {
-        case id, title, description
+        case id, title, description, titles, descriptions
         case courseId      = "course_id"
         case orderIndex    = "order_index"
         case xpReward      = "xp_reward"
         case requiredScore = "required_score"
         case iconName      = "icon_name"
         case isCheckpoint  = "is_checkpoint"
+        case unitIndex     = "unit_index"
+        case unitTitles    = "unit_titles"
     }
 
-    /// Kullanıcının native diline göre lokalize edilmiş seviye başlığı.
-    /// Supabase'de `titles` sütunu eklenene kadar yerel sözlük kullanılır.
-    func localizedTitle(langCode: String) -> String {
-        let lang = langCode.lowercased()
-        return SBLevel.titleTranslations[title.lowercased()]?[lang]
-            ?? SBLevel.titleTranslations[title.lowercased()]?["en"]
-            ?? title
-    }
-
-    // MARK: - Yerel Seviye Başlığı Sözlüğü
-    // key: İngilizce başlık (lowercase), value: [langCode: çeviri]
-    private static let titleTranslations: [String: [String: String]] = [
-        "greetings": [
-            "tr": "Selamlaşmalar", "de": "Begrüßungen", "fr": "Salutations",
-            "es": "Saludos", "it": "Saluti", "ru": "Приветствия", "zh": "问候语"
-        ],
-        "numbers": [
-            "tr": "Sayılar", "de": "Zahlen", "fr": "Chiffres",
-            "es": "Números", "it": "Numeri", "ru": "Числа", "zh": "数字"
-        ],
-        "colors": [
-            "tr": "Renkler", "de": "Farben", "fr": "Couleurs",
-            "es": "Colores", "it": "Colori", "ru": "Цвета", "zh": "颜色"
-        ],
-        "animals": [
-            "tr": "Hayvanlar", "de": "Tiere", "fr": "Animaux",
-            "es": "Animales", "it": "Animali", "ru": "Животные", "zh": "动物"
-        ],
-        "food": [
-            "tr": "Yiyecekler", "de": "Essen", "fr": "Nourriture",
-            "es": "Comida", "it": "Cibo", "ru": "Еда", "zh": "食物"
-        ],
-        "family": [
-            "tr": "Aile", "de": "Familie", "fr": "Famille",
-            "es": "Familia", "it": "Famiglia", "ru": "Семья", "zh": "家庭"
-        ],
-        "travel": [
-            "tr": "Seyahat", "de": "Reise", "fr": "Voyage",
-            "es": "Viaje", "it": "Viaggio", "ru": "Путешествие", "zh": "旅行"
-        ],
-        "shopping": [
-            "tr": "Alışveriş", "de": "Einkaufen", "fr": "Shopping",
-            "es": "Compras", "it": "Shopping", "ru": "Покупки", "zh": "购物"
-        ],
-        "weather": [
-            "tr": "Hava Durumu", "de": "Wetter", "fr": "Météo",
-            "es": "Clima", "it": "Meteo", "ru": "Погода", "zh": "天气"
-        ],
-        "time": [
-            "tr": "Zaman", "de": "Zeit", "fr": "Temps",
-            "es": "Tiempo", "it": "Tempo", "ru": "Время", "zh": "时间"
-        ],
-        "body": [
-            "tr": "Vücut", "de": "Körper", "fr": "Corps",
-            "es": "Cuerpo", "it": "Corpo", "ru": "Тело", "zh": "身体"
-        ],
-        "health": [
-            "tr": "Sağlık", "de": "Gesundheit", "fr": "Santé",
-            "es": "Salud", "it": "Salute", "ru": "Здоровье", "zh": "健康"
-        ],
-        "work": [
-            "tr": "İş", "de": "Arbeit", "fr": "Travail",
-            "es": "Trabajo", "it": "Lavoro", "ru": "Работа", "zh": "工作"
-        ],
-        "home": [
-            "tr": "Ev", "de": "Zuhause", "fr": "Maison",
-            "es": "Casa", "it": "Casa", "ru": "Дом", "zh": "家"
-        ],
-        "school": [
-            "tr": "Okul", "de": "Schule", "fr": "École",
-            "es": "Escuela", "it": "Scuola", "ru": "Школа", "zh": "学校"
-        ],
-        "sports": [
-            "tr": "Spor", "de": "Sport", "fr": "Sport",
-            "es": "Deportes", "it": "Sport", "ru": "Спорт", "zh": "运动"
-        ],
-        "technology": [
-            "tr": "Teknoloji", "de": "Technologie", "fr": "Technologie",
-            "es": "Tecnología", "it": "Tecnologia", "ru": "Технологии", "zh": "科技"
-        ],
-        "hobbies": [
-            "tr": "Hobiler", "de": "Hobbys", "fr": "Loisirs",
-            "es": "Pasatiempos", "it": "Hobby", "ru": "Хобби", "zh": "爱好"
-        ],
-        "emotions": [
-            "tr": "Duygular", "de": "Gefühle", "fr": "Émotions",
-            "es": "Emociones", "it": "Emozioni", "ru": "Эмоции", "zh": "情感"
-        ],
-        "nature": [
-            "tr": "Doğa", "de": "Natur", "fr": "Nature",
-            "es": "Naturaleza", "it": "Natura", "ru": "Природа", "zh": "自然"
-        ],
-        "city": [
-            "tr": "Şehir", "de": "Stadt", "fr": "Ville",
-            "es": "Ciudad", "it": "Città", "ru": "Город", "zh": "城市"
-        ],
-        "transportation": [
-            "tr": "Ulaşım", "de": "Transport", "fr": "Transport",
-            "es": "Transporte", "it": "Trasporti", "ru": "Транспорт", "zh": "交通"
-        ],
-        "clothing": [
-            "tr": "Giyim", "de": "Kleidung", "fr": "Vêtements",
-            "es": "Ropa", "it": "Abbigliamento", "ru": "Одежда", "zh": "服装"
-        ],
-        "directions": [
-            "tr": "Yönler", "de": "Richtungen", "fr": "Directions",
-            "es": "Direcciones", "it": "Direzioni", "ru": "Направления", "zh": "方向"
-        ],
-        "at the restaurant": [
-            "tr": "Restoranda", "de": "Im Restaurant", "fr": "Au restaurant",
-            "es": "En el restaurante", "it": "Al ristorante", "ru": "В ресторане", "zh": "在餐厅"
-        ],
-        "at the airport": [
-            "tr": "Havalimanında", "de": "Am Flughafen", "fr": "À l'aéroport",
-            "es": "En el aeropuerto", "it": "All'aeroporto", "ru": "В аэропорту", "zh": "在机场"
-        ],
-        "daily routines": [
-            "tr": "Günlük Rutinler", "de": "Tagesroutinen", "fr": "Routines quotidiennes",
-            "es": "Rutinas diarias", "it": "Routine quotidiane", "ru": "Ежедневные рутины", "zh": "日常惯例"
-        ],
-        "introductions": [
-            "tr": "Tanışma", "de": "Vorstellungen", "fr": "Présentations",
-            "es": "Presentaciones", "it": "Presentazioni", "ru": "Знакомство", "zh": "介绍"
-        ],
-    ]
+    /// Kullanıcının ana diline göre seviye başlığı (içerikte 8 dilde var).
+    func localizedTitle(langCode: String) -> String { localized(titles, langCode) ?? title }
+    func localizedDescription(langCode: String) -> String? { localized(descriptions, langCode) ?? description }
+    func localizedUnitTitle(langCode: String) -> String? { localized(unitTitles, langCode) }
 }
 
 // MARK: - User Progress
@@ -274,9 +171,14 @@ struct SBWord: Codable, Identifiable {
     let difficulty: Int
     /// Multi-language translations keyed by uppercase ISO code e.g. ["EN": "hello", "TR": "merhaba"]
     let translations: [String: String]?
+    /// ZH pinyin, JA romaji, KO romanization, RU transliteration
+    var romanization: String? = nil
+
+    /// Non-Latin scripts show romanization (more useful to learners than IPA)
+    var pronunciation: String? { romanization ?? phonetic }
 
     enum CodingKeys: String, CodingKey {
-        case id, term, translation, phonetic, description, difficulty, translations
+        case id, term, translation, phonetic, description, difficulty, translations, romanization
         case sourceLangId    = "source_lang_id"
         case targetLangId    = "target_lang_id"
         case exampleSentence = "example_sentence"
@@ -362,21 +264,29 @@ struct SBSentence: Codable, Identifiable {
     let courseId: UUID
     let levelId: UUID?
     let targetText: String      // sentence in target language (shown to user)
-    let nativeText: String      // correct native-language translation
-    let keyWord: String?        // the word in targetText to highlight and translate
-    let keyWordNative: String?  // native-language translation of keyWord
+    let defaultNativeText: String       // fallback translation (EN, or TR for the English course)
+    let keyWord: String?                // the word in targetText to highlight and translate
+    let defaultKeyWordNative: String?
+    let translations: [String: String]?
+    let keyWordTranslations: [String: String]?
     let difficulty: Int
     let isActive: Bool
 
+    /// Translation in the user's native language
+    var nativeText: String { localized(translations) ?? defaultNativeText }
+    /// Native-language translation of keyWord
+    var keyWordNative: String? { localized(keyWordTranslations) ?? defaultKeyWordNative }
+
     enum CodingKeys: String, CodingKey {
-        case id, difficulty
-        case courseId      = "course_id"
-        case levelId       = "level_id"
-        case targetText    = "target_text"
-        case nativeText    = "native_text"
-        case keyWord       = "key_word"
-        case keyWordNative = "key_word_native"
-        case isActive      = "is_active"
+        case id, difficulty, translations
+        case courseId             = "course_id"
+        case levelId              = "level_id"
+        case targetText           = "target_text"
+        case defaultNativeText    = "native_text"
+        case keyWord              = "key_word"
+        case defaultKeyWordNative = "key_word_native"
+        case keyWordTranslations  = "key_word_translations"
+        case isActive             = "is_active"
     }
 }
 

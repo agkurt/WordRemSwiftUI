@@ -456,7 +456,7 @@ private struct PathHeaderView: View {
                 }
             }
 
-            Text(course?.title ?? langManager.s(.pathSelectCourse))
+            Text(course?.localizedTitle ?? langManager.s(.pathSelectCourse))
                 .font(DS.Font.display(30, weight: .bold))
                 .foregroundStyle(DS.Colors.ink)
                 .lineLimit(2)
@@ -642,7 +642,7 @@ private struct PathLevelRow: View {
                     .font(DS.Font.display(22))
                     .foregroundStyle(DS.Colors.ink)
                     .fixedSize(horizontal: false, vertical: true)
-                if let desc = item.level.description, !desc.isEmpty {
+                if let desc = item.level.localizedDescription(langCode: langManager.currentLanguageCode), !desc.isEmpty {
                     Text(desc)
                         .font(DS.Font.ui(14))
                         .foregroundStyle(DS.Colors.inkSoft)

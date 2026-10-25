@@ -1,0 +1,5023 @@
+{
+  "target": "KO",
+  "title": {
+    "TR": "Korece",
+    "EN": "Korean",
+    "DE": "Koreanisch",
+    "FR": "Coréen",
+    "ES": "Coreano",
+    "IT": "Coreano",
+    "RU": "Корейский",
+    "ZH": "韩语"
+  },
+  "description": {
+    "TR": "A1'den B1'e günlük Korece kelime ve ifadeler öğrenin.",
+    "EN": "Learn everyday Korean words and phrases from A1 to B1.",
+    "DE": "Lerne alltägliche koreanische Wörter und Ausdrücke von A1 bis B1.",
+    "FR": "Apprenez les mots et expressions coréens du quotidien, de A1 à B1.",
+    "ES": "Aprende palabras y expresiones cotidianas en coreano, de A1 a B1.",
+    "IT": "Impara parole ed espressioni coreane di tutti i giorni, dall'A1 al B1.",
+    "RU": "Учите повседневные корейские слова и фразы — от A1 до B1.",
+    "ZH": "从A1到B1，学习日常韩语词汇和表达。"
+  },
+  "units": [
+    {
+      "title": {
+        "TR": "Başlangıç",
+        "EN": "Getting started",
+        "DE": "Erste Schritte",
+        "FR": "Premiers pas",
+        "ES": "Primeros pasos",
+        "IT": "Primi passi",
+        "RU": "Первые шаги",
+        "ZH": "入门"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Selamlaşma",
+            "EN": "Greetings",
+            "DE": "Begrüßungen",
+            "FR": "Salutations",
+            "ES": "Saludos",
+            "IT": "Saluti",
+            "RU": "Приветствия",
+            "ZH": "问候"
+          },
+          "description": {
+            "TR": "Merhaba demek ve teşekkür etmek",
+            "EN": "Say hello and thank you",
+            "DE": "Hallo und danke sagen",
+            "FR": "Dire bonjour et merci",
+            "ES": "Saludar y dar las gracias",
+            "IT": "Salutare e ringraziare",
+            "RU": "Здороваться и благодарить",
+            "ZH": "打招呼和道谢"
+          },
+          "icon": "hand.wave",
+          "words": [
+            {
+              "term": "안녕하세요",
+              "romanization": "annyeonghaseyo",
+              "phonetic": "/an.njʌŋ.ɦa.se.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Merhaba",
+                "EN": "Hello",
+                "DE": "Hallo",
+                "FR": "Bonjour",
+                "ES": "Hola",
+                "IT": "Ciao",
+                "RU": "Здравствуйте",
+                "ZH": "你好"
+              },
+              "example": "안녕하세요, 저는 민수예요."
+            },
+            {
+              "term": "안녕히 가세요",
+              "romanization": "annyeonghi gaseyo",
+              "phonetic": "/an.njʌŋ.ɦi ka.se.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Güle güle",
+                "EN": "Goodbye (to someone leaving)",
+                "DE": "Auf Wiedersehen (zu jemandem, der geht)",
+                "FR": "Au revoir (à qui s'en va)",
+                "ES": "Adiós (a quien se va)",
+                "IT": "Arrivederci (a chi se ne va)",
+                "RU": "До свидания (тому, кто уходит)",
+                "ZH": "再见（对离开的人说）"
+              },
+              "example": "네, 안녕히 가세요."
+            },
+            {
+              "term": "안녕히 계세요",
+              "romanization": "annyeonghi gyeseyo",
+              "phonetic": "/an.njʌŋ.ɦi kje.se.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Hoşça kalın",
+                "EN": "Goodbye (when you are leaving)",
+                "DE": "Auf Wiedersehen (wenn man selbst geht)",
+                "FR": "Au revoir (quand on s'en va)",
+                "ES": "Adiós (cuando uno se va)",
+                "IT": "Arrivederci (quando si va via)",
+                "RU": "До свидания (когда уходите вы)",
+                "ZH": "再见（自己离开时说）"
+              },
+              "example": "그럼 안녕히 계세요."
+            },
+            {
+              "term": "감사합니다",
+              "romanization": "gamsahamnida",
+              "phonetic": "/kam.sa.ɦam.ni.da/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Teşekkür ederim",
+                "EN": "Thank you",
+                "DE": "Danke schön",
+                "FR": "Merci",
+                "ES": "Gracias",
+                "IT": "Grazie",
+                "RU": "Спасибо",
+                "ZH": "谢谢"
+              },
+              "example": "도와주셔서 감사합니다."
+            },
+            {
+              "term": "미안해요",
+              "romanization": "mianhaeyo",
+              "phonetic": "/mi.an.ɦɛ.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Özür dilerim",
+                "EN": "I'm sorry",
+                "DE": "Es tut mir leid",
+                "FR": "Désolé",
+                "ES": "Lo siento",
+                "IT": "Mi dispiace",
+                "RU": "Простите",
+                "ZH": "对不起"
+              },
+              "example": "늦어서 미안해요."
+            },
+            {
+              "term": "네",
+              "romanization": "ne",
+              "phonetic": "/ne/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Evet",
+                "EN": "Yes",
+                "DE": "Ja",
+                "FR": "Oui",
+                "ES": "Sí",
+                "IT": "Sì",
+                "RU": "Да",
+                "ZH": "是"
+              },
+              "example": "네, 맞아요."
+            },
+            {
+              "term": "아니요",
+              "romanization": "aniyo",
+              "phonetic": "/a.ni.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Hayır",
+                "EN": "No",
+                "DE": "Nein",
+                "FR": "Non",
+                "ES": "No",
+                "IT": "No",
+                "RU": "Нет",
+                "ZH": "不"
+              },
+              "example": "아니요, 저는 학생이 아니에요."
+            },
+            {
+              "term": "반갑습니다",
+              "romanization": "bangapseumnida",
+              "phonetic": "/pan.ɡap̚.s͈ɯm.ni.da/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Memnun oldum",
+                "EN": "Glad to meet you",
+                "DE": "Freut mich",
+                "FR": "Ravi de vous rencontrer",
+                "ES": "Encantado",
+                "IT": "Piacere di conoscerla",
+                "RU": "Рад познакомиться",
+                "ZH": "很高兴认识你"
+              },
+              "example": "처음 뵙겠습니다. 반갑습니다."
+            },
+            {
+              "term": "저기요",
+              "romanization": "jeogiyo",
+              "phonetic": "/tɕʌ.ɡi.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Bakar mısınız?",
+                "EN": "Excuse me! (to get attention)",
+                "DE": "Entschuldigung! (zum Ansprechen)",
+                "FR": "Excusez-moi ! (pour appeler)",
+                "ES": "¡Disculpe! (para llamar)",
+                "IT": "Scusi! (per chiamare)",
+                "RU": "Простите! (чтобы позвать)",
+                "ZH": "请问！（叫人时）"
+              },
+              "example": "저기요, 물 좀 주세요."
+            },
+            {
+              "term": "괜찮아요",
+              "romanization": "gwaenchanayo",
+              "phonetic": "/kwɛn.tɕʰa.na.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Sorun değil",
+                "EN": "It's okay",
+                "DE": "Schon gut",
+                "FR": "Ce n'est pas grave",
+                "ES": "Está bien",
+                "IT": "Va bene",
+                "RU": "Ничего страшного",
+                "ZH": "没关系"
+              },
+              "example": "괜찮아요, 걱정하지 마세요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Sayılar",
+            "EN": "Numbers",
+            "DE": "Zahlen",
+            "FR": "Les nombres",
+            "ES": "Los números",
+            "IT": "I numeri",
+            "RU": "Числа",
+            "ZH": "数字"
+          },
+          "description": {
+            "TR": "Birden ona kadar saymak",
+            "EN": "Count from one to ten",
+            "DE": "Von eins bis zehn zählen",
+            "FR": "Compter de un à dix",
+            "ES": "Contar del uno al diez",
+            "IT": "Contare da uno a dieci",
+            "RU": "Считать от одного до десяти",
+            "ZH": "从一数到十"
+          },
+          "icon": "number",
+          "words": [
+            {
+              "term": "하나",
+              "romanization": "hana",
+              "phonetic": "/ha.na/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "bir",
+                "EN": "one",
+                "DE": "eins",
+                "FR": "un",
+                "ES": "uno",
+                "IT": "uno",
+                "RU": "один",
+                "ZH": "一"
+              },
+              "example": "하나, 둘, 셋!"
+            },
+            {
+              "term": "둘",
+              "romanization": "dul",
+              "phonetic": "/tul/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "iki",
+                "EN": "two",
+                "DE": "zwei",
+                "FR": "deux",
+                "ES": "dos",
+                "IT": "due",
+                "RU": "два",
+                "ZH": "二"
+              },
+              "example": "아이가 둘 있어요."
+            },
+            {
+              "term": "셋",
+              "romanization": "set",
+              "phonetic": "/set̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "üç",
+                "EN": "three",
+                "DE": "drei",
+                "FR": "trois",
+                "ES": "tres",
+                "IT": "tre",
+                "RU": "три",
+                "ZH": "三"
+              },
+              "example": "우리 형제는 셋이에요."
+            },
+            {
+              "term": "넷",
+              "romanization": "net",
+              "phonetic": "/net̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dört",
+                "EN": "four",
+                "DE": "vier",
+                "FR": "quatre",
+                "ES": "cuatro",
+                "IT": "quattro",
+                "RU": "четыре",
+                "ZH": "四"
+              },
+              "example": "우리 가족은 모두 넷이에요."
+            },
+            {
+              "term": "다섯",
+              "romanization": "daseot",
+              "phonetic": "/ta.sʌt̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "beş",
+                "EN": "five",
+                "DE": "fünf",
+                "FR": "cinq",
+                "ES": "cinco",
+                "IT": "cinque",
+                "RU": "пять",
+                "ZH": "五"
+              },
+              "example": "다섯 시에 만나요."
+            },
+            {
+              "term": "여섯",
+              "romanization": "yeoseot",
+              "phonetic": "/jʌ.sʌt̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "altı",
+                "EN": "six",
+                "DE": "sechs",
+                "FR": "six",
+                "ES": "seis",
+                "IT": "sei",
+                "RU": "шесть",
+                "ZH": "六"
+              },
+              "example": "여섯 시에 일어나요."
+            },
+            {
+              "term": "일곱",
+              "romanization": "ilgop",
+              "phonetic": "/il.ɡop̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "yedi",
+                "EN": "seven",
+                "DE": "sieben",
+                "FR": "sept",
+                "ES": "siete",
+                "IT": "sette",
+                "RU": "семь",
+                "ZH": "七"
+              },
+              "example": "일곱 시에 아침을 먹어요."
+            },
+            {
+              "term": "여덟",
+              "romanization": "yeodeol",
+              "phonetic": "/jʌ.dʌl/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sekiz",
+                "EN": "eight",
+                "DE": "acht",
+                "FR": "huit",
+                "ES": "ocho",
+                "IT": "otto",
+                "RU": "восемь",
+                "ZH": "八"
+              },
+              "example": "여덟 시에 학교에 가요."
+            },
+            {
+              "term": "아홉",
+              "romanization": "ahop",
+              "phonetic": "/a.ɦop̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "dokuz",
+                "EN": "nine",
+                "DE": "neun",
+                "FR": "neuf",
+                "ES": "nueve",
+                "IT": "nove",
+                "RU": "девять",
+                "ZH": "九"
+              },
+              "example": "아홉 시에 회사에 가요."
+            },
+            {
+              "term": "열",
+              "romanization": "yeol",
+              "phonetic": "/jʌl/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "on",
+                "EN": "ten",
+                "DE": "zehn",
+                "FR": "dix",
+                "ES": "diez",
+                "IT": "dieci",
+                "RU": "десять",
+                "ZH": "十"
+              },
+              "example": "밤 열 시에 자요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Aile",
+            "EN": "Family",
+            "DE": "Familie",
+            "FR": "La famille",
+            "ES": "La familia",
+            "IT": "La famiglia",
+            "RU": "Семья",
+            "ZH": "家人"
+          },
+          "description": {
+            "TR": "Aile üyelerini tanıtmak",
+            "EN": "Introduce your family members",
+            "DE": "Familienmitglieder vorstellen",
+            "FR": "Présenter sa famille",
+            "ES": "Presentar a tu familia",
+            "IT": "Presentare la propria famiglia",
+            "RU": "Рассказать о своей семье",
+            "ZH": "介绍你的家人"
+          },
+          "icon": "person.3",
+          "words": [
+            {
+              "term": "가족",
+              "romanization": "gajok",
+              "phonetic": "/ka.dʑok̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "aile",
+                "EN": "family",
+                "DE": "die Familie",
+                "FR": "la famille",
+                "ES": "la familia",
+                "IT": "la famiglia",
+                "RU": "семья",
+                "ZH": "家人"
+              },
+              "example": "우리 가족은 네 명이에요."
+            },
+            {
+              "term": "아버지",
+              "romanization": "abeoji",
+              "phonetic": "/a.bʌ.dʑi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "baba",
+                "EN": "father",
+                "DE": "der Vater",
+                "FR": "le père",
+                "ES": "el padre",
+                "IT": "il padre",
+                "RU": "отец",
+                "ZH": "父亲"
+              },
+              "example": "아버지는 회사원이세요."
+            },
+            {
+              "term": "어머니",
+              "romanization": "eomeoni",
+              "phonetic": "/ʌ.mʌ.ni/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "anne",
+                "EN": "mother",
+                "DE": "die Mutter",
+                "FR": "la mère",
+                "ES": "la madre",
+                "IT": "la madre",
+                "RU": "мать",
+                "ZH": "母亲"
+              },
+              "example": "어머니는 요리를 잘하세요."
+            },
+            {
+              "term": "형",
+              "romanization": "hyeong",
+              "phonetic": "/hjʌŋ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ağabey (erkekler söyler)",
+                "EN": "older brother (said by a man)",
+                "DE": "der ältere Bruder (von Männern gesagt)",
+                "FR": "le grand frère (dit par un homme)",
+                "ES": "el hermano mayor (lo dice un hombre)",
+                "IT": "il fratello maggiore (detto da un uomo)",
+                "RU": "старший брат (говорит мужчина)",
+                "ZH": "哥哥（男性用语）"
+              },
+              "example": "형은 서울에 살아요."
+            },
+            {
+              "term": "오빠",
+              "romanization": "oppa",
+              "phonetic": "/op͈a/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ağabey (kadınlar söyler)",
+                "EN": "older brother (said by a woman)",
+                "DE": "der ältere Bruder (von Frauen gesagt)",
+                "FR": "le grand frère (dit par une femme)",
+                "ES": "el hermano mayor (lo dice una mujer)",
+                "IT": "il fratello maggiore (detto da una donna)",
+                "RU": "старший брат (говорит женщина)",
+                "ZH": "哥哥（女性用语）"
+              },
+              "example": "오빠는 대학생이에요."
+            },
+            {
+              "term": "누나",
+              "romanization": "nuna",
+              "phonetic": "/nu.na/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "abla (erkekler söyler)",
+                "EN": "older sister (said by a man)",
+                "DE": "die ältere Schwester (von Männern gesagt)",
+                "FR": "la grande sœur (dit par un homme)",
+                "ES": "la hermana mayor (lo dice un hombre)",
+                "IT": "la sorella maggiore (detto da un uomo)",
+                "RU": "старшая сестра (говорит мужчина)",
+                "ZH": "姐姐（男性用语）"
+              },
+              "example": "누나는 간호사예요."
+            },
+            {
+              "term": "언니",
+              "romanization": "eonni",
+              "phonetic": "/ʌn.ni/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "abla (kadınlar söyler)",
+                "EN": "older sister (said by a woman)",
+                "DE": "die ältere Schwester (von Frauen gesagt)",
+                "FR": "la grande sœur (dit par une femme)",
+                "ES": "la hermana mayor (lo dice una mujer)",
+                "IT": "la sorella maggiore (detto da una donna)",
+                "RU": "старшая сестра (говорит женщина)",
+                "ZH": "姐姐（女性用语）"
+              },
+              "example": "언니하고 쇼핑을 가요."
+            },
+            {
+              "term": "동생",
+              "romanization": "dongsaeng",
+              "phonetic": "/toŋ.sɛŋ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "küçük kardeş",
+                "EN": "younger sibling",
+                "DE": "der jüngere Bruder / die jüngere Schwester",
+                "FR": "le petit frère / la petite sœur",
+                "ES": "el hermano menor / la hermana menor",
+                "IT": "il fratello minore / la sorella minore",
+                "RU": "младший брат / младшая сестра",
+                "ZH": "弟弟／妹妹"
+              },
+              "example": "동생은 고등학생이에요."
+            },
+            {
+              "term": "남편",
+              "romanization": "nampyeon",
+              "phonetic": "/nam.pʰjʌn/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "eş, koca",
+                "EN": "husband",
+                "DE": "der Ehemann",
+                "FR": "le mari",
+                "ES": "el marido",
+                "IT": "il marito",
+                "RU": "муж",
+                "ZH": "丈夫"
+              },
+              "example": "남편은 의사예요."
+            },
+            {
+              "term": "아내",
+              "romanization": "anae",
+              "phonetic": "/a.nɛ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "eş, hanım",
+                "EN": "wife",
+                "DE": "die Ehefrau",
+                "FR": "la femme",
+                "ES": "la esposa",
+                "IT": "la moglie",
+                "RU": "жена",
+                "ZH": "妻子"
+              },
+              "example": "아내와 같이 여행을 가요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Yiyecek ve içecek",
+            "EN": "Food & drink",
+            "DE": "Essen & Trinken",
+            "FR": "Manger et boire",
+            "ES": "Comida y bebida",
+            "IT": "Cibo e bevande",
+            "RU": "Еда и напитки",
+            "ZH": "食物和饮料"
+          },
+          "description": {
+            "TR": "Temel yiyecekler ve içecekler",
+            "EN": "Basic food and drinks",
+            "DE": "Grundlegende Lebensmittel und Getränke",
+            "FR": "Aliments et boissons de base",
+            "ES": "Alimentos y bebidas básicos",
+            "IT": "Cibi e bevande di base",
+            "RU": "Основные продукты и напитки",
+            "ZH": "基本的食物和饮料"
+          },
+          "icon": "fork.knife",
+          "words": [
+            {
+              "term": "물",
+              "romanization": "mul",
+              "phonetic": "/mul/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "su",
+                "EN": "water",
+                "DE": "das Wasser",
+                "FR": "l'eau",
+                "ES": "el agua",
+                "IT": "l'acqua",
+                "RU": "вода",
+                "ZH": "水"
+              },
+              "example": "물 한 잔 주세요."
+            },
+            {
+              "term": "차",
+              "romanization": "cha",
+              "phonetic": "/tɕʰa/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "çay",
+                "EN": "tea",
+                "DE": "der Tee",
+                "FR": "le thé",
+                "ES": "el té",
+                "IT": "il tè",
+                "RU": "чай",
+                "ZH": "茶"
+              },
+              "example": "차 한 잔 하실래요?"
+            },
+            {
+              "term": "커피",
+              "romanization": "keopi",
+              "phonetic": "/kʰʌ.pʰi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kahve",
+                "EN": "coffee",
+                "DE": "der Kaffee",
+                "FR": "le café",
+                "ES": "el café",
+                "IT": "il caffè",
+                "RU": "кофе",
+                "ZH": "咖啡"
+              },
+              "example": "아침마다 커피를 마셔요."
+            },
+            {
+              "term": "우유",
+              "romanization": "uyu",
+              "phonetic": "/u.ju/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "süt",
+                "EN": "milk",
+                "DE": "die Milch",
+                "FR": "le lait",
+                "ES": "la leche",
+                "IT": "il latte",
+                "RU": "молоко",
+                "ZH": "牛奶"
+              },
+              "example": "우유가 냉장고에 있어요."
+            },
+            {
+              "term": "밥",
+              "romanization": "bap",
+              "phonetic": "/pap̚/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pilav, yemek",
+                "EN": "rice / meal",
+                "DE": "der Reis / das Essen",
+                "FR": "le riz / le repas",
+                "ES": "el arroz / la comida",
+                "IT": "il riso / il pasto",
+                "RU": "рис / еда",
+                "ZH": "米饭"
+              },
+              "example": "밥 먹었어요?"
+            },
+            {
+              "term": "빵",
+              "romanization": "ppang",
+              "phonetic": "/p͈aŋ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "ekmek",
+                "EN": "bread",
+                "DE": "das Brot",
+                "FR": "le pain",
+                "ES": "el pan",
+                "IT": "il pane",
+                "RU": "хлеб",
+                "ZH": "面包"
+              },
+              "example": "아침에 빵을 먹어요."
+            },
+            {
+              "term": "고기",
+              "romanization": "gogi",
+              "phonetic": "/ko.ɡi/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "et",
+                "EN": "meat",
+                "DE": "das Fleisch",
+                "FR": "la viande",
+                "ES": "la carne",
+                "IT": "la carne",
+                "RU": "мясо",
+                "ZH": "肉"
+              },
+              "example": "저는 고기를 좋아해요."
+            },
+            {
+              "term": "생선",
+              "romanization": "saengseon",
+              "phonetic": "/sɛŋ.sʌn/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "balık",
+                "EN": "fish",
+                "DE": "der Fisch",
+                "FR": "le poisson",
+                "ES": "el pescado",
+                "IT": "il pesce",
+                "RU": "рыба",
+                "ZH": "鱼"
+              },
+              "example": "이 생선은 신선해요."
+            },
+            {
+              "term": "채소",
+              "romanization": "chaeso",
+              "phonetic": "/tɕʰɛ.so/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sebze",
+                "EN": "vegetables",
+                "DE": "das Gemüse",
+                "FR": "les légumes",
+                "ES": "las verduras",
+                "IT": "la verdura",
+                "RU": "овощи",
+                "ZH": "蔬菜"
+              },
+              "example": "채소를 많이 드세요."
+            },
+            {
+              "term": "과일",
+              "romanization": "gwail",
+              "phonetic": "/kwa.il/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "meyve",
+                "EN": "fruit",
+                "DE": "das Obst",
+                "FR": "les fruits",
+                "ES": "la fruta",
+                "IT": "la frutta",
+                "RU": "фрукты",
+                "ZH": "水果"
+              },
+              "example": "과일을 정말 좋아해요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Kafede",
+            "EN": "At the café",
+            "DE": "Im Café",
+            "FR": "Au café",
+            "ES": "En la cafetería",
+            "IT": "Al bar",
+            "RU": "В кафе",
+            "ZH": "在咖啡馆"
+          },
+          "description": {
+            "TR": "Sipariş vermek ve fiyat sormak",
+            "EN": "Order and ask the price",
+            "DE": "Bestellen und nach dem Preis fragen",
+            "FR": "Commander et demander le prix",
+            "ES": "Pedir y preguntar el precio",
+            "IT": "Ordinare e chiedere il prezzo",
+            "RU": "Заказать и спросить цену",
+            "ZH": "点单和问价格"
+          },
+          "icon": "cup.and.saucer",
+          "words": [
+            {
+              "term": "카페",
+              "romanization": "kape",
+              "phonetic": "/kʰa.pʰe/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "kafe",
+                "EN": "café",
+                "DE": "das Café",
+                "FR": "le café",
+                "ES": "la cafetería",
+                "IT": "la caffetteria",
+                "RU": "кафе",
+                "ZH": "咖啡馆"
+              },
+              "example": "역 앞에 카페가 있어요."
+            },
+            {
+              "term": "메뉴",
+              "romanization": "menyu",
+              "phonetic": "/me.nju/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "menü",
+                "EN": "menu",
+                "DE": "die Speisekarte",
+                "FR": "la carte",
+                "ES": "la carta",
+                "IT": "il menù",
+                "RU": "меню",
+                "ZH": "菜单"
+              },
+              "example": "메뉴 좀 보여 주세요."
+            },
+            {
+              "term": "케이크",
+              "romanization": "keikeu",
+              "phonetic": "/kʰe.i.kʰɯ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "pasta",
+                "EN": "cake",
+                "DE": "der Kuchen",
+                "FR": "le gâteau",
+                "ES": "el pastel",
+                "IT": "la torta",
+                "RU": "торт",
+                "ZH": "蛋糕"
+              },
+              "example": "치즈 케이크 하나 주세요."
+            },
+            {
+              "term": "설탕",
+              "romanization": "seoltang",
+              "phonetic": "/sʌl.tʰaŋ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "şeker",
+                "EN": "sugar",
+                "DE": "der Zucker",
+                "FR": "le sucre",
+                "ES": "el azúcar",
+                "IT": "lo zucchero",
+                "RU": "сахар",
+                "ZH": "糖"
+              },
+              "example": "설탕 넣으세요?"
+            },
+            {
+              "term": "주스",
+              "romanization": "juseu",
+              "phonetic": "/tɕu.sɯ/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "meyve suyu",
+                "EN": "juice",
+                "DE": "der Saft",
+                "FR": "le jus",
+                "ES": "el zumo",
+                "IT": "il succo",
+                "RU": "сок",
+                "ZH": "果汁"
+              },
+              "example": "오렌지 주스 한 잔 주세요."
+            },
+            {
+              "term": "뜨겁다",
+              "romanization": "tteugeopda",
+              "phonetic": "/t͈ɯ.ɡʌp̚.t͈a/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "sıcak",
+                "EN": "hot",
+                "DE": "heiß",
+                "FR": "chaud",
+                "ES": "caliente",
+                "IT": "caldo",
+                "RU": "горячий",
+                "ZH": "烫"
+              },
+              "example": "커피가 아주 뜨거워요."
+            },
+            {
+              "term": "차갑다",
+              "romanization": "chagapda",
+              "phonetic": "/tɕʰa.ɡap̚.t͈a/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "soğuk",
+                "EN": "cold",
+                "DE": "kalt",
+                "FR": "froid",
+                "ES": "frío",
+                "IT": "freddo",
+                "RU": "холодный",
+                "ZH": "冰的"
+              },
+              "example": "차가운 물 주세요."
+            },
+            {
+              "term": "맛있다",
+              "romanization": "masitda",
+              "phonetic": "/ma.ɕit̚.t͈a/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "lezzetli",
+                "EN": "delicious",
+                "DE": "lecker",
+                "FR": "délicieux",
+                "ES": "delicioso",
+                "IT": "buono",
+                "RU": "вкусный",
+                "ZH": "好吃"
+              },
+              "example": "이 빵 정말 맛있어요."
+            },
+            {
+              "term": "주세요",
+              "romanization": "juseyo",
+              "phonetic": "/tɕu.se.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "… lütfen (verir misiniz)",
+                "EN": "please (give me …)",
+                "DE": "bitte (geben Sie mir …)",
+                "FR": "s'il vous plaît (donnez-moi …)",
+                "ES": "por favor (deme …)",
+                "IT": "per favore (mi dia …)",
+                "RU": "пожалуйста (дайте …)",
+                "ZH": "请给我"
+              },
+              "example": "아메리카노 한 잔 주세요."
+            },
+            {
+              "term": "얼마예요",
+              "romanization": "eolmayeyo",
+              "phonetic": "/ʌl.ma.je.jo/",
+              "difficulty": 1,
+              "translations": {
+                "TR": "Ne kadar?",
+                "EN": "How much is it?",
+                "DE": "Was kostet das?",
+                "FR": "C'est combien ?",
+                "ES": "¿Cuánto cuesta?",
+                "IT": "Quanto costa?",
+                "RU": "Сколько стоит?",
+                "ZH": "多少钱？"
+              },
+              "example": "이거 얼마예요?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Günlük hayat",
+        "EN": "Everyday life",
+        "DE": "Alltag",
+        "FR": "La vie quotidienne",
+        "ES": "La vida diaria",
+        "IT": "La vita quotidiana",
+        "RU": "Повседневная жизнь",
+        "ZH": "日常生活"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Ev",
+            "EN": "At home",
+            "DE": "Zu Hause",
+            "FR": "À la maison",
+            "ES": "En casa",
+            "IT": "A casa",
+            "RU": "Дома",
+            "ZH": "在家"
+          },
+          "description": {
+            "TR": "Odalar ve eşyalar",
+            "EN": "Rooms and furniture",
+            "DE": "Zimmer und Möbel",
+            "FR": "Pièces et meubles",
+            "ES": "Habitaciones y muebles",
+            "IT": "Stanze e mobili",
+            "RU": "Комнаты и мебель",
+            "ZH": "房间和家具"
+          },
+          "icon": "house",
+          "words": [
+            {
+              "term": "집",
+              "romanization": "jip",
+              "phonetic": "/tɕip̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ev",
+                "EN": "house / home",
+                "DE": "das Haus / das Zuhause",
+                "FR": "la maison",
+                "ES": "la casa",
+                "IT": "la casa",
+                "RU": "дом",
+                "ZH": "家"
+              },
+              "example": "우리 집은 역에서 가까워요."
+            },
+            {
+              "term": "방",
+              "romanization": "bang",
+              "phonetic": "/paŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "oda",
+                "EN": "room",
+                "DE": "das Zimmer",
+                "FR": "la chambre",
+                "ES": "la habitación",
+                "IT": "la stanza",
+                "RU": "комната",
+                "ZH": "房间"
+              },
+              "example": "방이 아주 깨끗해요."
+            },
+            {
+              "term": "부엌",
+              "romanization": "bueok",
+              "phonetic": "/pu.ʌk̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "mutfak",
+                "EN": "kitchen",
+                "DE": "die Küche",
+                "FR": "la cuisine",
+                "ES": "la cocina",
+                "IT": "la cucina",
+                "RU": "кухня",
+                "ZH": "厨房"
+              },
+              "example": "어머니는 부엌에 계세요."
+            },
+            {
+              "term": "욕실",
+              "romanization": "yoksil",
+              "phonetic": "/jok̚.ɕ͈il/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "banyo",
+                "EN": "bathroom",
+                "DE": "das Badezimmer",
+                "FR": "la salle de bain",
+                "ES": "el cuarto de baño",
+                "IT": "il bagno",
+                "RU": "ванная",
+                "ZH": "浴室"
+              },
+              "example": "욕실이 넓어요."
+            },
+            {
+              "term": "화장실",
+              "romanization": "hwajangsil",
+              "phonetic": "/hwa.dʑaŋ.ɕil/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tuvalet",
+                "EN": "toilet",
+                "DE": "die Toilette",
+                "FR": "les toilettes",
+                "ES": "el baño",
+                "IT": "il bagno",
+                "RU": "туалет",
+                "ZH": "洗手间"
+              },
+              "example": "화장실은 2층에 있어요."
+            },
+            {
+              "term": "침대",
+              "romanization": "chimdae",
+              "phonetic": "/tɕʰim.dɛ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yatak",
+                "EN": "bed",
+                "DE": "das Bett",
+                "FR": "le lit",
+                "ES": "la cama",
+                "IT": "il letto",
+                "RU": "кровать",
+                "ZH": "床"
+              },
+              "example": "침대 위에 고양이가 있어요."
+            },
+            {
+              "term": "책상",
+              "romanization": "chaeksang",
+              "phonetic": "/tɕʰɛk̚.s͈aŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "çalışma masası",
+                "EN": "desk",
+                "DE": "der Schreibtisch",
+                "FR": "le bureau",
+                "ES": "el escritorio",
+                "IT": "la scrivania",
+                "RU": "письменный стол",
+                "ZH": "书桌"
+              },
+              "example": "책상 위에 책이 있어요."
+            },
+            {
+              "term": "의자",
+              "romanization": "uija",
+              "phonetic": "/ɯi.dʑa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sandalye",
+                "EN": "chair",
+                "DE": "der Stuhl",
+                "FR": "la chaise",
+                "ES": "la silla",
+                "IT": "la sedia",
+                "RU": "стул",
+                "ZH": "椅子"
+              },
+              "example": "이 의자에 앉으세요."
+            },
+            {
+              "term": "창문",
+              "romanization": "changmun",
+              "phonetic": "/tɕʰaŋ.mun/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "pencere",
+                "EN": "window",
+                "DE": "das Fenster",
+                "FR": "la fenêtre",
+                "ES": "la ventana",
+                "IT": "la finestra",
+                "RU": "окно",
+                "ZH": "窗户"
+              },
+              "example": "창문 좀 열어도 돼요?"
+            },
+            {
+              "term": "문",
+              "romanization": "mun",
+              "phonetic": "/mun/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kapı",
+                "EN": "door",
+                "DE": "die Tür",
+                "FR": "la porte",
+                "ES": "la puerta",
+                "IT": "la porta",
+                "RU": "дверь",
+                "ZH": "门"
+              },
+              "example": "문 좀 닫아 주세요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Günlük rutin",
+            "EN": "Daily routine",
+            "DE": "Tagesablauf",
+            "FR": "La routine",
+            "ES": "La rutina diaria",
+            "IT": "La routine",
+            "RU": "Распорядок дня",
+            "ZH": "日常作息"
+          },
+          "description": {
+            "TR": "Her gün yaptıklarınız",
+            "EN": "What you do every day",
+            "DE": "Was du jeden Tag machst",
+            "FR": "Ce que tu fais chaque jour",
+            "ES": "Lo que haces cada día",
+            "IT": "Cosa fai ogni giorno",
+            "RU": "Что вы делаете каждый день",
+            "ZH": "每天做的事"
+          },
+          "icon": "alarm",
+          "words": [
+            {
+              "term": "일어나다",
+              "romanization": "ireonada",
+              "phonetic": "/i.ɾʌ.na.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kalkmak",
+                "EN": "to get up",
+                "DE": "aufstehen",
+                "FR": "se lever",
+                "ES": "levantarse",
+                "IT": "alzarsi",
+                "RU": "вставать",
+                "ZH": "起床"
+              },
+              "example": "매일 아침 여섯 시에 일어나요."
+            },
+            {
+              "term": "자다",
+              "romanization": "jada",
+              "phonetic": "/tɕa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uyumak",
+                "EN": "to sleep",
+                "DE": "schlafen",
+                "FR": "dormir",
+                "ES": "dormir",
+                "IT": "dormire",
+                "RU": "спать",
+                "ZH": "睡觉"
+              },
+              "example": "밤 열한 시에 자요."
+            },
+            {
+              "term": "먹다",
+              "romanization": "meokda",
+              "phonetic": "/mʌk̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yemek",
+                "EN": "to eat",
+                "DE": "essen",
+                "FR": "manger",
+                "ES": "comer",
+                "IT": "mangiare",
+                "RU": "есть",
+                "ZH": "吃"
+              },
+              "example": "열두 시에 점심을 먹어요."
+            },
+            {
+              "term": "마시다",
+              "romanization": "masida",
+              "phonetic": "/ma.ɕi.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "içmek",
+                "EN": "to drink",
+                "DE": "trinken",
+                "FR": "boire",
+                "ES": "beber",
+                "IT": "bere",
+                "RU": "пить",
+                "ZH": "喝"
+              },
+              "example": "물을 많이 마셔요."
+            },
+            {
+              "term": "가다",
+              "romanization": "gada",
+              "phonetic": "/ka.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "gitmek",
+                "EN": "to go",
+                "DE": "gehen",
+                "FR": "aller",
+                "ES": "ir",
+                "IT": "andare",
+                "RU": "идти",
+                "ZH": "去"
+              },
+              "example": "매일 학교에 가요."
+            },
+            {
+              "term": "오다",
+              "romanization": "oda",
+              "phonetic": "/o.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "gelmek",
+                "EN": "to come",
+                "DE": "kommen",
+                "FR": "venir",
+                "ES": "venir",
+                "IT": "venire",
+                "RU": "приходить",
+                "ZH": "来"
+              },
+              "example": "내일 친구가 집에 와요."
+            },
+            {
+              "term": "보다",
+              "romanization": "boda",
+              "phonetic": "/po.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "izlemek, görmek",
+                "EN": "to watch / to see",
+                "DE": "sehen",
+                "FR": "regarder",
+                "ES": "ver",
+                "IT": "guardare",
+                "RU": "смотреть",
+                "ZH": "看"
+              },
+              "example": "저녁에 텔레비전을 봐요."
+            },
+            {
+              "term": "공부하다",
+              "romanization": "gongbuhada",
+              "phonetic": "/koŋ.bu.ɦa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ders çalışmak",
+                "EN": "to study",
+                "DE": "lernen",
+                "FR": "étudier",
+                "ES": "estudiar",
+                "IT": "studiare",
+                "RU": "учиться",
+                "ZH": "学习"
+              },
+              "example": "매일 한국어를 공부해요."
+            },
+            {
+              "term": "일하다",
+              "romanization": "ilhada",
+              "phonetic": "/il.ɦa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "çalışmak",
+                "EN": "to work",
+                "DE": "arbeiten",
+                "FR": "travailler",
+                "ES": "trabajar",
+                "IT": "lavorare",
+                "RU": "работать",
+                "ZH": "工作"
+              },
+              "example": "아버지는 은행에서 일하세요."
+            },
+            {
+              "term": "씻다",
+              "romanization": "ssitda",
+              "phonetic": "/ɕ͈it̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yıkanmak",
+                "EN": "to wash up",
+                "DE": "sich waschen",
+                "FR": "se laver",
+                "ES": "lavarse",
+                "IT": "lavarsi",
+                "RU": "умываться",
+                "ZH": "洗漱"
+              },
+              "example": "자기 전에 씻어요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Zaman ve günler",
+            "EN": "Time & days",
+            "DE": "Zeit & Tage",
+            "FR": "Le temps et les jours",
+            "ES": "El tiempo y los días",
+            "IT": "Tempo e giorni",
+            "RU": "Время и дни",
+            "ZH": "时间和日子"
+          },
+          "description": {
+            "TR": "Bugün, yarın ve hafta",
+            "EN": "Today, tomorrow and the week",
+            "DE": "Heute, morgen und die Woche",
+            "FR": "Aujourd'hui, demain et la semaine",
+            "ES": "Hoy, mañana y la semana",
+            "IT": "Oggi, domani e la settimana",
+            "RU": "Сегодня, завтра и неделя",
+            "ZH": "今天、明天和一周"
+          },
+          "icon": "calendar",
+          "words": [
+            {
+              "term": "오늘",
+              "romanization": "oneul",
+              "phonetic": "/o.nɯl/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bugün",
+                "EN": "today",
+                "DE": "heute",
+                "FR": "aujourd'hui",
+                "ES": "hoy",
+                "IT": "oggi",
+                "RU": "сегодня",
+                "ZH": "今天"
+              },
+              "example": "오늘은 무슨 요일이에요?"
+            },
+            {
+              "term": "내일",
+              "romanization": "naeil",
+              "phonetic": "/nɛ.il/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yarın",
+                "EN": "tomorrow",
+                "DE": "morgen",
+                "FR": "demain",
+                "ES": "mañana",
+                "IT": "domani",
+                "RU": "завтра",
+                "ZH": "明天"
+              },
+              "example": "내일 또 만나요."
+            },
+            {
+              "term": "어제",
+              "romanization": "eoje",
+              "phonetic": "/ʌ.dʑe/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "dün",
+                "EN": "yesterday",
+                "DE": "gestern",
+                "FR": "hier",
+                "ES": "ayer",
+                "IT": "ieri",
+                "RU": "вчера",
+                "ZH": "昨天"
+              },
+              "example": "어제는 바빴어요."
+            },
+            {
+              "term": "지금",
+              "romanization": "jigeum",
+              "phonetic": "/tɕi.ɡɯm/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "şimdi",
+                "EN": "now",
+                "DE": "jetzt",
+                "FR": "maintenant",
+                "ES": "ahora",
+                "IT": "adesso",
+                "RU": "сейчас",
+                "ZH": "现在"
+              },
+              "example": "지금 몇 시예요?"
+            },
+            {
+              "term": "아침",
+              "romanization": "achim",
+              "phonetic": "/a.tɕʰim/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sabah",
+                "EN": "morning",
+                "DE": "der Morgen",
+                "FR": "le matin",
+                "ES": "la mañana",
+                "IT": "la mattina",
+                "RU": "утро",
+                "ZH": "早上"
+              },
+              "example": "아침에 커피를 마셔요."
+            },
+            {
+              "term": "밤",
+              "romanization": "bam",
+              "phonetic": "/pam/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "gece",
+                "EN": "night",
+                "DE": "die Nacht",
+                "FR": "la nuit",
+                "ES": "la noche",
+                "IT": "la notte",
+                "RU": "ночь",
+                "ZH": "晚上"
+              },
+              "example": "밤에 책을 읽어요."
+            },
+            {
+              "term": "매일",
+              "romanization": "maeil",
+              "phonetic": "/mɛ.il/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "her gün",
+                "EN": "every day",
+                "DE": "jeden Tag",
+                "FR": "tous les jours",
+                "ES": "todos los días",
+                "IT": "ogni giorno",
+                "RU": "каждый день",
+                "ZH": "每天"
+              },
+              "example": "매일 걸어서 회사에 가요."
+            },
+            {
+              "term": "시간",
+              "romanization": "sigan",
+              "phonetic": "/ɕi.ɡan/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "zaman",
+                "EN": "time",
+                "DE": "die Zeit",
+                "FR": "le temps",
+                "ES": "el tiempo",
+                "IT": "il tempo",
+                "RU": "время",
+                "ZH": "时间"
+              },
+              "example": "오늘은 시간이 없어요."
+            },
+            {
+              "term": "주말",
+              "romanization": "jumal",
+              "phonetic": "/tɕu.mal/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hafta sonu",
+                "EN": "weekend",
+                "DE": "das Wochenende",
+                "FR": "le week-end",
+                "ES": "el fin de semana",
+                "IT": "il fine settimana",
+                "RU": "выходные",
+                "ZH": "周末"
+              },
+              "example": "주말에는 집에서 쉬어요."
+            },
+            {
+              "term": "월요일",
+              "romanization": "woryoil",
+              "phonetic": "/wʌ.ɾjo.il/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "pazartesi",
+                "EN": "Monday",
+                "DE": "der Montag",
+                "FR": "lundi",
+                "ES": "el lunes",
+                "IT": "il lunedì",
+                "RU": "понедельник",
+                "ZH": "星期一"
+              },
+              "example": "월요일은 항상 바빠요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Hava durumu",
+            "EN": "Weather",
+            "DE": "Wetter",
+            "FR": "La météo",
+            "ES": "El tiempo",
+            "IT": "Il meteo",
+            "RU": "Погода",
+            "ZH": "天气"
+          },
+          "description": {
+            "TR": "Hava hakkında konuşmak",
+            "EN": "Talk about the weather",
+            "DE": "Über das Wetter sprechen",
+            "FR": "Parler du temps qu'il fait",
+            "ES": "Hablar del tiempo",
+            "IT": "Parlare del tempo",
+            "RU": "Говорить о погоде",
+            "ZH": "谈论天气"
+          },
+          "icon": "cloud.sun",
+          "words": [
+            {
+              "term": "날씨",
+              "romanization": "nalssi",
+              "phonetic": "/nal.ɕ͈i/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hava",
+                "EN": "weather",
+                "DE": "das Wetter",
+                "FR": "le temps",
+                "ES": "el tiempo",
+                "IT": "il tempo",
+                "RU": "погода",
+                "ZH": "天气"
+              },
+              "example": "오늘 날씨가 좋네요."
+            },
+            {
+              "term": "맑다",
+              "romanization": "makda",
+              "phonetic": "/mak̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "güneşli",
+                "EN": "sunny",
+                "DE": "sonnig",
+                "FR": "ensoleillé",
+                "ES": "soleado",
+                "IT": "soleggiato",
+                "RU": "ясно",
+                "ZH": "晴朗"
+              },
+              "example": "내일은 날씨가 맑아요."
+            },
+            {
+              "term": "흐리다",
+              "romanization": "heurida",
+              "phonetic": "/hɯ.ɾi.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bulutlu",
+                "EN": "cloudy",
+                "DE": "bewölkt",
+                "FR": "nuageux",
+                "ES": "nublado",
+                "IT": "nuvoloso",
+                "RU": "пасмурно",
+                "ZH": "阴天"
+              },
+              "example": "오후에는 날씨가 흐려요."
+            },
+            {
+              "term": "비",
+              "romanization": "bi",
+              "phonetic": "/pi/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yağmur",
+                "EN": "rain",
+                "DE": "der Regen",
+                "FR": "la pluie",
+                "ES": "la lluvia",
+                "IT": "la pioggia",
+                "RU": "дождь",
+                "ZH": "雨"
+              },
+              "example": "지금 비가 와요."
+            },
+            {
+              "term": "눈",
+              "romanization": "nun",
+              "phonetic": "/nuːn/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kar",
+                "EN": "snow",
+                "DE": "der Schnee",
+                "FR": "la neige",
+                "ES": "la nieve",
+                "IT": "la neve",
+                "RU": "снег",
+                "ZH": "雪"
+              },
+              "example": "겨울에는 눈이 많이 와요."
+            },
+            {
+              "term": "바람",
+              "romanization": "baram",
+              "phonetic": "/pa.ɾam/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "rüzgâr",
+                "EN": "wind",
+                "DE": "der Wind",
+                "FR": "le vent",
+                "ES": "el viento",
+                "IT": "il vento",
+                "RU": "ветер",
+                "ZH": "风"
+              },
+              "example": "오늘은 바람이 많이 불어요."
+            },
+            {
+              "term": "덥다",
+              "romanization": "deopda",
+              "phonetic": "/tʌp̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sıcak",
+                "EN": "hot",
+                "DE": "heiß",
+                "FR": "chaud",
+                "ES": "caluroso",
+                "IT": "caldo",
+                "RU": "жаркий",
+                "ZH": "热"
+              },
+              "example": "여름은 정말 더워요."
+            },
+            {
+              "term": "춥다",
+              "romanization": "chupda",
+              "phonetic": "/tɕʰup̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "soğuk",
+                "EN": "cold",
+                "DE": "kalt",
+                "FR": "froid",
+                "ES": "frío",
+                "IT": "freddo",
+                "RU": "холодный",
+                "ZH": "冷"
+              },
+              "example": "오늘 아침은 추워요."
+            },
+            {
+              "term": "따뜻하다",
+              "romanization": "ttatteuthada",
+              "phonetic": "/t͈a.t͈ɯ.tʰa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ılık",
+                "EN": "warm",
+                "DE": "warm",
+                "FR": "doux",
+                "ES": "templado",
+                "IT": "mite",
+                "RU": "тёплый",
+                "ZH": "暖和"
+              },
+              "example": "봄은 따뜻해요."
+            },
+            {
+              "term": "시원하다",
+              "romanization": "siwonhada",
+              "phonetic": "/ɕi.wʌn.ɦa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "serin",
+                "EN": "cool",
+                "DE": "kühl",
+                "FR": "frais",
+                "ES": "fresco",
+                "IT": "fresco",
+                "RU": "прохладный",
+                "ZH": "凉快"
+              },
+              "example": "가을은 시원해요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Alışveriş",
+            "EN": "Shopping",
+            "DE": "Einkaufen",
+            "FR": "Les achats",
+            "ES": "De compras",
+            "IT": "Lo shopping",
+            "RU": "Покупки",
+            "ZH": "购物"
+          },
+          "description": {
+            "TR": "Fiyatlar, giysiler ve bedenler",
+            "EN": "Prices, clothes and sizes",
+            "DE": "Preise, Kleidung und Größen",
+            "FR": "Prix, vêtements et tailles",
+            "ES": "Precios, ropa y tallas",
+            "IT": "Prezzi, vestiti e taglie",
+            "RU": "Цены, одежда и размеры",
+            "ZH": "价格、衣服和尺码"
+          },
+          "icon": "cart",
+          "words": [
+            {
+              "term": "가게",
+              "romanization": "gage",
+              "phonetic": "/ka.ɡe/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "dükkân",
+                "EN": "shop",
+                "DE": "der Laden",
+                "FR": "le magasin",
+                "ES": "la tienda",
+                "IT": "il negozio",
+                "RU": "магазин",
+                "ZH": "商店"
+              },
+              "example": "이 가게는 밤 아홉 시까지 열어요."
+            },
+            {
+              "term": "사다",
+              "romanization": "sada",
+              "phonetic": "/sa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "satın almak",
+                "EN": "to buy",
+                "DE": "kaufen",
+                "FR": "acheter",
+                "ES": "comprar",
+                "IT": "comprare",
+                "RU": "покупать",
+                "ZH": "买"
+              },
+              "example": "시장에서 채소를 사요."
+            },
+            {
+              "term": "비싸다",
+              "romanization": "bissada",
+              "phonetic": "/pi.s͈a.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "pahalı",
+                "EN": "expensive",
+                "DE": "teuer",
+                "FR": "cher",
+                "ES": "caro",
+                "IT": "caro",
+                "RU": "дорогой",
+                "ZH": "贵"
+              },
+              "example": "이 가방은 너무 비싸요."
+            },
+            {
+              "term": "싸다",
+              "romanization": "ssada",
+              "phonetic": "/s͈a.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ucuz",
+                "EN": "cheap",
+                "DE": "billig",
+                "FR": "bon marché",
+                "ES": "barato",
+                "IT": "economico",
+                "RU": "дешёвый",
+                "ZH": "便宜"
+              },
+              "example": "이 가게는 채소가 싸요."
+            },
+            {
+              "term": "돈",
+              "romanization": "don",
+              "phonetic": "/ton/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "para",
+                "EN": "money",
+                "DE": "das Geld",
+                "FR": "l'argent",
+                "ES": "el dinero",
+                "IT": "i soldi",
+                "RU": "деньги",
+                "ZH": "钱"
+              },
+              "example": "지금 돈이 별로 없어요."
+            },
+            {
+              "term": "원",
+              "romanization": "won",
+              "phonetic": "/wʌn/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "won",
+                "EN": "won",
+                "DE": "der Won",
+                "FR": "le won",
+                "ES": "el won",
+                "IT": "il won",
+                "RU": "вона",
+                "ZH": "韩元"
+              },
+              "example": "이 셔츠는 삼만 원이에요."
+            },
+            {
+              "term": "옷",
+              "romanization": "ot",
+              "phonetic": "/ot̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kıyafet",
+                "EN": "clothes",
+                "DE": "die Kleidung",
+                "FR": "les vêtements",
+                "ES": "la ropa",
+                "IT": "i vestiti",
+                "RU": "одежда",
+                "ZH": "衣服"
+              },
+              "example": "새 옷을 사고 싶어요."
+            },
+            {
+              "term": "신발",
+              "romanization": "sinbal",
+              "phonetic": "/ɕin.bal/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ayakkabı",
+                "EN": "shoes",
+                "DE": "die Schuhe",
+                "FR": "les chaussures",
+                "ES": "los zapatos",
+                "IT": "le scarpe",
+                "RU": "обувь",
+                "ZH": "鞋"
+              },
+              "example": "이 신발은 좀 작아요."
+            },
+            {
+              "term": "크다",
+              "romanization": "keuda",
+              "phonetic": "/kʰɯ.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "büyük",
+                "EN": "big",
+                "DE": "groß",
+                "FR": "grand",
+                "ES": "grande",
+                "IT": "grande",
+                "RU": "большой",
+                "ZH": "大"
+              },
+              "example": "더 큰 사이즈 있어요?"
+            },
+            {
+              "term": "작다",
+              "romanization": "jakda",
+              "phonetic": "/tɕak̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "küçük",
+                "EN": "small",
+                "DE": "klein",
+                "FR": "petit",
+                "ES": "pequeño",
+                "IT": "piccolo",
+                "RU": "маленький",
+                "ZH": "小"
+              },
+              "example": "이 가방은 너무 작아요."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "Dışarıda",
+        "EN": "Out and about",
+        "DE": "Unterwegs",
+        "FR": "En ville",
+        "ES": "Fuera de casa",
+        "IT": "In giro",
+        "RU": "В городе",
+        "ZH": "出门在外"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "Yol tarifi",
+            "EN": "Directions",
+            "DE": "Wegbeschreibung",
+            "FR": "L'itinéraire",
+            "ES": "Direcciones",
+            "IT": "Indicazioni",
+            "RU": "Как пройти",
+            "ZH": "问路"
+          },
+          "description": {
+            "TR": "Yolu sormak ve bulmak",
+            "EN": "Ask the way and find it",
+            "DE": "Nach dem Weg fragen und ihn finden",
+            "FR": "Demander son chemin et le trouver",
+            "ES": "Preguntar el camino y encontrarlo",
+            "IT": "Chiedere la strada e trovarla",
+            "RU": "Спросить дорогу и найти её",
+            "ZH": "问路和找路"
+          },
+          "icon": "map",
+          "words": [
+            {
+              "term": "역",
+              "romanization": "yeok",
+              "phonetic": "/jʌk̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "istasyon",
+                "EN": "station",
+                "DE": "der Bahnhof",
+                "FR": "la gare",
+                "ES": "la estación",
+                "IT": "la stazione",
+                "RU": "станция",
+                "ZH": "车站"
+              },
+              "example": "역까지 걸어서 십 분이에요."
+            },
+            {
+              "term": "길",
+              "romanization": "gil",
+              "phonetic": "/kil/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yol",
+                "EN": "road / way",
+                "DE": "die Straße / der Weg",
+                "FR": "la rue / le chemin",
+                "ES": "la calle / el camino",
+                "IT": "la strada",
+                "RU": "дорога",
+                "ZH": "路"
+              },
+              "example": "이 길로 쭉 가세요."
+            },
+            {
+              "term": "오른쪽",
+              "romanization": "oreunjjok",
+              "phonetic": "/o.ɾɯn.t͈ɕok̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sağ",
+                "EN": "right",
+                "DE": "rechts",
+                "FR": "à droite",
+                "ES": "a la derecha",
+                "IT": "a destra",
+                "RU": "направо",
+                "ZH": "右边"
+              },
+              "example": "은행은 오른쪽에 있어요."
+            },
+            {
+              "term": "왼쪽",
+              "romanization": "oenjjok",
+              "phonetic": "/wen.t͈ɕok̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sol",
+                "EN": "left",
+                "DE": "links",
+                "FR": "à gauche",
+                "ES": "a la izquierda",
+                "IT": "a sinistra",
+                "RU": "налево",
+                "ZH": "左边"
+              },
+              "example": "다음 신호등에서 왼쪽으로 가세요."
+            },
+            {
+              "term": "쭉",
+              "romanization": "jjuk",
+              "phonetic": "/t͈ɕuk̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "dümdüz",
+                "EN": "straight ahead",
+                "DE": "geradeaus",
+                "FR": "tout droit",
+                "ES": "todo recto",
+                "IT": "dritto",
+                "RU": "прямо",
+                "ZH": "一直"
+              },
+              "example": "쭉 가면 역이 나와요."
+            },
+            {
+              "term": "가깝다",
+              "romanization": "gakkapda",
+              "phonetic": "/ka.k͈ap̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yakın",
+                "EN": "near",
+                "DE": "nah",
+                "FR": "proche",
+                "ES": "cerca",
+                "IT": "vicino",
+                "RU": "близко",
+                "ZH": "近"
+              },
+              "example": "호텔은 역에서 가까워요."
+            },
+            {
+              "term": "멀다",
+              "romanization": "meolda",
+              "phonetic": "/mʌl.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uzak",
+                "EN": "far",
+                "DE": "weit",
+                "FR": "loin",
+                "ES": "lejos",
+                "IT": "lontano",
+                "RU": "далеко",
+                "ZH": "远"
+              },
+              "example": "공항은 여기서 멀어요?"
+            },
+            {
+              "term": "은행",
+              "romanization": "eunhaeng",
+              "phonetic": "/ɯn.ɦɛŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "banka",
+                "EN": "bank",
+                "DE": "die Bank",
+                "FR": "la banque",
+                "ES": "el banco",
+                "IT": "la banca",
+                "RU": "банк",
+                "ZH": "银行"
+              },
+              "example": "은행은 몇 시까지 해요?"
+            },
+            {
+              "term": "지도",
+              "romanization": "jido",
+              "phonetic": "/tɕi.do/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "harita",
+                "EN": "map",
+                "DE": "die Karte",
+                "FR": "le plan",
+                "ES": "el mapa",
+                "IT": "la mappa",
+                "RU": "карта",
+                "ZH": "地图"
+              },
+              "example": "지도 좀 보여 주세요."
+            },
+            {
+              "term": "모퉁이",
+              "romanization": "motungi",
+              "phonetic": "/mo.tʰuŋ.i/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "köşe",
+                "EN": "corner",
+                "DE": "die Ecke",
+                "FR": "le coin",
+                "ES": "la esquina",
+                "IT": "l'angolo",
+                "RU": "угол",
+                "ZH": "拐角"
+              },
+              "example": "저 모퉁이에 편의점이 있어요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Seyahat",
+            "EN": "Travel",
+            "DE": "Reisen",
+            "FR": "Les voyages",
+            "ES": "Los viajes",
+            "IT": "I viaggi",
+            "RU": "Путешествия",
+            "ZH": "旅行"
+          },
+          "description": {
+            "TR": "Ulaşım, biletler ve oteller",
+            "EN": "Transport, tickets and hotels",
+            "DE": "Verkehrsmittel, Tickets und Hotels",
+            "FR": "Transports, billets et hôtels",
+            "ES": "Transporte, billetes y hoteles",
+            "IT": "Trasporti, biglietti e alberghi",
+            "RU": "Транспорт, билеты и гостиницы",
+            "ZH": "交通、车票和酒店"
+          },
+          "icon": "airplane",
+          "words": [
+            {
+              "term": "여행",
+              "romanization": "yeohaeng",
+              "phonetic": "/jʌ.ɦɛŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "seyahat",
+                "EN": "trip / travel",
+                "DE": "die Reise",
+                "FR": "le voyage",
+                "ES": "el viaje",
+                "IT": "il viaggio",
+                "RU": "путешествие",
+                "ZH": "旅行"
+              },
+              "example": "다음 달에 제주도로 여행을 가요."
+            },
+            {
+              "term": "비행기",
+              "romanization": "bihaenggi",
+              "phonetic": "/pi.ɦɛŋ.ɡi/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "uçak",
+                "EN": "airplane",
+                "DE": "das Flugzeug",
+                "FR": "l'avion",
+                "ES": "el avión",
+                "IT": "l'aereo",
+                "RU": "самолёт",
+                "ZH": "飞机"
+              },
+              "example": "제주도까지 비행기로 가요."
+            },
+            {
+              "term": "기차",
+              "romanization": "gicha",
+              "phonetic": "/ki.tɕʰa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tren",
+                "EN": "train",
+                "DE": "der Zug",
+                "FR": "le train",
+                "ES": "el tren",
+                "IT": "il treno",
+                "RU": "поезд",
+                "ZH": "火车"
+              },
+              "example": "기차로 부산에 가요."
+            },
+            {
+              "term": "버스",
+              "romanization": "beoseu",
+              "phonetic": "/pʌ.sɯ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "otobüs",
+                "EN": "bus",
+                "DE": "der Bus",
+                "FR": "le bus",
+                "ES": "el autobús",
+                "IT": "l'autobus",
+                "RU": "автобус",
+                "ZH": "公交车"
+              },
+              "example": "버스 정류장이 어디예요?"
+            },
+            {
+              "term": "표",
+              "romanization": "pyo",
+              "phonetic": "/pʰjo/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bilet",
+                "EN": "ticket",
+                "DE": "die Fahrkarte",
+                "FR": "le billet",
+                "ES": "el billete",
+                "IT": "il biglietto",
+                "RU": "билет",
+                "ZH": "票"
+              },
+              "example": "부산까지 가는 표 두 장 주세요."
+            },
+            {
+              "term": "호텔",
+              "romanization": "hotel",
+              "phonetic": "/ho.tʰel/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "otel",
+                "EN": "hotel",
+                "DE": "das Hotel",
+                "FR": "l'hôtel",
+                "ES": "el hotel",
+                "IT": "l'albergo",
+                "RU": "гостиница",
+                "ZH": "酒店"
+              },
+              "example": "호텔은 역 근처에 있어요."
+            },
+            {
+              "term": "공항",
+              "romanization": "gonghang",
+              "phonetic": "/koŋ.ɦaŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "havalimanı",
+                "EN": "airport",
+                "DE": "der Flughafen",
+                "FR": "l'aéroport",
+                "ES": "el aeropuerto",
+                "IT": "l'aeroporto",
+                "RU": "аэропорт",
+                "ZH": "机场"
+              },
+              "example": "공항까지 버스로 한 시간 걸려요."
+            },
+            {
+              "term": "예약",
+              "romanization": "yeyak",
+              "phonetic": "/je.jak̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "rezervasyon",
+                "EN": "reservation",
+                "DE": "die Reservierung",
+                "FR": "la réservation",
+                "ES": "la reserva",
+                "IT": "la prenotazione",
+                "RU": "бронирование",
+                "ZH": "预订"
+              },
+              "example": "일곱 시에 두 명으로 예약했어요."
+            },
+            {
+              "term": "여권",
+              "romanization": "yeogwon",
+              "phonetic": "/jʌ.k͈wʌn/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "pasaport",
+                "EN": "passport",
+                "DE": "der Reisepass",
+                "FR": "le passeport",
+                "ES": "el pasaporte",
+                "IT": "il passaporto",
+                "RU": "паспорт",
+                "ZH": "护照"
+              },
+              "example": "여권 좀 보여 주세요."
+            },
+            {
+              "term": "짐",
+              "romanization": "jim",
+              "phonetic": "/tɕim/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "bagaj",
+                "EN": "luggage",
+                "DE": "das Gepäck",
+                "FR": "les bagages",
+                "ES": "el equipaje",
+                "IT": "i bagagli",
+                "RU": "багаж",
+                "ZH": "行李"
+              },
+              "example": "짐이 너무 많아요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Restoranda",
+            "EN": "At the restaurant",
+            "DE": "Im Restaurant",
+            "FR": "Au restaurant",
+            "ES": "En el restaurante",
+            "IT": "Al ristorante",
+            "RU": "В ресторане",
+            "ZH": "在餐厅"
+          },
+          "description": {
+            "TR": "Sipariş, tatlar ve sofra görgüsü",
+            "EN": "Ordering, flavors and table manners",
+            "DE": "Bestellen, Geschmack und Tischsitten",
+            "FR": "Commander, saveurs et savoir-vivre",
+            "ES": "Pedir, sabores y modales en la mesa",
+            "IT": "Ordinare, sapori e buone maniere",
+            "RU": "Заказ, вкусы и манеры за столом",
+            "ZH": "点菜、口味和餐桌礼仪"
+          },
+          "icon": "menucard",
+          "words": [
+            {
+              "term": "식당",
+              "romanization": "sikdang",
+              "phonetic": "/ɕik̚.t͈aŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "restoran",
+                "EN": "restaurant",
+                "DE": "das Restaurant",
+                "FR": "le restaurant",
+                "ES": "el restaurante",
+                "IT": "il ristorante",
+                "RU": "ресторан",
+                "ZH": "餐厅"
+              },
+              "example": "이 근처에 좋은 식당이 있어요."
+            },
+            {
+              "term": "주문하다",
+              "romanization": "jumunhada",
+              "phonetic": "/tɕu.mun.ɦa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sipariş vermek",
+                "EN": "to order",
+                "DE": "bestellen",
+                "FR": "commander",
+                "ES": "pedir",
+                "IT": "ordinare",
+                "RU": "заказывать",
+                "ZH": "点菜"
+              },
+              "example": "벌써 주문했어요?"
+            },
+            {
+              "term": "추천",
+              "romanization": "chucheon",
+              "phonetic": "/tɕʰu.tɕʰʌn/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "öneri",
+                "EN": "recommendation",
+                "DE": "die Empfehlung",
+                "FR": "la recommandation",
+                "ES": "la recomendación",
+                "IT": "il consiglio",
+                "RU": "рекомендация",
+                "ZH": "推荐"
+              },
+              "example": "친구 추천으로 이 식당에 왔어요."
+            },
+            {
+              "term": "맵다",
+              "romanization": "maepda",
+              "phonetic": "/mɛp̚.t͈a/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "acı",
+                "EN": "spicy",
+                "DE": "scharf",
+                "FR": "épicé",
+                "ES": "picante",
+                "IT": "piccante",
+                "RU": "острый",
+                "ZH": "辣"
+              },
+              "example": "이 김치는 좀 매워요."
+            },
+            {
+              "term": "달다",
+              "romanization": "dalda",
+              "phonetic": "/tal.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "tatlı",
+                "EN": "sweet",
+                "DE": "süß",
+                "FR": "sucré",
+                "ES": "dulce",
+                "IT": "dolce",
+                "RU": "сладкий",
+                "ZH": "甜"
+              },
+              "example": "이 디저트는 너무 달아요."
+            },
+            {
+              "term": "젓가락",
+              "romanization": "jeotgarak",
+              "phonetic": "/tɕʌt̚.k͈a.ɾak̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yemek çubukları",
+                "EN": "chopsticks",
+                "DE": "die Essstäbchen",
+                "FR": "les baguettes",
+                "ES": "los palillos",
+                "IT": "le bacchette",
+                "RU": "палочки для еды",
+                "ZH": "筷子"
+              },
+              "example": "젓가락 좀 주세요."
+            },
+            {
+              "term": "계산",
+              "romanization": "gyesan",
+              "phonetic": "/kje.san/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hesap",
+                "EN": "bill",
+                "DE": "die Rechnung",
+                "FR": "l'addition",
+                "ES": "la cuenta",
+                "IT": "il conto",
+                "RU": "счёт",
+                "ZH": "账单"
+              },
+              "example": "계산은 따로 해 주세요."
+            },
+            {
+              "term": "자리",
+              "romanization": "jari",
+              "phonetic": "/tɕa.ɾi/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yer",
+                "EN": "seat",
+                "DE": "der Platz",
+                "FR": "la place",
+                "ES": "el sitio",
+                "IT": "il posto",
+                "RU": "место",
+                "ZH": "座位"
+              },
+              "example": "창가 자리 있어요?"
+            },
+            {
+              "term": "잘 먹겠습니다",
+              "romanization": "jal meokgetseumnida",
+              "phonetic": "/tɕal mʌk̚.k͈et̚.s͈ɯm.ni.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "Afiyet olsun (yemekten önce)",
+                "EN": "Let's eat (said before a meal)",
+                "DE": "Guten Appetit (vor dem Essen)",
+                "FR": "Bon appétit (avant de manger)",
+                "ES": "¡Buen provecho! (antes de comer)",
+                "IT": "Buon appetito (prima di mangiare)",
+                "RU": "Приятного аппетита (перед едой)",
+                "ZH": "我开动了"
+              },
+              "example": "와, 맛있겠다! 잘 먹겠습니다."
+            },
+            {
+              "term": "잘 먹었습니다",
+              "romanization": "jal meogeotseumnida",
+              "phonetic": "/tɕal mʌ.ɡʌt̚.s͈ɯm.ni.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "Elinize sağlık (yemekten sonra)",
+                "EN": "Thank you for the meal",
+                "DE": "Danke für das Essen",
+                "FR": "Merci pour le repas",
+                "ES": "Gracias por la comida",
+                "IT": "Grazie per il pasto",
+                "RU": "Спасибо за угощение",
+                "ZH": "谢谢款待"
+              },
+              "example": "잘 먹었습니다. 정말 맛있었어요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Sağlık",
+            "EN": "Health",
+            "DE": "Gesundheit",
+            "FR": "La santé",
+            "ES": "La salud",
+            "IT": "La salute",
+            "RU": "Здоровье",
+            "ZH": "健康"
+          },
+          "description": {
+            "TR": "Nasıl hissettiğinizi anlatmak",
+            "EN": "Describe how you feel",
+            "DE": "Beschwerden beschreiben",
+            "FR": "Décrire ses symptômes",
+            "ES": "Describir cómo te encuentras",
+            "IT": "Descrivere come ti senti",
+            "RU": "Рассказать о самочувствии",
+            "ZH": "描述身体状况"
+          },
+          "icon": "cross.case",
+          "words": [
+            {
+              "term": "몸",
+              "romanization": "mom",
+              "phonetic": "/mom/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "vücut",
+                "EN": "body",
+                "DE": "der Körper",
+                "FR": "le corps",
+                "ES": "el cuerpo",
+                "IT": "il corpo",
+                "RU": "тело",
+                "ZH": "身体"
+              },
+              "example": "몸 조심하세요."
+            },
+            {
+              "term": "머리",
+              "romanization": "meori",
+              "phonetic": "/mʌ.ɾi/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "baş",
+                "EN": "head",
+                "DE": "der Kopf",
+                "FR": "la tête",
+                "ES": "la cabeza",
+                "IT": "la testa",
+                "RU": "голова",
+                "ZH": "头"
+              },
+              "example": "아침부터 머리가 좀 아파요."
+            },
+            {
+              "term": "배",
+              "romanization": "bae",
+              "phonetic": "/pɛ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "karın",
+                "EN": "stomach",
+                "DE": "der Bauch",
+                "FR": "le ventre",
+                "ES": "el estómago",
+                "IT": "la pancia",
+                "RU": "живот",
+                "ZH": "肚子"
+              },
+              "example": "배가 고파요."
+            },
+            {
+              "term": "아프다",
+              "romanization": "apeuda",
+              "phonetic": "/a.pʰɯ.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ağrımak",
+                "EN": "to hurt",
+                "DE": "wehtun",
+                "FR": "avoir mal",
+                "ES": "doler",
+                "IT": "fare male",
+                "RU": "болеть",
+                "ZH": "疼"
+              },
+              "example": "다리가 아파요."
+            },
+            {
+              "term": "병",
+              "romanization": "byeong",
+              "phonetic": "/pjʌŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hastalık",
+                "EN": "illness",
+                "DE": "die Krankheit",
+                "FR": "la maladie",
+                "ES": "la enfermedad",
+                "IT": "la malattia",
+                "RU": "болезнь",
+                "ZH": "病"
+              },
+              "example": "이제 병이 다 나았어요."
+            },
+            {
+              "term": "약",
+              "romanization": "yak",
+              "phonetic": "/jak̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ilaç",
+                "EN": "medicine",
+                "DE": "das Medikament",
+                "FR": "le médicament",
+                "ES": "el medicamento",
+                "IT": "la medicina",
+                "RU": "лекарство",
+                "ZH": "药"
+              },
+              "example": "이 약을 하루에 세 번 드세요."
+            },
+            {
+              "term": "병원",
+              "romanization": "byeongwon",
+              "phonetic": "/pjʌŋ.wʌn/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hastane",
+                "EN": "hospital",
+                "DE": "das Krankenhaus",
+                "FR": "l'hôpital",
+                "ES": "el hospital",
+                "IT": "l'ospedale",
+                "RU": "больница",
+                "ZH": "医院"
+              },
+              "example": "근처에 병원이 있어요?"
+            },
+            {
+              "term": "의사",
+              "romanization": "uisa",
+              "phonetic": "/ɯi.sa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "doktor",
+                "EN": "doctor",
+                "DE": "der Arzt",
+                "FR": "le médecin",
+                "ES": "el médico",
+                "IT": "il medico",
+                "RU": "врач",
+                "ZH": "医生"
+              },
+              "example": "의사가 푹 쉬라고 했어요."
+            },
+            {
+              "term": "열이 나다",
+              "romanization": "yeori nada",
+              "phonetic": "/jʌ.ɾi na.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "ateşi çıkmak",
+                "EN": "to have a fever",
+                "DE": "Fieber haben",
+                "FR": "avoir de la fièvre",
+                "ES": "tener fiebre",
+                "IT": "avere la febbre",
+                "RU": "температурить",
+                "ZH": "发烧"
+              },
+              "example": "어제부터 열이 나요."
+            },
+            {
+              "term": "감기",
+              "romanization": "gamgi",
+              "phonetic": "/kam.ɡi/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "soğuk algınlığı",
+                "EN": "a cold",
+                "DE": "die Erkältung",
+                "FR": "le rhume",
+                "ES": "el resfriado",
+                "IT": "il raffreddore",
+                "RU": "простуда",
+                "ZH": "感冒"
+              },
+              "example": "감기에 걸렸어요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Hobiler",
+            "EN": "Hobbies",
+            "DE": "Hobbys",
+            "FR": "Les loisirs",
+            "ES": "Los pasatiempos",
+            "IT": "Gli hobby",
+            "RU": "Хобби",
+            "ZH": "爱好"
+          },
+          "description": {
+            "TR": "Boş zamanlarda yaptıklarınız",
+            "EN": "What you do in free time",
+            "DE": "Was du in der Freizeit machst",
+            "FR": "Ce que tu fais pendant tes loisirs",
+            "ES": "Lo que haces en tu tiempo libre",
+            "IT": "Cosa fai nel tempo libero",
+            "RU": "Чем заняться в свободное время",
+            "ZH": "业余时间做什么"
+          },
+          "icon": "paintpalette",
+          "words": [
+            {
+              "term": "취미",
+              "romanization": "chwimi",
+              "phonetic": "/tɕʰwi.mi/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "hobi",
+                "EN": "hobby",
+                "DE": "das Hobby",
+                "FR": "le passe-temps",
+                "ES": "el pasatiempo",
+                "IT": "l'hobby",
+                "RU": "хобби",
+                "ZH": "爱好"
+              },
+              "example": "취미가 뭐예요?"
+            },
+            {
+              "term": "음악",
+              "romanization": "eumak",
+              "phonetic": "/ɯ.mak̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "müzik",
+                "EN": "music",
+                "DE": "die Musik",
+                "FR": "la musique",
+                "ES": "la música",
+                "IT": "la musica",
+                "RU": "музыка",
+                "ZH": "音乐"
+              },
+              "example": "어떤 음악을 좋아해요?"
+            },
+            {
+              "term": "영화",
+              "romanization": "yeonghwa",
+              "phonetic": "/jʌŋ.ɦwa/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "film",
+                "EN": "movie",
+                "DE": "der Film",
+                "FR": "le film",
+                "ES": "la película",
+                "IT": "il film",
+                "RU": "фильм",
+                "ZH": "电影"
+              },
+              "example": "주말에 영화 보러 갈래요?"
+            },
+            {
+              "term": "책",
+              "romanization": "chaek",
+              "phonetic": "/tɕʰɛk̚/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "kitap",
+                "EN": "book",
+                "DE": "das Buch",
+                "FR": "le livre",
+                "ES": "el libro",
+                "IT": "il libro",
+                "RU": "книга",
+                "ZH": "书"
+              },
+              "example": "자기 전에 책을 읽어요."
+            },
+            {
+              "term": "사진",
+              "romanization": "sajin",
+              "phonetic": "/sa.dʑin/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "fotoğraf",
+                "EN": "photo",
+                "DE": "das Foto",
+                "FR": "la photo",
+                "ES": "la foto",
+                "IT": "la foto",
+                "RU": "фотография",
+                "ZH": "照片"
+              },
+              "example": "사진 찍어도 돼요?"
+            },
+            {
+              "term": "요리",
+              "romanization": "yori",
+              "phonetic": "/jo.ɾi/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yemek yapma",
+                "EN": "cooking",
+                "DE": "das Kochen",
+                "FR": "la cuisine",
+                "ES": "la cocina",
+                "IT": "la cucina",
+                "RU": "готовка",
+                "ZH": "做饭"
+              },
+              "example": "일요일에는 자주 요리를 해요."
+            },
+            {
+              "term": "운동",
+              "romanization": "undong",
+              "phonetic": "/un.doŋ/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "egzersiz",
+                "EN": "exercise",
+                "DE": "das Training",
+                "FR": "l'exercice physique",
+                "ES": "el ejercicio",
+                "IT": "l'esercizio fisico",
+                "RU": "тренировка",
+                "ZH": "锻炼"
+              },
+              "example": "매일 아침 운동을 해요."
+            },
+            {
+              "term": "노래하다",
+              "romanization": "noraehada",
+              "phonetic": "/no.ɾɛ.ɦa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "şarkı söylemek",
+                "EN": "to sing",
+                "DE": "singen",
+                "FR": "chanter",
+                "ES": "cantar",
+                "IT": "cantare",
+                "RU": "петь",
+                "ZH": "唱歌"
+              },
+              "example": "노래방에서 노래하는 걸 좋아해요."
+            },
+            {
+              "term": "수영하다",
+              "romanization": "suyeonghada",
+              "phonetic": "/su.jʌŋ.ɦa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "yüzmek",
+                "EN": "to swim",
+                "DE": "schwimmen",
+                "FR": "nager",
+                "ES": "nadar",
+                "IT": "nuotare",
+                "RU": "плавать",
+                "ZH": "游泳"
+              },
+              "example": "여름에는 바다에서 수영해요."
+            },
+            {
+              "term": "좋아하다",
+              "romanization": "joahada",
+              "phonetic": "/tɕo.a.ɦa.da/",
+              "difficulty": 2,
+              "translations": {
+                "TR": "sevmek",
+                "EN": "to like",
+                "DE": "mögen",
+                "FR": "aimer",
+                "ES": "gustar",
+                "IT": "piacere",
+                "RU": "нравиться",
+                "ZH": "喜欢"
+              },
+              "example": "저는 고양이를 좋아해요."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "TR": "İleri adımlar",
+        "EN": "Going further",
+        "DE": "Weiter geht's",
+        "FR": "Aller plus loin",
+        "ES": "Un paso más",
+        "IT": "Un passo avanti",
+        "RU": "Двигаемся дальше",
+        "ZH": "更进一步"
+      },
+      "levels": [
+        {
+          "title": {
+            "TR": "İş hayatı",
+            "EN": "Work",
+            "DE": "Arbeit",
+            "FR": "Le travail",
+            "ES": "El trabajo",
+            "IT": "Il lavoro",
+            "RU": "Работа",
+            "ZH": "工作"
+          },
+          "description": {
+            "TR": "Ofis, toplantılar ve iş arkadaşları",
+            "EN": "Office, meetings and colleagues",
+            "DE": "Büro, Besprechungen und Kollegen",
+            "FR": "Bureau, réunions et collègues",
+            "ES": "Oficina, reuniones y compañeros",
+            "IT": "Ufficio, riunioni e colleghi",
+            "RU": "Офис, совещания и коллеги",
+            "ZH": "办公室、会议和同事"
+          },
+          "icon": "briefcase",
+          "words": [
+            {
+              "term": "일",
+              "romanization": "il",
+              "phonetic": "/il/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "iş",
+                "EN": "work / job",
+                "DE": "die Arbeit",
+                "FR": "le travail",
+                "ES": "el trabajo",
+                "IT": "il lavoro",
+                "RU": "работа",
+                "ZH": "工作"
+              },
+              "example": "무슨 일을 하세요?"
+            },
+            {
+              "term": "회사",
+              "romanization": "hoesa",
+              "phonetic": "/hwe.sa/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "şirket",
+                "EN": "company",
+                "DE": "die Firma",
+                "FR": "l'entreprise",
+                "ES": "la empresa",
+                "IT": "l'azienda",
+                "RU": "компания",
+                "ZH": "公司"
+              },
+              "example": "회사는 역 옆에 있어요."
+            },
+            {
+              "term": "회의",
+              "romanization": "hoeui",
+              "phonetic": "/hwe.i/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "toplantı",
+                "EN": "meeting",
+                "DE": "die Besprechung",
+                "FR": "la réunion",
+                "ES": "la reunión",
+                "IT": "la riunione",
+                "RU": "совещание",
+                "ZH": "会议"
+              },
+              "example": "회의는 세 시에 시작해요."
+            },
+            {
+              "term": "동료",
+              "romanization": "dongnyo",
+              "phonetic": "/toŋ.njo/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "iş arkadaşı",
+                "EN": "colleague",
+                "DE": "der Kollege",
+                "FR": "le collègue",
+                "ES": "el compañero de trabajo",
+                "IT": "il collega",
+                "RU": "коллега",
+                "ZH": "同事"
+              },
+              "example": "동료하고 점심을 먹었어요."
+            },
+            {
+              "term": "상사",
+              "romanization": "sangsa",
+              "phonetic": "/saŋ.sa/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "amir",
+                "EN": "boss",
+                "DE": "der Chef",
+                "FR": "le chef",
+                "ES": "el jefe",
+                "IT": "il capo",
+                "RU": "начальник",
+                "ZH": "上司"
+              },
+              "example": "상사에게 결과를 보고했어요."
+            },
+            {
+              "term": "월급",
+              "romanization": "wolgeup",
+              "phonetic": "/wʌl.ɡɯp̚/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "maaş",
+                "EN": "salary",
+                "DE": "das Gehalt",
+                "FR": "le salaire",
+                "ES": "el sueldo",
+                "IT": "lo stipendio",
+                "RU": "зарплата",
+                "ZH": "工资"
+              },
+              "example": "월급은 매달 25일에 받아요."
+            },
+            {
+              "term": "바쁘다",
+              "romanization": "bappeuda",
+              "phonetic": "/pa.p͈ɯ.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "meşgul",
+                "EN": "busy",
+                "DE": "beschäftigt",
+                "FR": "occupé",
+                "ES": "ocupado",
+                "IT": "impegnato",
+                "RU": "занятой",
+                "ZH": "忙"
+              },
+              "example": "이번 주는 정말 바빠요."
+            },
+            {
+              "term": "휴가",
+              "romanization": "hyuga",
+              "phonetic": "/hju.ɡa/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "izin, tatil",
+                "EN": "vacation",
+                "DE": "der Urlaub",
+                "FR": "les vacances",
+                "ES": "las vacaciones",
+                "IT": "le ferie",
+                "RU": "отпуск",
+                "ZH": "休假"
+              },
+              "example": "다음 달에 휴가를 가요."
+            },
+            {
+              "term": "야근",
+              "romanization": "yageun",
+              "phonetic": "/ja.ɡɯn/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "fazla mesai",
+                "EN": "overtime",
+                "DE": "die Überstunden",
+                "FR": "les heures supplémentaires",
+                "ES": "las horas extra",
+                "IT": "gli straordinari",
+                "RU": "сверхурочная работа",
+                "ZH": "加班"
+              },
+              "example": "오늘은 야근을 해야 해요."
+            },
+            {
+              "term": "이메일",
+              "romanization": "imeil",
+              "phonetic": "/i.me.il/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "e-posta",
+                "EN": "email",
+                "DE": "die E-Mail",
+                "FR": "l'e-mail",
+                "ES": "el correo electrónico",
+                "IT": "l'e-mail",
+                "RU": "электронное письмо",
+                "ZH": "邮件"
+              },
+              "example": "나중에 이메일을 보낼게요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Duygular",
+            "EN": "Feelings",
+            "DE": "Gefühle",
+            "FR": "Les émotions",
+            "ES": "Las emociones",
+            "IT": "Le emozioni",
+            "RU": "Чувства",
+            "ZH": "情感"
+          },
+          "description": {
+            "TR": "Duygularınızı ifade etmek",
+            "EN": "Express how you feel",
+            "DE": "Gefühle ausdrücken",
+            "FR": "Exprimer ses émotions",
+            "ES": "Expresar cómo te sientes",
+            "IT": "Esprimere le emozioni",
+            "RU": "Выражать свои чувства",
+            "ZH": "表达你的感受"
+          },
+          "icon": "heart",
+          "words": [
+            {
+              "term": "기쁘다",
+              "romanization": "gippeuda",
+              "phonetic": "/ki.p͈ɯ.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "mutlu",
+                "EN": "happy",
+                "DE": "froh",
+                "FR": "heureux",
+                "ES": "feliz",
+                "IT": "felice",
+                "RU": "радостный",
+                "ZH": "高兴"
+              },
+              "example": "선물을 받아서 정말 기뻤어요."
+            },
+            {
+              "term": "슬프다",
+              "romanization": "seulpeuda",
+              "phonetic": "/sɯl.pʰɯ.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "üzgün",
+                "EN": "sad",
+                "DE": "traurig",
+                "FR": "triste",
+                "ES": "triste",
+                "IT": "triste",
+                "RU": "грустный",
+                "ZH": "难过"
+              },
+              "example": "그 영화는 너무 슬펐어요."
+            },
+            {
+              "term": "즐겁다",
+              "romanization": "jeulgeopda",
+              "phonetic": "/tɕɯl.ɡʌp̚.t͈a/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "eğlenceli",
+                "EN": "fun",
+                "DE": "macht Spaß",
+                "FR": "amusant",
+                "ES": "divertido",
+                "IT": "divertente",
+                "RU": "весёлый",
+                "ZH": "开心"
+              },
+              "example": "여행이 정말 즐거웠어요."
+            },
+            {
+              "term": "피곤하다",
+              "romanization": "pigonhada",
+              "phonetic": "/pʰi.ɡon.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "yorgun",
+                "EN": "tired",
+                "DE": "müde",
+                "FR": "fatigué",
+                "ES": "cansado",
+                "IT": "stanco",
+                "RU": "усталый",
+                "ZH": "累"
+              },
+              "example": "오늘은 너무 피곤해요."
+            },
+            {
+              "term": "화나다",
+              "romanization": "hwanada",
+              "phonetic": "/hwa.na.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "sinirlenmek",
+                "EN": "to get angry",
+                "DE": "sich ärgern",
+                "FR": "se fâcher",
+                "ES": "enfadarse",
+                "IT": "arrabbiarsi",
+                "RU": "сердиться",
+                "ZH": "生气"
+              },
+              "example": "친구가 늦어서 화났어요."
+            },
+            {
+              "term": "걱정하다",
+              "romanization": "geokjeonghada",
+              "phonetic": "/kʌk̚.t͈ɕʌŋ.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "endişelenmek",
+                "EN": "to worry",
+                "DE": "sich Sorgen machen",
+                "FR": "s'inquiéter",
+                "ES": "preocuparse",
+                "IT": "preoccuparsi",
+                "RU": "волноваться",
+                "ZH": "担心"
+              },
+              "example": "걱정하지 마세요."
+            },
+            {
+              "term": "외롭다",
+              "romanization": "oeropda",
+              "phonetic": "/we.ɾop̚.t͈a/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "yalnız",
+                "EN": "lonely",
+                "DE": "einsam",
+                "FR": "seul",
+                "ES": "solo",
+                "IT": "solo",
+                "RU": "одинокий",
+                "ZH": "孤单"
+              },
+              "example": "혼자 살아서 가끔 외로워요."
+            },
+            {
+              "term": "긴장하다",
+              "romanization": "ginjanghada",
+              "phonetic": "/kin.dʑaŋ.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "gerilmek",
+                "EN": "to be nervous",
+                "DE": "nervös sein",
+                "FR": "être nerveux",
+                "ES": "ponerse nervioso",
+                "IT": "essere nervoso",
+                "RU": "нервничать",
+                "ZH": "紧张"
+              },
+              "example": "면접 전에는 항상 긴장해요."
+            },
+            {
+              "term": "안심하다",
+              "romanization": "ansimhada",
+              "phonetic": "/an.ɕim.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "içi rahatlamak",
+                "EN": "to feel relieved",
+                "DE": "erleichtert sein",
+                "FR": "être soulagé",
+                "ES": "sentirse aliviado",
+                "IT": "sentirsi sollevato",
+                "RU": "успокоиться",
+                "ZH": "放心"
+              },
+              "example": "이제 다 괜찮으니까 안심하세요."
+            },
+            {
+              "term": "기분",
+              "romanization": "gibun",
+              "phonetic": "/ki.bun/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "ruh hâli",
+                "EN": "mood",
+                "DE": "die Laune",
+                "FR": "l'humeur",
+                "ES": "el ánimo",
+                "IT": "l'umore",
+                "RU": "настроение",
+                "ZH": "心情"
+              },
+              "example": "오늘 기분이 어때요?"
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Geçmiş olaylar",
+            "EN": "Past events",
+            "DE": "Vergangenes",
+            "FR": "Le passé",
+            "ES": "El pasado",
+            "IT": "Il passato",
+            "RU": "Прошлое",
+            "ZH": "过去的事"
+          },
+          "description": {
+            "TR": "Olup biteni anlatmak",
+            "EN": "Talk about what happened",
+            "DE": "Erzählen, was passiert ist",
+            "FR": "Raconter ce qui s'est passé",
+            "ES": "Contar lo que pasó",
+            "IT": "Raccontare cosa è successo",
+            "RU": "Рассказать о том, что было",
+            "ZH": "讲述发生过的事"
+          },
+          "icon": "clock.arrow.circlepath",
+          "words": [
+            {
+              "term": "지난주",
+              "romanization": "jinanju",
+              "phonetic": "/tɕi.nan.dʑu/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "geçen hafta",
+                "EN": "last week",
+                "DE": "letzte Woche",
+                "FR": "la semaine dernière",
+                "ES": "la semana pasada",
+                "IT": "la settimana scorsa",
+                "RU": "на прошлой неделе",
+                "ZH": "上周"
+              },
+              "example": "지난주에 오랜만에 친구를 만났어요."
+            },
+            {
+              "term": "작년",
+              "romanization": "jangnyeon",
+              "phonetic": "/tɕaŋ.njʌn/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "geçen yıl",
+                "EN": "last year",
+                "DE": "letztes Jahr",
+                "FR": "l'année dernière",
+                "ES": "el año pasado",
+                "IT": "l'anno scorso",
+                "RU": "в прошлом году",
+                "ZH": "去年"
+              },
+              "example": "작년에 한국에 왔어요."
+            },
+            {
+              "term": "지난달",
+              "romanization": "jinandal",
+              "phonetic": "/tɕi.nan.dal/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "geçen ay",
+                "EN": "last month",
+                "DE": "letzten Monat",
+                "FR": "le mois dernier",
+                "ES": "el mes pasado",
+                "IT": "il mese scorso",
+                "RU": "в прошлом месяце",
+                "ZH": "上个月"
+              },
+              "example": "지난달에 새 일을 시작했어요."
+            },
+            {
+              "term": "전에",
+              "romanization": "jeone",
+              "phonetic": "/tɕʌ.ne/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "önce",
+                "EN": "before / previously",
+                "DE": "früher",
+                "FR": "avant",
+                "ES": "antes",
+                "IT": "prima",
+                "RU": "раньше",
+                "ZH": "以前"
+              },
+              "example": "전에 여기 와 본 적이 있어요."
+            },
+            {
+              "term": "처음",
+              "romanization": "cheoeum",
+              "phonetic": "/tɕʰʌ.ɯm/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "ilk kez",
+                "EN": "for the first time",
+                "DE": "zum ersten Mal",
+                "FR": "pour la première fois",
+                "ES": "por primera vez",
+                "IT": "per la prima volta",
+                "RU": "впервые",
+                "ZH": "第一次"
+              },
+              "example": "태어나서 처음으로 눈을 봤어요."
+            },
+            {
+              "term": "벌써",
+              "romanization": "beolsseo",
+              "phonetic": "/pʌl.s͈ʌ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "zaten",
+                "EN": "already",
+                "DE": "schon",
+                "FR": "déjà",
+                "ES": "ya",
+                "IT": "già",
+                "RU": "уже",
+                "ZH": "已经"
+              },
+              "example": "벌써 점심을 먹었어요."
+            },
+            {
+              "term": "아직",
+              "romanization": "ajik",
+              "phonetic": "/a.dʑik̚/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "henüz",
+                "EN": "still / not yet",
+                "DE": "noch",
+                "FR": "encore",
+                "ES": "todavía",
+                "IT": "ancora",
+                "RU": "ещё",
+                "ZH": "还"
+              },
+              "example": "아직 숙제를 안 했어요."
+            },
+            {
+              "term": "경험",
+              "romanization": "gyeongheom",
+              "phonetic": "/kjʌŋ.ɦʌm/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "deneyim",
+                "EN": "experience",
+                "DE": "die Erfahrung",
+                "FR": "l'expérience",
+                "ES": "la experiencia",
+                "IT": "l'esperienza",
+                "RU": "опыт",
+                "ZH": "经验"
+              },
+              "example": "정말 좋은 경험이 됐어요."
+            },
+            {
+              "term": "추억",
+              "romanization": "chueok",
+              "phonetic": "/tɕʰu.ʌk̚/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "anı",
+                "EN": "memory",
+                "DE": "die Erinnerung",
+                "FR": "le souvenir",
+                "ES": "el recuerdo",
+                "IT": "il ricordo",
+                "RU": "воспоминание",
+                "ZH": "回忆"
+              },
+              "example": "즐거운 추억이 많아요."
+            },
+            {
+              "term": "잊어버리다",
+              "romanization": "ijeobeorida",
+              "phonetic": "/i.dʑʌ.bʌ.ɾi.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "unutmak",
+                "EN": "to forget",
+                "DE": "vergessen",
+                "FR": "oublier",
+                "ES": "olvidar",
+                "IT": "dimenticare",
+                "RU": "забывать",
+                "ZH": "忘记"
+              },
+              "example": "친구 생일을 잊어버렸어요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Planlar ve gelecek",
+            "EN": "Plans & future",
+            "DE": "Pläne & Zukunft",
+            "FR": "Projets et avenir",
+            "ES": "Planes y futuro",
+            "IT": "Progetti e futuro",
+            "RU": "Планы и будущее",
+            "ZH": "计划和未来"
+          },
+          "description": {
+            "TR": "Gelecek planlarınızdan bahsetmek",
+            "EN": "Talk about your future plans",
+            "DE": "Über Zukunftspläne sprechen",
+            "FR": "Parler de ses projets d'avenir",
+            "ES": "Hablar de tus planes",
+            "IT": "Parlare dei propri progetti",
+            "RU": "Рассказать о планах на будущее",
+            "ZH": "谈论未来的计划"
+          },
+          "icon": "calendar.badge.plus",
+          "words": [
+            {
+              "term": "계획",
+              "romanization": "gyehoek",
+              "phonetic": "/kje.ɦwek̚/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "plan",
+                "EN": "plan",
+                "DE": "der Plan",
+                "FR": "le projet",
+                "ES": "el plan",
+                "IT": "il piano",
+                "RU": "план",
+                "ZH": "计划"
+              },
+              "example": "여름 방학 계획을 세웠어요."
+            },
+            {
+              "term": "일정",
+              "romanization": "iljeong",
+              "phonetic": "/il.t͈ɕʌŋ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "program",
+                "EN": "schedule / plans",
+                "DE": "der Zeitplan",
+                "FR": "le programme",
+                "ES": "los planes",
+                "IT": "il programma",
+                "RU": "планы",
+                "ZH": "安排"
+              },
+              "example": "내일 일정이 어떻게 돼요?"
+            },
+            {
+              "term": "다음 주",
+              "romanization": "daeum ju",
+              "phonetic": "/ta.ɯm tɕu/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "gelecek hafta",
+                "EN": "next week",
+                "DE": "nächste Woche",
+                "FR": "la semaine prochaine",
+                "ES": "la semana que viene",
+                "IT": "la settimana prossima",
+                "RU": "на следующей неделе",
+                "ZH": "下周"
+              },
+              "example": "다음 주에 부산에 가요."
+            },
+            {
+              "term": "내년",
+              "romanization": "naenyeon",
+              "phonetic": "/nɛ.njʌn/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "gelecek yıl",
+                "EN": "next year",
+                "DE": "nächstes Jahr",
+                "FR": "l'année prochaine",
+                "ES": "el año que viene",
+                "IT": "l'anno prossimo",
+                "RU": "в следующем году",
+                "ZH": "明年"
+              },
+              "example": "내년에 대학교를 졸업해요."
+            },
+            {
+              "term": "미래",
+              "romanization": "mirae",
+              "phonetic": "/mi.ɾɛ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "gelecek",
+                "EN": "future",
+                "DE": "die Zukunft",
+                "FR": "l'avenir",
+                "ES": "el futuro",
+                "IT": "il futuro",
+                "RU": "будущее",
+                "ZH": "将来"
+              },
+              "example": "미래에 선생님이 되고 싶어요."
+            },
+            {
+              "term": "꿈",
+              "romanization": "kkum",
+              "phonetic": "/k͈um/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "hayal",
+                "EN": "dream",
+                "DE": "der Traum",
+                "FR": "le rêve",
+                "ES": "el sueño",
+                "IT": "il sogno",
+                "RU": "мечта",
+                "ZH": "梦想"
+              },
+              "example": "제 꿈은 세계 여행이에요."
+            },
+            {
+              "term": "약속",
+              "romanization": "yaksok",
+              "phonetic": "/jak̚.s͈ok̚/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "söz, buluşma",
+                "EN": "promise / appointment",
+                "DE": "die Verabredung",
+                "FR": "le rendez-vous",
+                "ES": "la cita",
+                "IT": "l'appuntamento",
+                "RU": "договорённость",
+                "ZH": "约定"
+              },
+              "example": "오늘 친구하고 약속이 있어요."
+            },
+            {
+              "term": "기대되다",
+              "romanization": "gidaedoeda",
+              "phonetic": "/ki.dɛ.dwe.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "dört gözle beklemek",
+                "EN": "to look forward to",
+                "DE": "sich freuen auf",
+                "FR": "avoir hâte",
+                "ES": "tener ganas de",
+                "IT": "non vedere l'ora",
+                "RU": "с нетерпением ждать",
+                "ZH": "期待"
+              },
+              "example": "다음 달 여행이 정말 기대돼요."
+            },
+            {
+              "term": "이사하다",
+              "romanization": "isahada",
+              "phonetic": "/i.sa.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "taşınmak",
+                "EN": "to move (house)",
+                "DE": "umziehen",
+                "FR": "déménager",
+                "ES": "mudarse",
+                "IT": "traslocare",
+                "RU": "переезжать",
+                "ZH": "搬家"
+              },
+              "example": "다음 달에 새 아파트로 이사할 거예요."
+            },
+            {
+              "term": "준비하다",
+              "romanization": "junbihada",
+              "phonetic": "/tɕun.bi.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "hazırlanmak",
+                "EN": "to prepare",
+                "DE": "vorbereiten",
+                "FR": "préparer",
+                "ES": "preparar",
+                "IT": "preparare",
+                "RU": "готовиться",
+                "ZH": "准备"
+              },
+              "example": "요즘 시험을 준비하고 있어요."
+            }
+          ]
+        },
+        {
+          "title": {
+            "TR": "Fikirler",
+            "EN": "Opinions",
+            "DE": "Meinungen",
+            "FR": "Les opinions",
+            "ES": "Las opiniones",
+            "IT": "Le opinioni",
+            "RU": "Мнения",
+            "ZH": "观点"
+          },
+          "description": {
+            "TR": "Ne düşündüğünüzü söylemek",
+            "EN": "Say what you think",
+            "DE": "Sagen, was du denkst",
+            "FR": "Dire ce que tu penses",
+            "ES": "Decir lo que piensas",
+            "IT": "Dire cosa ne pensi",
+            "RU": "Высказать своё мнение",
+            "ZH": "说出你的想法"
+          },
+          "icon": "bubble.left.and.bubble.right",
+          "words": [
+            {
+              "term": "생각하다",
+              "romanization": "saenggakhada",
+              "phonetic": "/sɛŋ.ɡa.kʰa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "düşünmek",
+                "EN": "to think",
+                "DE": "denken",
+                "FR": "penser",
+                "ES": "pensar",
+                "IT": "pensare",
+                "RU": "думать",
+                "ZH": "认为"
+              },
+              "example": "이 계획에 대해 어떻게 생각해요?"
+            },
+            {
+              "term": "의견",
+              "romanization": "uigyeon",
+              "phonetic": "/ɯi.ɡjʌn/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "fikir",
+                "EN": "opinion",
+                "DE": "die Meinung",
+                "FR": "l'avis",
+                "ES": "la opinión",
+                "IT": "l'opinione",
+                "RU": "мнение",
+                "ZH": "意见"
+              },
+              "example": "여러분의 의견을 듣고 싶어요."
+            },
+            {
+              "term": "찬성",
+              "romanization": "chanseong",
+              "phonetic": "/tɕʰan.sʌŋ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "lehinde olmak",
+                "EN": "in favor",
+                "DE": "dafür",
+                "FR": "pour",
+                "ES": "a favor",
+                "IT": "favorevole",
+                "RU": "за",
+                "ZH": "赞成"
+              },
+              "example": "저는 그 의견에 찬성해요."
+            },
+            {
+              "term": "반대",
+              "romanization": "bandae",
+              "phonetic": "/pan.dɛ/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "karşı olmak",
+                "EN": "against",
+                "DE": "dagegen",
+                "FR": "contre",
+                "ES": "en contra",
+                "IT": "contrario",
+                "RU": "против",
+                "ZH": "反对"
+              },
+              "example": "저는 그 계획에 반대해요."
+            },
+            {
+              "term": "이유",
+              "romanization": "iyu",
+              "phonetic": "/i.ju/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "sebep",
+                "EN": "reason",
+                "DE": "der Grund",
+                "FR": "la raison",
+                "ES": "el motivo",
+                "IT": "il motivo",
+                "RU": "причина",
+                "ZH": "理由"
+              },
+              "example": "이유를 말해 주세요."
+            },
+            {
+              "term": "중요하다",
+              "romanization": "jungyohada",
+              "phonetic": "/tɕuŋ.jo.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "önemli",
+                "EN": "important",
+                "DE": "wichtig",
+                "FR": "important",
+                "ES": "importante",
+                "IT": "importante",
+                "RU": "важный",
+                "ZH": "重要"
+              },
+              "example": "가족이 제일 중요해요."
+            },
+            {
+              "term": "편리하다",
+              "romanization": "pyeollihada",
+              "phonetic": "/pʰjʌl.li.ɦa.da/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "kullanışlı",
+                "EN": "convenient",
+                "DE": "praktisch",
+                "FR": "pratique",
+                "ES": "práctico",
+                "IT": "comodo",
+                "RU": "удобный",
+                "ZH": "方便"
+              },
+              "example": "이 동네는 교통이 편리해요."
+            },
+            {
+              "term": "어렵다",
+              "romanization": "eoryeopda",
+              "phonetic": "/ʌ.ɾjʌp̚.t͈a/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "zor",
+                "EN": "difficult",
+                "DE": "schwierig",
+                "FR": "difficile",
+                "ES": "difícil",
+                "IT": "difficile",
+                "RU": "трудный",
+                "ZH": "难"
+              },
+              "example": "한국어 문법은 좀 어려워요."
+            },
+            {
+              "term": "쉽다",
+              "romanization": "swipda",
+              "phonetic": "/ɕwip̚.t͈a/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "kolay",
+                "EN": "easy",
+                "DE": "einfach",
+                "FR": "facile",
+                "ES": "fácil",
+                "IT": "facile",
+                "RU": "лёгкий",
+                "ZH": "简单"
+              },
+              "example": "이 문제는 쉬워요."
+            },
+            {
+              "term": "아마",
+              "romanization": "ama",
+              "phonetic": "/a.ma/",
+              "difficulty": 3,
+              "translations": {
+                "TR": "muhtemelen",
+                "EN": "probably",
+                "DE": "wahrscheinlich",
+                "FR": "probablement",
+                "ES": "probablemente",
+                "IT": "probabilmente",
+                "RU": "наверное",
+                "ZH": "大概"
+              },
+              "example": "아마 괜찮을 거예요."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sentences": [
+    {
+      "level": 1,
+      "target_text": "안녕하세요. 반갑습니다.",
+      "translations": {
+        "TR": "Merhaba, tanıştığımıza memnun oldum.",
+        "EN": "Hello, nice to meet you.",
+        "DE": "Hallo, freut mich.",
+        "FR": "Bonjour, enchanté.",
+        "ES": "Hola, mucho gusto.",
+        "IT": "Ciao, piacere.",
+        "RU": "Здравствуйте, очень приятно.",
+        "ZH": "你好，很高兴认识你。"
+      },
+      "key_word": "안녕하세요",
+      "key_word_translations": {
+        "TR": "Merhaba",
+        "EN": "Hello",
+        "DE": "Hallo",
+        "FR": "Bonjour",
+        "ES": "Hola",
+        "IT": "Ciao",
+        "RU": "Здравствуйте",
+        "ZH": "你好"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 1,
+      "target_text": "네, 감사합니다.",
+      "translations": {
+        "TR": "Evet, teşekkür ederim.",
+        "EN": "Yes, thank you.",
+        "DE": "Ja, danke.",
+        "FR": "Oui, merci.",
+        "ES": "Sí, gracias.",
+        "IT": "Sì, grazie.",
+        "RU": "Да, спасибо.",
+        "ZH": "好的，谢谢。"
+      },
+      "key_word": "감사합니다",
+      "key_word_translations": {
+        "TR": "Teşekkür ederim",
+        "EN": "Thank you",
+        "DE": "Danke schön",
+        "FR": "Merci",
+        "ES": "Gracias",
+        "IT": "Grazie",
+        "RU": "Спасибо",
+        "ZH": "谢谢"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 2,
+      "target_text": "사과 다섯 개 주세요.",
+      "translations": {
+        "TR": "Beş elma lütfen.",
+        "EN": "Five apples, please.",
+        "DE": "Fünf Äpfel, bitte.",
+        "FR": "Cinq pommes, s'il vous plaît.",
+        "ES": "Cinco manzanas, por favor.",
+        "IT": "Cinque mele, per favore.",
+        "RU": "Пять яблок, пожалуйста.",
+        "ZH": "请给我五个苹果。"
+      },
+      "key_word": "다섯",
+      "key_word_translations": {
+        "TR": "beş",
+        "EN": "five",
+        "DE": "fünf",
+        "FR": "cinq",
+        "ES": "cinco",
+        "IT": "cinque",
+        "RU": "пять",
+        "ZH": "五"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 2,
+      "target_text": "아들은 일곱 살이에요.",
+      "translations": {
+        "TR": "Oğlum yedi yaşında.",
+        "EN": "My son is seven years old.",
+        "DE": "Mein Sohn ist sieben Jahre alt.",
+        "FR": "Mon fils a sept ans.",
+        "ES": "Mi hijo tiene siete años.",
+        "IT": "Mio figlio ha sette anni.",
+        "RU": "Моему сыну семь лет.",
+        "ZH": "我儿子七岁。"
+      },
+      "key_word": "일곱",
+      "key_word_translations": {
+        "TR": "yedi",
+        "EN": "seven",
+        "DE": "sieben",
+        "FR": "sept",
+        "ES": "siete",
+        "IT": "sette",
+        "RU": "семь",
+        "ZH": "七"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 3,
+      "target_text": "이건 우리 가족이에요.",
+      "translations": {
+        "TR": "Bu benim ailem.",
+        "EN": "This is my family.",
+        "DE": "Das ist meine Familie.",
+        "FR": "Voici ma famille.",
+        "ES": "Esta es mi familia.",
+        "IT": "Questa è la mia famiglia.",
+        "RU": "Это моя семья.",
+        "ZH": "这是我的家人。"
+      },
+      "key_word": "가족",
+      "key_word_translations": {
+        "TR": "aile",
+        "EN": "family",
+        "DE": "die Familie",
+        "FR": "la famille",
+        "ES": "la familia",
+        "IT": "la famiglia",
+        "RU": "семья",
+        "ZH": "家人"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 3,
+      "target_text": "어머니는 선생님이세요.",
+      "translations": {
+        "TR": "Annem öğretmen.",
+        "EN": "My mother is a teacher.",
+        "DE": "Meine Mutter ist Lehrerin.",
+        "FR": "Ma mère est professeure.",
+        "ES": "Mi madre es profesora.",
+        "IT": "Mia madre è insegnante.",
+        "RU": "Моя мама — учительница.",
+        "ZH": "我妈妈是老师。"
+      },
+      "key_word": "어머니",
+      "key_word_translations": {
+        "TR": "anne",
+        "EN": "mother",
+        "DE": "die Mutter",
+        "FR": "la mère",
+        "ES": "la madre",
+        "IT": "la madre",
+        "RU": "мать",
+        "ZH": "母亲"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 4,
+      "target_text": "물 주세요.",
+      "translations": {
+        "TR": "Su lütfen.",
+        "EN": "Water, please.",
+        "DE": "Wasser, bitte.",
+        "FR": "De l'eau, s'il vous plaît.",
+        "ES": "Agua, por favor.",
+        "IT": "Acqua, per favore.",
+        "RU": "Воды, пожалуйста.",
+        "ZH": "请给我水。"
+      },
+      "key_word": "물",
+      "key_word_translations": {
+        "TR": "su",
+        "EN": "water",
+        "DE": "das Wasser",
+        "FR": "l'eau",
+        "ES": "el agua",
+        "IT": "l'acqua",
+        "RU": "вода",
+        "ZH": "水"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 4,
+      "target_text": "저는 고기를 안 먹어요.",
+      "translations": {
+        "TR": "Et yemiyorum.",
+        "EN": "I don't eat meat.",
+        "DE": "Ich esse kein Fleisch.",
+        "FR": "Je ne mange pas de viande.",
+        "ES": "No como carne.",
+        "IT": "Non mangio carne.",
+        "RU": "Я не ем мясо.",
+        "ZH": "我不吃肉。"
+      },
+      "key_word": "고기",
+      "key_word_translations": {
+        "TR": "et",
+        "EN": "meat",
+        "DE": "das Fleisch",
+        "FR": "la viande",
+        "ES": "la carne",
+        "IT": "la carne",
+        "RU": "мясо",
+        "ZH": "肉"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 5,
+      "target_text": "커피 한 잔 주세요.",
+      "translations": {
+        "TR": "Bir kahve lütfen.",
+        "EN": "One coffee, please.",
+        "DE": "Einen Kaffee, bitte.",
+        "FR": "Un café, s'il vous plaît.",
+        "ES": "Un café, por favor.",
+        "IT": "Un caffè, per favore.",
+        "RU": "Один кофе, пожалуйста.",
+        "ZH": "请给我一杯咖啡。"
+      },
+      "key_word": "주세요",
+      "key_word_translations": {
+        "TR": "… lütfen (verir misiniz)",
+        "EN": "please (give me …)",
+        "DE": "bitte (geben Sie mir …)",
+        "FR": "s'il vous plaît (donnez-moi …)",
+        "ES": "por favor (deme …)",
+        "IT": "per favore (mi dia …)",
+        "RU": "пожалуйста (дайте …)",
+        "ZH": "请给我"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 5,
+      "target_text": "이 케이크 맛있어요.",
+      "translations": {
+        "TR": "Bu pasta lezzetli.",
+        "EN": "This cake is delicious.",
+        "DE": "Dieser Kuchen ist lecker.",
+        "FR": "Ce gâteau est délicieux.",
+        "ES": "Este pastel está delicioso.",
+        "IT": "Questa torta è buona.",
+        "RU": "Этот торт вкусный.",
+        "ZH": "这个蛋糕很好吃。"
+      },
+      "key_word": "케이크",
+      "key_word_translations": {
+        "TR": "pasta",
+        "EN": "cake",
+        "DE": "der Kuchen",
+        "FR": "le gâteau",
+        "ES": "el pastel",
+        "IT": "la torta",
+        "RU": "торт",
+        "ZH": "蛋糕"
+      },
+      "difficulty": 1
+    },
+    {
+      "level": 6,
+      "target_text": "제 방은 작아요.",
+      "translations": {
+        "TR": "Odam küçük.",
+        "EN": "My room is small.",
+        "DE": "Mein Zimmer ist klein.",
+        "FR": "Ma chambre est petite.",
+        "ES": "Mi habitación es pequeña.",
+        "IT": "La mia stanza è piccola.",
+        "RU": "Моя комната маленькая.",
+        "ZH": "我的房间很小。"
+      },
+      "key_word": "방",
+      "key_word_translations": {
+        "TR": "oda",
+        "EN": "room",
+        "DE": "das Zimmer",
+        "FR": "la chambre",
+        "ES": "la habitación",
+        "IT": "la stanza",
+        "RU": "комната",
+        "ZH": "房间"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 6,
+      "target_text": "화장실이 어디예요?",
+      "translations": {
+        "TR": "Tuvalet nerede?",
+        "EN": "Where is the toilet?",
+        "DE": "Wo ist die Toilette?",
+        "FR": "Où sont les toilettes ?",
+        "ES": "¿Dónde está el baño?",
+        "IT": "Dov'è il bagno?",
+        "RU": "Где туалет?",
+        "ZH": "洗手间在哪里？"
+      },
+      "key_word": "화장실",
+      "key_word_translations": {
+        "TR": "tuvalet",
+        "EN": "toilet",
+        "DE": "die Toilette",
+        "FR": "les toilettes",
+        "ES": "el baño",
+        "IT": "il bagno",
+        "RU": "туалет",
+        "ZH": "洗手间"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 7,
+      "target_text": "매일 아침 일곱 시에 일어나요.",
+      "translations": {
+        "TR": "Her sabah saat yedide kalkarım.",
+        "EN": "I get up at seven every morning.",
+        "DE": "Ich stehe jeden Morgen um sieben auf.",
+        "FR": "Je me lève à sept heures tous les matins.",
+        "ES": "Me levanto a las siete todas las mañanas.",
+        "IT": "Mi alzo alle sette ogni mattina.",
+        "RU": "Я встаю каждое утро в семь.",
+        "ZH": "我每天早上七点起床。"
+      },
+      "key_word": "일어나요",
+      "key_word_translations": {
+        "TR": "kalkmak",
+        "EN": "to get up",
+        "DE": "aufstehen",
+        "FR": "se lever",
+        "ES": "levantarse",
+        "IT": "alzarsi",
+        "RU": "вставать",
+        "ZH": "起床"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 7,
+      "target_text": "밤에 도서관에서 공부해요.",
+      "translations": {
+        "TR": "Geceleri kütüphanede ders çalışırım.",
+        "EN": "I study at the library at night.",
+        "DE": "Abends lerne ich in der Bibliothek.",
+        "FR": "Le soir, j'étudie à la bibliothèque.",
+        "ES": "Por la noche estudio en la biblioteca.",
+        "IT": "La sera studio in biblioteca.",
+        "RU": "Вечером я занимаюсь в библиотеке.",
+        "ZH": "我晚上在图书馆学习。"
+      },
+      "key_word": "공부해요",
+      "key_word_translations": {
+        "TR": "ders çalışmak",
+        "EN": "to study",
+        "DE": "lernen",
+        "FR": "étudier",
+        "ES": "estudiar",
+        "IT": "studiare",
+        "RU": "учиться",
+        "ZH": "学习"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 8,
+      "target_text": "내일은 월요일이에요.",
+      "translations": {
+        "TR": "Yarın pazartesi.",
+        "EN": "Tomorrow is Monday.",
+        "DE": "Morgen ist Montag.",
+        "FR": "Demain, c'est lundi.",
+        "ES": "Mañana es lunes.",
+        "IT": "Domani è lunedì.",
+        "RU": "Завтра понедельник.",
+        "ZH": "明天是星期一。"
+      },
+      "key_word": "내일",
+      "key_word_translations": {
+        "TR": "yarın",
+        "EN": "tomorrow",
+        "DE": "morgen",
+        "FR": "demain",
+        "ES": "mañana",
+        "IT": "domani",
+        "RU": "завтра",
+        "ZH": "明天"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 8,
+      "target_text": "주말에 뭐 했어요?",
+      "translations": {
+        "TR": "Hafta sonu ne yaptın?",
+        "EN": "What did you do on the weekend?",
+        "DE": "Was hast du am Wochenende gemacht?",
+        "FR": "Qu'est-ce que tu as fait ce week-end ?",
+        "ES": "¿Qué hiciste el fin de semana?",
+        "IT": "Cosa hai fatto nel fine settimana?",
+        "RU": "Что ты делал на выходных?",
+        "ZH": "你周末做了什么？"
+      },
+      "key_word": "주말",
+      "key_word_translations": {
+        "TR": "hafta sonu",
+        "EN": "weekend",
+        "DE": "das Wochenende",
+        "FR": "le week-end",
+        "ES": "el fin de semana",
+        "IT": "il fine settimana",
+        "RU": "выходные",
+        "ZH": "周末"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 9,
+      "target_text": "오늘은 정말 더워요.",
+      "translations": {
+        "TR": "Bugün hava çok sıcak.",
+        "EN": "It's very hot today.",
+        "DE": "Heute ist es sehr heiß.",
+        "FR": "Il fait très chaud aujourd'hui.",
+        "ES": "Hoy hace mucho calor.",
+        "IT": "Oggi fa molto caldo.",
+        "RU": "Сегодня очень жарко.",
+        "ZH": "今天很热。"
+      },
+      "key_word": "더워요",
+      "key_word_translations": {
+        "TR": "sıcak",
+        "EN": "hot",
+        "DE": "heiß",
+        "FR": "chaud",
+        "ES": "caluroso",
+        "IT": "caldo",
+        "RU": "жаркий",
+        "ZH": "热"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 9,
+      "target_text": "내일 비가 온대요.",
+      "translations": {
+        "TR": "Yarın yağmur yağacakmış.",
+        "EN": "I heard it's going to rain tomorrow.",
+        "DE": "Morgen soll es regnen.",
+        "FR": "Il paraît qu'il va pleuvoir demain.",
+        "ES": "Dicen que mañana va a llover.",
+        "IT": "Dicono che domani pioverà.",
+        "RU": "Говорят, завтра будет дождь.",
+        "ZH": "听说明天会下雨。"
+      },
+      "key_word": "비",
+      "key_word_translations": {
+        "TR": "yağmur",
+        "EN": "rain",
+        "DE": "der Regen",
+        "FR": "la pluie",
+        "ES": "la lluvia",
+        "IT": "la pioggia",
+        "RU": "дождь",
+        "ZH": "雨"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 10,
+      "target_text": "이 신발 얼마예요?",
+      "translations": {
+        "TR": "Bu ayakkabılar ne kadar?",
+        "EN": "How much are these shoes?",
+        "DE": "Was kosten diese Schuhe?",
+        "FR": "Combien coûtent ces chaussures ?",
+        "ES": "¿Cuánto cuestan estos zapatos?",
+        "IT": "Quanto costano queste scarpe?",
+        "RU": "Сколько стоит эта обувь?",
+        "ZH": "这双鞋多少钱？"
+      },
+      "key_word": "신발",
+      "key_word_translations": {
+        "TR": "ayakkabı",
+        "EN": "shoes",
+        "DE": "die Schuhe",
+        "FR": "les chaussures",
+        "ES": "los zapatos",
+        "IT": "le scarpe",
+        "RU": "обувь",
+        "ZH": "鞋"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 10,
+      "target_text": "좀 비싸요.",
+      "translations": {
+        "TR": "Biraz pahalı.",
+        "EN": "It's a bit expensive.",
+        "DE": "Das ist ein bisschen teuer.",
+        "FR": "C'est un peu cher.",
+        "ES": "Es un poco caro.",
+        "IT": "È un po' caro.",
+        "RU": "Это немного дорого.",
+        "ZH": "有点儿贵。"
+      },
+      "key_word": "비싸요",
+      "key_word_translations": {
+        "TR": "pahalı",
+        "EN": "expensive",
+        "DE": "teuer",
+        "FR": "cher",
+        "ES": "caro",
+        "IT": "caro",
+        "RU": "дорогой",
+        "ZH": "贵"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 11,
+      "target_text": "역이 어디예요?",
+      "translations": {
+        "TR": "İstasyon nerede?",
+        "EN": "Where is the station?",
+        "DE": "Wo ist der Bahnhof?",
+        "FR": "Où est la gare ?",
+        "ES": "¿Dónde está la estación?",
+        "IT": "Dov'è la stazione?",
+        "RU": "Где станция?",
+        "ZH": "车站在哪里？"
+      },
+      "key_word": "역",
+      "key_word_translations": {
+        "TR": "istasyon",
+        "EN": "station",
+        "DE": "der Bahnhof",
+        "FR": "la gare",
+        "ES": "la estación",
+        "IT": "la stazione",
+        "RU": "станция",
+        "ZH": "车站"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 11,
+      "target_text": "다음 모퉁이에서 오른쪽으로 도세요.",
+      "translations": {
+        "TR": "Bir sonraki köşeden sağa dönün.",
+        "EN": "Please turn right at the next corner.",
+        "DE": "Biegen Sie an der nächsten Ecke rechts ab.",
+        "FR": "Tournez à droite au prochain coin de rue.",
+        "ES": "Gire a la derecha en la próxima esquina.",
+        "IT": "Giri a destra al prossimo angolo.",
+        "RU": "Поверните направо на следующем углу.",
+        "ZH": "请在下一个拐角右转。"
+      },
+      "key_word": "오른쪽",
+      "key_word_translations": {
+        "TR": "sağ",
+        "EN": "right",
+        "DE": "rechts",
+        "FR": "à droite",
+        "ES": "a la derecha",
+        "IT": "a destra",
+        "RU": "направо",
+        "ZH": "右边"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 12,
+      "target_text": "호텔을 예약하고 싶어요.",
+      "translations": {
+        "TR": "Bir otel rezervasyonu yapmak istiyorum.",
+        "EN": "I'd like to book a hotel.",
+        "DE": "Ich möchte ein Hotel buchen.",
+        "FR": "Je voudrais réserver un hôtel.",
+        "ES": "Quiero reservar un hotel.",
+        "IT": "Vorrei prenotare un albergo.",
+        "RU": "Я хочу забронировать гостиницу.",
+        "ZH": "我想预订酒店。"
+      },
+      "key_word": "호텔",
+      "key_word_translations": {
+        "TR": "otel",
+        "EN": "hotel",
+        "DE": "das Hotel",
+        "FR": "l'hôtel",
+        "ES": "el hotel",
+        "IT": "l'albergo",
+        "RU": "гостиница",
+        "ZH": "酒店"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 12,
+      "target_text": "기차는 몇 시에 출발해요?",
+      "translations": {
+        "TR": "Tren saat kaçta kalkıyor?",
+        "EN": "What time does the train leave?",
+        "DE": "Wann fährt der Zug ab?",
+        "FR": "À quelle heure part le train ?",
+        "ES": "¿A qué hora sale el tren?",
+        "IT": "A che ora parte il treno?",
+        "RU": "Во сколько отправляется поезд?",
+        "ZH": "火车几点出发？"
+      },
+      "key_word": "기차",
+      "key_word_translations": {
+        "TR": "tren",
+        "EN": "train",
+        "DE": "der Zug",
+        "FR": "le train",
+        "ES": "el tren",
+        "IT": "il treno",
+        "RU": "поезд",
+        "ZH": "火车"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 13,
+      "target_text": "추천 메뉴가 뭐예요?",
+      "translations": {
+        "TR": "Ne önerirsiniz?",
+        "EN": "What do you recommend?",
+        "DE": "Was empfehlen Sie?",
+        "FR": "Qu'est-ce que vous me recommandez ?",
+        "ES": "¿Qué me recomienda?",
+        "IT": "Cosa mi consiglia?",
+        "RU": "Что вы посоветуете?",
+        "ZH": "你们有什么推荐的？"
+      },
+      "key_word": "추천",
+      "key_word_translations": {
+        "TR": "öneri",
+        "EN": "recommendation",
+        "DE": "die Empfehlung",
+        "FR": "la recommandation",
+        "ES": "la recomendación",
+        "IT": "il consiglio",
+        "RU": "рекомендация",
+        "ZH": "推荐"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 13,
+      "target_text": "계산해 주세요.",
+      "translations": {
+        "TR": "Hesap lütfen.",
+        "EN": "The bill, please.",
+        "DE": "Die Rechnung, bitte.",
+        "FR": "L'addition, s'il vous plaît.",
+        "ES": "La cuenta, por favor.",
+        "IT": "Il conto, per favore.",
+        "RU": "Счёт, пожалуйста.",
+        "ZH": "请结账。"
+      },
+      "key_word": "계산",
+      "key_word_translations": {
+        "TR": "hesap",
+        "EN": "bill",
+        "DE": "die Rechnung",
+        "FR": "l'addition",
+        "ES": "la cuenta",
+        "IT": "il conto",
+        "RU": "счёт",
+        "ZH": "账单"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 14,
+      "target_text": "머리가 아파요.",
+      "translations": {
+        "TR": "Başım ağrıyor.",
+        "EN": "I have a headache.",
+        "DE": "Ich habe Kopfschmerzen.",
+        "FR": "J'ai mal à la tête.",
+        "ES": "Me duele la cabeza.",
+        "IT": "Ho mal di testa.",
+        "RU": "У меня болит голова.",
+        "ZH": "我头疼。"
+      },
+      "key_word": "머리",
+      "key_word_translations": {
+        "TR": "baş",
+        "EN": "head",
+        "DE": "der Kopf",
+        "FR": "la tête",
+        "ES": "la cabeza",
+        "IT": "la testa",
+        "RU": "голова",
+        "ZH": "头"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 14,
+      "target_text": "병원에 가 보는 게 좋겠어요.",
+      "translations": {
+        "TR": "Hastaneye gitseniz iyi olur.",
+        "EN": "You should go to the hospital.",
+        "DE": "Sie sollten ins Krankenhaus gehen.",
+        "FR": "Vous devriez aller à l'hôpital.",
+        "ES": "Debería ir al hospital.",
+        "IT": "Dovrebbe andare in ospedale.",
+        "RU": "Вам лучше сходить в больницу.",
+        "ZH": "你最好去医院看看。"
+      },
+      "key_word": "병원",
+      "key_word_translations": {
+        "TR": "hastane",
+        "EN": "hospital",
+        "DE": "das Krankenhaus",
+        "FR": "l'hôpital",
+        "ES": "el hospital",
+        "IT": "l'ospedale",
+        "RU": "больница",
+        "ZH": "医院"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 15,
+      "target_text": "제 취미는 요리예요.",
+      "translations": {
+        "TR": "Hobim yemek yapmak.",
+        "EN": "My hobby is cooking.",
+        "DE": "Mein Hobby ist Kochen.",
+        "FR": "Mon passe-temps, c'est la cuisine.",
+        "ES": "Mi pasatiempo es cocinar.",
+        "IT": "Il mio hobby è cucinare.",
+        "RU": "Моё хобби — готовить.",
+        "ZH": "我的爱好是做饭。"
+      },
+      "key_word": "취미",
+      "key_word_translations": {
+        "TR": "hobi",
+        "EN": "hobby",
+        "DE": "das Hobby",
+        "FR": "le passe-temps",
+        "ES": "el pasatiempo",
+        "IT": "l'hobby",
+        "RU": "хобби",
+        "ZH": "爱好"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 15,
+      "target_text": "주말에 자주 영화를 봐요.",
+      "translations": {
+        "TR": "Hafta sonları sık sık film izlerim.",
+        "EN": "I often watch movies on weekends.",
+        "DE": "Am Wochenende sehe ich oft Filme.",
+        "FR": "Le week-end, je regarde souvent des films.",
+        "ES": "Los fines de semana veo películas a menudo.",
+        "IT": "Nel fine settimana guardo spesso film.",
+        "RU": "По выходным я часто смотрю фильмы.",
+        "ZH": "我周末经常看电影。"
+      },
+      "key_word": "영화",
+      "key_word_translations": {
+        "TR": "film",
+        "EN": "movie",
+        "DE": "der Film",
+        "FR": "le film",
+        "ES": "la película",
+        "IT": "il film",
+        "RU": "фильм",
+        "ZH": "电影"
+      },
+      "difficulty": 2
+    },
+    {
+      "level": 16,
+      "target_text": "내일 회의가 있어요.",
+      "translations": {
+        "TR": "Yarın toplantım var.",
+        "EN": "I have a meeting tomorrow.",
+        "DE": "Ich habe morgen eine Besprechung.",
+        "FR": "J'ai une réunion demain.",
+        "ES": "Mañana tengo una reunión.",
+        "IT": "Domani ho una riunione.",
+        "RU": "Завтра у меня совещание.",
+        "ZH": "我明天有个会。"
+      },
+      "key_word": "회의",
+      "key_word_translations": {
+        "TR": "toplantı",
+        "EN": "meeting",
+        "DE": "die Besprechung",
+        "FR": "la réunion",
+        "ES": "la reunión",
+        "IT": "la riunione",
+        "RU": "совещание",
+        "ZH": "会议"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 16,
+      "target_text": "요즘 일이 많이 바빠요.",
+      "translations": {
+        "TR": "Son zamanlarda işler çok yoğun.",
+        "EN": "Work has been busy lately.",
+        "DE": "In letzter Zeit habe ich viel Arbeit.",
+        "FR": "Ces derniers temps, j'ai beaucoup de travail.",
+        "ES": "Últimamente tengo mucho trabajo.",
+        "IT": "Ultimamente ho molto lavoro.",
+        "RU": "В последнее время много работы.",
+        "ZH": "最近工作很忙。"
+      },
+      "key_word": "일",
+      "key_word_translations": {
+        "TR": "iş",
+        "EN": "work / job",
+        "DE": "die Arbeit",
+        "FR": "le travail",
+        "ES": "el trabajo",
+        "IT": "il lavoro",
+        "RU": "работа",
+        "ZH": "工作"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 17,
+      "target_text": "만나서 정말 기뻐요.",
+      "translations": {
+        "TR": "Seni gördüğüme çok sevindim.",
+        "EN": "I'm so happy to see you.",
+        "DE": "Ich freue mich sehr, dich zu sehen.",
+        "FR": "Je suis très content de te voir.",
+        "ES": "Me alegro mucho de verte.",
+        "IT": "Sono molto felice di vederti.",
+        "RU": "Я очень рад тебя видеть.",
+        "ZH": "见到你我很高兴。"
+      },
+      "key_word": "기뻐요",
+      "key_word_translations": {
+        "TR": "mutlu",
+        "EN": "happy",
+        "DE": "froh",
+        "FR": "heureux",
+        "ES": "feliz",
+        "IT": "felice",
+        "RU": "радостный",
+        "ZH": "高兴"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 17,
+      "target_text": "시험 전에 많이 긴장했어요.",
+      "translations": {
+        "TR": "Sınavdan önce çok gerildim.",
+        "EN": "I was nervous before the exam.",
+        "DE": "Vor der Prüfung war ich nervös.",
+        "FR": "J'étais nerveux avant l'examen.",
+        "ES": "Estaba nervioso antes del examen.",
+        "IT": "Ero nervoso prima dell'esame.",
+        "RU": "Перед экзаменом я нервничал.",
+        "ZH": "考试前我很紧张。"
+      },
+      "key_word": "긴장",
+      "key_word_translations": {
+        "TR": "gerilmek",
+        "EN": "to be nervous",
+        "DE": "nervös sein",
+        "FR": "être nerveux",
+        "ES": "ponerse nervioso",
+        "IT": "essere nervoso",
+        "RU": "нервничать",
+        "ZH": "紧张"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 18,
+      "target_text": "작년에 바다에 갔어요.",
+      "translations": {
+        "TR": "Geçen yıl denize gittim.",
+        "EN": "I went to the seaside last year.",
+        "DE": "Letztes Jahr war ich am Meer.",
+        "FR": "L'année dernière, je suis allé à la mer.",
+        "ES": "El año pasado fui a la playa.",
+        "IT": "L'anno scorso sono andato al mare.",
+        "RU": "В прошлом году я ездил на море.",
+        "ZH": "我去年去了海边。"
+      },
+      "key_word": "작년",
+      "key_word_translations": {
+        "TR": "geçen yıl",
+        "EN": "last year",
+        "DE": "letztes Jahr",
+        "FR": "l'année dernière",
+        "ES": "el año pasado",
+        "IT": "l'anno scorso",
+        "RU": "в прошлом году",
+        "ZH": "去年"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 18,
+      "target_text": "처음으로 비행기를 탔어요.",
+      "translations": {
+        "TR": "İlk kez uçağa bindim.",
+        "EN": "I flew on a plane for the first time.",
+        "DE": "Ich bin zum ersten Mal geflogen.",
+        "FR": "J'ai pris l'avion pour la première fois.",
+        "ES": "Viajé en avión por primera vez.",
+        "IT": "Ho preso l'aereo per la prima volta.",
+        "RU": "Я впервые летел на самолёте.",
+        "ZH": "我第一次坐了飞机。"
+      },
+      "key_word": "처음",
+      "key_word_translations": {
+        "TR": "ilk kez",
+        "EN": "for the first time",
+        "DE": "zum ersten Mal",
+        "FR": "pour la première fois",
+        "ES": "por primera vez",
+        "IT": "per la prima volta",
+        "RU": "впервые",
+        "ZH": "第一次"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 19,
+      "target_text": "내년에 유학을 갈 거예요.",
+      "translations": {
+        "TR": "Gelecek yıl yurt dışında okumayı planlıyorum.",
+        "EN": "I'm planning to study abroad next year.",
+        "DE": "Ich habe vor, nächstes Jahr im Ausland zu studieren.",
+        "FR": "Je compte étudier à l'étranger l'année prochaine.",
+        "ES": "El año que viene pienso estudiar en el extranjero.",
+        "IT": "L'anno prossimo ho intenzione di studiare all'estero.",
+        "RU": "В следующем году я собираюсь учиться за границей.",
+        "ZH": "我打算明年去留学。"
+      },
+      "key_word": "내년",
+      "key_word_translations": {
+        "TR": "gelecek yıl",
+        "EN": "next year",
+        "DE": "nächstes Jahr",
+        "FR": "l'année prochaine",
+        "ES": "el año que viene",
+        "IT": "l'anno prossimo",
+        "RU": "в следующем году",
+        "ZH": "明年"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 19,
+      "target_text": "이번 주말에 무슨 계획 있어요?",
+      "translations": {
+        "TR": "Bu hafta sonu bir planın var mı?",
+        "EN": "Do you have any plans this weekend?",
+        "DE": "Hast du dieses Wochenende schon etwas vor?",
+        "FR": "Tu as des projets ce week-end ?",
+        "ES": "¿Tienes planes para este fin de semana?",
+        "IT": "Hai programmi per questo fine settimana?",
+        "RU": "У тебя есть планы на эти выходные?",
+        "ZH": "你这个周末有什么安排吗？"
+      },
+      "key_word": "계획",
+      "key_word_translations": {
+        "TR": "plan",
+        "EN": "plan",
+        "DE": "der Plan",
+        "FR": "le projet",
+        "ES": "el plan",
+        "IT": "il piano",
+        "RU": "план",
+        "ZH": "计划"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 20,
+      "target_text": "좋은 생각인 것 같아요.",
+      "translations": {
+        "TR": "Bence iyi bir fikir.",
+        "EN": "I think it's a good idea.",
+        "DE": "Ich finde, das ist eine gute Idee.",
+        "FR": "Je pense que c'est une bonne idée.",
+        "ES": "Creo que es una buena idea.",
+        "IT": "Penso che sia una buona idea.",
+        "RU": "Думаю, это хорошая идея.",
+        "ZH": "我觉得这是个好主意。"
+      },
+      "key_word": "생각",
+      "key_word_translations": {
+        "TR": "fikir",
+        "EN": "idea",
+        "DE": "die Idee",
+        "FR": "l'idée",
+        "ES": "la idea",
+        "IT": "l'idea",
+        "RU": "идея",
+        "ZH": "主意"
+      },
+      "difficulty": 3
+    },
+    {
+      "level": 20,
+      "target_text": "외국어 공부는 어려워요. 하지만 재미있어요.",
+      "translations": {
+        "TR": "Yabancı dil öğrenmek zor ama eğlenceli.",
+        "EN": "Learning a foreign language is hard but fun.",
+        "DE": "Eine Fremdsprache zu lernen ist schwer, aber es macht Spaß.",
+        "FR": "Apprendre une langue étrangère, c'est difficile mais amusant.",
+        "ES": "Aprender un idioma extranjero es difícil, pero divertido.",
+        "IT": "Studiare una lingua straniera è difficile ma divertente.",
+        "RU": "Учить иностранный язык трудно, но интересно.",
+        "ZH": "学外语很难，但是很有意思。"
+      },
+      "key_word": "어려워요",
+      "key_word_translations": {
+        "TR": "zor",
+        "EN": "difficult",
+        "DE": "schwierig",
+        "FR": "difficile",
+        "ES": "difícil",
+        "IT": "difficile",
+        "RU": "трудный",
+        "ZH": "难"
+      },
+      "difficulty": 3
+    }
+  ]
+}

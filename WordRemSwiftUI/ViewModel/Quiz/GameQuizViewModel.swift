@@ -181,7 +181,7 @@ final class GameQuizViewModel: ObservableObject {
                     id: q.word.id.uuidString,
                     term: q.word.term,
                     meaning: q.word.displayTranslation(phoneCode: native),
-                    phonetic: q.word.phonetic,
+                    phonetic: q.word.pronunciation,
                     languageCode: targetLangCode.uppercased(),
                     learnedAt: Date()
                 )], nativeLangCode: native)
