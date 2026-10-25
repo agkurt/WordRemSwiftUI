@@ -74,7 +74,9 @@ final class InAppPurchaseManager: ObservableObject {
 
     private func isActive(_ info: CustomerInfo?) -> Bool {
         guard let info else { return false }
-        return info.entitlements["pro"]?.isActive == true
+        // RevenueCat'teki yetki "premium"; eski sürümler "pro" kullanıyordu
+        return info.entitlements["premium"]?.isActive == true
+            || info.entitlements["pro"]?.isActive == true
             || !info.activeSubscriptions.isDisjoint(with: ProductIdentifier.all)
     }
 
