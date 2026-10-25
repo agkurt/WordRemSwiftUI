@@ -10,7 +10,7 @@ import RevenueCat
 /// App Store Connect'te aynı abonelik grubunda olmalı; yıllıkta 7 günlük ücretsiz deneme tanımlı.
 enum ProductIdentifier: String, CaseIterable {
     case annual  = "wordrem_annual_subscription"
-    case monthly = "wordrem_monthly_subscription"
+    case monthly = "wordrem_ai_monthly"
     case weekly  = "wordrem_weekly_subscription"
 
     static var all: [String] { allCases.map(\.rawValue) }
@@ -201,12 +201,12 @@ final class InAppPurchaseManager: ObservableObject {
                                              paymentMode: .freeTrial,
                                              subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week),
                                              numberOfPeriods: 1, type: .introductory)
-        let annual = TestStoreProduct(localizedTitle: "WordRem Pro Annual", price: 79.99, localizedPriceString: "$79.99",
+        let annual = TestStoreProduct(localizedTitle: "WordRem Pro Annual", price: 49.99, localizedPriceString: "$49.99",
                                       productIdentifier: ProductIdentifier.annual.rawValue, productType: .autoRenewableSubscription,
                                       localizedDescription: "", subscriptionGroupIdentifier: "pro",
                                       subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .year),
                                       introductoryDiscount: trial, locale: Locale(identifier: "en_US")).toStoreProduct()
-        let weekly = TestStoreProduct(localizedTitle: "WordRem Pro Monthly", price: 14.99, localizedPriceString: "$14.99",
+        let weekly = TestStoreProduct(localizedTitle: "WordRem Pro Monthly", price: 9.99, localizedPriceString: "$9.99",
                                       productIdentifier: ProductIdentifier.monthly.rawValue, productType: .autoRenewableSubscription,
                                       localizedDescription: "", subscriptionGroupIdentifier: "pro",
                                       subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month),

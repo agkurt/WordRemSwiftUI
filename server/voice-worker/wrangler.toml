@@ -16,7 +16,13 @@ FREE_TASTE_SECONDS = "180"
 SESSION_MAX_SECONDS = "600"
 TRIAL_DAILY_SECONDS = "600"
 PRO_DAILY_SECONDS = "1800"
+# Aylık sınır ödenen fiyattan hesaplanır, bu aralıkta tutulur
+MIN_MONTHLY_SECONDS = "1800"
 PRO_MONTHLY_SECONDS = "18000"
+# Dakika başı OpenAI maliyeti (gpt-realtime-mini, temkinli) ve net gelirin AI'a ayrılan payı
+COST_PER_MIN_USD = "0.035"
+AI_BUDGET_SHARE = "0.7"
+APPLE_COMMISSION = "0.15"
 
 # Gizli değerler (panelden ya da `npx wrangler secret put <AD>` ile):
 #   OPENAI_API_KEY   — OpenAI API anahtarı

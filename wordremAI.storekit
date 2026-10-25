@@ -36,7 +36,7 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "29.99",
+          "displayPrice": "49.99",
           "familyShareable": false,
           "groupNumber": 1,
           "internalID": "6C0FFEE0A1",
@@ -56,6 +56,28 @@
           "productID": "wordrem_annual_subscription",
           "recurringSubscriptionPeriod": "P1Y",
           "referenceName": "WordRem Pro Annual",
+          "subscriptionGroupID": "21985400",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "9.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6826938099",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "All courses and features, billed monthly",
+              "displayName": "WordRem Pro Monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "wordrem_ai_monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Monthly Subscription",
           "subscriptionGroupID": "21985400",
           "type": "RecurringSubscription",
           "winbackOffers": []
