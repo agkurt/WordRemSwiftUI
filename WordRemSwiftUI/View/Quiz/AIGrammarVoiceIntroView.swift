@@ -204,7 +204,7 @@ struct AIGrammarVoiceIntroView: View {
         VStack(spacing: 10) {
             Group {
                 if phase == .generating {
-                    Text("Konu anlatımı hazırlanıyor...")
+                    Text(AL.s(.hcPreparingLesson))
                         .font(.custom("Poppins-Regular", size: 15))
                         .foregroundStyle(Color(hex: "#94a3b8"))
                 } else if phase == .processing {
@@ -228,15 +228,15 @@ struct AIGrammarVoiceIntroView: View {
             // Alt ipucu
             switch phase {
             case .speaking:
-                Text("Kesmek için dokunun")
+                Text(AL.s(.hcTapToInterrupt))
                     .font(.custom("Poppins-Regular", size: 13))
                     .foregroundStyle(Color(hex: "#cbd5e1"))
             case .idle:
-                Text("Konuşmak için basılı tutun")
+                Text(AL.s(.hcHoldToSpeak))
                     .font(.custom("Poppins-Regular", size: 13))
                     .foregroundStyle(Color(hex: "#94a3b8"))
             case .listening:
-                Text(srm.recognizedText.isEmpty ? "Seni dinliyorum..." : srm.recognizedText)
+                Text(srm.recognizedText.isEmpty ? AL.s(.hcListening) : srm.recognizedText)
                     .font(.custom("Poppins-Italic", size: 13))
                     .foregroundStyle(Color(hex: "#94a3b8"))
                     .multilineTextAlignment(.center)
@@ -308,7 +308,7 @@ struct AIGrammarVoiceIntroView: View {
 
             Button { cleanup(); onProceed(topic) } label: {
                 HStack(spacing: 8) {
-                    Text("Quize Başla")
+                    Text(AL.s(.hcStartQuiz))
                         .font(.custom("Poppins-SemiBold", size: 16))
                     Image(systemName: "arrow.right")
                         .font(.system(size: 14, weight: .semibold))
@@ -340,7 +340,7 @@ struct AIGrammarVoiceIntroView: View {
             history.append((role: "assistant", content: text))
             await speakWithTypewriter(text)
         } else {
-            displayedText = "Konu anlatımı yüklenemedi. Quize geçmek için aşağıdaki butonu kullanabilirsin."
+            displayedText = AL.s(.hcLessonLoadFailed)
             phase = .idle
             stopDotBounce()
         }
@@ -460,7 +460,7 @@ struct AIGrammarVoiceIntroView: View {
         userRequestCount += 1
 
         guard !userText.isEmpty else {
-            let fallback = "Seni duyamadım, tekrar dener misin?"
+            let fallback = AL.s(.hcDidntHear)
             history.append((role: "assistant", content: fallback))
             await speakWithTypewriter(fallback)
             return
@@ -647,7 +647,7 @@ private struct TranscriptSheet: View {
                 }
             }
             .background(Color.white)
-            .navigationTitle("Konuşma Geçmişi")
+            .navigationTitle(AL.s(.hcChatHistory))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct ForgotAndSignUpButtonView: View {
+    @EnvironmentObject var langManager: LanguageManager
+    var onForgotPassword: () -> Void = {}
+
     var body: some View {
         VStack {
             HStack {
-                Button(action: {
-                    
-                }) {
-                    Text("Forgot Your Password?")
+                Button(action: onForgotPassword) {
+                    Text(langManager.s(.loginForgotPassword))
                 }
                 Spacer()
                 
-                NavigationLink("Sign up") {
+                NavigationLink(langManager.s(.loginSignUp)) {
                     RegisterScreenView().navigationBarBackButtonHidden()
                 }
             }
@@ -28,4 +29,5 @@ struct ForgotAndSignUpButtonView: View {
 
 #Preview {
     ForgotAndSignUpButtonView()
+        .environmentObject(LanguageManager.shared)
 }

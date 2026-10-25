@@ -116,25 +116,22 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
 
     // MARK: - Sign Out
     func signOut() {
-        let uid = SupabaseAuthService.shared.currentUserId?.uuidString
         Task {
+            // Ağ hatası olsa bile yerel oturum silinir; UI'ı her durumda sıfırla
             do {
                 try await SupabaseAuthService.shared.signOut()
-                try? await Purchases.shared.logOut()
-                await MainActor.run {
-                    self.userIsLoggedIn = false
-                    self.authState = .signedOut
-                    self.isAnonymous = true
-                    InAppPurchaseManager.shared.isPremium = false  // didSet → UserDefaults + DailyLimitManager
-                    UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
-                }
-                EventManager.shared.logLogoutEvent()
-                if let uid = uid {
-                    await NotificationService.shared.scheduleLogoutNotification(uid: uid)
-                }
             } catch {
                 print("❌ Sign-out error: \(error)")
             }
+            try? await Purchases.shared.logOut()
+            await MainActor.run {
+                self.userIsLoggedIn = false
+                self.authState = .signedOut
+                self.isAnonymous = true
+                InAppPurchaseManager.shared.isPremium = false  // didSet → UserDefaults + DailyLimitManager
+                UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+            }
+            EventManager.shared.logLogoutEvent()
         }
     }
 
@@ -365,6 +362,8 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                     throw URLError(.badServerResponse)
                 }
 
+                // Silinen kullanıcının oturumunu Keychain'den temizle (yoksa açılışta geri yüklenir)
+                try? await SupabaseAuthService.shared.signOut()
                 try? await Purchases.shared.logOut()
                 await MainActor.run {
                     self.isDeleting = false

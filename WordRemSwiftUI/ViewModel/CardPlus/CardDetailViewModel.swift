@@ -46,7 +46,7 @@ final class CardDetailViewModel: ObservableObject {
     }
 
     func deleteCard(at index: Int, deckId: String) {
-        guard index >= 0 && index < self.wordNames.count else {
+        guard index >= 0 && index < self.cardIds.count else {
             print("Index out of range")
             return
         }
@@ -54,11 +54,13 @@ final class CardDetailViewModel: ObservableObject {
         Task { @MainActor in
             do {
                 try await FirebaseService.shared.deleteCardInfoAndTransactions(deckId: deckId, cardId: cardId)
-                self.wordInfo.remove(at: index)
-                self.wordNames.remove(at: index)
-                self.wordMeans.remove(at: index)
-                self.cardIds.remove(at: index)
-                self.wordDescriptions.remove(at: index)
+                // await sonrası index kaymış olabilir — id ile bul
+                guard let i = self.cardIds.firstIndex(of: cardId) else { return }
+                if i < self.wordInfo.count { self.wordInfo.remove(at: i) }
+                if i < self.wordNames.count { self.wordNames.remove(at: i) }
+                if i < self.wordMeans.count { self.wordMeans.remove(at: i) }
+                self.cardIds.remove(at: i)
+                if i < self.wordDescriptions.count { self.wordDescriptions.remove(at: i) }
             } catch {
                 print("Error deleting card: \(error.localizedDescription)")
             }

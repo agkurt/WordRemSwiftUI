@@ -17,6 +17,12 @@ enum PurchaseResult {
     case failure
 }
 
+enum PurchaseOutcome {
+    case success
+    case cancelled
+    case failed
+}
+
 // MARK: - InAppPurchaseManager
 final class InAppPurchaseManager: ObservableObject {
 
@@ -100,13 +106,13 @@ final class InAppPurchaseManager: ObservableObject {
     }
 
     // MARK: - Purchase
-    func purchase(product: StoreProduct, completion: @escaping (Bool) -> Void) {
+    func purchase(product: StoreProduct, completion: @escaping (PurchaseOutcome) -> Void) {
         Purchases.shared.purchase(product: product) { [weak self] _, customerInfo, error, userCancelled in
-            if userCancelled { completion(false); return }
+            if userCancelled { completion(.cancelled); return }
             if let error {
                 print("❌ [IAP] Purchase error: \(error.localizedDescription)")
                 DispatchQueue.main.async { self?.failCount += 1 }
-                completion(false)
+                completion(.failed)
                 return
             }
             let isActive = customerInfo?.entitlements["pro"]?.isActive == true
@@ -114,7 +120,7 @@ final class InAppPurchaseManager: ObservableObject {
             DispatchQueue.main.async {
                 self?.isPremium = isActive   // didSet → UserDefaults + DailyLimitManager
             }
-            completion(isActive)
+            completion(isActive ? .success : .failed)
         }
     }
 

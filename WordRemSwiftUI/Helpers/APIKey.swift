@@ -12,16 +12,14 @@ enum APIKey {
     static var geminiApi: String {
         guard let filePath = Bundle.main.path(forResource: "ApiKey-Info", ofType: "plist")
         else {
-            fatalError("Couldn't find file 'ApiKey-Info.plist'.")
+            print("⚠️ ApiKey-Info.plist missing"); return ""
         }
         let plist = NSDictionary(contentsOfFile: filePath)
         guard let value = plist?.object(forKey: "GeminiApi") as? String else {
-            fatalError("Couldn't find key 'API_KEY' in 'ApiKey-Info.plist'.")
+            print("⚠️ API key missing in ApiKey-Info.plist"); return ""
         }
         if value.starts(with: "_") || value.isEmpty {
-            fatalError(
-                ""
-            )
+            print("⚠️ API key placeholder in ApiKey-Info.plist"); return ""
         }
         return value
     }
@@ -29,16 +27,14 @@ enum APIKey {
     static var wordsApi: String {
         guard let filePath = Bundle.main.path(forResource: "ApiKey-Info", ofType: "plist")
         else {
-            fatalError("Couldn't find file 'ApiKey-Info.plist'.")
+            print("⚠️ ApiKey-Info.plist missing"); return ""
         }
         let plist = NSDictionary(contentsOfFile: filePath)
         guard let value = plist?.object(forKey: "WordsApi") as? String else {
-            fatalError("Couldn't find key 'API_KEY' in 'ApiKey-Info.plist'.")
+            print("⚠️ API key missing in ApiKey-Info.plist"); return ""
         }
         if value.starts(with: "_") || value.isEmpty {
-            fatalError(
-                ""
-            )
+            print("⚠️ API key placeholder in ApiKey-Info.plist"); return ""
         }
         return value
     }
@@ -46,16 +42,14 @@ enum APIKey {
     static var newsApi: String {
         guard let filePath = Bundle.main.path(forResource: "ApiKey-Info", ofType: "plist")
         else {
-            fatalError("Couldn't find file 'ApiKey-Info.plist'.")
+            print("⚠️ ApiKey-Info.plist missing"); return ""
         }
         let plist = NSDictionary(contentsOfFile: filePath)
         guard let value = plist?.object(forKey: "NewsApi") as? String else {
-            fatalError("Couldn't find key 'API_KEY' in 'ApiKey-Info.plist'.")
+            print("⚠️ API key missing in ApiKey-Info.plist"); return ""
         }
         if value.starts(with: "_") || value.isEmpty {
-            fatalError(
-                ""
-            )
+            print("⚠️ API key placeholder in ApiKey-Info.plist"); return ""
         }
         return value
     }

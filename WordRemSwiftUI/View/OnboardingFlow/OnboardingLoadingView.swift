@@ -18,6 +18,7 @@ struct OnboardingLoadingView: View {
     var nativeLangCode: String = OL.nativeLangCode
 
     @EnvironmentObject var authManager: AuthManager
+    @State private var signInFailed = false
 
     var body: some View {
         ZStack {
@@ -26,6 +27,26 @@ struct OnboardingLoadingView: View {
             VStack(spacing: 32) {
                 Spacer()
                 LoadingAnimationView(width: 160, height: 160)
+                if signInFailed {
+                    VStack(spacing: 16) {
+                        Text(AL.s(.loadFailedMessage))
+                            .font(.custom("Feather-Bold", size: 16))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                        Button {
+                            signInFailed = false
+                            startGame()
+                        } label: {
+                            Text(AL.s(.paywallRetry))
+                                .font(.custom("Feather-Bold", size: 16))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 32)
+                                .padding(.vertical, 12)
+                                .background(AppTheme.Colors.primaryOrange, in: Capsule())
+                        }
+                    }
+                } else {
                 VStack(spacing: 16) {
                     Text(langManager.s(.loadingText))
                         .font(.custom("Feather-Bold", size: 18))
@@ -36,6 +57,7 @@ struct OnboardingLoadingView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                         .lineSpacing(6)
+                }
                 }
                 Spacer()
             }
@@ -68,14 +90,16 @@ struct OnboardingLoadingView: View {
                 try? await Task.sleep(nanoseconds: 300_000_000)
             }
 
-            // Supabase anonim giriş — hata olsa bile ilerle
+            // Supabase anonim giriş — oturum olmadan uygulama çalışmaz; hata olursa tekrar dene ekranı
             do {
                 try await SupabaseAuthService.shared.signInAnonymously()
                 let guestName = "Guest-\(Int.random(in: 1000...9999))"
                 try? await SupabaseAuthService.shared.ensureUserRow(username: guestName)
                 print("✅ Anonymous login success")
             } catch {
-                print("⚠️ Anonymous login failed, continuing anyway: \(error.localizedDescription)")
+                print("⚠️ Anonymous login failed: \(error.localizedDescription)")
+                await MainActor.run { signInFailed = true }
+                return
             }
 
             // Supabase'e TÜM tercihleri kaydet (arka planda, başarısız olsa da devam et)
@@ -89,7 +113,7 @@ struct OnboardingLoadingView: View {
                 )
             }
 
-            // HER DURUMDA ana uygulamaya geç
+            // Oturum açıldı → ana uygulamaya geç
             await MainActor.run {
                 authManager.userIsLoggedIn = true
                 UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")

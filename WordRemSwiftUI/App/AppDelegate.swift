@@ -24,14 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate,
         // Keep Firebase only for Cloud Messaging (push notifications)
         FirebaseApp.configure()
 
-        // Push notification permission
+        // Bildirim izni onboarding bittikten sonra WordRemSwiftUIApp'ta istenir
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: [.alert, .badge, .sound]
-        ) { granted, error in
-            if let error { print("🔔 Notification auth error: \(error)") }
-            print("🔔 Notification permission granted: \(granted)")
-        }
         application.registerForRemoteNotifications()
         Messaging.messaging().delegate = self
         InAppPurchaseManager.configure(apiKey: "appl_AIYIRTwVqPvcdVpfrGdzmqAYbox")

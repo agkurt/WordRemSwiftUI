@@ -19,6 +19,7 @@ struct GameQuizView: View {
     @StateObject private var vm = GameQuizViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var wordsLoaded = false
+    @State private var loadAttempt = 0
     @State private var showPaywall = false
     @State private var showHintSheet = false
     @State private var hintText: String = ""
@@ -91,6 +92,34 @@ struct GameQuizView: View {
                 .overlay(DailyLimitOverlay(onPaywall: { showPaywall = true },
                                            onQuit: { dismiss() }))
 
+            case .loadFailed:
+                VStack(spacing: 16) {
+                    Image(systemName: "wifi.exclamationmark")
+                        .font(.system(size: 44))
+                        .foregroundStyle(AppTheme.Colors.textSecondary)
+                    Text(AL.s(.loadFailedMessage))
+                        .font(.custom("Poppins-SemiBold", size: 15))
+                        .foregroundStyle(AppTheme.Colors.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                    Button {
+                        vm.state = .loading
+                        wordsLoaded = false
+                        loadAttempt += 1
+                    } label: {
+                        Text(AL.s(.paywallRetry))
+                            .font(.custom("Feather-Bold", size: 16))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 12)
+                            .background(AppTheme.Colors.primaryOrange, in: Capsule())
+                    }
+                    Button(AL.s(.gameQuit)) { dismiss() }
+                        .font(.custom("Feather-Bold", size: 14))
+                        .foregroundStyle(AppTheme.Colors.textSecondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
             case .completed(let score, let stars, let xp):
                 QuizResultView(
                     score: score,
@@ -112,7 +141,7 @@ struct GameQuizView: View {
                     .animation(.spring(response: 0.4), value: vm.showXPToast)
             }
         }
-        .task {
+        .task(id: loadAttempt) {
             guard !wordsLoaded else { return }
             wordsLoaded = true
             // .aiGenerated: sorular AIQuizView'dan preloadedQuestions olarak gelir
@@ -144,12 +173,16 @@ struct GameQuizView: View {
                 case .mistakes:
                     let ids = MistakesManager.shared.mistakeUUIDs
                     words = try await SupabaseDataService.shared.fetchWords(byIds: ids)
+                    // Veritabanında karşılığı olmayan (eski/geçersiz) id'leri listeden temizle
+                    let found = Set(words.map { $0.id })
+                    let stale = Set(ids.filter { !found.contains($0) }.map { $0.uuidString })
+                    MistakesManager.shared.removeMistakes(stale)
                 case .aiGenerated: return   // already handled above
                 }
                 vm.setup(sessionType: sessionType, words: words, sentences: sentences, levelTitle: title)
             } catch {
                 print("❌ Failed to load words: \(error)")
-                vm.state = .dailyLimitReached
+                vm.state = .loadFailed
             }
         }
         .sheet(isPresented: $showPaywall) {
@@ -1367,13 +1400,13 @@ private struct SpeakingMicButton: View {
                 }
                 .foregroundStyle(AppTheme.Colors.textSecondary)
             }
-            .alert("🔇 Sessiz Mod", isPresented: $showMuteAlert) {
-                Button("15 dk Sessiz Devam") {
+            .alert(AL.s(.hcMuteTitle), isPresented: $showMuteAlert) {
+                Button(AL.s(.hcMuteConfirm)) {
                     onMute()
                 }
-                Button("İptal", role: .cancel) {}
+                Button(AL.s(.hcCancel), role: .cancel) {}
             } message: {
-                Text("Önümüzdeki 15 dakika boyunca sesli soru sorulmayacak, diğer soru tipleriyle devam edeceğiz.")
+                Text(AL.s(.hcMuteMessage))
             }
         }
         // Yeni soru gelince önceki tanınan metni sıfırla
@@ -1549,13 +1582,13 @@ private struct SentenceBuilderContent: View {
             // ── Instruction ───────────────────────────────────────
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("YENİ KELİME")
+                    Text(AL.s(.hcNewWord))
                         .font(.custom("Poppins-Regular", size: 11))
                         .foregroundStyle(Color(hex: "#8b5cf6"))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(Color(hex: "#8b5cf6").opacity(0.1), in: Capsule())
-                    Text("Aşağıdaki cümleyi çevir")
+                    Text(AL.s(.hcTranslateSentence))
                         .font(.custom("Poppins-Bold", size: 22))
                         .foregroundStyle(AppTheme.Colors.textPrimary)
                 }

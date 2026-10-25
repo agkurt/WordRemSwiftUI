@@ -148,7 +148,7 @@ struct LanguageSelectionView: View {
         .navigationDestination(isPresented: $navigateToProficiency) {
             let code = availableLanguages.first(where: { $0.name == selectedLanguage })?.code ?? "en"
             ProficiencyView(
-                selectedLanguageName: selectedLanguage ?? "İngilizce",
+                selectedLanguageName: langManager.languageName(for: code),
                 selectedLanguageCode: code,
                 nativeLangCode: nativeLangCode
             )

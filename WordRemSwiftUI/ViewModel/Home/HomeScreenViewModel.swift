@@ -41,23 +41,23 @@ final class HomeScreenViewModel: ObservableObject {
     }
     
     func deleteCard(at index: Int) {
+        guard index >= 0 && index < self.cardIds.count else {
+            print("Index out of range")
+            return
+        }
+        // id'yi await'ten önce yakala; silme sonrası index kaymış olabilir
+        let cardId = self.cardIds[index]
         Task {
-            guard index >= 0 && index < self.cards.count else {
-                print("Index out of range")
-                return
-            }
             do {
-                let cardId = self.cardIds[index]
                 try await FirebaseService.shared.deleteCardAndTransactions(withId: cardId)
                 DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return } 
-                    self.cards.remove(at: index)
-                    self.cardNames.remove(at: index)
-                    self.cardIds.remove(at: index)
-                    self.selectedFlag.remove(at: index)
-                    if index < self.cardWordCounts.count {
-                        self.cardWordCounts.remove(at: index)
-                    }
+                    guard let self = self,
+                          let i = self.cardIds.firstIndex(of: cardId) else { return }
+                    if i < self.cards.count { self.cards.remove(at: i) }
+                    if i < self.cardNames.count { self.cardNames.remove(at: i) }
+                    self.cardIds.remove(at: i)
+                    if i < self.selectedFlag.count { self.selectedFlag.remove(at: i) }
+                    if i < self.cardWordCounts.count { self.cardWordCounts.remove(at: i) }
                 }
             } catch {
                 print("Error deleting card: \(error.localizedDescription)")

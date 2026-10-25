@@ -22,10 +22,10 @@ enum AppTab: Int, CaseIterable {
 
     var label: String {
         switch self {
-        case .home:        return "Decks"
-        case .path:        return "Path"
-        case .leaderboard: return "Rank"
-        case .profile:     return "Profile"
+        case .home:        return AL.s(.tabDecks)
+        case .path:        return AL.s(.tabPath)
+        case .leaderboard: return AL.s(.tabRank)
+        case .profile:     return AL.s(.tabProfile)
         }
     }
 }

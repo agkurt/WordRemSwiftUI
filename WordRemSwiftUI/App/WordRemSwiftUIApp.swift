@@ -51,16 +51,14 @@ struct WordRemSwiftUIApp: App {
             .environmentObject(languageManager)
             .environment(\.layoutDirection, languageManager.layoutDirection)
             .preferredColorScheme(.light)
+            .onChange(of: hasCompletedOnboarding) { completed in
+                guard completed else { return }
+                Task { await requestNotificationPermission() }
+            }
             .onAppear {
                 Task {
-                    // 1) Bildirim izni
-                    let center = UNUserNotificationCenter.current()
-                    if let success = try? await center.requestAuthorization(options: [.alert, .badge, .sound]),
-                       success {
-                        await MainActor.run {
-                            UIApplication.shared.registerForRemoteNotifications()
-                        }
-                    }
+                    // 1) Bildirim izni — açılışta değil, onboarding tamamlandıktan sonra
+                    if hasCompletedOnboarding { await requestNotificationPermission() }
 
                     // 2) Supabase'den kullanıcı dilini senkronize et (fallback: UserDefaults değeri korunur)
                     await languageManager.syncFromSupabase()
@@ -68,6 +66,16 @@ struct WordRemSwiftUIApp: App {
                     // 3) RevenueCat'ten premium durumunu senkronize et
                     await InAppPurchaseManager.shared.syncPremiumStatus()
                 }
+            }
+        }
+    }
+
+    private func requestNotificationPermission() async {
+        let center = UNUserNotificationCenter.current()
+        if let granted = try? await center.requestAuthorization(options: [.alert, .badge, .sound]),
+           granted {
+            await MainActor.run {
+                UIApplication.shared.registerForRemoteNotifications()
             }
         }
     }

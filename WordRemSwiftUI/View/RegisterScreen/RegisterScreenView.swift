@@ -13,6 +13,7 @@ struct RegisterScreenView: View {
     @Environment(\.presentationMode) var presentationMode
     // ✅ Access the shared AuthManager to trigger navigation
     @EnvironmentObject var authManager: AuthManager
+    @State private var showConfirmEmail = false
 
     var body: some View {
         NavigationStack {
@@ -117,10 +118,23 @@ struct RegisterScreenView: View {
             }
             // ✅ Navigate to MainTabView after successful registration
             .onReceive(viewModel.$isRegisterSuccess) { success in
-                if success {
+                guard success else { return }
+                if SupabaseAuthService.shared.isSignedIn {
                     authManager.userIsLoggedIn = true
                     authManager.authState = .signedIn
+                    authManager.isAnonymous = false
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                } else {
+                    // E-posta doğrulaması açık → oturum yok; kullanıcıyı bilgilendir ve girişe dön
+                    showConfirmEmail = true
                 }
+            }
+            .alert(AL.s(.registerCheckEmailTitle), isPresented: $showConfirmEmail) {
+                Button(AL.s(.paywallOk), role: .cancel) {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            } message: {
+                Text(AL.s(.registerCheckEmail))
             }
         }
     }

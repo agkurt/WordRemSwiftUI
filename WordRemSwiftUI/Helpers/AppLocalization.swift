@@ -132,6 +132,59 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case registerCheckEmailTitle = "register.check_email_title"
+        case registerCheckEmail = "register.check_email"
+        case hcAccuracy = "hc.accuracy"
+        case hcDailyStreak = "hc.daily_streak"
+        case hcBestStreak = "hc.best_streak"
+        case hcProgress = "hc.progress"
+        case hcRecommended = "hc.recommended"
+        case hcPerfectForBeginners = "hc.perfect_beginners"
+        case hcNext = "hc.next"
+        case hcLetsStart = "hc.lets_start"
+        case hcAIPage1Title = "hc.ai_p1_title"
+        case hcAIPage1Desc = "hc.ai_p1_desc"
+        case hcAIPage2Title = "hc.ai_p2_title"
+        case hcAIPage2Desc = "hc.ai_p2_desc"
+        case hcAIPage3Title = "hc.ai_p3_title"
+        case hcAIPage3Desc = "hc.ai_p3_desc"
+        case hcAIPage4Title = "hc.ai_p4_title"
+        case hcAIPage4Desc = "hc.ai_p4_desc"
+        case hcMuteTitle = "hc.mute_title"
+        case hcMuteConfirm = "hc.mute_confirm"
+        case hcCancel = "hc.cancel"
+        case hcMuteMessage = "hc.mute_message"
+        case hcNewWord = "hc.new_word"
+        case hcTranslateSentence = "hc.translate_sentence"
+        case hcPreparingLesson = "hc.preparing_lesson"
+        case hcTapToInterrupt = "hc.tap_interrupt"
+        case hcHoldToSpeak = "hc.hold_speak"
+        case hcListening = "hc.listening"
+        case hcStartQuiz = "hc.start_quiz"
+        case hcLessonLoadFailed = "hc.lesson_load_failed"
+        case hcDidntHear = "hc.didnt_hear"
+        case hcChatHistory = "hc.chat_history"
+        case hcAIServiceError = "hc.ai_service_error"
+        case hcAIRateLimited = "hc.ai_rate_limited"
+        case hcAIEmptyResponse = "hc.ai_empty"
+        case loginFailedTitle = "login.failed_title"
+        case loginButton = "login.button"
+        case loginForgotPassword = "login.forgot_password"
+        case loginSignUp = "login.sign_up"
+        case loginResetEmailMissing = "login.reset_email_missing"
+        case loginResetEmailSent = "login.reset_email_sent"
+        case loginResetTitle = "login.reset_title"
+        case paywallRestoreNothing = "paywall.restore_nothing"
+        case paywallRestoreTitle = "paywall.restore_title"
+        case paywallWeeklyTerm = "paywall.weekly_term"
+        case profileDeleteFailed = "profile.delete_failed"
+        case profileDeleting = "profile.deleting"
+        case usernameSkip = "username.skip"
+        case aiConsentTitle = "ai.consent_title"
+        case aiConsentMessage = "ai.consent_message"
+        case aiConsentAllow = "ai.consent_allow"
+        case aiConsentDeny = "ai.consent_deny"
+        case loadFailedMessage = "common.load_failed"
 
         // HomeScreenView
         case homeSearchPlaceholder  = "home.search_placeholder"
@@ -425,14 +478,14 @@ struct AL {
             .welcomeHaveAccount:    "ZATEN HESABIM VAR",
             // Paywall
             .paywallSubtitle:       "Öğrenmeyi bir üst seviyeye taşı",
-            .paywallFeature1:       "Reklamsız, kesintisiz öğrenme",
-            .paywallFeature2:       "Öncelikli yeni içeriklere erişim",
-            .paywallFeature3:       "Detaylı ilerleme & istatistikler",
-            .paywallFeature4:       "Akıllı hatırlatıcılar",
-            .paywallFeature1Sub:    "Hiç reklam olmadan öğrenmeye odaklan",
-            .paywallFeature2Sub:    "Yeni dersler sana ilk açılır",
-            .paywallFeature3Sub:    "Gelişimini grafiklerle takip et",
-            .paywallFeature4Sub:    "Günlük hedefini asla kaçırma",
+            .paywallFeature1:       "Sınırsız günlük pratik",
+            .paywallFeature2:       "Sınırsız ipucu",
+            .paywallFeature3:       "Sınırsız AI quiz",
+            .paywallFeature4:       "Sınırsız AI konuşma koçu",
+            .paywallFeature1Sub:    "Günlük soru limiti olmadan çalış",
+            .paywallFeature2Sub:    "Takıldığında ipucu hakkın hiç bitmesin",
+            .paywallFeature3Sub:    "Dilediğin kadar AI quiz oluştur",
+            .paywallFeature4Sub:    "Gramer ve telaffuzu AI ile sınırsız çalış",
             .paywallReviewsTitle:   "Kullanıcılar ne diyor?",
             .paywallWeeklyPro:      "Haftalık Pro",
             .paywallPerWeek:        "%@ / hafta",
@@ -447,6 +500,59 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .registerCheckEmailTitle: "E-postanı Doğrula",
+            .registerCheckEmail: "E-postana bir doğrulama bağlantısı gönderdik. Doğruladıktan sonra e-posta ve şifrenle giriş yap.",
+            .hcAccuracy: "Doğruluk",
+            .hcDailyStreak: "Günlük Seri",
+            .hcBestStreak: "En İyi Seri",
+            .hcProgress: "İlerleme",
+            .hcRecommended: "⭐ TAVSİYE EDİLEN",
+            .hcPerfectForBeginners: "Başlangıç için mükemmel",
+            .hcNext: "İleri",
+            .hcLetsStart: "Hadi Başlayalım!",
+            .hcAIPage1Title: "AI ile Kişiselleştirilmiş Quiz",
+            .hcAIPage1Desc: "Yapay zeka, seçtiğin konuya özel sorular hazırlar. Her seferinde farklı, her seferinde senin seviyene uygun!",
+            .hcAIPage2Title: "Gramer Zamanları",
+            .hcAIPage2Desc: "Simple Present'tan Past Perfect'e kadar tüm zaman kiplerini interaktif sorularla öğren. Özellikle Simple Present ile başlamanı öneririz! 🌟",
+            .hcAIPage3Title: "Cümle Yapısı",
+            .hcAIPage3Desc: "Koşul cümleleri, edilgen yapı, modal fiiller... Gerçek cümleler üzerinden pratik yaparak dili içselleştir.",
+            .hcAIPage4Title: "Kelime Kategorileri",
+            .hcAIPage4Desc: "Günlük hayat, yiyecekler, seyahat ve daha fazlası. Bağlam içinde kelime öğrenmek kalıcılığı 3 kat artırır!",
+            .hcMuteTitle: "🔇 Sessiz Mod",
+            .hcMuteConfirm: "15 dk Sessiz Devam",
+            .hcCancel: "İptal",
+            .hcMuteMessage: "Önümüzdeki 15 dakika boyunca sesli soru sorulmayacak, diğer soru tipleriyle devam edeceğiz.",
+            .hcNewWord: "YENİ KELİME",
+            .hcTranslateSentence: "Aşağıdaki cümleyi çevir",
+            .hcPreparingLesson: "Konu anlatımı hazırlanıyor...",
+            .hcTapToInterrupt: "Kesmek için dokunun",
+            .hcHoldToSpeak: "Konuşmak için basılı tutun",
+            .hcListening: "Seni dinliyorum...",
+            .hcStartQuiz: "Quize Başla",
+            .hcLessonLoadFailed: "Konu anlatımı yüklenemedi. Quize geçmek için aşağıdaki butonu kullanabilirsin.",
+            .hcDidntHear: "Seni duyamadım, tekrar dener misin?",
+            .hcChatHistory: "Konuşma Geçmişi",
+            .hcAIServiceError: "Yapay zekâ servisine şu an ulaşılamıyor. Lütfen daha sonra tekrar dene.",
+            .hcAIRateLimited: "Çok fazla istek gönderildi. Birkaç saniye bekleyip tekrar dene.",
+            .hcAIEmptyResponse: "Sunucu boş yanıt döndürdü.",
+            .loginFailedTitle: "Giriş Başarısız",
+            .loginButton: "Giriş Yap",
+            .loginForgotPassword: "Şifreni mi unuttun?",
+            .loginSignUp: "Kayıt ol",
+            .loginResetEmailMissing: "Önce yukarıya e-posta adresini yaz, sonra tekrar \"Şifreni mi unuttun?\" butonuna bas.",
+            .loginResetEmailSent: "Bu e-postaya ait bir hesap varsa şifre sıfırlama bağlantısı gönderdik.",
+            .loginResetTitle: "Şifre Sıfırlama",
+            .paywallRestoreNothing: "Bu Apple Hesabı için aktif bir abonelik bulunamadı.",
+            .paywallRestoreTitle: "Satın Alımları Geri Yükle",
+            .paywallWeeklyTerm: "1 hafta · otomatik yenilenir",
+            .profileDeleteFailed: "Hesabın silinemedi. Lütfen bağlantını kontrol edip tekrar dene.",
+            .profileDeleting: "Hesap siliniyor…",
+            .usernameSkip: "Atla",
+            .aiConsentTitle: "Yapay Zekâ Özellikleri",
+            .aiConsentMessage: "Quiz oluşturmak ve geri bildirim vermek için yazdığın metin ve söylediklerinin yazıya dökülmüş hali, işlenmek üzere yapay zekâ sağlayıcılarımıza (OpenAI ve Google) gönderilir. Ses kaydın gönderilmez. Ayrıntılar için Gizlilik Politikamıza bak.",
+            .aiConsentAllow: "İzin Ver",
+            .aiConsentDeny: "Şimdi Değil",
+            .loadFailedMessage: "İçerik yüklenemedi. Bağlantını kontrol edip tekrar dene.",
             // Home
             .homeSearchPlaceholder: "Deste ara...",
             .homeMyDecks:           "Destelerim",
@@ -690,14 +796,14 @@ struct AL {
             .welcomeHaveAccount:    "I ALREADY HAVE AN ACCOUNT",
             // Paywall
             .paywallSubtitle:       "Take your learning to the next level",
-            .paywallFeature1:       "Ad-free, uninterrupted learning",
-            .paywallFeature2:       "Priority access to new content",
-            .paywallFeature3:       "Detailed progress & statistics",
-            .paywallFeature4:       "Smart reminders",
-            .paywallFeature1Sub:    "Focus on learning with zero distractions",
-            .paywallFeature2Sub:    "New lessons unlock for you first",
-            .paywallFeature3Sub:    "Track your growth with detailed charts",
-            .paywallFeature4Sub:    "Never miss your daily goal",
+            .paywallFeature1:       "Unlimited daily practice",
+            .paywallFeature2:       "Unlimited hints",
+            .paywallFeature3:       "Unlimited AI quizzes",
+            .paywallFeature4:       "Unlimited AI speaking coach",
+            .paywallFeature1Sub:    "No daily question limit",
+            .paywallFeature2Sub:    "Never run out of hints when you're stuck",
+            .paywallFeature3Sub:    "Create as many AI quizzes as you like",
+            .paywallFeature4Sub:    "Practice grammar and pronunciation with AI",
             .paywallReviewsTitle:   "What users say",
             .paywallWeeklyPro:      "Weekly Pro",
             .paywallPerWeek:        "%@ / week",
@@ -712,6 +818,59 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .registerCheckEmailTitle: "Confirm Your Email",
+            .registerCheckEmail: "We sent a confirmation link to your email. After confirming, log in with your email and password.",
+            .hcAccuracy: "Accuracy",
+            .hcDailyStreak: "Daily Streak",
+            .hcBestStreak: "Best Streak",
+            .hcProgress: "Progress",
+            .hcRecommended: "⭐ RECOMMENDED",
+            .hcPerfectForBeginners: "Perfect for beginners",
+            .hcNext: "Next",
+            .hcLetsStart: "Let's Get Started!",
+            .hcAIPage1Title: "Personalized Quizzes with AI",
+            .hcAIPage1Desc: "AI creates questions tailored to the topic you choose. Different every time, always at your level!",
+            .hcAIPage2Title: "Grammar Tenses",
+            .hcAIPage2Desc: "Learn every tense from Simple Present to Past Perfect with interactive questions. We recommend starting with Simple Present! 🌟",
+            .hcAIPage3Title: "Sentence Structure",
+            .hcAIPage3Desc: "Conditionals, passive voice, modal verbs... Internalize the language by practicing with real sentences.",
+            .hcAIPage4Title: "Vocabulary Categories",
+            .hcAIPage4Desc: "Daily life, food, travel and more. Learning words in context makes them stick 3 times longer!",
+            .hcMuteTitle: "🔇 Silent Mode",
+            .hcMuteConfirm: "Mute for 15 min",
+            .hcCancel: "Cancel",
+            .hcMuteMessage: "No listening questions will be asked for the next 15 minutes; we'll continue with other question types.",
+            .hcNewWord: "NEW WORD",
+            .hcTranslateSentence: "Translate the sentence below",
+            .hcPreparingLesson: "Preparing the lesson...",
+            .hcTapToInterrupt: "Tap to interrupt",
+            .hcHoldToSpeak: "Hold to speak",
+            .hcListening: "I'm listening...",
+            .hcStartQuiz: "Start Quiz",
+            .hcLessonLoadFailed: "The lesson couldn't be loaded. You can use the button below to go to the quiz.",
+            .hcDidntHear: "I couldn't hear you, could you try again?",
+            .hcChatHistory: "Conversation History",
+            .hcAIServiceError: "The AI service is temporarily unavailable. Please try again later.",
+            .hcAIRateLimited: "Too many requests. Please wait a few seconds and try again.",
+            .hcAIEmptyResponse: "The server returned an empty response.",
+            .loginFailedTitle: "Sign In Failed",
+            .loginButton: "Log In",
+            .loginForgotPassword: "Forgot your password?",
+            .loginSignUp: "Sign up",
+            .loginResetEmailMissing: "Enter your email address above first, then tap \"Forgot your password?\" again.",
+            .loginResetEmailSent: "If an account exists for this email, we've sent a password reset link.",
+            .loginResetTitle: "Reset Password",
+            .paywallRestoreNothing: "No active subscription was found for this Apple Account.",
+            .paywallRestoreTitle: "Restore Purchases",
+            .paywallWeeklyTerm: "1 week · auto-renewing",
+            .profileDeleteFailed: "Your account could not be deleted. Please check your connection and try again.",
+            .profileDeleting: "Deleting account…",
+            .usernameSkip: "Skip",
+            .aiConsentTitle: "AI-Powered Features",
+            .aiConsentMessage: "To create quizzes and give feedback, the text you type and the transcript of what you say are sent to our AI providers (OpenAI and Google) for processing. Your audio recording is not sent. See our Privacy Policy for details.",
+            .aiConsentAllow: "Allow",
+            .aiConsentDeny: "Not Now",
+            .loadFailedMessage: "Couldn't load content. Check your connection and try again.",
             // Home
             .homeSearchPlaceholder: "Search decks...",
             .homeMyDecks:           "My Decks",
@@ -952,14 +1111,14 @@ struct AL {
             .welcomeHaveAccount:    "ICH HABE BEREITS EIN KONTO",
             // Paywall
             .paywallSubtitle:       "Bringe dein Lernen auf die nächste Stufe",
-            .paywallFeature1:       "Werbefreies, ununterbrochenes Lernen",
-            .paywallFeature2:       "Frühzeitiger Zugang zu neuen Inhalten",
-            .paywallFeature3:       "Detaillierter Fortschritt & Statistiken",
-            .paywallFeature4:       "Intelligente Erinnerungen",
-            .paywallFeature1Sub:    "Lerne ohne Ablenkung durch Werbung",
-            .paywallFeature2Sub:    "Neue Lektionen öffnen sich zuerst für dich",
-            .paywallFeature3Sub:    "Verfolge deinen Fortschritt mit Grafiken",
-            .paywallFeature4Sub:    "Verpasse nie dein Tagesziel",
+            .paywallFeature1:       "Unbegrenztes tägliches Üben",
+            .paywallFeature2:       "Unbegrenzte Hinweise",
+            .paywallFeature3:       "Unbegrenzte KI-Quizze",
+            .paywallFeature4:       "Unbegrenzter KI-Sprechcoach",
+            .paywallFeature1Sub:    "Kein tägliches Fragenlimit",
+            .paywallFeature2Sub:    "Dir gehen nie die Hinweise aus",
+            .paywallFeature3Sub:    "Erstelle so viele KI-Quizze, wie du willst",
+            .paywallFeature4Sub:    "Übe Grammatik und Aussprache mit KI",
             .paywallReviewsTitle:   "Was sagen Nutzer?",
             .paywallWeeklyPro:      "Wöchentliches Pro",
             .paywallPerWeek:        "%@ / Woche",
@@ -1157,14 +1316,14 @@ struct AL {
             .welcomeHaveAccount:    "J'AI DÉJÀ UN COMPTE",
             // Paywall
             .paywallSubtitle:       "Passe ton apprentissage au niveau supérieur",
-            .paywallFeature1:       "Apprentissage sans publicité ni interruption",
-            .paywallFeature2:       "Accès prioritaire aux nouveaux contenus",
-            .paywallFeature3:       "Progrès détaillés & statistiques",
-            .paywallFeature4:       "Rappels intelligents",
-            .paywallFeature1Sub:    "Concentre-toi sans aucune distraction",
-            .paywallFeature2Sub:    "Les nouveaux cours s'ouvrent pour toi en premier",
-            .paywallFeature3Sub:    "Suis ta progression avec des graphiques",
-            .paywallFeature4Sub:    "Ne manque jamais ton objectif quotidien",
+            .paywallFeature1:       "Pratique quotidienne illimitée",
+            .paywallFeature2:       "Indices illimités",
+            .paywallFeature3:       "Quiz IA illimités",
+            .paywallFeature4:       "Coach oral IA illimité",
+            .paywallFeature1Sub:    "Aucune limite de questions par jour",
+            .paywallFeature2Sub:    "Ne sois jamais à court d'indices",
+            .paywallFeature3Sub:    "Crée autant de quiz IA que tu veux",
+            .paywallFeature4Sub:    "Travaille grammaire et prononciation avec l'IA",
             .paywallReviewsTitle:   "Ce que disent les utilisateurs",
             .paywallWeeklyPro:      "Pro hebdomadaire",
             .paywallPerWeek:        "%@ / semaine",
@@ -1362,14 +1521,14 @@ struct AL {
             .welcomeHaveAccount:    "YA TENGO UNA CUENTA",
             // Paywall
             .paywallSubtitle:       "Lleva tu aprendizaje al siguiente nivel",
-            .paywallFeature1:       "Aprendizaje sin anuncios ni interrupciones",
-            .paywallFeature2:       "Acceso prioritario a nuevos contenidos",
-            .paywallFeature3:       "Progreso detallado y estadísticas",
-            .paywallFeature4:       "Recordatorios inteligentes",
-            .paywallFeature1Sub:    "Concéntrate sin ninguna distracción",
-            .paywallFeature2Sub:    "Las nuevas lecciones se abren para ti primero",
-            .paywallFeature3Sub:    "Sigue tu progreso con gráficos detallados",
-            .paywallFeature4Sub:    "Nunca pierdas tu objetivo diario",
+            .paywallFeature1:       "Práctica diaria ilimitada",
+            .paywallFeature2:       "Pistas ilimitadas",
+            .paywallFeature3:       "Cuestionarios IA ilimitados",
+            .paywallFeature4:       "Entrenador de conversación IA ilimitado",
+            .paywallFeature1Sub:    "Sin límite diario de preguntas",
+            .paywallFeature2Sub:    "Nunca te quedes sin pistas",
+            .paywallFeature3Sub:    "Crea todos los cuestionarios IA que quieras",
+            .paywallFeature4Sub:    "Practica gramática y pronunciación con IA",
             .paywallReviewsTitle:   "¿Qué dicen los usuarios?",
             .paywallWeeklyPro:      "Pro semanal",
             .paywallPerWeek:        "%@ / semana",
@@ -1567,14 +1726,14 @@ struct AL {
             .welcomeHaveAccount:    "HO GIÀ UN ACCOUNT",
             // Paywall
             .paywallSubtitle:       "Porta il tuo apprendimento al livello successivo",
-            .paywallFeature1:       "Apprendimento senza pubblicità e interruzioni",
-            .paywallFeature2:       "Accesso prioritario ai nuovi contenuti",
-            .paywallFeature3:       "Progressi dettagliati e statistiche",
-            .paywallFeature4:       "Promemoria intelligenti",
-            .paywallFeature1Sub:    "Concentrati senza alcuna distrazione",
-            .paywallFeature2Sub:    "Le nuove lezioni si aprono prima per te",
-            .paywallFeature3Sub:    "Segui i tuoi progressi con grafici dettagliati",
-            .paywallFeature4Sub:    "Non perdere mai il tuo obiettivo giornaliero",
+            .paywallFeature1:       "Pratica giornaliera illimitata",
+            .paywallFeature2:       "Suggerimenti illimitati",
+            .paywallFeature3:       "Quiz IA illimitati",
+            .paywallFeature4:       "Coach di conversazione IA illimitato",
+            .paywallFeature1Sub:    "Nessun limite giornaliero di domande",
+            .paywallFeature2Sub:    "Non restare mai senza suggerimenti",
+            .paywallFeature3Sub:    "Crea tutti i quiz IA che vuoi",
+            .paywallFeature4Sub:    "Esercita grammatica e pronuncia con l'IA",
             .paywallReviewsTitle:   "Cosa dicono gli utenti?",
             .paywallWeeklyPro:      "Pro settimanale",
             .paywallPerWeek:        "%@ / settimana",
@@ -1772,14 +1931,14 @@ struct AL {
             .welcomeHaveAccount:    "У МЕНЯ УЖЕ ЕСТЬ АККАУНТ",
             // Paywall
             .paywallSubtitle:       "Подними своё обучение на новый уровень",
-            .paywallFeature1:       "Обучение без рекламы и прерываний",
-            .paywallFeature2:       "Приоритетный доступ к новому контенту",
-            .paywallFeature3:       "Детальный прогресс и статистика",
-            .paywallFeature4:       "Умные напоминания",
-            .paywallFeature1Sub:    "Сосредоточься без отвлекающей рекламы",
-            .paywallFeature2Sub:    "Новые уроки открываются для тебя первым",
-            .paywallFeature3Sub:    "Следи за прогрессом с детальными графиками",
-            .paywallFeature4Sub:    "Никогда не пропускай ежедневную цель",
+            .paywallFeature1:       "Безлимитная ежедневная практика",
+            .paywallFeature2:       "Безлимитные подсказки",
+            .paywallFeature3:       "Безлимитные ИИ-квизы",
+            .paywallFeature4:       "Безлимитный ИИ-тренер речи",
+            .paywallFeature1Sub:    "Без дневного лимита вопросов",
+            .paywallFeature2Sub:    "Подсказки никогда не закончатся",
+            .paywallFeature3Sub:    "Создавай сколько угодно ИИ-квизов",
+            .paywallFeature4Sub:    "Тренируй грамматику и произношение с ИИ",
             .paywallReviewsTitle:   "Что говорят пользователи?",
             .paywallWeeklyPro:      "Еженедельный Pro",
             .paywallPerWeek:        "%@ / неделю",
@@ -1977,14 +2136,14 @@ struct AL {
             .welcomeHaveAccount:    "我已有账户",
             // Paywall
             .paywallSubtitle:       "将你的学习提升到新高度",
-            .paywallFeature1:       "无广告、不间断的学习",
-            .paywallFeature2:       "优先获取新内容",
-            .paywallFeature3:       "详细进度与统计",
-            .paywallFeature4:       "智能提醒",
-            .paywallFeature1Sub:    "专注学习，零干扰",
-            .paywallFeature2Sub:    "新课程优先为你解锁",
-            .paywallFeature3Sub:    "用图表追踪你的进步",
-            .paywallFeature4Sub:    "永不错过每日目标",
+            .paywallFeature1:       "无限每日练习",
+            .paywallFeature2:       "无限提示",
+            .paywallFeature3:       "无限 AI 测验",
+            .paywallFeature4:       "无限 AI 口语教练",
+            .paywallFeature1Sub:    "没有每日题目限制",
+            .paywallFeature2Sub:    "卡住时提示永远用不完",
+            .paywallFeature3Sub:    "随心创建 AI 测验",
+            .paywallFeature4Sub:    "用 AI 练习语法和发音",
             .paywallReviewsTitle:   "用户怎么说？",
             .paywallWeeklyPro:      "每周Pro",
             .paywallPerWeek:        "%@ / 周",

@@ -23,6 +23,7 @@ struct OnboardingPaywallView: View {
     @State private var showTerms: Bool = false
     @State private var showPurchaseErrorAlert: Bool = false
     @State private var showWelcomePro: Bool = false
+    @State private var restoreMessage: String?
 
     private let proColor     = Color(hex: "#8b5cf6")
     private let proColorDark = Color(hex: "#7c3aed")
@@ -51,6 +52,7 @@ struct OnboardingPaywallView: View {
                         .overlay(ProgressView().tint(.white).scaleEffect(1.5))
                 }
 
+                ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
 
                     // ── Hero ───────────────────────────────────────────
@@ -114,7 +116,7 @@ struct OnboardingPaywallView: View {
                                     Text(langManager.f(.paywallPerWeek, product.localizedPriceString))
                                         .font(.custom("Feather-Bold", size: 14))
                                         .foregroundStyle(.white.opacity(0.88))
-                                    Text("1 week · auto-renewing")
+                                    Text(langManager.s(.paywallWeeklyTerm))
                                         .font(.custom("Feather-Bold", size: 11))
                                         .foregroundStyle(.white.opacity(0.7))
                                 }
@@ -202,6 +204,9 @@ struct OnboardingPaywallView: View {
                         .padding(.bottom, 16)
                 }
                 .padding(.top, 4)
+                .frame(maxWidth: 560)
+                .frame(maxWidth: .infinity)
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -225,6 +230,14 @@ struct OnboardingPaywallView: View {
         }
         .onAppear {
             fetchPackage()
+        }
+        .alert(langManager.s(.paywallRestoreTitle), isPresented: Binding(
+            get: { restoreMessage != nil },
+            set: { if !$0 { restoreMessage = nil } }
+        )) {
+            Button(langManager.s(.paywallOk), role: .cancel) { restoreMessage = nil }
+        } message: {
+            Text(restoreMessage ?? "")
         }
         .alert(langManager.s(.paywallPurchaseFailed), isPresented: $showPurchaseErrorAlert) {
             Button(langManager.s(.paywallOk), role: .cancel) {}
@@ -276,14 +289,15 @@ struct OnboardingPaywallView: View {
         guard let product = weeklyProduct else { return }
         isLoading = true
         EventManager.shared.logPaywallEvent("purchase_tapped_weekly")
-        InAppPurchaseManager.shared.purchase(product: product) { isSuccessful in
+        InAppPurchaseManager.shared.purchase(product: product) { outcome in
             DispatchQueue.main.async { self.isLoading = false }
-            if isSuccessful {
+            switch outcome {
+            case .success:
                 EventManager.shared.logPaywallEvent("purchase_success_weekly")
-                DispatchQueue.main.async {
-                    self.showWelcomePro = true
-                }
-            } else {
+                DispatchQueue.main.async { self.showWelcomePro = true }
+            case .cancelled:
+                EventManager.shared.logPaywallEvent("purchase_cancelled_weekly")
+            case .failed:
                 EventManager.shared.logPaywallEvent("purchase_failed_weekly")
                 DispatchQueue.main.async { self.showPurchaseErrorAlert = true }
             }
@@ -303,6 +317,9 @@ struct OnboardingPaywallView: View {
                 }
             case .failure:
                 EventManager.shared.logPaywallEvent("restore_failed")
+                DispatchQueue.main.async {
+                    self.restoreMessage = langManager.s(.paywallRestoreNothing)
+                }
             }
         }
     }

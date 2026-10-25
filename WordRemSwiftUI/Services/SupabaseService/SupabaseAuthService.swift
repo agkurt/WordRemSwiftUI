@@ -33,6 +33,11 @@ final class SupabaseAuthService {
         _ = try await client.auth.signIn(email: email, password: password)
     }
 
+    // MARK: - Password Reset
+    func sendPasswordReset(email: String) async throws {
+        try await client.auth.resetPasswordForEmail(email)
+    }
+
     // MARK: - Sign Out
     func signOut() async throws {
         try await client.auth.signOut()

@@ -25,6 +25,7 @@ final class GameQuizViewModel: ObservableObject {
         case question
         case answered(isCorrect: Bool)
         case dailyLimitReached                              // replaces outOfLives
+        case loadFailed                                     // ağ hatası / boş seviye — paywall değil
         case completed(score: Int, stars: Int, xpEarned: Int)
     }
 
@@ -78,7 +79,7 @@ final class GameQuizViewModel: ObservableObject {
         self.sessionMistakes = []
 
         if questions.isEmpty {
-            self.state = .dailyLimitReached
+            self.state = .loadFailed
         } else if !DailyLimitManager.shared.canAskQuestion {
             self.state = .dailyLimitReached
         } else {
@@ -174,7 +175,8 @@ final class GameQuizViewModel: ObservableObject {
                 MistakesManager.shared.removeMistakes([q.word.id.uuidString])
             }
         } else {
-            if let q = currentQuestion {
+            // Cümle sorularının word.id'si geçici bir UUID — hatalar listesine yazma (asla temizlenemez)
+            if let q = currentQuestion, q.sentence == nil {
                 sessionMistakes.insert(q.word.id.uuidString)
             }
         }

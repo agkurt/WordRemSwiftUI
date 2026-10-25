@@ -322,7 +322,7 @@ private struct FeaturedTopicCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
-                        Text("⭐ TAVSİYE EDİLEN")
+                        Text(AL.s(.hcRecommended))
                             .font(.custom("Feather-Bold", size: 10))
                             .foregroundStyle(.white.opacity(0.9))
                             .padding(.horizontal, 8)
@@ -332,7 +332,7 @@ private struct FeaturedTopicCard: View {
                     Text(topic.rawValue)
                         .font(.custom("Feather-Bold", size: 18))
                         .foregroundStyle(.white)
-                    Text("Başlangıç için mükemmel")
+                    Text(AL.s(.hcPerfectForBeginners))
                         .font(.custom("Feather-Bold", size: 12))
                         .foregroundStyle(.white.opacity(0.85))
                 }
@@ -536,32 +536,32 @@ private struct AIQuizOnboardingOverlay: View {
     let onDismiss: () -> Void
     @State private var page = 0
 
-    private let pages: [(icon: String, colors: [Color], title: String, desc: String)] = [
+    private var pages: [(icon: String, colors: [Color], title: String, desc: String)] {[
         (
             icon: "sparkles",
             colors: [Color(hex: "#8b5cf6"), Color(hex: "#6366f1")],
-            title: "AI ile Kişiselleştirilmiş Quiz",
-            desc: "Yapay zeka, seçtiğin konuya özel sorular hazırlar. Her seferinde farklı, her seferinde senin seviyene uygun!"
+            title: AL.s(.hcAIPage1Title),
+            desc: AL.s(.hcAIPage1Desc)
         ),
         (
             icon: "clock.arrow.2.circlepath",
             colors: [Color(hex: "#f97316"), Color(hex: "#ec4899")],
-            title: "Gramer Zamanları",
-            desc: "Simple Present'tan Past Perfect'e kadar tüm zaman kiplerini interaktif sorularla öğren. Özellikle Simple Present ile başlamanı öneririz! 🌟"
+            title: AL.s(.hcAIPage2Title),
+            desc: AL.s(.hcAIPage2Desc)
         ),
         (
             icon: "text.alignleft",
             colors: [Color(hex: "#6366f1"), Color(hex: "#8b5cf6")],
-            title: "Cümle Yapısı",
-            desc: "Koşul cümleleri, edilgen yapı, modal fiiller... Gerçek cümleler üzerinden pratik yaparak dili içselleştir."
+            title: AL.s(.hcAIPage3Title),
+            desc: AL.s(.hcAIPage3Desc)
         ),
         (
             icon: "book.pages",
             colors: [Color(hex: "#10b981"), Color(hex: "#3b82f6")],
-            title: "Kelime Kategorileri",
-            desc: "Günlük hayat, yiyecekler, seyahat ve daha fazlası. Bağlam içinde kelime öğrenmek kalıcılığı 3 kat artırır!"
+            title: AL.s(.hcAIPage4Title),
+            desc: AL.s(.hcAIPage4Desc)
         )
-    ]
+    ]}
 
     var body: some View {
         ZStack {
@@ -625,7 +625,7 @@ private struct AIQuizOnboardingOverlay: View {
                                 withAnimation(.spring(response: 0.35)) { page += 1 }
                             } label: {
                                 HStack(spacing: 6) {
-                                    Text("İleri")
+                                    Text(AL.s(.hcNext))
                                     Image(systemName: "arrow.right")
                                 }
                                 .font(.custom("Feather-Bold", size: 15))
@@ -644,7 +644,7 @@ private struct AIQuizOnboardingOverlay: View {
                         } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: "sparkles")
-                                Text("Hadi Başlayalım!")
+                                Text(AL.s(.hcLetsStart))
                             }
                             .font(.custom("Feather-Bold", size: 16))
                             .foregroundStyle(.white)

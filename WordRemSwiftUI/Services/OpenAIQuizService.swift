@@ -75,11 +75,12 @@ final class OpenAIQuizService {
         var errorDescription: String? {
             switch self {
             case .missingAPIKey:
-                return "OpenAI API key eksik. Lütfen ayarlardan girin."
+                return AL.s(.hcAIServiceError)
             case .httpError(let code, let msg):
-                return "OpenAI hatası (\(code)): \(msg)"
+                print("❌ OpenAI HTTP \(code): \(msg)")
+                return AL.s(.hcAIServiceError)
             case .emptyResponse:
-                return "Sunucu boş yanıt döndürdü."
+                return AL.s(.hcAIEmptyResponse)
             }
         }
     }
@@ -126,9 +127,9 @@ final class OpenAIQuizService {
             let raw = String(data: data, encoding: .utf8) ?? "Bilinmeyen hata"
             let friendly: String
             switch http.statusCode {
-            case 401: friendly = "Geçersiz API key. Lütfen doğru anahtarı girin."
-            case 429: friendly = "Rate limit aşıldı. Birkaç saniye bekleyip tekrar deneyin."
-            case 400: friendly = "Geçersiz istek: \(raw)"
+            case 401: friendly = AL.s(.hcAIServiceError)
+            case 429: friendly = AL.s(.hcAIRateLimited)
+            case 400: friendly = AL.s(.hcAIServiceError)
             default:  friendly = "HTTP \(http.statusCode): \(raw)"
             }
             throw OAIError.httpError(http.statusCode, friendly)

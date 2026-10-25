@@ -84,17 +84,18 @@ struct ProfileView: View {
             .environmentObject(authManager)
         }
         .fullScreenCover(isPresented: $showLoginScreen) {
-            LoginScreenView()
+            LoginScreenView(showsCloseButton: true)
                 .environmentObject(authManager)
+                .environmentObject(langManager)
         }
         // Guest → Apple/Google girişi: loading + hata geri bildirimi
         .overlay {
-            if authManager.isAuthenticating {
+            if authManager.isAuthenticating || authManager.isDeleting {
                 Color.black.opacity(0.35).ignoresSafeArea()
                     .overlay(ProgressView().tint(.white).scaleEffect(1.5))
             }
         }
-        .alert("Sign In Failed", isPresented: Binding(
+        .alert(langManager.s(.loginFailedTitle), isPresented: Binding(
             get: { authManager.loginError != nil && !showLoginScreen && !showGuestLoginSheet },
             set: { if !$0 { authManager.loginError = nil } }
         )) {
@@ -311,7 +312,7 @@ struct ProfileView: View {
                 icon: "target",
                 color: Color(hex: "#E8409C"),
                 value: String(format: "%.0f%%", vm.stats.accuracy),
-                label: "Doğruluk"
+                label: AL.s(.hcAccuracy)
             )
             StatOverviewTile(
                 icon: "flag.checkered",
@@ -338,7 +339,7 @@ struct ProfileView: View {
                             .frame(width: 38, height: 38)
                         Text("🔥").font(.system(size: 20))
                     }
-                    Text("Günlük Seri")
+                    Text(AL.s(.hcDailyStreak))
                         .font(.custom("Feather-Bold", size: 15))
                         .foregroundStyle(Color(hex: "#ea580c"))
                     Spacer()
@@ -359,7 +360,7 @@ struct ProfileView: View {
                             .frame(width: 38, height: 38)
                         Text("🏆").font(.system(size: 20))
                     }
-                    Text("En İyi Seri")
+                    Text(AL.s(.hcBestStreak))
                         .font(.custom("Feather-Bold", size: 15))
                         .foregroundStyle(Color(hex: "#16a34a"))
                     Spacer()
@@ -397,7 +398,11 @@ struct ProfileView: View {
         let days = (0..<7).map { i -> Date in
             calendar.date(byAdding: .day, value: -6 + i, to: today)!
         }
-        let trNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cts", "Paz"]
+        // Pzt..Paz sırası — seçili dile göre kısa gün adları
+        var dayFormatter = Calendar(identifier: .gregorian)
+        dayFormatter.locale = Locale(identifier: langManager.currentLanguageCode)
+        let symbols = dayFormatter.shortWeekdaySymbols          // Sun=0
+        let dayNames = Array(symbols[1...]) + [symbols[0]]      // Mon=0
 
         return HStack(spacing: 0) {
             ForEach(Array(days.enumerated()), id: \.offset) { i, day in
@@ -407,7 +412,7 @@ struct ProfileView: View {
                 let isToday = calendar.isDateInToday(day)
 
                 VStack(spacing: 6) {
-                    Text(trNames[weekdayIdx])
+                    Text(dayNames[weekdayIdx])
                         .font(.custom("Feather-Bold", size: 10))
                         .foregroundStyle(isToday ? AppTheme.Colors.primaryOrange : Color(hex: "#94a3b8"))
 
@@ -438,7 +443,7 @@ struct ProfileView: View {
         let xpProgress = Double(xpInLevel) / Double(xpPerLevel)
 
         return VStack(alignment: .leading, spacing: 16) {
-            Text("İlerleme")
+            Text(AL.s(.hcProgress))
                 .font(.custom("Feather-Bold", size: 18))
                 .foregroundStyle(Color(hex: "#1a1a2e"))
 
@@ -507,7 +512,7 @@ struct ProfileView: View {
                 MiniProgressTile(
                     emoji: "🎯",
                     value: String(format: "%.0f%%", vm.stats.accuracy),
-                    label: "Doğruluk",
+                    label: AL.s(.hcAccuracy),
                     bg: Color(hex: "#fce7f3")
                 )
             }
@@ -614,6 +619,15 @@ struct ProfileView: View {
         } message: {
             Text(langManager.s(.profileDeleteMessage))
         }
+        .alert(langManager.s(.profileDeleteTitle), isPresented: Binding(
+            get: { authManager.deleteError != nil },
+            set: { if !$0 { authManager.deleteError = nil } }
+        )) {
+            Button(langManager.s(.paywallOk), role: .cancel) { authManager.deleteError = nil }
+        } message: {
+            Text(langManager.s(.profileDeleteFailed))
+        }
+        .disabled(authManager.isDeleting)
     }
 }
 
@@ -1306,27 +1320,23 @@ private struct UsernameSetupPopup: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Close butonu — sadece profil butonundan açılınca
-                if !isFirstSetup {
-                    HStack {
-                        Spacer()
-                        Button {
-                            focused = false
-                            onDismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(Color(hex: "#64748b"))
-                                .padding(10)
-                                .background(Color(hex: "#f1f5f9"), in: Circle())
-                        }
+                // Close butonu — her zaman (ilk kurulumda da atlanabilir; Apple 4.8 / 5.1.1)
+                HStack {
+                    Spacer()
+                    Button {
+                        focused = false
+                        onDismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Color(hex: "#64748b"))
+                            .padding(10)
+                            .background(Color(hex: "#f1f5f9"), in: Circle())
                     }
-                    .padding(.top, 16)
-                    .padding(.trailing, 16)
-                } else {
-                    // İlk login → close yok, sadece top padding
-                    Spacer().frame(height: 24)
+                    .accessibilityLabel(langManager.s(.usernameSkip))
                 }
+                .padding(.top, 16)
+                .padding(.trailing, 16)
 
                 MascotAnimationView(width: 110, height: 110)
 
