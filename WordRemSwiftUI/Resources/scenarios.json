@@ -1,0 +1,1057 @@
+{
+  "version": 1,
+  "chapters": [
+    {
+      "id": "meet",
+      "icon": "person.2.fill",
+      "level": 1,
+      "title": {
+        "TR": "Yeni insanlarla tanışma",
+        "EN": "Meeting people",
+        "DE": "Leute kennenlernen",
+        "FR": "Faire des rencontres",
+        "ES": "Conocer gente",
+        "IT": "Conoscere persone",
+        "RU": "Знакомство с людьми",
+        "ZH": "结识新朋友"
+      },
+      "subtitle": {
+        "TR": "Kendini tanıt, sohbet et, plan yap",
+        "EN": "Introduce yourself, chat and make plans",
+        "DE": "Stell dich vor, plaudere und mach Pläne",
+        "FR": "Présentez-vous, discutez et faites des projets",
+        "ES": "Preséntate, charla y haz planes",
+        "IT": "Presentati, chiacchiera e fai programmi",
+        "RU": "Представьтесь, поболтайте и договоритесь",
+        "ZH": "自我介绍、聊天和约定计划"
+      },
+      "goals": [
+        {
+          "id": "meet.greet",
+          "title": {
+            "TR": "Selamlaşma ve kendini tanıtma",
+            "EN": "Greeting & introducing yourself",
+            "DE": "Begrüßen und sich vorstellen",
+            "FR": "Saluer et se présenter",
+            "ES": "Saludar y presentarse",
+            "IT": "Salutare e presentarsi",
+            "RU": "Приветствие и знакомство",
+            "ZH": "打招呼和自我介绍"
+          },
+          "brief": "Situation: the learner meets a friendly stranger at a social gathering; you will later play that person. Teach one phrase at a time: a polite greeting, asking how someone is and answering, saying your name, asking the other person's name, and saying it is nice to meet them. For each phrase: model it, explain briefly, have the learner repeat, gently recast any errors. Then combine them into a short exchange. Finish with a mini roleplay where you greet the learner first and they lead the introduction. Success: the learner greets, gives their name, asks yours and says nice to meet you without help.",
+          "targets": [
+            "greet someone politely",
+            "ask and answer how are you",
+            "say your name",
+            "ask someone's name",
+            "say nice to meet you"
+          ]
+        },
+        {
+          "id": "meet.origin",
+          "title": {
+            "TR": "Nerelisin, ne iş yaparsın?",
+            "EN": "Where you're from & what you do",
+            "DE": "Herkunft und Beruf",
+            "FR": "Origine et métier",
+            "ES": "De dónde eres y a qué te dedicas",
+            "IT": "Da dove vieni e cosa fai",
+            "RU": "Откуда вы и чем занимаетесь",
+            "ZH": "来自哪里和做什么工作"
+          },
+          "brief": "Situation: small talk with a new acquaintance at a party; you play that person in the final roleplay. Teach one at a time: saying which country or city you come from, asking where someone is from, saying where you live now, saying your job or that you are a student, and asking what the other person does. Model each phrase, have the learner repeat, then let them personalise it with their own details. Recast mistakes by repeating the correct form naturally. Combine into a back-and-forth, then roleplay a two-minute chat where you ask questions and also share your own answers. Success: the learner states and asks about origin and occupation smoothly.",
+          "targets": [
+            "say where you are from",
+            "ask where someone is from",
+            "say where you live",
+            "say what you do for work or study",
+            "ask what someone does"
+          ]
+        },
+        {
+          "id": "meet.hobbies",
+          "title": {
+            "TR": "Hobiler ve ilgi alanları",
+            "EN": "Hobbies & interests",
+            "DE": "Hobbys und Interessen",
+            "FR": "Loisirs et centres d'intérêt",
+            "ES": "Aficiones e intereses",
+            "IT": "Hobby e interessi",
+            "RU": "Хобби и интересы",
+            "ZH": "爱好和兴趣"
+          },
+          "brief": "Situation: continuing a friendly conversation with someone you just met; you play that person. Teach one function at a time: saying what you like doing in your free time, saying what you do not like, saying how often you do something, asking about the other person's hobbies, and reacting with interest (for example 'me too' or 'really? that sounds fun'). Let the learner choose hobbies that are true for them and supply the words they need. After repetition, combine into short exchanges, then roleplay a relaxed chat where you share a hobby and invite follow-up questions. Success: the learner talks about two hobbies, asks about yours and reacts naturally.",
+          "targets": [
+            "say what you like doing",
+            "say what you don't like",
+            "say how often you do something",
+            "ask about someone's hobbies",
+            "react with interest"
+          ]
+        },
+        {
+          "id": "meet.contact",
+          "title": {
+            "TR": "İletişim bilgisi paylaşma",
+            "EN": "Exchanging contact info",
+            "DE": "Kontaktdaten austauschen",
+            "FR": "Échanger ses coordonnées",
+            "ES": "Intercambiar contactos",
+            "IT": "Scambiarsi i contatti",
+            "RU": "Обмен контактами",
+            "ZH": "交换联系方式"
+          },
+          "brief": "Situation: at the end of a pleasant conversation, the learner wants to stay in touch; you play the new acquaintance. Teach one phrase at a time: suggesting to keep in touch, asking for a phone number or social media account, giving your own number digit by digit, asking someone to repeat or spell something, and confirming the details back. Practise numbers carefully: say a few short numbers and have the learner repeat, then have them dictate one to you. Combine the phrases, then roleplay the exchange where you occasionally mishear so the learner must clarify. Success: the learner asks for and gives contact details, and checks them accurately.",
+          "targets": [
+            "suggest staying in touch",
+            "ask for a phone number or account",
+            "say your number clearly",
+            "ask someone to repeat or spell",
+            "confirm details back"
+          ]
+        },
+        {
+          "id": "meet.goodbye",
+          "title": {
+            "TR": "Vedalaşma ve plan yapma",
+            "EN": "Saying goodbye & making plans",
+            "DE": "Verabschieden und Pläne machen",
+            "FR": "Dire au revoir et prévoir",
+            "ES": "Despedirse y hacer planes",
+            "IT": "Salutarsi e fare programmi",
+            "RU": "Прощание и планы на встречу",
+            "ZH": "道别和约定见面"
+          },
+          "brief": "Situation: two new friends are parting and want to meet again; you play the friend. Teach one at a time: saying you have to go, suggesting an activity (for example coffee or a walk), proposing a day and time, accepting or politely suggesting another time, and saying goodbye warmly with 'see you then'. Teach days and simple times as needed. Model, have the learner repeat, gently recast errors. Combine into a short plan-making exchange, then roleplay: you are free only on certain days, so the learner must negotiate a time before saying goodbye. Success: the learner makes a concrete plan and closes the conversation politely.",
+          "targets": [
+            "say you have to leave",
+            "suggest an activity",
+            "propose a day and time",
+            "accept or suggest another time",
+            "say goodbye warmly"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "airport",
+      "icon": "airplane",
+      "level": 1,
+      "title": {
+        "TR": "Havalimanında temel ifadeler",
+        "EN": "Airport basics",
+        "DE": "Am Flughafen",
+        "FR": "À l'aéroport",
+        "ES": "En el aeropuerto",
+        "IT": "In aeroporto",
+        "RU": "В аэропорту",
+        "ZH": "机场基本用语"
+      },
+      "subtitle": {
+        "TR": "Check-in, güvenlik ve kapıda rahat konuş",
+        "EN": "Handle check-in, security and the gate",
+        "DE": "Check-in, Sicherheitskontrolle und Gate",
+        "FR": "Enregistrement, sécurité et porte d'embarquement",
+        "ES": "Facturación, seguridad y puerta de embarque",
+        "IT": "Check-in, controlli di sicurezza e gate",
+        "RU": "Регистрация, досмотр и выход на посадку",
+        "ZH": "值机、安检和登机口"
+      },
+      "goals": [
+        {
+          "id": "airport.greet",
+          "title": {
+            "TR": "Selamlaşma ve hızlı tanıtma",
+            "EN": "Greeting & quick intro",
+            "DE": "Begrüßung und kurze Vorstellung",
+            "FR": "Saluer et se présenter vite",
+            "ES": "Saludo y presentación rápida",
+            "IT": "Saluto e breve presentazione",
+            "RU": "Приветствие и краткое знакомство",
+            "ZH": "打招呼和简单介绍"
+          },
+          "brief": "Situation: the learner arrives at an airline check-in desk; you will play the check-in agent. Teach one phrase at a time: a polite greeting suited to the time of day, saying 'I'd like to check in, please', giving your name, saying your destination, and handing over a passport with a phrase like 'here you are'. Model each phrase, have the learner repeat, and recast mistakes gently. Combine them into one smooth opening, then roleplay the first 30 seconds at the desk: you greet, ask for name and destination, and request the passport. Success: the learner opens the interaction politely and gives name, destination and documents without prompting.",
+          "targets": [
+            "greet the agent politely",
+            "say you want to check in",
+            "give your name",
+            "say your destination",
+            "hand over documents politely"
+          ]
+        },
+        {
+          "id": "airport.checkin",
+          "title": {
+            "TR": "Check-in soruları",
+            "EN": "Check-in questions",
+            "DE": "Fragen beim Check-in",
+            "FR": "Questions à l'enregistrement",
+            "ES": "Preguntas de facturación",
+            "IT": "Domande al check-in",
+            "RU": "Вопросы при регистрации",
+            "ZH": "值机时的问题"
+          },
+          "brief": "Situation: at the check-in desk; you play the agent asking routine questions. Teach one item at a time: understanding and answering 'how many bags are you checking?', asking whether a bag is too heavy or what the weight limit is, asking for a window or aisle seat, asking if a carry-on bag is allowed, and asking about the boarding time. Model each question and answer, have the learner repeat, then swap roles so they ask too. Combine into a full check-in, then roleplay it: include a small surprise, such as the bag being slightly overweight. Success: the learner understands the agent's questions, answers them and makes a seat request.",
+          "targets": [
+            "say how many bags you have",
+            "ask about the weight limit",
+            "request a window or aisle seat",
+            "ask about carry-on luggage",
+            "ask when boarding starts"
+          ]
+        },
+        {
+          "id": "airport.security",
+          "title": {
+            "TR": "Güvenlik kontrolü diyaloğu",
+            "EN": "Security check dialog",
+            "DE": "An der Sicherheitskontrolle",
+            "FR": "Au contrôle de sécurité",
+            "ES": "En el control de seguridad",
+            "IT": "Al controllo di sicurezza",
+            "RU": "Диалог на досмотре",
+            "ZH": "安检对话"
+          },
+          "brief": "Situation: the security checkpoint; you play a calm security officer. First help the learner understand common instructions: put bags and liquids in the tray, take off your jacket or belt, remove a laptop, step through, raise your arms. Then teach replies: 'okay', 'is this all right?', asking 'should I take this out?', and saying 'sorry, I don't understand, could you repeat?'. Say each instruction, check comprehension, have the learner repeat the replies. Then roleplay the check: give instructions at natural speed, and once ask to look inside the bag. Success: the learner follows instructions, asks a clarifying question and responds politely.",
+          "targets": [
+            "understand security instructions",
+            "ask whether to remove an item",
+            "ask someone to repeat",
+            "respond politely to the officer"
+          ]
+        },
+        {
+          "id": "airport.gate",
+          "title": {
+            "TR": "Kapı ve uçuş soruları",
+            "EN": "Gate & flight questions",
+            "DE": "Fragen zu Gate und Flug",
+            "FR": "Questions sur la porte et le vol",
+            "ES": "Preguntas sobre puerta y vuelo",
+            "IT": "Domande su gate e volo",
+            "RU": "Вопросы о выходе и рейсе",
+            "ZH": "登机口和航班问题"
+          },
+          "brief": "Situation: inside the terminal; you play an airport staff member at an information desk, then a gate agent. Teach one phrase at a time: asking where a gate is, understanding simple directions (left, right, straight ahead, upstairs), asking if the flight is on time or delayed, asking how long the delay is, and asking whether this is the right gate for a destination. Practise gate numbers and times. Model, have the learner repeat, recast mistakes gently. Combine into a short sequence, then roleplay: the gate has changed and the flight is delayed, so the learner must find out the new gate and time. Success: the learner gets the gate, status and new time correctly.",
+          "targets": [
+            "ask where a gate is",
+            "understand simple directions",
+            "ask if the flight is delayed",
+            "ask how long the delay is",
+            "confirm the right gate"
+          ]
+        },
+        {
+          "id": "airport.help",
+          "title": {
+            "TR": "Sorun bildirme ve yardım",
+            "EN": "Reporting a problem",
+            "DE": "Probleme melden",
+            "FR": "Signaler un problème",
+            "ES": "Informar de un problema",
+            "IT": "Segnalare un problema",
+            "RU": "Сообщить о проблеме",
+            "ZH": "报告问题并求助"
+          },
+          "brief": "Situation: after landing, the learner's bag did not arrive; you play the baggage service clerk. Teach one phrase at a time: getting attention politely ('excuse me, can you help me?'), saying my bag did not arrive, describing the bag (size, colour, one feature), giving the flight details, and asking what happens next and how they will contact you. Model each phrase, have the learner repeat, and let them describe a bag of their own. Combine into a complete report, then roleplay the desk conversation where you ask follow-up questions and give a reference number. Success: the learner reports the problem, describes the bag and understands the next steps.",
+          "targets": [
+            "ask for help politely",
+            "say your bag is missing",
+            "describe your bag",
+            "give flight details",
+            "ask what happens next"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cafe",
+      "icon": "cup.and.saucer.fill",
+      "level": 1,
+      "title": {
+        "TR": "Kafe ve restoran",
+        "EN": "Café & restaurant",
+        "DE": "Café und Restaurant",
+        "FR": "Café et restaurant",
+        "ES": "Cafetería y restaurante",
+        "IT": "Bar e ristorante",
+        "RU": "Кафе и ресторан",
+        "ZH": "咖啡馆和餐厅"
+      },
+      "subtitle": {
+        "TR": "Masa iste, sipariş ver, hesabı öde",
+        "EN": "Get a table, order and pay the bill",
+        "DE": "Tisch bekommen, bestellen, bezahlen",
+        "FR": "Trouver une table, commander et payer",
+        "ES": "Pide mesa, haz tu pedido y paga",
+        "IT": "Chiedi un tavolo, ordina e paga",
+        "RU": "Попросите столик, закажите и оплатите",
+        "ZH": "找座位、点餐和结账"
+      },
+      "goals": [
+        {
+          "id": "cafe.table",
+          "title": {
+            "TR": "Masa isteme",
+            "EN": "Asking for a table",
+            "DE": "Nach einem Tisch fragen",
+            "FR": "Demander une table",
+            "ES": "Pedir una mesa",
+            "IT": "Chiedere un tavolo",
+            "RU": "Попросить столик",
+            "ZH": "要座位"
+          },
+          "brief": "Situation: the learner enters a busy restaurant; you play the host or waiter. Teach one phrase at a time: greeting and saying 'a table for two, please' (practise other numbers), saying whether you have a reservation, asking for a table by the window or outside, and responding to 'please wait a few minutes' or 'follow me'. Model, have the learner repeat, and gently recast errors. Combine into one smooth request, then roleplay the arrival: you say the indoor tables are full, so the learner must accept a short wait or choose another spot. Success: the learner asks for a table, states party size and handles the host's reply.",
+          "targets": [
+            "ask for a table for a number of people",
+            "say if you have a reservation",
+            "ask for a preferred spot",
+            "respond to waiting or seating"
+          ]
+        },
+        {
+          "id": "cafe.order",
+          "title": {
+            "TR": "Yemek ve içecek sipariş etme",
+            "EN": "Ordering food & drinks",
+            "DE": "Essen und Getränke bestellen",
+            "FR": "Commander à manger et à boire",
+            "ES": "Pedir comida y bebida",
+            "IT": "Ordinare cibo e bevande",
+            "RU": "Заказ еды и напитков",
+            "ZH": "点餐和饮料"
+          },
+          "brief": "Situation: seated at a café; you play the waiter. Teach one phrase at a time: getting the waiter's attention, saying 'I'd like…' or 'could I have…' with a food item, ordering a drink with size or temperature, asking for more of something (water, bread), and saying 'that's all, thank you'. Use a handful of common food and drink words; let the learner pick items they actually like. After repetition, combine into a full order, then roleplay: you take the order, ask one follow-up question (for example 'still or sparkling?') and repeat it back. Success: the learner orders a meal and a drink politely and answers your follow-up.",
+          "targets": [
+            "call the waiter politely",
+            "order a dish",
+            "order a drink with details",
+            "ask for more of something",
+            "finish the order"
+          ]
+        },
+        {
+          "id": "cafe.special",
+          "title": {
+            "TR": "Özel istekler ve alerjiler",
+            "EN": "Special requests & allergies",
+            "DE": "Sonderwünsche und Allergien",
+            "FR": "Demandes spéciales et allergies",
+            "ES": "Peticiones especiales y alergias",
+            "IT": "Richieste speciali e allergie",
+            "RU": "Особые пожелания и аллергии",
+            "ZH": "特殊要求和过敏"
+          },
+          "brief": "Situation: ordering at a restaurant with dietary needs; you play the waiter. Teach one function at a time: saying 'I'm allergic to…' with common allergens (nuts, milk, gluten, seafood), asking 'does this contain…?', asking for a dish without an ingredient, saying you are vegetarian or do not eat something, and asking for a substitution. Model each, have the learner repeat, and let them state real or chosen preferences. Combine, then roleplay: the learner asks about a dish, you reveal it contains their allergen, and they must request a change or choose something else. Success: the learner clearly states a dietary need and gets a safe option.",
+          "targets": [
+            "state an allergy",
+            "ask if a dish contains something",
+            "ask for a dish without an ingredient",
+            "say what you don't eat",
+            "ask for a substitution"
+          ]
+        },
+        {
+          "id": "cafe.menu",
+          "title": {
+            "TR": "Menü ve tavsiye sorma",
+            "EN": "Asking about the menu",
+            "DE": "Nach der Karte fragen",
+            "FR": "Se renseigner sur le menu",
+            "ES": "Preguntar por la carta",
+            "IT": "Chiedere informazioni sul menù",
+            "RU": "Вопросы о меню",
+            "ZH": "询问菜单"
+          },
+          "brief": "Situation: the learner is unsure what to order; you play a helpful waiter. Teach one phrase at a time: asking what the waiter recommends, asking what a dish is or what is in it, asking if something is spicy or sweet, asking about the dish of the day, and deciding ('I'll take that one'). Model each phrase, have the learner repeat, and recast mistakes by repeating them correctly. Combine into a short inquiry, then roleplay: you describe two dishes briefly and the learner asks follow-up questions before choosing. Success: the learner asks for a recommendation, understands a short description and makes a choice.",
+          "targets": [
+            "ask for a recommendation",
+            "ask what is in a dish",
+            "ask about taste",
+            "ask about the dish of the day",
+            "make a choice"
+          ]
+        },
+        {
+          "id": "cafe.bill",
+          "title": {
+            "TR": "Hesabı ödeme",
+            "EN": "Paying the bill",
+            "DE": "Die Rechnung bezahlen",
+            "FR": "Payer l'addition",
+            "ES": "Pagar la cuenta",
+            "IT": "Pagare il conto",
+            "RU": "Оплата счёта",
+            "ZH": "结账"
+          },
+          "brief": "Situation: finishing a meal; you play the waiter. Teach one phrase at a time: asking for the bill, asking if you can pay by card or must pay cash, saying you want to pay separately or together, checking a possible mistake on the bill politely, and thanking and saying the food was delicious. Practise understanding a few prices. Model, have the learner repeat, then combine. Roleplay the end of the meal: you bring the bill with one item they did not order, so the learner must point it out politely, then pay and say goodbye. Success: the learner asks for the bill, chooses a payment method, fixes the error and leaves politely.",
+          "targets": [
+            "ask for the bill",
+            "ask about payment methods",
+            "ask to split or pay together",
+            "point out a mistake politely",
+            "thank and compliment the food"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotel",
+      "icon": "bed.double.fill",
+      "level": 2,
+      "title": {
+        "TR": "Otelde konaklama",
+        "EN": "Hotel stay",
+        "DE": "Im Hotel",
+        "FR": "Séjour à l'hôtel",
+        "ES": "Estancia en el hotel",
+        "IT": "Soggiorno in hotel",
+        "RU": "В отеле",
+        "ZH": "酒店住宿"
+      },
+      "subtitle": {
+        "TR": "Giriş, sorunlar, hizmetler ve çıkış",
+        "EN": "Check in, solve problems and check out",
+        "DE": "Einchecken, Probleme lösen, auschecken",
+        "FR": "Arrivée, problèmes, services et départ",
+        "ES": "Registro, problemas, servicios y salida",
+        "IT": "Check-in, problemi, servizi e check-out",
+        "RU": "Заселение, проблемы, услуги и выезд",
+        "ZH": "入住、问题、服务和退房"
+      },
+      "goals": [
+        {
+          "id": "hotel.checkin",
+          "title": {
+            "TR": "Rezervasyonla giriş yapma",
+            "EN": "Checking in with a reservation",
+            "DE": "Mit Reservierung einchecken",
+            "FR": "Arriver avec une réservation",
+            "ES": "Registrarse con reserva",
+            "IT": "Check-in con prenotazione",
+            "RU": "Заселение по брони",
+            "ZH": "凭预订办理入住"
+          },
+          "brief": "Situation: the learner arrives at a hotel reception; you play the receptionist. Teach one function at a time: saying you have a reservation under a name, giving the number of nights and guests, spelling your surname, asking what time breakfast or check-out is, and asking for the Wi-Fi password. Model each phrase, have the learner repeat, then let them adapt details. Recast errors naturally. Combine into a complete check-in, then roleplay: you cannot find the booking at first, so the learner must spell the name and give the dates before you find it. Success: the learner completes check-in, handles the hiccup and asks a practical question.",
+          "targets": [
+            "say you have a reservation",
+            "give number of nights and guests",
+            "spell your name",
+            "ask about check-out time",
+            "ask for the Wi-Fi password"
+          ]
+        },
+        {
+          "id": "hotel.problems",
+          "title": {
+            "TR": "Odadaki sorunlar",
+            "EN": "Room problems",
+            "DE": "Probleme im Zimmer",
+            "FR": "Problèmes dans la chambre",
+            "ES": "Problemas en la habitación",
+            "IT": "Problemi in camera",
+            "RU": "Проблемы в номере",
+            "ZH": "房间问题"
+          },
+          "brief": "Situation: the learner calls reception about a problem in the room; you play the receptionist. Teach one function at a time: saying something does not work (air conditioning, heating, shower, TV), saying the room is too noisy or not clean, asking for extra items (towels, pillow), asking someone to come and fix it, and asking to change rooms. Model each, have the learner repeat, and recast mistakes gently. Combine into a polite complaint, then roleplay the call: you first offer a slow solution, so the learner must politely insist or ask for another room. Success: the learner describes the problem clearly and gets a concrete solution.",
+          "targets": [
+            "say something doesn't work",
+            "complain about noise or cleanliness",
+            "ask for extra items",
+            "ask for a repair",
+            "ask to change rooms"
+          ]
+        },
+        {
+          "id": "hotel.services",
+          "title": {
+            "TR": "Kahvaltı ve hizmetler",
+            "EN": "Breakfast & services",
+            "DE": "Frühstück und Service",
+            "FR": "Petit-déjeuner et services",
+            "ES": "Desayuno y servicios",
+            "IT": "Colazione e servizi",
+            "RU": "Завтрак и услуги",
+            "ZH": "早餐和服务"
+          },
+          "brief": "Situation: the learner asks reception about hotel services; you play the receptionist. Teach one question at a time: what time and where breakfast is served, whether breakfast is included, whether there is a gym, pool or laundry service, how much a service costs, and whether you can leave luggage after check-out. Model each question and a typical answer, have the learner repeat, then have them ask without help. Combine, then roleplay: the learner asks about three services and you give details including times and prices that they must repeat back to confirm. Success: the learner asks about services and confirms the key details correctly.",
+          "targets": [
+            "ask about breakfast time and place",
+            "ask if something is included",
+            "ask about available services",
+            "ask about prices",
+            "ask to store luggage"
+          ]
+        },
+        {
+          "id": "hotel.directions",
+          "title": {
+            "TR": "Yol tarifi ve öneri isteme",
+            "EN": "Directions & recommendations",
+            "DE": "Wegbeschreibung und Tipps",
+            "FR": "Itinéraires et recommandations",
+            "ES": "Indicaciones y recomendaciones",
+            "IT": "Indicazioni e consigli",
+            "RU": "Как пройти и что посоветуете",
+            "ZH": "问路和推荐"
+          },
+          "brief": "Situation: the learner asks the concierge for local advice; you play the concierge. Teach one function at a time: asking for a good place to eat nearby, asking how to get somewhere, asking if it is within walking distance or how long it takes, asking for a map or to write the address, and thanking for the advice. Model, have the learner repeat, and recast errors gently. Use generic places (a museum, a market, the old town), not real names. Combine, then roleplay: you recommend two options and the learner asks follow-up questions to choose one and get there. Success: the learner gets a recommendation and understands how to reach it.",
+          "targets": [
+            "ask for a recommendation nearby",
+            "ask how to get somewhere",
+            "ask about distance or time",
+            "ask for the address or a map",
+            "thank for help"
+          ]
+        },
+        {
+          "id": "hotel.checkout",
+          "title": {
+            "TR": "Otelden çıkış",
+            "EN": "Checking out",
+            "DE": "Auschecken",
+            "FR": "Quitter l'hôtel",
+            "ES": "Hacer el check-out",
+            "IT": "Fare il check-out",
+            "RU": "Выезд из отеля",
+            "ZH": "办理退房"
+          },
+          "brief": "Situation: the learner leaves the hotel; you play the receptionist. Teach one function at a time: saying you would like to check out and returning the key, understanding questions about the minibar or extra charges, asking about a charge you do not recognise, asking for a receipt, and asking the reception to call a taxi. Model each phrase, have the learner repeat, then combine. Roleplay the checkout: the bill includes an unexpected charge, so the learner must ask about it politely, settle it, request a receipt and arrange transport. Success: the learner checks out, clarifies the bill and arranges onward travel.",
+          "targets": [
+            "say you want to check out",
+            "answer questions about extras",
+            "ask about an unexpected charge",
+            "ask for a receipt",
+            "ask them to call a taxi"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shopping",
+      "icon": "bag.fill",
+      "level": 2,
+      "title": {
+        "TR": "Alışveriş",
+        "EN": "Shopping",
+        "DE": "Einkaufen",
+        "FR": "Faire du shopping",
+        "ES": "De compras",
+        "IT": "Fare shopping",
+        "RU": "Покупки",
+        "ZH": "购物"
+      },
+      "subtitle": {
+        "TR": "Fiyat sor, dene, iade et ve öde",
+        "EN": "Ask prices, try on, return and pay",
+        "DE": "Preise, Anprobe, Umtausch und Bezahlung",
+        "FR": "Prix, essayage, retours et paiement",
+        "ES": "Precios, probador, devoluciones y pago",
+        "IT": "Prezzi, prove, resi e pagamento",
+        "RU": "Цены, примерка, возврат и оплата",
+        "ZH": "问价、试穿、退换和付款"
+      },
+      "goals": [
+        {
+          "id": "shopping.prices",
+          "title": {
+            "TR": "Fiyat sorma",
+            "EN": "Asking prices",
+            "DE": "Nach Preisen fragen",
+            "FR": "Demander les prix",
+            "ES": "Preguntar precios",
+            "IT": "Chiedere i prezzi",
+            "RU": "Узнать цену",
+            "ZH": "询问价格"
+          },
+          "brief": "Situation: the learner browses in a shop or market; you play the shop assistant. Teach one function at a time: asking how much something costs (one item and several), understanding prices, asking if there is a discount or sale, saying something is too expensive, and asking for something cheaper. Practise numbers carefully with short price drills. Model, have the learner repeat, recast errors. Combine, then roleplay: the learner asks about two items, compares the prices you give, and asks for a cheaper option. Success: the learner asks prices, understands them correctly and reacts appropriately.",
+          "targets": [
+            "ask how much something costs",
+            "understand prices",
+            "ask about discounts",
+            "say something is too expensive",
+            "ask for a cheaper option"
+          ]
+        },
+        {
+          "id": "shopping.sizes",
+          "title": {
+            "TR": "Beden ve renkler",
+            "EN": "Sizes & colors",
+            "DE": "Größen und Farben",
+            "FR": "Tailles et couleurs",
+            "ES": "Tallas y colores",
+            "IT": "Taglie e colori",
+            "RU": "Размеры и цвета",
+            "ZH": "尺码和颜色"
+          },
+          "brief": "Situation: shopping for clothes; you play the shop assistant. Teach one function at a time: saying what you are looking for, asking if an item comes in another size, giving your size, asking for another colour, and saying something is too big, too small or just right. Teach a few colours and clothing words the learner actually needs. Model, have the learner repeat, gently recast mistakes. Combine, then roleplay: the learner asks for a jacket, you only have their colour in the wrong size, so they must ask for alternatives. Success: the learner describes what they want and requests size and colour changes.",
+          "targets": [
+            "say what you are looking for",
+            "ask for another size",
+            "give your size",
+            "ask for another colour",
+            "say if it fits"
+          ]
+        },
+        {
+          "id": "shopping.decide",
+          "title": {
+            "TR": "Deneme ve karar verme",
+            "EN": "Trying on & deciding",
+            "DE": "Anprobieren und entscheiden",
+            "FR": "Essayer et se décider",
+            "ES": "Probarse y decidir",
+            "IT": "Provare e decidere",
+            "RU": "Примерка и решение",
+            "ZH": "试穿和决定"
+          },
+          "brief": "Situation: in a clothing shop; you play the shop assistant. Teach one function at a time: asking where the fitting room is, asking if you can try something on, giving a simple opinion ('it looks good', 'I don't like the style'), asking for the assistant's opinion, and deciding ('I'll take it' or 'I'll think about it'). Model, have the learner repeat, and recast errors naturally. Combine, then roleplay: the learner tries on two items, gives opinions on each, asks for your view and makes a decision politely. Success: the learner tries items on, expresses opinions and decides without awkwardness.",
+          "targets": [
+            "ask to try something on",
+            "ask where the fitting room is",
+            "give a simple opinion",
+            "ask for an opinion",
+            "decide or decline politely"
+          ]
+        },
+        {
+          "id": "shopping.returns",
+          "title": {
+            "TR": "İade ve değişim",
+            "EN": "Returns & exchanges",
+            "DE": "Umtausch und Rückgabe",
+            "FR": "Retours et échanges",
+            "ES": "Devoluciones y cambios",
+            "IT": "Resi e cambi",
+            "RU": "Возврат и обмен",
+            "ZH": "退货和换货"
+          },
+          "brief": "Situation: the learner returns to a shop with an item bought earlier; you play the customer service assistant. Teach one function at a time: saying you want to return or exchange something, explaining the reason (wrong size, damaged, changed mind), saying when you bought it and showing the receipt, asking for a refund or store credit, and asking about the return policy. Model, have the learner repeat, gently recast mistakes. Combine, then roleplay: you first offer only an exchange, and the learner must politely ask for a refund or accept a reasonable alternative. Success: the learner explains the issue and reaches a clear outcome.",
+          "targets": [
+            "say you want to return or exchange",
+            "explain the reason",
+            "mention the receipt and date",
+            "ask for a refund",
+            "ask about the return policy"
+          ]
+        },
+        {
+          "id": "shopping.paying",
+          "title": {
+            "TR": "Ödeme yapma",
+            "EN": "Paying",
+            "DE": "Bezahlen",
+            "FR": "Payer",
+            "ES": "Pagar",
+            "IT": "Pagare",
+            "RU": "Оплата",
+            "ZH": "付款"
+          },
+          "brief": "Situation: at the checkout counter; you play the cashier. Teach one function at a time: saying you would like to pay, understanding the total, asking 'can I pay by card?', answering whether you want a bag, and asking for a receipt or gift wrapping. Practise understanding totals and change. Model each phrase, have the learner repeat, then combine. Roleplay the checkout: you ask quick routine questions (bag? receipt? loyalty card?) at natural speed and say the card machine is not working, so the learner must pay another way. Success: the learner completes the payment and answers the cashier's questions confidently.",
+          "targets": [
+            "say you want to pay",
+            "understand the total",
+            "ask about card payment",
+            "answer about a bag",
+            "ask for a receipt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "city",
+      "icon": "map.fill",
+      "level": 2,
+      "title": {
+        "TR": "Şehirde dolaşma",
+        "EN": "Getting around the city",
+        "DE": "Unterwegs in der Stadt",
+        "FR": "Se déplacer en ville",
+        "ES": "Moverse por la ciudad",
+        "IT": "Muoversi in città",
+        "RU": "Передвижение по городу",
+        "ZH": "城市出行"
+      },
+      "subtitle": {
+        "TR": "Yol sor, bilet al, taksiye bin",
+        "EN": "Ask the way, buy tickets, take a taxi",
+        "DE": "Nach dem Weg fragen, Tickets, Taxi",
+        "FR": "Demander son chemin, billets et taxi",
+        "ES": "Pregunta el camino, billetes y taxi",
+        "IT": "Chiedi la strada, biglietti e taxi",
+        "RU": "Спросить дорогу, билеты и такси",
+        "ZH": "问路、买票、打车"
+      },
+      "goals": [
+        {
+          "id": "city.directions",
+          "title": {
+            "TR": "Yol sorma",
+            "EN": "Asking for directions",
+            "DE": "Nach dem Weg fragen",
+            "FR": "Demander son chemin",
+            "ES": "Pedir indicaciones",
+            "IT": "Chiedere indicazioni",
+            "RU": "Как спросить дорогу",
+            "ZH": "问路"
+          },
+          "brief": "Situation: the learner is lost in a city; you play a friendly passer-by. Teach one function at a time: stopping someone politely, asking how to get to a place, understanding directions (turn left or right, go straight, on the corner, next to), asking if it is far, and checking understanding by repeating the directions back. Model, have the learner repeat, and drill direction words with quick mini-quizzes. Combine, then roleplay: you give directions with three steps at natural speed, and the learner must repeat them back and ask one clarifying question. Success: the learner asks the way and correctly repeats the route.",
+          "targets": [
+            "stop someone politely",
+            "ask how to get somewhere",
+            "understand directions",
+            "ask if it is far",
+            "repeat directions to confirm"
+          ]
+        },
+        {
+          "id": "city.transport",
+          "title": {
+            "TR": "Toplu taşıma biletleri",
+            "EN": "Public transport tickets",
+            "DE": "Fahrkarten für den Nahverkehr",
+            "FR": "Billets de transport en commun",
+            "ES": "Billetes de transporte público",
+            "IT": "Biglietti dei mezzi pubblici",
+            "RU": "Билеты на транспорт",
+            "ZH": "公共交通票"
+          },
+          "brief": "Situation: at a metro or bus ticket counter; you play the ticket clerk. Teach one function at a time: asking for a single or return ticket to a stop, asking about a day pass, asking which line or platform to take, asking if you need to change, and asking how often trains or buses run. Model, have the learner repeat, and recast mistakes gently. Use generic stop names. Combine, then roleplay: the learner buys a ticket, and you explain they must change lines once, so they ask where and which direction. Success: the learner buys the right ticket and understands the route.",
+          "targets": [
+            "ask for a ticket",
+            "ask about a day pass",
+            "ask which line or platform",
+            "ask if you need to change",
+            "ask how often it runs"
+          ]
+        },
+        {
+          "id": "city.taxi",
+          "title": {
+            "TR": "Taksi",
+            "EN": "Taking a taxi",
+            "DE": "Taxi fahren",
+            "FR": "Prendre un taxi",
+            "ES": "Tomar un taxi",
+            "IT": "Prendere un taxi",
+            "RU": "Поездка на такси",
+            "ZH": "乘出租车"
+          },
+          "brief": "Situation: the learner takes a taxi; you play the driver. Teach one function at a time: saying where you want to go, asking roughly how much it costs and how long it takes, asking the driver to stop here or wait a moment, asking to pay by card, and asking for a receipt. Model each phrase, have the learner repeat, and recast errors naturally. Combine, then roleplay the ride: you make small talk once, ask a clarifying question about the address, and at the end the learner asks you to stop, pays and says goodbye. Success: the learner gives the destination, manages the ride and pays smoothly.",
+          "targets": [
+            "give your destination",
+            "ask about price and time",
+            "ask the driver to stop or wait",
+            "ask to pay by card",
+            "ask for a receipt"
+          ]
+        },
+        {
+          "id": "city.sights",
+          "title": {
+            "TR": "Gezilecek yer önerileri",
+            "EN": "Tourist recommendations",
+            "DE": "Sehenswürdigkeiten und Tipps",
+            "FR": "Conseils touristiques",
+            "ES": "Recomendaciones turísticas",
+            "IT": "Consigli turistici",
+            "RU": "Что посмотреть в городе",
+            "ZH": "旅游推荐"
+          },
+          "brief": "Situation: at a tourist information desk; you play the information officer. Teach one function at a time: asking what you should see in the city, asking about opening hours, asking about ticket prices, asking whether something is good for a short visit, and saying what you are interested in (history, food, nature, art). Use generic places (a museum, a park, a viewpoint). Model, have the learner repeat, recast gently. Combine, then roleplay: the learner has one free afternoon, tells you their interests, and asks questions until they choose a plan. Success: the learner states interests, gathers practical details and decides on a plan.",
+          "targets": [
+            "ask what to see",
+            "ask about opening hours",
+            "ask about ticket prices",
+            "say what you are interested in",
+            "decide on a plan"
+          ]
+        },
+        {
+          "id": "city.emergency",
+          "title": {
+            "TR": "Küçük acil durumlar",
+            "EN": "Small emergencies",
+            "DE": "Kleine Notfälle",
+            "FR": "Petites urgences",
+            "ES": "Pequeñas emergencias",
+            "IT": "Piccole emergenze",
+            "RU": "Мелкие неприятности",
+            "ZH": "小型紧急情况"
+          },
+          "brief": "Situation: a small problem in the city, such as a lost phone or wallet, or missing the last bus; you play a helpful shop employee or officer. Teach one function at a time: asking urgently but politely for help, explaining what happened in one or two sentences, asking where the nearest police station or pharmacy is, asking to use a phone or charger, and thanking someone for helping. Model, have the learner repeat, and keep the tone calm. Avoid frightening or graphic scenarios. Combine, then roleplay: the learner has lost their wallet and must explain, ask where to report it and get directions. Success: the learner explains the situation clearly and gets useful help.",
+          "targets": [
+            "ask for help urgently but politely",
+            "explain what happened",
+            "ask where the nearest police or pharmacy is",
+            "ask to use a phone or charger",
+            "thank someone for help"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "health",
+      "icon": "cross.case.fill",
+      "level": 3,
+      "title": {
+        "TR": "Sağlık",
+        "EN": "Health",
+        "DE": "Gesundheit",
+        "FR": "Santé",
+        "ES": "Salud",
+        "IT": "Salute",
+        "RU": "Здоровье",
+        "ZH": "健康"
+      },
+      "subtitle": {
+        "TR": "Eczane, doktor randevusu ve şikayetler",
+        "EN": "Pharmacy, doctor visits and symptoms",
+        "DE": "Apotheke, Arzttermine und Symptome",
+        "FR": "Pharmacie, médecin et symptômes",
+        "ES": "Farmacia, médico y síntomas",
+        "IT": "Farmacia, medico e sintomi",
+        "RU": "Аптека, врач и симптомы",
+        "ZH": "药店、看医生和症状"
+      },
+      "goals": [
+        {
+          "id": "health.pharmacy",
+          "title": {
+            "TR": "Eczanede",
+            "EN": "At the pharmacy",
+            "DE": "In der Apotheke",
+            "FR": "À la pharmacie",
+            "ES": "En la farmacia",
+            "IT": "In farmacia",
+            "RU": "В аптеке",
+            "ZH": "在药店"
+          },
+          "brief": "Situation: the learner visits a pharmacy for a minor problem such as a cold or headache; you play the pharmacist. Teach one function at a time: saying you need something for a common symptom, answering the pharmacist's questions (how long, other symptoms), asking how often to take it, asking about side effects or drowsiness, and mentioning an allergy. Model each phrase, have the learner repeat, and recast mistakes naturally. Keep content general and non-diagnostic. Combine, then roleplay: you ask two follow-up questions and give dosage instructions the learner must repeat back. Success: the learner explains the need, answers questions and confirms how to take the medicine.",
+          "targets": [
+            "ask for something for a symptom",
+            "answer follow-up questions",
+            "ask how often to take it",
+            "ask about side effects",
+            "mention an allergy"
+          ]
+        },
+        {
+          "id": "health.appointment",
+          "title": {
+            "TR": "Doktor randevusu alma",
+            "EN": "Booking a doctor appointment",
+            "DE": "Einen Arzttermin vereinbaren",
+            "FR": "Prendre rendez-vous médical",
+            "ES": "Pedir cita con el médico",
+            "IT": "Prenotare una visita medica",
+            "RU": "Запись к врачу",
+            "ZH": "预约医生"
+          },
+          "brief": "Situation: the learner phones a clinic to book an appointment; you play the receptionist. Teach one function at a time: saying you would like to make an appointment, briefly saying the reason, asking for the earliest available time, accepting or proposing another day and time, and giving and spelling your name and phone number. Model, have the learner repeat, and practise dates and times. Recast errors gently. Combine into a full call, then roleplay: your first offered slot does not suit the learner, so they negotiate another one and confirm the details. Success: the learner books a suitable appointment and confirms date, time and name.",
+          "targets": [
+            "ask for an appointment",
+            "state the reason briefly",
+            "ask for the earliest time",
+            "negotiate a day and time",
+            "confirm your details"
+          ]
+        },
+        {
+          "id": "health.symptoms",
+          "title": {
+            "TR": "Şikayetleri anlatma",
+            "EN": "Describing symptoms",
+            "DE": "Symptome beschreiben",
+            "FR": "Décrire ses symptômes",
+            "ES": "Describir síntomas",
+            "IT": "Descrivere i sintomi",
+            "RU": "Описание симптомов",
+            "ZH": "描述症状"
+          },
+          "brief": "Situation: at a doctor's consultation; you play a calm, kind doctor. Teach one function at a time: saying where it hurts, describing common symptoms (fever, cough, sore throat, feeling dizzy, tired), saying how long you have had them, describing how strong the pain is, and mentioning medication you already take. Use mild, everyday conditions only. Model, have the learner repeat, recast gently. Combine, then roleplay the consultation: you ask typical doctor questions and the learner describes a cold or mild injury of their choosing. Success: the learner describes symptoms, duration and intensity clearly enough for the doctor.",
+          "targets": [
+            "say where it hurts",
+            "describe common symptoms",
+            "say how long you've had them",
+            "describe pain intensity",
+            "mention current medication"
+          ]
+        },
+        {
+          "id": "health.instructions",
+          "title": {
+            "TR": "Talimatları anlama",
+            "EN": "Understanding instructions",
+            "DE": "Anweisungen verstehen",
+            "FR": "Comprendre les consignes",
+            "ES": "Entender las indicaciones",
+            "IT": "Capire le istruzioni",
+            "RU": "Понимание рекомендаций",
+            "ZH": "理解医嘱"
+          },
+          "brief": "Situation: the doctor gives treatment advice; you play the doctor. Focus on listening. Teach the learner to understand instructions about how many times a day, before or after meals, for how many days, and things to avoid; and to respond by asking the doctor to repeat or slow down, checking by repeating the instructions back, and asking what to do if it does not get better. Say each instruction, check comprehension, have the learner repeat the clarifying phrases. Roleplay: you give a three-part instruction at natural speed and the learner must confirm all parts and ask one question. Success: the learner accurately repeats the instructions and clarifies doubts.",
+          "targets": [
+            "understand dosage and timing",
+            "ask the doctor to repeat or slow down",
+            "repeat instructions to confirm",
+            "ask what to do if it doesn't improve"
+          ]
+        },
+        {
+          "id": "health.followup",
+          "title": {
+            "TR": "Kontrol ve sigorta",
+            "EN": "Follow-up & insurance",
+            "DE": "Nachsorge und Versicherung",
+            "FR": "Suivi et assurance",
+            "ES": "Seguimiento y seguro",
+            "IT": "Controllo e assicurazione",
+            "RU": "Повторный приём и страховка",
+            "ZH": "复诊和保险"
+          },
+          "brief": "Situation: at the clinic reception after the consultation; you play the receptionist. Teach one function at a time: asking whether you need a follow-up visit and booking it, saying you have travel or health insurance, asking whether the visit is covered or how much it costs, asking for an invoice or medical report for insurance, and asking for a sick note for work or school. Model, have the learner repeat, recast errors gently. Keep it general, not tied to any country's system. Combine, then roleplay: you say insurance must be paid back later, so the learner asks for the right documents and books a follow-up. Success: the learner arranges the follow-up and gets the paperwork they need.",
+          "targets": [
+            "ask about a follow-up visit",
+            "say you have insurance",
+            "ask about cost or coverage",
+            "ask for an invoice or report",
+            "ask for a sick note"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "work",
+      "icon": "briefcase.fill",
+      "level": 3,
+      "title": {
+        "TR": "İş ve kariyer",
+        "EN": "Work & career",
+        "DE": "Arbeit und Karriere",
+        "FR": "Travail et carrière",
+        "ES": "Trabajo y carrera",
+        "IT": "Lavoro e carriera",
+        "RU": "Работа и карьера",
+        "ZH": "工作与职业"
+      },
+      "subtitle": {
+        "TR": "Mülakat, toplantı ve iş yazışmaları",
+        "EN": "Interviews, meetings and work messages",
+        "DE": "Vorstellungsgespräch, Meetings, Mails",
+        "FR": "Entretiens, réunions et messages pro",
+        "ES": "Entrevistas, reuniones y mensajes",
+        "IT": "Colloqui, riunioni e messaggi di lavoro",
+        "RU": "Собеседования, встречи и деловая переписка",
+        "ZH": "面试、会议和工作沟通"
+      },
+      "goals": [
+        {
+          "id": "work.interview",
+          "title": {
+            "TR": "Mülakatta kendini tanıtma",
+            "EN": "Job interview intro",
+            "DE": "Vorstellung im Interview",
+            "FR": "Se présenter en entretien",
+            "ES": "Presentarse en una entrevista",
+            "IT": "Presentarsi al colloquio",
+            "RU": "Начало собеседования",
+            "ZH": "面试开场"
+          },
+          "brief": "Situation: the start of a job interview; you play a friendly but professional interviewer. Teach one function at a time: greeting formally and thanking for the invitation, a short self-introduction (name, current role or studies, field), saying why you are interested in the position, and asking politely for a question to be repeated or rephrased. Help the learner build a personal 3–4 sentence introduction step by step. Model, have them repeat, recast errors gently, use the formal register where the target language has one. Roleplay the opening: you greet, ask 'tell me about yourself' and 'why this role?'. Success: the learner delivers a confident, polite introduction and motivation.",
+          "targets": [
+            "greet formally and thank",
+            "introduce yourself briefly",
+            "say why you want the job",
+            "ask for a question to be repeated"
+          ]
+        },
+        {
+          "id": "work.strengths",
+          "title": {
+            "TR": "Deneyim ve güçlü yönler",
+            "EN": "Experience & strengths",
+            "DE": "Erfahrung und Stärken",
+            "FR": "Expérience et points forts",
+            "ES": "Experiencia y puntos fuertes",
+            "IT": "Esperienza e punti di forza",
+            "RU": "Опыт и сильные стороны",
+            "ZH": "经验和优势"
+          },
+          "brief": "Situation: the middle of a job interview; you play the interviewer. Teach one function at a time: saying how long you have worked in a role or field, describing a main responsibility, naming a strength with a short example, talking about a weakness positively, and describing a past achievement in simple past-tense sentences. Let the learner use real or invented details; supply vocabulary as needed. Model, have them repeat, recast errors gently. Combine, then roleplay: you ask three typical interview questions with one follow-up each. Success: the learner answers with relevant experience and concrete examples in clear sentences.",
+          "targets": [
+            "say how long you've worked somewhere",
+            "describe your responsibilities",
+            "name a strength with an example",
+            "talk about a weakness positively",
+            "describe an achievement"
+          ]
+        },
+        {
+          "id": "work.meetings",
+          "title": {
+            "TR": "Toplantıda fikir bildirme",
+            "EN": "Giving opinions in meetings",
+            "DE": "Meinungen im Meeting äußern",
+            "FR": "Donner son avis en réunion",
+            "ES": "Opinar en reuniones",
+            "IT": "Esprimere opinioni in riunione",
+            "RU": "Мнение на совещании",
+            "ZH": "在会议中表达意见"
+          },
+          "brief": "Situation: a team meeting discussing a simple plan, such as a project deadline; you play a colleague. Teach one function at a time: giving an opinion softly ('I think…', 'in my opinion…'), agreeing, disagreeing politely with a reason, making a suggestion, and interrupting politely or asking to add something. Model each phrase, have the learner repeat, and point out softer, more polite alternatives when their phrasing sounds too direct. Combine, then roleplay: you propose an idea with a weak point, and the learner must partly agree, raise a concern politely and suggest an alternative. Success: the learner expresses agreement and disagreement diplomatically.",
+          "targets": [
+            "give an opinion politely",
+            "agree with someone",
+            "disagree politely with a reason",
+            "make a suggestion",
+            "interrupt politely"
+          ]
+        },
+        {
+          "id": "work.smalltalk",
+          "title": {
+            "TR": "İş arkadaşlarıyla sohbet",
+            "EN": "Small talk with colleagues",
+            "DE": "Smalltalk mit Kollegen",
+            "FR": "Discuter avec ses collègues",
+            "ES": "Charlar con compañeros",
+            "IT": "Due chiacchiere con i colleghi",
+            "RU": "Разговор с коллегами",
+            "ZH": "和同事闲聊"
+          },
+          "brief": "Situation: a coffee break at work; you play a friendly colleague. Teach one function at a time: asking how someone's weekend was and answering, asking how work is going, talking about weekend plans, sharing a small positive comment, and ending the chat naturally ('I should get back to work'). Keep topics light and neutral; avoid politics, religion or personal finances. Model, have the learner repeat, recast gently. Combine, then roleplay a two-minute break chat where you share something about your weekend and the learner keeps the conversation going with questions. Success: the learner sustains friendly small talk and closes it naturally.",
+          "targets": [
+            "ask about the weekend",
+            "ask how work is going",
+            "talk about plans",
+            "keep the conversation going",
+            "end a chat naturally"
+          ]
+        },
+        {
+          "id": "work.phone",
+          "title": {
+            "TR": "Telefon ve e-postada nezaket",
+            "EN": "Polite phone & email phrases",
+            "DE": "Höflich am Telefon und per Mail",
+            "FR": "Téléphone et e-mails polis",
+            "ES": "Teléfono y correo con cortesía",
+            "IT": "Telefono ed email cortesi",
+            "RU": "Вежливо по телефону и в письмах",
+            "ZH": "电话和邮件礼貌用语"
+          },
+          "brief": "Situation: professional calls and emails; you play a client or colleague on the phone. Teach one function at a time: answering or opening a call with your name and company, asking to speak to someone, leaving or taking a message, asking someone to call back, and standard email openings and closings (greeting, 'I am writing about…', 'I look forward to your reply'). Model each phrase, have the learner repeat, and use formal register where the target language has one. Combine, then roleplay a call: the person is unavailable, so the learner leaves a clear message, then dictates a short follow-up email aloud. Success: the learner handles the call and drafts a polite email orally.",
+          "targets": [
+            "open a call professionally",
+            "ask to speak to someone",
+            "leave or take a message",
+            "ask for a call back",
+            "open and close an email politely"
+          ]
+        }
+      ]
+    }
+  ]
+}

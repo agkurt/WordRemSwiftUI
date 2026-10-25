@@ -7,10 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */; };
+		C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */; };
+		C1DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */; };
+		C1DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift */; };
+		C1DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift */; };
 		C1DE90653F7CB3D0B2785546 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE90653F7CB3D0B2785546 /* DemoData.swift */; };
 		C1DE11A019AF810A0B827D3F /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */; };
 		C1DEEBE4900BF6326E432FB4 /* AIEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */; };
 		C1DE0000000000000000C0A1 /* content.json in Resources */ = {isa = PBXBuildFile; fileRef = C0DE0000000000000000C0A1 /* content.json */; };
+		C1DE0000000000000000C0A2 /* scenarios.json in Resources */ = {isa = PBXBuildFile; fileRef = C0DE0000000000000000C0A2 /* scenarios.json */; };
 		C1DEE01425A64424D6988A1A /* DeckService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEE01425A64424D6988A1A /* DeckService.swift */; };
 		C1DEB3A79D42AE64BD46DA35 /* GameCenterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEB3A79D42AE64BD46DA35 /* GameCenterService.swift */; };
 		C1DE2C64156D00AA753A9481 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE2C64156D00AA753A9481 /* DataService.swift */; };
@@ -211,10 +217,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/TutorBrain.swift; sourceTree = "<group>"; };
+		C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/TalkHomeView.swift; sourceTree = "<group>"; };
+		C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/VoiceTutorView.swift; sourceTree = "<group>"; };
+		C0DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/VoiceBackend.swift; sourceTree = "<group>"; };
+		C0DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/RealtimeVoiceSession.swift; sourceTree = "<group>"; };
 		C0DE90653F7CB3D0B2785546 /* DemoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoData.swift; sourceTree = "<group>"; };
 		C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 		C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIEngine.swift; sourceTree = "<group>"; };
 		C0DE0000000000000000C0A1 /* content.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/content.json; sourceTree = "<group>"; };
+		C0DE0000000000000000C0A2 /* scenarios.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/scenarios.json; sourceTree = "<group>"; };
 		C0DEE01425A64424D6988A1A /* DeckService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckService.swift; sourceTree = "<group>"; };
 		C0DEB3A79D42AE64BD46DA35 /* GameCenterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterService.swift; sourceTree = "<group>"; };
 		C0DE2C64156D00AA753A9481 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
@@ -619,6 +631,9 @@
 				C0DEE01425A64424D6988A1A /* DeckService.swift */,
 				C0DEB3A79D42AE64BD46DA35 /* GameCenterService.swift */,
 				C0DE2C64156D00AA753A9481 /* DataService.swift */,
+				C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */,
+				C0DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift */,
+				C0DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift */,
 				C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */,
 				C0DE905666683AA6BB0AC894 /* UserStore.swift */,
 				C0DE89944ECAD01F4969F163 /* ContentStore.swift */,
@@ -719,6 +734,7 @@
 				E84CC1972B92718E0066FF96 /* WordRemSwiftUI.entitlements */,
 				E8610DE22B98A1E200402FF4 /* Config.plist */,
 				C0DE0000000000000000C0A1 /* content.json */,
+				C0DE0000000000000000C0A2 /* scenarios.json */,
 				AA00C0DE0000000000000002 /* PrivacyInfo.xcprivacy */,
 			);
 			path = WordRemSwiftUI;
@@ -923,6 +939,8 @@
 				C0DE948193DAB5ED5CF05A3A /* WordsView.swift */,
 				C0DE6E7D14E32BAC993BE25F /* ReviewSessionView.swift */,
 				C0DEB9507D0476F5EEF60D9B /* TodayView.swift */,
+				C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */,
+				C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */,
 				C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */,
 				E81C0AEA2F6607C600ACF8BB /* InteractiveSentenceView.swift */,
 				E8AEB0182BDACEBF004E8664 /* MotherTongueView */,
@@ -1152,6 +1170,7 @@
 				E84367152F6C9D5E0033FFEB /* trash.png in Resources */,
 				E8610DE32B98A1E200402FF4 /* Config.plist in Resources */,
 				C1DE0000000000000000C0A1 /* content.json in Resources */,
+				C1DE0000000000000000C0A2 /* scenarios.json in Resources */,
 				AA00C0DE0000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
 				E8D6F2AE2B8DFF400017A523 /* Poppins-Light.ttf in Resources */,
 				E8D6F2AD2B8DFF400017A523 /* OFL.txt in Resources */,
@@ -1298,6 +1317,11 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				C1DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift in Sources */,
+				C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */,
+				C1DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift in Sources */,
+				C1DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift in Sources */,
+				C1DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift in Sources */,
 				C1DE90653F7CB3D0B2785546 /* DemoData.swift in Sources */,
 				C1DE11A019AF810A0B827D3F /* LaunchScreenView.swift in Sources */,
 				C1DEEBE4900BF6326E432FB4 /* AIEngine.swift in Sources */,

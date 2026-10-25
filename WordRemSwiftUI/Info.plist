@@ -5,7 +5,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>WordRem uses your microphone for the Speaking quiz mode so you can practice pronunciation aloud.</string>
+	<string>WordRem uses your microphone so you can speak with your AI language tutor and practice pronunciation.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>WordRem uses speech recognition to evaluate your pronunciation during the Speaking quiz mode.</string>
 	<key>UIAppFonts</key>
@@ -15,5 +15,9 @@
 		<string>Poppins-Bold.ttf</string>
 		<string>Poppins-Medium.ttf</string>
 	</array>
+	<key>VoiceAPIBaseURL</key>
+	<string>https://REPLACE.workers.dev</string>
+	<key>VoiceAppKey</key>
+	<string>ggrk5HriNGc3ZWYJUGWhffGo-RSaJguGYL5cPAUawWw</string>
 </dict>
 </plist>

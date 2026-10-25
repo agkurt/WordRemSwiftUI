@@ -1,0 +1,24 @@
+name = "wordrem-voice"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# Kullanım sayaçları (dakika sınırları) — `npx wrangler kv namespace create USAGE` çıktısındaki id ile doldurun
+[[kv_namespaces]]
+binding = "USAGE"
+id = "REPLACE_WITH_KV_ID"
+
+[vars]
+REALTIME_MODEL = "gpt-realtime-mini"
+VOICE = "marin"
+RC_ENTITLEMENT = "premium"
+# Saniye cinsinden sınırlar
+FREE_TASTE_SECONDS = "180"
+SESSION_MAX_SECONDS = "600"
+TRIAL_DAILY_SECONDS = "600"
+PRO_DAILY_SECONDS = "1800"
+PRO_MONTHLY_SECONDS = "18000"
+
+# Gizli değerler (panelden ya da `npx wrangler secret put <AD>` ile):
+#   OPENAI_API_KEY   — OpenAI API anahtarı
+#   RC_SECRET_KEY    — RevenueCat v1 gizli anahtarı (sk_...)
+#   APP_SHARED_KEY   — uygulamanın gönderdiği X-App-Key başlığı (rastgele uzun bir metin)

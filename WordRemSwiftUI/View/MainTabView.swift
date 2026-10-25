@@ -13,11 +13,11 @@ enum AppTab: Int, CaseIterable {
     /// Sekme çubuğunda yok; Bugün ekranındaki kupa butonundan sheet olarak açılır
     case leaderboard
 
-    static let barTabs: [AppTab] = [.today, .words, .path, .profile]
+    static let barTabs: [AppTab] = [.today, .path, .words, .profile]
 
     var icon: String {
         switch self {
-        case .today:       return "sun.horizon"
+        case .today:       return "waveform"
         case .words:       return "text.book.closed"
         case .path:        return "square.grid.2x2"
         case .profile:     return "person"
@@ -27,7 +27,7 @@ enum AppTab: Int, CaseIterable {
 
     var label: String {
         switch self {
-        case .today:       return AL.s(.tabToday)
+        case .today:       return AL.s(.tabTalk)
         case .words:       return AL.s(.tabWords)
         case .path:        return AL.s(.tabPractice)
         case .profile:     return AL.s(.tabProfile)
@@ -50,8 +50,7 @@ struct MainTabView: View {
         Group {
             switch selectedTab {
             case .today, .leaderboard:
-                TodayView(onLearnNew: { selectedTab = .path },
-                          onOpenLeaderboard: { showLeaderboard = true })
+                TalkHomeView(onOpenLeaderboard: { showLeaderboard = true })
             case .words:
                 WordsView(homeVM: homeVM, showCreateDeck: $showCreateDeck, segment: $wordsSegment)
             case .path:

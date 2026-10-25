@@ -33,6 +33,16 @@ struct UserState: Codable, Equatable {
     var totalAnswers: Int = 0
     var correctAnswers: Int = 0
     var updatedAt: Date = Date()
+
+    // Sesli öğretmen (eski kayıtlarda yok → opsiyonel)
+    /// Tamamlanan senaryo hedefleri: goalId → tarih
+    var voiceGoalsDone: [String: Date]?
+    /// AI'ın hatırladığı kalıcı bilgiler ("Adı Ahmet", "İzmir'de yaşıyor", "Hedefi: iş görüşmesi")
+    var tutorFacts: [String]?
+    /// Son sohbetlerin 1–2 cümlelik özetleri (en yeni sonda, en fazla 10)
+    var tutorSummaries: [String]?
+    /// Toplam sesli pratik süresi (saniye)
+    var voiceSeconds: Int?
 }
 
 final class UserStore {
@@ -119,6 +129,9 @@ final class UserStore {
         out.correctAnswers = max(a.correctAnswers, b.correctAnswers)
         out.achievements = a.achievements.union(b.achievements)
         out.usernameChanges = max(a.usernameChanges, b.usernameChanges)
+        out.voiceGoalsDone = (a.voiceGoalsDone ?? [:]).merging(b.voiceGoalsDone ?? [:]) { min($0, $1) }
+        out.voiceSeconds = max(a.voiceSeconds ?? 0, b.voiceSeconds ?? 0)
+        out.tutorFacts = Array(Array(Set((a.tutorFacts ?? []) + (b.tutorFacts ?? []))).sorted().suffix(30))
         for (levelId, theirs) in other.progress {
             guard let mine = out.progress[levelId] else { out.progress[levelId] = theirs; continue }
             out.progress[levelId] = mine.status.rank >= theirs.status.rank
