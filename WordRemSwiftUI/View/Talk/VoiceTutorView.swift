@@ -44,6 +44,10 @@ struct VoiceTutorView: View {
         .onChange(of: session.phase) { phase in
             if case .failed(let code) = phase, code == "paywall" { showPaywall = true }
         }
+        // Kullanıcı kartı söyledikten sonra öğretmen cevap vermeye başlayınca kart kalkar
+        .onChange(of: session.responseCount) { _ in
+            if phrase != nil { withAnimation { phrase = nil } }
+        }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
             OnboardingPaywallView(onContinue: { showPaywall = false })
@@ -56,7 +60,6 @@ struct VoiceTutorView: View {
                               onPhrase: { text, tr in
                                   showTranslation = false
                                   phrase = (text, tr)
-                                  session.setPushToTalk(true)
                               },
                               onFinish: { success in
                                   finishedSuccess = success
@@ -113,25 +116,28 @@ struct VoiceTutorView: View {
                             .font(DS.Font.display(28, weight: .bold)).foregroundStyle(DS.Colors.ink)
                     }
                 } else {
-                    Text(session.caption.isEmpty ? " " : lastLines(session.caption))
-                        .font(DS.Font.display(30, weight: .medium))
-                        .foregroundStyle(DS.Colors.ink)
-                        .lineSpacing(4)
+                    captionText
+                        .font(DS.Font.ui(24, weight: .medium))
+                        .lineSpacing(6)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .mask(LinearGradient(colors: [.black.opacity(0.35), .black, .black],
-                                             startPoint: .top, endPoint: .bottom))
-                        .animation(.linear(duration: 0.05), value: session.caption)
+                        .animation(.easeOut(duration: 0.15), value: session.caption)
                 }
             }
         }
     }
 
-    /// Uzun konuşmalarda ekranda son ~220 karakter kalsın (kelime sınırından)
-    private func lastLines(_ text: String) -> String {
-        guard text.count > 220 else { return text }
-        let tail = text.suffix(220)
-        if let sp = tail.firstIndex(of: " ") { return String(tail[tail.index(after: sp)...]) }
-        return String(tail)
+    /// Söylenmiş kelimeler koyu, sıradaki kelime soluk (Pingo gibi). Uzun cevapta son ~240 karakter.
+    private var captionText: Text {
+        let shown = session.caption
+        let full = session.captionFull
+        let rest = full.count > shown.count ? String(full.dropFirst(shown.count)) : ""
+        let next = rest.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) ?? ""
+        var visible = shown
+        if visible.count > 240, let sp = visible.dropFirst(visible.count - 240).firstIndex(of: " ") {
+            visible = String(visible[visible.index(after: sp)...])
+        }
+        return Text(visible.isEmpty && next.isEmpty ? " " : visible).foregroundColor(DS.Colors.ink)
+            + Text(next).foregroundColor(DS.Colors.muted.opacity(0.45))
     }
 
     private func failureView(_ code: String) -> some View {
@@ -174,70 +180,62 @@ struct VoiceTutorView: View {
                     Image(systemName: "speaker.wave.2").font(.system(size: 24, weight: .medium))
                 }
                 .accessibilityLabel(AL.s(.quizTapToHear))
-                Button {
-                    phrase = nil
-                    session.setPushToTalk(false)
-                } label: {
-                    Image(systemName: "arrow.uturn.backward").font(.system(size: 22, weight: .medium))
-                }
-                .accessibilityLabel(AL.s(.talkBackToChat))
             }
             .foregroundStyle(DS.Colors.accent)
         }
     }
 
     // MARK: - Bottom
+    /// Sıra kullanıcıdaysa alt panelin tamamı bas-konuş alanı; öğretmen konuşurken "Transkript"
+    private var canTalk: Bool {
+        switch session.phase {
+        case .listening, .userSpeaking: return true
+        default: return false
+        }
+    }
+
     private var bottomArea: some View {
-        VStack(spacing: 10) {
-            if phrase != nil {
-                holdToTalk
-            } else {
-                Text(statusText)
-                    .font(DS.Font.ui(15, weight: .medium))
-                    .foregroundStyle(DS.Colors.accent)
-                    .frame(height: 22)
-                if session.allowedSeconds > 0, session.phase != .ended {
-                    Text(timeLeftText)
-                        .font(DS.Font.ui(12))
-                        .foregroundStyle(DS.Colors.muted)
-                }
+        let holding = session.isHoldingToTalk
+        return VStack(spacing: 8) {
+            Image(systemName: "chevron.up")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(DS.Colors.accent)
+                .opacity(canTalk ? 0 : 1)
+            Text(canTalk ? (holding ? AL.s(.talkReleaseToSend) : AL.s(.talkHoldToTalk))
+                 : session.phase == .thinking ? "…"
+                 : session.phase == .connecting || session.phase == .idle ? AL.s(.talkConnecting)
+                 : AL.s(.talkTranscript))
+                .font(DS.Font.ui(17, weight: .semibold))
+                .foregroundStyle(DS.Colors.accent)
+            if session.allowedSeconds > 0, session.phase != .ended {
+                Text(timeLeftText)
+                    .font(DS.Font.ui(12))
+                    .foregroundStyle(DS.Colors.muted)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 22)
-        .padding(.bottom, 26)
+        .frame(maxWidth: .infinity, minHeight: 120)
+        .padding(.bottom, 12)
         .background(
-            (session.phase == .userSpeaking || session.isHoldingToTalk ? DS.Colors.accent.opacity(0.10) : DS.Colors.paperSunken)
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 40, topTrailingRadius: 40))
+            (holding ? DS.Colors.accent.opacity(0.18) : canTalk ? DS.Colors.accent.opacity(0.08) : DS.Colors.paperSunken)
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 44, topTrailingRadius: 44))
                 .ignoresSafeArea(edges: .bottom)
         )
+        .scaleEffect(holding ? 1.02 : 1, anchor: .bottom)
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    guard !session.isHoldingToTalk else { return }
+                    if canTalk { session.beginHold() }
+                }
+                .onEnded { v in
+                    if session.isHoldingToTalk { session.endHold() }
+                    else if !canTalk, abs(v.translation.height) < 10 { showTranscript = true }
+                }
+        )
+        .accessibilityAddTraits(.isButton)
+        .animation(.spring(response: 0.25), value: holding)
         .animation(.easeOut(duration: 0.2), value: session.phase)
-    }
-
-    private var holdToTalk: some View {
-        Text(session.isHoldingToTalk ? AL.s(.talkReleaseToSend) : AL.s(.talkHoldToTalk))
-            .font(DS.Font.ui(16, weight: .semibold))
-            .foregroundStyle(DS.Colors.paper)
-            .frame(maxWidth: 420, minHeight: 58)
-            .background(session.isHoldingToTalk ? DS.Colors.accent : DS.Colors.ink, in: Capsule())
-            .scaleEffect(session.isHoldingToTalk ? 1.04 : 1)
-            .padding(.horizontal, 24)
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in if !session.isHoldingToTalk { session.beginHold() } }
-                    .onEnded { _ in session.endHold() }
-            )
-            .accessibilityAddTraits(.isButton)
-            .animation(.spring(response: 0.25), value: session.isHoldingToTalk)
-    }
-
-    private var statusText: String {
-        switch session.phase {
-        case .listening:    return AL.s(.talkListening)
-        case .userSpeaking: return AL.s(.talkHearing)
-        case .thinking:     return "…"
-        default:            return " "
-        }
     }
 
     private var timeLeftText: String {

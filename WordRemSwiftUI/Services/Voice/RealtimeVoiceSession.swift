@@ -7,7 +7,8 @@
 //   2) OpenAI Realtime'a WebSocket ile bağlanılır; mikrofon 24 kHz PCM16 olarak akıtılır.
 //   3) AI'ın sesi akış halinde çalınır, altyazı çalınan sesle aynı hızda açılır.
 //   4) AI'ın araç çağrıları (ifade kartı göster, kelimeyi kullandı…) `onToolCall` ile uygulamaya iletilir.
-//  Konuşma modu: sunucu tarafı ses algılama (eller serbest). Kart modu: basılı tut → bırak → gönder.
+//  Pingo gibi her zaman bas-konuş: basılı tut → konuş → bırak → gönder. Mikrofon kendiliğinden dinlemez,
+//  böylece AI kendi sesini duyup kendine cevap vermez.
 //
 
 import AVFoundation
@@ -32,12 +33,16 @@ final class RealtimeVoiceSession: ObservableObject {
     @Published private(set) var phase: Phase = .idle
     /// Şu anki AI konuşmasının ekranda görünen kısmı (sesle senkron açılır)
     @Published private(set) var caption: String = ""
+    /// Şu anki AI cevabının tamamı (altyazıda sıradaki kelimeyi soluk göstermek için)
+    @Published private(set) var captionFull: String = ""
+    /// Her yeni AI cevabında artar (ekrandaki kartı kaldırmak için)
+    @Published private(set) var responseCount = 0
     /// Tüm konuşma (Transkript çekmecesi için)
     @Published private(set) var turns: [Turn] = []
     @Published private(set) var elapsedSeconds: Int = 0
     @Published private(set) var allowedSeconds: Int = 0
     /// Bas-konuş modu (ifade kartı tekrarında)
-    @Published private(set) var pushToTalk = false
+    @Published private(set) var pushToTalk = true
     @Published private(set) var isHoldingToTalk = false
     /// Giriş ses seviyesi 0…1 (dinleme animasyonu için)
     @Published private(set) var inputLevel: Float = 0
@@ -54,7 +59,8 @@ final class RealtimeVoiceSession: ObservableObject {
     private let outFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 24_000, channels: 1, interleaved: false)!
     private let wireFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 24_000, channels: 1, interleaved: false)!
     private var converter: AVAudioConverter?
-    private var micMuted = false
+    private var micMuted = true
+    private var holdStartedAt: Date?
     /// AI konuşurken (ve bitişinden kısa süre sonra) mikrofon sunucuya gitmez:
     /// hoparlörden çıkan ses mikrofona geri girip "kullanıcı konuştu" sanılmasın.
     private var echoGuardUntil = Date.distantPast
@@ -102,7 +108,7 @@ final class RealtimeVoiceSession: ObservableObject {
         engine.inputNode.removeTap(onBus: 0)
         engine.stop()
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        caption = fullAIText
+        caption = fullAIText; captionFull = fullAIText
         phase = .ended
     }
 
@@ -118,9 +124,11 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     func beginHold() {
-        guard pushToTalk else { return }
+        guard pushToTalk, socket != nil else { return }
+        if phase == .aiSpeaking || phase == .thinking { send(["type": "response.cancel"]) }
         stopPlayback()
         send(["type": "input_audio_buffer.clear"])
+        holdStartedAt = Date()
         micMuted = false
         isHoldingToTalk = true
         phase = .userSpeaking
@@ -130,6 +138,12 @@ final class RealtimeVoiceSession: ObservableObject {
         guard pushToTalk, isHoldingToTalk else { return }
         isHoldingToTalk = false
         micMuted = true
+        // Çok kısa basış: boş ses gönderme (sunucu hata verir)
+        if let start = holdStartedAt, Date().timeIntervalSince(start) < 0.35 {
+            send(["type": "input_audio_buffer.clear"])
+            phase = .listening
+            return
+        }
         send(["type": "input_audio_buffer.commit"])
         send(["type": "response.create"])
         phase = .thinking
@@ -252,7 +266,7 @@ final class RealtimeVoiceSession: ObservableObject {
         player.stop(); player.play()
         scheduledSamples = 0; playbackStart = nil; playbackWallStart = nil
         captionTimer?.invalidate()
-        if !fullAIText.isEmpty { caption = fullAIText }
+        if !fullAIText.isEmpty { caption = fullAIText; captionFull = fullAIText }
     }
 
     /// Altyazı, çalınan ses kadar açılır (Pingo tarzı karaoke)
@@ -273,10 +287,11 @@ final class RealtimeVoiceSession: ObservableObject {
             playedSamples = Date().timeIntervalSince(start) * outFormat.sampleRate
         }
         let played = min(1, playedSamples / scheduledSamples)
-        let target = Int(Double(fullAIText.count) * played)
+        captionFull = fullAIText
+        let target = Self.wordBoundary(in: fullAIText, upTo: Int(Double(fullAIText.count) * played))
         if target > caption.count { caption = String(fullAIText.prefix(target)) }
         if played >= 0.999 && responseFinished {
-            caption = fullAIText
+            caption = fullAIText; captionFull = fullAIText
             captionTimer?.invalidate()
             scheduledSamples = 0; playbackStart = nil; playbackWallStart = nil
             echoGuardUntil = Date().addingTimeInterval(0.6)
@@ -286,6 +301,14 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     private var responseFinished = false
+
+    /// Altyazı kelime kelime açılsın: hedefi son tamamlanmış kelimenin sonuna çek
+    private static func wordBoundary(in text: String, upTo n: Int) -> Int {
+        guard n < text.count else { return text.count }
+        let prefix = text.prefix(n)
+        guard let lastSpace = prefix.lastIndex(where: { $0 == " " || $0 == "\n" }) else { return 0 }
+        return prefix.distance(from: prefix.startIndex, to: lastSpace) + 1
+    }
 
     private static func rms(_ buffer: AVAudioPCMBuffer) -> Float {
         guard let ch = buffer.floatChannelData?[0], buffer.frameLength > 0 else { return 0 }
@@ -335,6 +358,8 @@ final class RealtimeVoiceSession: ObservableObject {
         case "session.created", "session.updated":
             if phase == .connecting {
                 phase = .listening
+                // Sunucu ses algılaması kapalı: yalnızca basılı tutunca dinlenir
+                send(["type": "session.update", "session": ["type": "realtime", "audio": ["input": ["turn_detection": NSNull()]]]])
                 // AI ilk sözü alsın (karşılama)
                 send(["type": "response.create"])
             }
@@ -352,7 +377,8 @@ final class RealtimeVoiceSession: ObservableObject {
             if !t.isEmpty { turns.append(Turn(role: .user, text: t)) }
 
         case "response.created":
-            fullAIText = ""; caption = ""; responseFinished = false
+            fullAIText = ""; caption = ""; captionFull = ""; responseFinished = false
+            responseCount += 1
             turns.append(Turn(role: .ai, text: ""))
 
         case "response.output_audio.delta", "response.audio.delta":
@@ -384,7 +410,7 @@ final class RealtimeVoiceSession: ObservableObject {
                 pendingToolFollowUp = false
                 send(["type": "response.create"])
             } else if scheduledSamples == 0 {
-                caption = fullAIText
+                caption = fullAIText; captionFull = fullAIText
                 phase = .listening
             }
 
