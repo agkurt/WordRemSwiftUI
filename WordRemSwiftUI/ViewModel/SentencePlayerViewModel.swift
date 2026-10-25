@@ -80,13 +80,6 @@ final class SentencePlayerViewModel: NSObject, ObservableObject {
     }
     
     private func translateSentenceWithAlignment(sentence: String, sourceLang: String, targetLang: String) async throws -> (translation: String, alignments: [String: (translation: String, colorIndex: Int)]) {
-        let apiKey = APIKey.geminiApi
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         
         let sourceLangName = getLanguageName(code: sourceLang)
         let targetLangName = getLanguageName(code: targetLang)
@@ -108,32 +101,7 @@ final class SentencePlayerViewModel: NSObject, ObservableObject {
         Now translate (2 lines only):
         """
         
-        let requestBody: [String: Any] = [
-            "model": "gpt-3.5-turbo",
-            "messages": [
-                ["role": "user", "content": prompt]
-            ],
-            "temperature": 0.3,
-            "max_tokens": 150  // Increased for complete sentences
-        ]
-        
-        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw NSError(domain: "API Error", code: -1)
-        }
-        
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        
-        guard let choices = json?["choices"] as? [[String: Any]],
-              let firstChoice = choices.first,
-              let message = firstChoice["message"] as? [String: Any],
-              let text = message["content"] as? String else {
-            throw NSError(domain: "Failed to parse response", code: -1)
-        }
+        let text = try await AIEngine.complete(instructions: "You are a helpful language tutor.", prompt: prompt)
         
         // Parse response
         let rawText = text.trimmingCharacters(in: .whitespacesAndNewlines)

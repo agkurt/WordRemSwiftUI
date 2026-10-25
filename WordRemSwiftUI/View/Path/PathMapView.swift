@@ -80,8 +80,10 @@ struct PathMapView: View {
                         ScrollViewReader { proxy in
                             ScrollView(.vertical, showsIndicators: false) {
                                 VStack(alignment: .leading, spacing: 0) {
-                                    practiceRows
-                                        .padding(.top, 20)
+                                    if mistakes.hasMistakes || AIEngine.isAvailable {
+                                        practiceRows
+                                            .padding(.top, 20)
+                                    }
 
                                     ForEach(Array(unitGroups.enumerated()), id: \.offset) { unitIndex, unitLevels in
                                         PathUnitSection(
@@ -266,31 +268,36 @@ struct PathMapView: View {
                 .accessibilityLabel(langManager.f(.pathMistakesFormat, mistakes.count))
                 .transition(.opacity)
 
-                Rectangle()
-                    .fill(DS.Colors.line)
-                    .frame(height: 1)
-                    .padding(.leading, 52)
+                if AIEngine.isAvailable {
+                    Rectangle()
+                        .fill(DS.Colors.line)
+                        .frame(height: 1)
+                        .padding(.leading, 52)
+                }
             }
 
-            Button {
-                showAIQuiz = true
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "text.book.closed")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(DS.Colors.slate)
-                        .frame(width: 24)
-                    Text(AL.s(.pathAIGrammarQuiz))
-                        .font(DS.Font.ui(16, weight: .medium))
-                        .foregroundStyle(DS.Colors.ink)
-                    Spacer()
-                    PathChevron()
+            // Cihaz üstü AI (Apple Intelligence) yoksa gizlenir
+            if AIEngine.isAvailable {
+                Button {
+                    showAIQuiz = true
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "text.book.closed")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(DS.Colors.slate)
+                            .frame(width: 24)
+                        Text(AL.s(.pathAIGrammarQuiz))
+                            .font(DS.Font.ui(16, weight: .medium))
+                            .foregroundStyle(DS.Colors.ink)
+                        Spacer()
+                        PathChevron()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+                    .contentShape(Rectangle())
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .contentShape(Rectangle())
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
         .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.line, lineWidth: 1))

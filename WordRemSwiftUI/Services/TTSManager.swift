@@ -142,34 +142,8 @@ final class TTSManager {
         await MainActor.run { playData(audioData) }
     }
 
-    private func fetchAudio(text: String, speed: Double) async -> Data? {
-        let url = URL(string: "https://api.openai.com/v1/audio/speech")!
-        var req = URLRequest(url: url)
-        req.httpMethod  = "POST"
-        req.timeoutInterval = 12
-        req.setValue("application/json",          forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(APIKey.geminiApi)", forHTTPHeaderField: "Authorization")
-
-        let body: [String: Any] = [
-            "model":  "tts-1",          // tts-1-hd daha kaliteli ama ~2x yavaş; quiz için tts-1 yeterli
-            "input":  text,
-            "voice":  "nova",           // doğal kadın sesi; alternatifler: shimmer, alloy, onyx, echo
-            "speed":  speed,
-            "response_format": "mp3"
-        ]
-
-        guard let bodyData = try? JSONSerialization.data(withJSONObject: body) else { return nil }
-        req.httpBody = bodyData
-
-        guard let (data, response) = try? await URLSession.shared.data(for: req),
-              let http = response as? HTTPURLResponse,
-              http.statusCode == 200,
-              !data.isEmpty else {
-            return nil
-        }
-
-        return data
-    }
+    /// Sesler cihazdaki sistem sesleriyle (AVSpeechSynthesizer) çalınır — ağ/anahtar gerekmez.
+    private func fetchAudio(text: String, speed: Double) async -> Data? { nil }
 
     // MARK: - Playback
 

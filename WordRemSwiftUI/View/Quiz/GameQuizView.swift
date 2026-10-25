@@ -623,7 +623,9 @@ struct GameQuizView: View {
     // MARK: - Hint Button
     @ViewBuilder
     private func hintButton(for question: GameQuestion) -> some View {
-        if HintManager.shared.canUseHint {
+        if !AIEngine.isAvailable {
+            EmptyView()
+        } else if HintManager.shared.canUseHint {
             Button {
                 triggerHint(for: question)
             } label: {

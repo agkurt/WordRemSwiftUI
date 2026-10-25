@@ -139,12 +139,6 @@ final class PathMistakesDeckService {
     // MARK: - Örnek cümle üretimi (OpenAI)
 
     private func generateSentence(term: String, langCode: String) async throws -> String {
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.setValue("application/json",          forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(APIKey.geminiApi)", forHTTPHeaderField: "Authorization")
-
         let langName = languageName(for: langCode)
         let prompt = """
         Generate ONE short example sentence (10-15 words max) using "\(term)" in \(langName).
@@ -152,18 +146,9 @@ final class PathMistakesDeckService {
         - No quotes, no numbering, no translation
         - Return ONLY the sentence
         """
-        let body: [String: Any] = [
-            "model": "gpt-3.5-turbo",
-            "messages": [["role": "user", "content": prompt]],
-            "temperature": 0.7,
-            "max_tokens": 50
-        ]
-        req.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, _) = try await URLSession.shared.data(for: req)
-        let json      = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        let content   = (json?["choices"] as? [[String: Any]])?.first?["message"] as? [String: Any]
-        return (content?["content"] as? String ?? "")
+        let content = try await AIEngine.complete(instructions: "You write short, natural example sentences.",
+                                                  prompt: prompt)
+        return content
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .components(separatedBy: .newlines).first ?? ""
     }

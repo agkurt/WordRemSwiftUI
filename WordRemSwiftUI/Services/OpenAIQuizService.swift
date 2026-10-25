@@ -2,13 +2,13 @@
 //  OpenAIQuizService.swift
 //  WordRemSwiftUI
 //
-//  OpenAI chat/completions kullanarak gramer konularında quiz soruları üretir.
-//  Model: gpt-4o-mini  |  Response format: JSON
+//  Gramer quizi, sesli gramer sohbeti ve kelime çevirisi.
+//  Apple'ın cihaz üstü modeliyle çalışır (AIEngine) — API anahtarı yok.
 //
 
 import Foundation
 
-// MARK: - OpenAI Response Models
+// MARK: - Prompt Models
 
 private struct OAIRequest: Encodable {
     let model: String
@@ -24,18 +24,6 @@ private struct OAIMessage: Encodable {
 
 private struct OAIResponseFormat: Encodable {
     let type: String          // "json_object"
-}
-
-private struct OAIResponse: Decodable {
-    let choices: [OAIChoice]
-}
-
-private struct OAIChoice: Decodable {
-    let message: OAIChoiceMessage
-}
-
-private struct OAIChoiceMessage: Decodable {
-    let content: String
 }
 
 // MARK: - AI Question Model (JSON parse için)
@@ -60,29 +48,19 @@ final class OpenAIQuizService {
     static let shared = OpenAIQuizService()
     private init() {}
 
-    private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
+    var hasAPIKey: Bool { AIEngine.isAvailable }
 
-    // MARK: - API Key (ApiKey-Info.plist → GeminiApi key'inden okunur)
-    private var apiKey: String { APIKey.geminiApi }
-    var hasAPIKey: Bool { !apiKey.trimmingCharacters(in: .whitespaces).isEmpty }
-
-    // MARK: - Custom Errors
-    enum OAIError: LocalizedError {
-        case missingAPIKey
-        case httpError(Int, String)
-        case emptyResponse
-
-        var errorDescription: String? {
-            switch self {
-            case .missingAPIKey:
-                return AL.s(.hcAIServiceError)
-            case .httpError(let code, let msg):
-                print("❌ OpenAI HTTP \(code): \(msg)")
-                return AL.s(.hcAIServiceError)
-            case .emptyResponse:
-                return AL.s(.hcAIEmptyResponse)
-            }
+    /// Sistem mesajını talimat, son kullanıcı mesajını istem, aradakileri geçmiş olarak gönderir
+    private func run(_ body: OAIRequest) async throws -> String {
+        let instructions = body.messages.first { $0.role == "system" }?.content ?? ""
+        let turns = body.messages.filter { $0.role != "system" }
+        var prompt = turns.last?.content ?? ""
+        if body.response_format.type == "json_object" {
+            prompt += "\n\nReply with ONLY valid JSON, no markdown."
         }
+        return try await AIEngine.complete(instructions: instructions, prompt: prompt,
+                                           history: turns.dropLast().map { ($0.role, $0.content) },
+                                           temperature: body.temperature)
     }
 
     /// Verilen konu ve soru sayısı için GameQuestion dizisi üretir.
@@ -94,20 +72,14 @@ final class OpenAIQuizService {
         langCode: String = "en"
     ) async throws -> [GameQuestion] {
 
-        guard hasAPIKey else { throw OAIError.missingAPIKey }
+        guard hasAPIKey else { throw AIEngine.AIError.unavailable }
 
         let prompt = buildPrompt(topic: topic, count: count,
                                  targetLang: targetLang, nativeLang: nativeLang,
                                  langCode: langCode)
 
-        var request = URLRequest(url: endpoint)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        request.timeoutInterval = 30
-
         let body = OAIRequest(
-            model: "gpt-4o-mini",
+            model: "on-device",
             messages: [
                 OAIMessage(role: "system", content: systemPrompt(nativeLang: nativeLang, targetLang: targetLang)),
                 OAIMessage(role: "user",   content: prompt)
@@ -115,33 +87,10 @@ final class OpenAIQuizService {
             response_format: OAIResponseFormat(type: "json_object"),
             temperature: 0.7
         )
-        request.httpBody = try JSONEncoder().encode(body)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let http = response as? HTTPURLResponse else {
-            throw OAIError.emptyResponse
-        }
-        guard http.statusCode == 200 else {
-            // OpenAI hata mesajını parse et
-            let raw = String(data: data, encoding: .utf8) ?? "Bilinmeyen hata"
-            let friendly: String
-            switch http.statusCode {
-            case 401: friendly = AL.s(.hcAIServiceError)
-            case 429: friendly = AL.s(.hcAIRateLimited)
-            case 400: friendly = AL.s(.hcAIServiceError)
-            default:  friendly = "HTTP \(http.statusCode): \(raw)"
-            }
-            throw OAIError.httpError(http.statusCode, friendly)
-        }
-
-        let oaiResp = try JSONDecoder().decode(OAIResponse.self, from: data)
-        guard let content = oaiResp.choices.first?.message.content else {
-            throw OAIError.emptyResponse
-        }
+        let content = try await run(body)
 
         // Debug: API'den gelen ham JSON'u logla
-        print("📝 OpenAI raw content:\n\(content)")
+        print("📝 AI raw content:\n\(content)")
 
         // Bazen model cevabı ```json ... ``` içinde sarıyor, temizle
         let cleaned = content
@@ -150,8 +99,8 @@ final class OpenAIQuizService {
             .replacingOccurrences(of: "```", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
-        guard let jsonData = cleaned.data(using: .utf8) else {
-            throw OAIError.emptyResponse
+        guard let jsonData = AIEngine.jsonData(from: cleaned) else {
+            throw AIEngine.AIError.emptyResponse
         }
 
         do {
@@ -172,7 +121,7 @@ final class OpenAIQuizService {
         guard hasAPIKey else { return nil }
 
         let body = OAIRequest(
-            model: "gpt-4o-mini",
+            model: "on-device",
             messages: [
                 OAIMessage(role: "system", content: """
                     You are a brilliant, warm and funny \(targetLang) teacher. \
@@ -196,20 +145,7 @@ final class OpenAIQuizService {
             response_format: OAIResponseFormat(type: "text"),
             temperature: 0.7
         )
-
-        var req = URLRequest(url: endpoint)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        req.timeoutInterval = 20
-        req.httpBody = try? JSONEncoder().encode(body)
-
-        guard let (data, resp) = try? await URLSession.shared.data(for: req),
-              let http = resp as? HTTPURLResponse, http.statusCode == 200 else { return nil }
-
-        let decoded = try? JSONDecoder().decode(OAIResponse.self, from: data)
-        return decoded?.choices.first?.message.content
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return try? await run(body)
     }
 
     /// Kullanıcının sesli sorusuna kısa, doğal bir yanıt üretir.
@@ -262,25 +198,13 @@ final class OpenAIQuizService {
         messages.append(OAIMessage(role: "user", content: userText))
 
         let body = OAIRequest(
-            model: "gpt-4o-mini",
+            model: "on-device",
             messages: messages,
             response_format: OAIResponseFormat(type: "text"),
             temperature: 0.7
         )
 
-        var req = URLRequest(url: endpoint)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        req.timeoutInterval = 20
-        req.httpBody = try? JSONEncoder().encode(body)
-
-        guard let (data, resp) = try? await URLSession.shared.data(for: req),
-              let http = resp as? HTTPURLResponse, http.statusCode == 200 else { return nil }
-
-        let decoded = try? JSONDecoder().decode(OAIResponse.self, from: data)
-        return decoded?.choices.first?.message.content
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return try? await run(body)
     }
 
     // MARK: - Word Translation (single word, lightweight call)
@@ -293,7 +217,7 @@ final class OpenAIQuizService {
         let nativeName = fullLangName(for: nativeLangCode)
 
         let body = OAIRequest(
-            model: "gpt-4o-mini",
+            model: "on-device",
             messages: [
                 OAIMessage(role: "system",
                            content: "You are a translator. Translate the given \(targetName) word/phrase into \(nativeName). Reply with ONLY the translation — one word or short phrase, no extra text."),
@@ -303,22 +227,7 @@ final class OpenAIQuizService {
             temperature: 0.2
         )
 
-        guard let httpBody = try? JSONEncoder().encode(body) else { return nil }
-
-        var request = URLRequest(url: endpoint)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        request.timeoutInterval = 15
-        request.httpBody = httpBody
-
-        guard let (data, response) = try? await URLSession.shared.data(for: request),
-              let http = response as? HTTPURLResponse,
-              http.statusCode == 200 else { return nil }
-
-        let oaiResp = try? JSONDecoder().decode(OAIResponse.self, from: data)
-        return oaiResp?.choices.first?.message.content
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return try? await run(body)
     }
 
     // MARK: - Language Code → Full Name

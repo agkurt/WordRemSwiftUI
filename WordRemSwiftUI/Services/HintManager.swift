@@ -79,29 +79,8 @@ final class HintManager {
         Return ONLY the hint text.
         """
 
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(APIKey.geminiApi)", forHTTPHeaderField: "Authorization")
-
-        let body: [String: Any] = [
-            "model": "gpt-3.5-turbo",
-            "messages": [["role": "user", "content": prompt]],
-            "temperature": 0.7,
-            "max_tokens": 120
-        ]
-
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: body) else {
-            return "💡 \(term)"
-        }
-        req.httpBody = httpBody
-
-        guard let (data, _) = try? await URLSession.shared.data(for: req),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let choices = json["choices"] as? [[String: Any]],
-              let msg = choices.first?["message"] as? [String: Any],
-              let content = msg["content"] as? String else {
+        guard let content = try? await AIEngine.complete(instructions: "You are a helpful language tutor.",
+                                                         prompt: prompt) else {
             return "💡 Try to think of a context where you'd use '\(term)' in \(targetName)."
         }
 

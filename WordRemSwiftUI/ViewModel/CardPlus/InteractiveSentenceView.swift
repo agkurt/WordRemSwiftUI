@@ -57,7 +57,7 @@ struct InteractiveSentenceView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
                         // Translate button
-                        if !viewModel.showTranslation {
+                        if !viewModel.showTranslation && AIEngine.isAvailable {
                             Button {
                                 Task {
                                     await viewModel.translateSentence(

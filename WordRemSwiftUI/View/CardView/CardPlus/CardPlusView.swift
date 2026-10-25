@@ -62,7 +62,7 @@ struct CardPlusView: View {
 
                         if viewModel.isLoading {
                             LoadingRow(text: AL.s(.cardTranslating))
-                        } else {
+                        } else if AIEngine.isAvailable {
                             SmallOutlineButton(title: AL.s(.cardTranslate), icon: "arrow.left.arrow.right",
                                                enabled: !viewModel.wordName.isEmpty) {
                                 guard !viewModel.wordName.isEmpty else { return }
@@ -84,7 +84,7 @@ struct CardPlusView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         if viewModel.isLoadingSentence {
                             LoadingRow(text: AL.s(.cardGenerating))
-                        } else {
+                        } else if AIEngine.isAvailable {
                             SmallOutlineButton(title: AL.s(.cardGenerateSentence), icon: "text.quote",
                                                enabled: !viewModel.wordMean.isEmpty) {
                                 guard !viewModel.wordMean.isEmpty else { return }

@@ -68,13 +68,6 @@ final class CardPlusViewModel: ObservableObject {
     }
     
     private func generateExampleSentenceWithGemini(word: String, languageCode: String) async throws -> String {
-        let apiKey = APIKey.geminiApi // OpenAI key burda
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         
         let languageName = getLanguageName(code: languageCode)
         
@@ -94,40 +87,7 @@ final class CardPlusViewModel: ObservableObject {
         [A short sentence using the word in \(languageName)]
         """
         
-        let requestBody: [String: Any] = [
-            "model": "gpt-3.5-turbo",
-            "messages": [
-                ["role": "user", "content": prompt]
-            ],
-            "temperature": 0.7,
-            "max_tokens": 50
-        ]
-        
-        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "Invalid response", code: -1)
-        }
-        
-        guard httpResponse.statusCode == 200 else {
-            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let error = json["error"] as? [String: Any],
-               let message = error["message"] as? String {
-                throw NSError(domain: "API Error", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
-            }
-            throw NSError(domain: "frafAPI Error", code: httpResponse.statusCode)
-        }
-        
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        
-        guard let choices = json?["choices"] as? [[String: Any]],
-              let firstChoice = choices.first,
-              let message = firstChoice["message"] as? [String: Any],
-              let text = message["content"] as? String else {
-            throw NSError(domain: "Failed to parse response", code: -1)
-        }
+        let text = try await AIEngine.complete(instructions: "You are a helpful language tutor.", prompt: prompt)
         
         // Clean up the sentence
         let cleanedSentence = text
@@ -175,13 +135,6 @@ final class CardPlusViewModel: ObservableObject {
     }
     
     private func translateWithGemini(word: String, sourceLang: String, targetLang: String) async throws -> String {
-        let apiKey = APIKey.geminiApi // OpenAI key burda
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         
         // Map language codes to full names
         let sourceLangName = getLanguageName(code: sourceLang)
@@ -203,40 +156,7 @@ final class CardPlusViewModel: ObservableObject {
         Translation:
         """
         
-        let requestBody: [String: Any] = [
-            "model": "gpt-3.5-turbo",
-            "messages": [
-                ["role": "user", "content": prompt]
-            ],
-            "temperature": 0.3,
-            "max_tokens": 20
-        ]
-        
-        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "Invalid response", code: -1)
-        }
-        
-        guard httpResponse.statusCode == 200 else {
-            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let error = json["error"] as? [String: Any],
-               let message = error["message"] as? String {
-                throw NSError(domain: "API Error", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
-            }
-            throw NSError(domain: "API Error", code: httpResponse.statusCode)
-        }
-        
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        
-        guard let choices = json?["choices"] as? [[String: Any]],
-              let firstChoice = choices.first,
-              let message = firstChoice["message"] as? [String: Any],
-              let text = message["content"] as? String else {
-            throw NSError(domain: "Failed to parse response", code: -1)
-        }
+        let text = try await AIEngine.complete(instructions: "You are a helpful language tutor.", prompt: prompt)
         
         // Clean up the translation - get first word/line only
         let cleanedTranslation = text

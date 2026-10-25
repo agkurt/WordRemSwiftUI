@@ -14,7 +14,6 @@ struct WordRemSwiftUIApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     @StateObject private var authManager = AuthManager()
-    @StateObject private var sentenceViewModel = SentenceViewModel()
     @StateObject private var tabBarModifier = TabBarModifier()
     @StateObject private var motherTongueViewModel = MotherTongueViewModel()
     @StateObject private var languageManager = LanguageManager.shared
@@ -44,7 +43,6 @@ struct WordRemSwiftUIApp: App {
                 }
             }
             .environmentObject(authManager)
-            .environmentObject(sentenceViewModel)
             .environmentObject(tabBarModifier)
             .environmentObject(motherTongueViewModel)
             .environmentObject(languageManager)

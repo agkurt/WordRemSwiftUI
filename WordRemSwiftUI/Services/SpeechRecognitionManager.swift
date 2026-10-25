@@ -2,13 +2,14 @@
 //  SpeechRecognitionManager.swift
 //  WordRemSwiftUI
 //
-//  Ses tanıma — AVAudioRecorder ile kayıt alır, OpenAI Whisper API ile
-//  hedef dile özgü transkripsiyon yapar. Cihaz diline bağlı olmadığından
-//  Fransızca söylenen kelimeyi Türkçeye çevirmez.
+//  Ses tanıma — AVAudioRecorder ile kayıt alır, Apple Speech ile hedef dilin
+//  yerel ayarında yazıya döker (mümkünse cihaz üstünde). Cihaz diline bağlı
+//  olmadığından Fransızca söylenen kelimeyi Türkçeye çevirmez.
 //
 
 import Foundation
 import AVFoundation
+import Speech
 
 @MainActor
 final class SpeechRecognitionManager: ObservableObject {
@@ -17,7 +18,7 @@ final class SpeechRecognitionManager: ObservableObject {
 
     @Published var recognizedText: String = ""
     @Published var isRecording: Bool      = false
-    @Published var isProcessing: Bool     = false   // true while Whisper API call is in flight
+    @Published var isProcessing: Bool     = false   // true while transcription is running
     @Published var micPermission: AVAudioSession.RecordPermission = AVAudioSession.sharedInstance().recordPermission
 
     private var audioRecorder: AVAudioRecorder?
@@ -57,7 +58,7 @@ final class SpeechRecognitionManager: ObservableObject {
 
         let settings: [String: Any] = [
             AVFormatIDKey:            Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey:          16000,          // Whisper prefers 16 kHz
+            AVSampleRateKey:          16000,          // speech recognizers prefer 16 kHz
             AVNumberOfChannelsKey:    1,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
@@ -109,7 +110,7 @@ final class SpeechRecognitionManager: ObservableObject {
 
         isProcessing = true
         Task {
-            let result = await transcribeWithWhisper(fileURL: url, langCode: currentLangCode)
+            let result = await transcribe(fileURL: url, langCode: currentLangCode)
             recognizedText = result
             isProcessing   = false
             try? FileManager.default.removeItem(at: url)
@@ -126,57 +127,50 @@ final class SpeechRecognitionManager: ObservableObject {
         return levenshteinSimilarity(r, e) >= 0.78
     }
 
-    // MARK: - Whisper API
+    // MARK: - Apple Speech
 
-    private func transcribeWithWhisper(fileURL: URL, langCode: String) async -> String {
-        let endpoint = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
-        var req = URLRequest(url: endpoint)
-        req.httpMethod = "POST"
-        req.timeoutInterval = 20
-        req.setValue("Bearer \(APIKey.geminiApi)", forHTTPHeaderField: "Authorization")
-
-        let boundary = "Boundary-\(UUID().uuidString)"
-        req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        guard let audioData = try? Data(contentsOf: fileURL) else { return "" }
-
-        var body = Data()
-        let iso = whisperISO(langCode)
-
-        body.appendField("model", value: "whisper-1", boundary: boundary)
-        body.appendField("language", value: iso, boundary: boundary)
-        body.appendField("response_format", value: "text", boundary: boundary)
-        body.appendFilePart(name: "file", filename: "speech.m4a",
-                            mimeType: "audio/m4a", data: audioData, boundary: boundary)
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-
-        req.httpBody = body
-
-        guard let (data, response) = try? await URLSession.shared.data(for: req),
-              let http = response as? HTTPURLResponse,
-              http.statusCode == 200,
-              let text = String(data: data, encoding: .utf8) else {
-            return ""
+    private func transcribe(fileURL: URL, langCode: String) async -> String {
+        let authorized: Bool = await withCheckedContinuation { cont in
+            SFSpeechRecognizer.requestAuthorization { cont.resume(returning: $0 == .authorized) }
         }
+        guard authorized,
+              let recognizer = SFSpeechRecognizer(locale: Locale(identifier: speechLocale(langCode))),
+              recognizer.isAvailable else { return "" }
 
-        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let request = SFSpeechURLRecognitionRequest(url: fileURL)
+        request.shouldReportPartialResults = false
+        if recognizer.supportsOnDeviceRecognition { request.requiresOnDeviceRecognition = true }
+
+        return await withCheckedContinuation { cont in
+            var finished = false
+            recognizer.recognitionTask(with: request) { result, error in
+                guard !finished else { return }
+                if let result, result.isFinal {
+                    finished = true
+                    cont.resume(returning: result.bestTranscription.formattedString)
+                } else if error != nil {
+                    finished = true
+                    cont.resume(returning: "")
+                }
+            }
+        }
     }
 
     // MARK: - Helpers
 
-    private func whisperISO(_ code: String) -> String {
+    private func speechLocale(_ code: String) -> String {
         switch code.uppercased() {
-        case "FR": return "fr"
-        case "DE": return "de"
-        case "ES": return "es"
-        case "IT": return "it"
-        case "RU": return "ru"
-        case "ZH": return "zh"
-        case "TR": return "tr"
-        case "JA": return "ja"
-        case "KO": return "ko"
-        case "PT": return "pt"
-        default:   return "en"
+        case "FR": return "fr-FR"
+        case "DE": return "de-DE"
+        case "ES": return "es-ES"
+        case "IT": return "it-IT"
+        case "RU": return "ru-RU"
+        case "ZH": return "zh-CN"
+        case "TR": return "tr-TR"
+        case "JA": return "ja-JP"
+        case "KO": return "ko-KR"
+        case "PT": return "pt-BR"
+        default:   return "en-US"
         }
     }
 
@@ -198,21 +192,3 @@ final class SpeechRecognitionManager: ObservableObject {
     }
 }
 
-// MARK: - Multipart helpers
-
-private extension Data {
-    mutating func appendField(_ name: String, value: String, boundary: String) {
-        append("--\(boundary)\r\n".data(using: .utf8)!)
-        append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n".data(using: .utf8)!)
-        append("\(value)\r\n".data(using: .utf8)!)
-    }
-
-    mutating func appendFilePart(name: String, filename: String,
-                                  mimeType: String, data fileData: Data, boundary: String) {
-        append("--\(boundary)\r\n".data(using: .utf8)!)
-        append("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
-        append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
-        append(fileData)
-        append("\r\n".data(using: .utf8)!)
-    }
-}
