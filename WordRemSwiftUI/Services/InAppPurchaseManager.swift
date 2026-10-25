@@ -7,8 +7,36 @@ import Foundation
 import RevenueCat
 
 // MARK: - Product Identifier
-enum ProductIdentifier: String {
+/// App Store Connect'te aynı abonelik grubunda olmalı; yıllıkta 7 günlük ücretsiz deneme tanımlı.
+enum ProductIdentifier: String, CaseIterable {
+    case annual = "wordrem_annual_subscription"
     case weekly = "wordrem_weekly_subscription"
+
+    static var all: [String] { allCases.map(\.rawValue) }
+}
+
+// MARK: - Plan (paywall'da gösterilen tek seçenek)
+struct SubscriptionPlan: Identifiable {
+    let product: StoreProduct
+    /// Kullanıcı ücretsiz denemeye uygunsa deneme gün sayısı
+    var trialDays: Int?
+
+    var id: String { product.productIdentifier }
+    var isAnnual: Bool { product.subscriptionPeriod?.unit == .year }
+
+    static func freeTrialDays(of product: StoreProduct) -> Int? {
+        guard let intro = product.introductoryDiscount, intro.paymentMode == .freeTrial else { return nil }
+        let p = intro.subscriptionPeriod
+        let days: Int
+        switch p.unit {
+        case .day:   days = p.value
+        case .week:  days = p.value * 7
+        case .month: days = p.value * 30
+        case .year:  days = p.value * 365
+        @unknown default: return nil
+        }
+        return days * max(intro.numberOfPeriods, 1)
+    }
 }
 
 // MARK: - Purchase Result
@@ -30,7 +58,6 @@ final class InAppPurchaseManager: ObservableObject {
 
     private let premiumKey = "isPremium"
 
-    @Published var weeklyPackage: Package?
     @Published var failCount: Int = 0
 
     /// Cache'ten başlatılır. set edilince UserDefaults'a da yazar.
@@ -43,6 +70,12 @@ final class InAppPurchaseManager: ObservableObject {
 
     private init() {
         self.isPremium = UserDefaults.standard.bool(forKey: "isPremium")
+    }
+
+    private func isActive(_ info: CustomerInfo?) -> Bool {
+        guard let info else { return false }
+        return info.entitlements["pro"]?.isActive == true
+            || !info.activeSubscriptions.isDisjoint(with: ProductIdentifier.all)
     }
 
     // MARK: - Configure
@@ -60,49 +93,40 @@ final class InAppPurchaseManager: ObservableObject {
             print("⚠️ [IAP] customerInfo alınamadı — cache korundu: \(isPremium)")
             return
         }
-        let active = info.entitlements["pro"]?.isActive == true
-            || info.activeSubscriptions.contains(ProductIdentifier.weekly.rawValue)
+        let active = self.isActive(info)
         await MainActor.run {
             isPremium = active   // didSet → UserDefaults + DailyLimitManager
         }
         print("✅ [IAP] Premium sync: \(active)")
     }
 
-    // MARK: - Fetch Weekly Package
-    func fetchWeeklyPackage(completion: @escaping (Package?) -> Void) {
-        Purchases.shared.getOfferings { [weak self] offerings, error in
-            if let error {
-                print("❌ [IAP] Offerings fetch error: \(error.localizedDescription)")
-                completion(nil)
-                return
-            }
-            let pkg = offerings?.current?.weekly
-                ?? offerings?.current?.availablePackages.first(where: {
-                    $0.storeProduct.productIdentifier == ProductIdentifier.weekly.rawValue
-                })
-            DispatchQueue.main.async {
-                self?.weeklyPackage = pkg
-                completion(pkg)
-            }
+    // MARK: - Fetch Plans
+    /// Önce RevenueCat offering'i, boşsa ürünleri doğrudan StoreKit'ten çeker.
+    /// Yıllık önce gelir; deneme uygunluğu kullanıcı bazında kontrol edilir.
+    func fetchPlans() async -> [SubscriptionPlan] {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-MockPaywall") { return Self.mockPlans }
+        #endif
+        var products: [StoreProduct] = []
+        if let offerings = try? await Purchases.shared.offerings(),
+           let packages = offerings.current?.availablePackages, !packages.isEmpty {
+            products = packages.map(\.storeProduct).filter { $0.subscriptionPeriod != nil }
         }
-    }
-
-    // MARK: - Fetch Weekly Product
-    /// Önce RevenueCat offering'ini dener; offering boş/yanlış ayarlıysa ürünü
-    /// doğrudan StoreKit'ten çeker. Paywall'da "Price unavailable" kalmasın diye.
-    func fetchWeeklyProduct(completion: @escaping (StoreProduct?) -> Void) {
-        fetchWeeklyPackage { pkg in
-            if let pkg {
-                completion(pkg.storeProduct)
-                return
-            }
-            Purchases.shared.getProducts([ProductIdentifier.weekly.rawValue]) { products in
-                if products.isEmpty {
-                    print("❌ [IAP] StoreKit product fetch returned empty")
-                }
-                DispatchQueue.main.async { completion(products.first) }
-            }
+        if products.isEmpty {
+            products = await Purchases.shared.products(ProductIdentifier.all)
         }
+        guard !products.isEmpty else {
+            print("❌ [IAP] No products from offering or StoreKit")
+            return []
+        }
+        let eligibility = await Purchases.shared.checkTrialOrIntroDiscountEligibility(
+            productIdentifiers: products.map(\.productIdentifier))
+        return products
+            .map { p in
+                let eligible = eligibility[p.productIdentifier]?.status != .ineligible
+                return SubscriptionPlan(product: p, trialDays: eligible ? SubscriptionPlan.freeTrialDays(of: p) : nil)
+            }
+            .sorted { ($0.isAnnual ? 0 : 1) < ($1.isAnnual ? 0 : 1) }
     }
 
     // MARK: - Purchase
@@ -115,8 +139,7 @@ final class InAppPurchaseManager: ObservableObject {
                 completion(.failed)
                 return
             }
-            let isActive = customerInfo?.entitlements["pro"]?.isActive == true
-                || customerInfo?.activeSubscriptions.contains(ProductIdentifier.weekly.rawValue) == true
+            let isActive = self?.isActive(customerInfo) == true
             DispatchQueue.main.async {
                 self?.isPremium = isActive   // didSet → UserDefaults + DailyLimitManager
             }
@@ -133,8 +156,7 @@ final class InAppPurchaseManager: ObservableObject {
                 completion(false)
                 return
             }
-            let isActive = customerInfo?.entitlements["pro"]?.isActive == true
-                || customerInfo?.activeSubscriptions.contains(ProductIdentifier.weekly.rawValue) == true
+            let isActive = self?.isActive(customerInfo) == true
             DispatchQueue.main.async {
                 self?.isPremium = isActive   // didSet → UserDefaults + DailyLimitManager
             }
@@ -150,8 +172,7 @@ final class InAppPurchaseManager: ObservableObject {
                 completion(.failure)
                 return
             }
-            let isActive = customerInfo?.entitlements["pro"]?.isActive == true
-                || customerInfo?.activeSubscriptions.contains(ProductIdentifier.weekly.rawValue) == true
+            let isActive = self?.isActive(customerInfo) == true
             DispatchQueue.main.async {
                 self?.isPremium = isActive   // didSet → UserDefaults + DailyLimitManager
             }
@@ -162,7 +183,26 @@ final class InAppPurchaseManager: ObservableObject {
     // MARK: - Check Active Entitlement
     func isPro() async -> Bool {
         guard let info = try? await Purchases.shared.customerInfo() else { return false }
-        return info.entitlements["pro"]?.isActive == true
-            || info.activeSubscriptions.contains(ProductIdentifier.weekly.rawValue)
+        return isActive(info)
     }
+
+    #if DEBUG
+    /// Simülatörde/ekran görüntüsü için sahte planlar: `-MockPaywall` argümanıyla açılır
+    private static var mockPlans: [SubscriptionPlan] {
+        let trial = TestStoreProductDiscount(identifier: "trial", price: 0, localizedPriceString: "$0.00",
+                                             paymentMode: .freeTrial,
+                                             subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week),
+                                             numberOfPeriods: 1, type: .introductory)
+        let annual = TestStoreProduct(localizedTitle: "WordRem Pro Annual", price: 29.99, localizedPriceString: "$29.99",
+                                      productIdentifier: ProductIdentifier.annual.rawValue, productType: .autoRenewableSubscription,
+                                      localizedDescription: "", subscriptionGroupIdentifier: "pro",
+                                      subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .year),
+                                      introductoryDiscount: trial).toStoreProduct()
+        let weekly = TestStoreProduct(localizedTitle: "WordRem Pro Weekly", price: 2.99, localizedPriceString: "$2.99",
+                                      productIdentifier: ProductIdentifier.weekly.rawValue, productType: .autoRenewableSubscription,
+                                      localizedDescription: "", subscriptionGroupIdentifier: "pro",
+                                      subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week)).toStoreProduct()
+        return [SubscriptionPlan(product: annual, trialDays: 7), SubscriptionPlan(product: weekly, trialDays: nil)]
+    }
+    #endif
 }

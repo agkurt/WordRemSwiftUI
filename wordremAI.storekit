@@ -1,79 +1,92 @@
 {
-  "appPolicies" : {
-    "eula" : "",
-    "policies" : [
+  "appPolicies": {
+    "eula": "",
+    "policies": [
       {
-        "locale" : "en_US",
-        "policyText" : "",
-        "policyURL" : ""
+        "locale": "en_US",
+        "policyText": "",
+        "policyURL": ""
       }
     ]
   },
-  "identifier" : "D23977CA",
-  "nonRenewingSubscriptions" : [
-
-  ],
-  "products" : [
-
-  ],
-  "settings" : {
-    "_applicationInternalID" : "6478985459",
-    "_askToBuyEnabled" : false,
-    "_billingGracePeriodEnabled" : false,
-    "_billingIssuesEnabled" : false,
-    "_developerTeamID" : "7T569GVN5Q",
-    "_disableDialogs" : false,
-    "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 795558155.28327799,
-    "_locale" : "en_US",
-    "_renewalBillingIssuesEnabled" : false,
-    "_storefront" : "USA",
-    "_storeKitErrors" : [
-
-    ],
-    "_timeRate" : 0
+  "identifier": "D23977CA",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": {
+    "_applicationInternalID": "6478985459",
+    "_askToBuyEnabled": false,
+    "_billingGracePeriodEnabled": false,
+    "_billingIssuesEnabled": false,
+    "_developerTeamID": "7T569GVN5Q",
+    "_disableDialogs": false,
+    "_failTransactionsEnabled": false,
+    "_lastSynchronizedDate": 795558155.283278,
+    "_locale": "en_US",
+    "_renewalBillingIssuesEnabled": false,
+    "_storefront": "USA",
+    "_storeKitErrors": [],
+    "_timeRate": 0
   },
-  "subscriptionGroups" : [
+  "subscriptionGroups": [
     {
-      "id" : "21985400",
-      "localizations" : [
-
-      ],
-      "name" : "wordrem_subscription",
-      "subscriptions" : [
+      "id": "21985400",
+      "localizations": [],
+      "name": "wordrem_subscription",
+      "subscriptions": [
         {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
-          "displayPrice" : "2.99",
-          "familyShareable" : false,
-          "groupNumber" : 1,
-          "internalID" : "6760787477",
-          "introductoryOffer" : null,
-          "localizations" : [
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "29.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6C0FFEE0A1",
+          "introductoryOffer": {
+            "internalID": "6C0FFEE0A2",
+            "numberOfPeriods": 1,
+            "paymentMode": "free",
+            "subscriptionPeriod": "P1W"
+          },
+          "localizations": [
             {
-              "description" : "WordRem Pro Weekly Subscription",
-              "displayName" : "WordRem Pro Weekly Subscription",
-              "locale" : "en_US"
+              "description": "All courses and features, billed yearly",
+              "displayName": "WordRem Pro Annual",
+              "locale": "en_US"
             }
           ],
-          "productID" : "wordrem_weekly_subscription",
-          "recurringSubscriptionPeriod" : "P1W",
-          "referenceName" : "Weekly Subscription",
-          "subscriptionGroupID" : "21985400",
-          "type" : "RecurringSubscription",
-          "winbackOffers" : [
-
-          ]
+          "productID": "wordrem_annual_subscription",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "WordRem Pro Annual",
+          "subscriptionGroupID": "21985400",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "2.99",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "6760787477",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "WordRem Pro Weekly Subscription",
+              "displayName": "WordRem Pro Weekly Subscription",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "wordrem_weekly_subscription",
+          "recurringSubscriptionPeriod": "P1W",
+          "referenceName": "Weekly Subscription",
+          "subscriptionGroupID": "21985400",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
         }
       ]
     }
   ],
-  "version" : {
-    "major" : 4,
-    "minor" : 0
+  "version": {
+    "major": 4,
+    "minor": 0
   }
 }

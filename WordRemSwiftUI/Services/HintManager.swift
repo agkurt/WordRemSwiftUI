@@ -62,7 +62,13 @@ final class HintManager {
     // MARK: - Generate hint via OpenAI
     /// Returns an AI hint in the user's native language that hints at the word
     /// without directly translating it.
-    func fetchHint(term: String, targetLangCode: String, options: [String] = [], correctAnswer: String = "") async -> String {
+    func fetchHint(term: String, targetLangCode: String, options: [String] = [], correctAnswer: String = "",
+                   example: String? = nil) async -> String {
+        // Cihaz üstü AI yoksa: içerikteki örnek cümle ipucu olarak gösterilir
+        guard AIEngine.isAvailable else {
+            if let example, !example.isEmpty { return "💡 \(example)" }
+            return "💡 \(term)"
+        }
         let phoneCode   = OL.nativeLangCode.uppercased()
         let langName    = languageName(for: phoneCode)
         let targetName  = languageName(for: targetLangCode)

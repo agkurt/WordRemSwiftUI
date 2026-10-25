@@ -6,6 +6,7 @@
 import SwiftUI
 import RevenueCat
 import SafariServices
+import UserNotifications
 
 struct OnboardingPaywallView: View {
 
@@ -14,7 +15,8 @@ struct OnboardingPaywallView: View {
 
     @Environment(\.presentationMode) var presentationMode
 
-    @State private var weeklyProduct: StoreProduct?
+    @State private var plans: [SubscriptionPlan] = []
+    @State private var selectedId: String?
     @State private var fetchAttempts: Int = 0
     @State private var fetchFailed: Bool = false
     @State private var isLoading: Bool = false
@@ -26,12 +28,20 @@ struct OnboardingPaywallView: View {
     @State private var restoreMessage: String?
 
     // (SF Symbol, title, subtitle) — Pro'nun gerçekten açtığı özellikler
-    private var features: [(String, String, String)] {[
-        ("infinity",              langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
-        ("lightbulb",             langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
-        ("list.bullet.rectangle", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
-        ("waveform",              langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
-    ]}
+    // AI satırları yalnızca Apple Intelligence olan cihazlarda gösterilir (vaat edilen her şey çalışmalı)
+    private var features: [(String, String, String)] {
+        var list = [
+            ("infinity",  langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
+            ("lightbulb", langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
+        ]
+        if AIEngine.isAvailable {
+            list += [
+                ("list.bullet.rectangle", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
+                ("waveform",              langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
+            ]
+        }
+        return list
+    }
 
     var body: some View {
         NavigationStack {
@@ -80,32 +90,20 @@ struct OnboardingPaywallView: View {
                     }
                     .padding(.bottom, 28)
 
-                    // ── Plan Card ──────────────────────────────────────
+                    // ── Plans ──────────────────────────────────────────
                     Group {
-                        if let product = weeklyProduct {
-                            HStack(alignment: .center) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(langManager.s(.paywallWeeklyPro))
-                                        .font(DS.Font.ui(17, weight: .semibold))
-                                        .foregroundStyle(DS.Colors.ink)
-                                    Text(langManager.s(.paywallWeeklyTerm))
-                                        .font(DS.Font.ui(13))
-                                        .foregroundStyle(DS.Colors.muted)
+                        if !plans.isEmpty {
+                            VStack(spacing: 12) {
+                                ForEach(plans) { plan in
+                                    planCard(plan)
                                 }
-                                Spacer()
-                                Text(langManager.f(.paywallPerWeek, product.localizedPriceString))
-                                    .font(DS.Font.display(20, weight: .bold))
-                                    .foregroundStyle(DS.Colors.ink)
                             }
-                            .padding(20)
-                            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
-                            .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.ink, lineWidth: 1.5))
                         } else if fetchFailed {
                             VStack(spacing: 8) {
                                 Text(langManager.s(.paywallPriceFailed))
                                     .font(DS.Font.ui(15, weight: .medium))
                                     .foregroundStyle(DS.Colors.inkSoft)
-                                Button { fetchAttempts = 0; fetchPackage() } label: {
+                                Button { fetchAttempts = 0; fetchPlans() } label: {
                                     Text(langManager.s(.paywallRetry))
                                         .font(DS.Font.ui(15, weight: .semibold))
                                         .foregroundStyle(DS.Colors.accent)
@@ -117,17 +115,30 @@ struct OnboardingPaywallView: View {
                         } else {
                             RoundedRectangle(cornerRadius: DS.Radius.card)
                                 .fill(DS.Colors.paperSunken)
-                                .frame(height: 80)
+                                .frame(height: 150)
                                 .overlay(ProgressView().tint(DS.Colors.muted))
                         }
                     }
-                    .padding(.bottom, 16)
+                    .padding(.bottom, 20)
+
+                    // ── Trial timeline (only when a free trial applies) ──
+                    if let days = selectedPlan?.trialDays, days >= 3 {
+                        trialTimeline(days: days)
+                            .padding(.bottom, 20)
+                    }
 
                     // ── Purchase Button ────────────────────────────────
-                    Button(langManager.s(.paywallContinue), action: purchaseWeekly)
+                    Button(ctaTitle, action: purchaseSelected)
                         .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-                        .disabled(weeklyProduct == nil || isLoading)
-                        .opacity(weeklyProduct == nil ? 0.4 : 1)
+                        .disabled(selectedPlan == nil || isLoading)
+                        .opacity(selectedPlan == nil ? 0.4 : 1)
+                        .padding(.bottom, 8)
+
+                    Text(ctaSubtitle)
+                        .font(DS.Font.ui(13))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
                         .padding(.bottom, 16)
 
                     // ── Legal ──────────────────────────────────────────
@@ -175,7 +186,7 @@ struct OnboardingPaywallView: View {
             }
         }
         .onAppear {
-            fetchPackage()
+            fetchPlans()
         }
         .alert(langManager.s(.paywallRestoreTitle), isPresented: Binding(
             get: { restoreMessage != nil },
@@ -216,39 +227,179 @@ struct OnboardingPaywallView: View {
         }
     }
 
+    // MARK: - Plan helpers
+    private var selectedPlan: SubscriptionPlan? { plans.first { $0.id == selectedId } }
+    private var weeklyPlan: SubscriptionPlan? { plans.first { $0.product.subscriptionPeriod?.unit == .week } }
+
+    /// Yıllık planın haftalığa göre tasarruf yüzdesi
+    private func savingsPercent(_ plan: SubscriptionPlan) -> Int? {
+        guard plan.isAnnual, let weekly = weeklyPlan?.product.price, weekly > 0 else { return nil }
+        let ratio = NSDecimalNumber(decimal: plan.product.price / (weekly * 52)).doubleValue
+        let pct = Int((1 - ratio) * 100)
+        return pct >= 10 ? pct : nil
+    }
+
+    private func periodPrice(_ plan: SubscriptionPlan) -> String {
+        plan.isAnnual ? AL.f(.paywallPerYear, plan.product.localizedPriceString)
+                      : langManager.f(.paywallPerWeek, plan.product.localizedPriceString)
+    }
+
+    private var ctaTitle: String {
+        if let days = selectedPlan?.trialDays { return AL.f(.paywallStartTrial, days) }
+        return langManager.s(.paywallContinue)
+    }
+
+    private var ctaSubtitle: String {
+        guard let plan = selectedPlan else { return " " }
+        if let days = plan.trialDays {
+            return String(format: AL.s(.paywallTrialThen), days, plan.product.localizedPriceString)
+        }
+        return AL.s(.paywallNoCommit)
+    }
+
+    @ViewBuilder
+    private func planCard(_ plan: SubscriptionPlan) -> some View {
+        let selected = plan.id == selectedId
+        Button {
+            selectedId = plan.id
+        } label: {
+            HStack(alignment: .center, spacing: 14) {
+                Image(systemName: selected ? "largecircle.fill.circle" : "circle")
+                    .font(.system(size: 20, weight: .regular))
+                    .foregroundStyle(selected ? DS.Colors.accent : DS.Colors.line)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Text(plan.isAnnual ? AL.s(.paywallAnnual) : AL.s(.paywallWeeklyPlan))
+                            .font(DS.Font.ui(17, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                        if let days = plan.trialDays {
+                            Text(AL.f(.paywallTrialBadge, days))
+                                .font(DS.Font.ui(11, weight: .semibold))
+                                .foregroundStyle(DS.Colors.accent)
+                                .padding(.horizontal, 7).padding(.vertical, 3)
+                                .background(DS.Colors.accent.opacity(0.1), in: Capsule())
+                        }
+                    }
+                    if plan.isAnnual, let perWeek = plan.product.localizedPricePerWeek {
+                        Text(AL.f(.paywallWeeklyEquiv, perWeek))
+                            .font(DS.Font.ui(13))
+                            .foregroundStyle(DS.Colors.muted)
+                    } else {
+                        Text(langManager.s(.paywallWeeklyTerm))
+                            .font(DS.Font.ui(13))
+                            .foregroundStyle(DS.Colors.muted)
+                    }
+                }
+                Spacer(minLength: 8)
+                Text(periodPrice(plan))
+                    .font(DS.Font.display(18, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .multilineTextAlignment(.trailing)
+            }
+            .padding(18)
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
+            .overlay(RoundedRectangle(cornerRadius: DS.Radius.card)
+                .stroke(selected ? DS.Colors.ink : DS.Colors.line, lineWidth: selected ? 1.5 : 1))
+            .overlay(alignment: .topTrailing) {
+                if plan.isAnnual {
+                    Text(savingsPercent(plan).map { AL.f(.paywallSave, $0) } ?? AL.s(.paywallBestValue))
+                        .font(DS.Font.ui(11, weight: .bold))
+                        .foregroundStyle(DS.Colors.paper)
+                        .padding(.horizontal, 9).padding(.vertical, 4)
+                        .background(DS.Colors.accent, in: Capsule())
+                        .offset(x: -14, y: -10)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    /// Bugün → hatırlatma (bitişten 2 gün önce) → ücretlendirme
+    private func trialTimeline(days: Int) -> some View {
+        let steps: [(String, String, String)] = [
+            ("lock.open", AL.s(.paywallTLToday), AL.s(.paywallTLTodaySub)),
+            ("bell", AL.f(.paywallTLDay, days - 2), AL.s(.paywallTLReminderSub)),
+            ("creditcard", AL.f(.paywallTLDay, days), AL.s(.paywallTLChargeSub)),
+        ]
+        return VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
+                HStack(alignment: .top, spacing: 14) {
+                    VStack(spacing: 0) {
+                        Image(systemName: step.0)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(index == 0 ? DS.Colors.paper : DS.Colors.inkSoft)
+                            .frame(width: 30, height: 30)
+                            .background(index == 0 ? DS.Colors.accent : DS.Colors.paperSunken, in: Circle())
+                        if index < steps.count - 1 {
+                            Rectangle().fill(DS.Colors.line).frame(width: 1.5, height: 22)
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(step.1)
+                            .font(DS.Font.ui(15, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                        Text(step.2)
+                            .font(DS.Font.ui(13))
+                            .foregroundStyle(DS.Colors.muted)
+                    }
+                    .padding(.top, 5)
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+    }
+
     // MARK: - Actions
-    private func fetchPackage() {
+    private func fetchPlans() {
         fetchFailed = false
         fetchAttempts += 1
-        InAppPurchaseManager.shared.fetchWeeklyProduct { product in
-            if let product {
-                weeklyProduct = product
+        Task { @MainActor in
+            let result = await InAppPurchaseManager.shared.fetchPlans()
+            if !result.isEmpty {
+                plans = result
+                if selectedId == nil { selectedId = result.first?.id }   // yıllık önce gelir
             } else if fetchAttempts < 3 {
                 // Ağ / StoreKit geçici hatalarında sessizce tekrar dene
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { fetchPackage() }
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                fetchPlans()
             } else {
                 fetchFailed = true
             }
         }
     }
 
-    private func purchaseWeekly() {
-        guard let product = weeklyProduct else { return }
+    private func purchaseSelected() {
+        guard let plan = selectedPlan else { return }
+        let tag = plan.isAnnual ? "annual" : "weekly"
         isLoading = true
-        EventManager.shared.logPaywallEvent("purchase_tapped_weekly")
-        InAppPurchaseManager.shared.purchase(product: product) { outcome in
+        EventManager.shared.logPaywallEvent("purchase_tapped_\(tag)")
+        InAppPurchaseManager.shared.purchase(product: plan.product) { outcome in
             DispatchQueue.main.async { self.isLoading = false }
             switch outcome {
             case .success:
-                EventManager.shared.logPaywallEvent("purchase_success_weekly")
+                EventManager.shared.logPaywallEvent("purchase_success_\(tag)")
+                if let days = plan.trialDays { scheduleTrialReminder(trialDays: days) }
                 DispatchQueue.main.async { self.showWelcomePro = true }
             case .cancelled:
-                EventManager.shared.logPaywallEvent("purchase_cancelled_weekly")
+                EventManager.shared.logPaywallEvent("purchase_cancelled_\(tag)")
             case .failed:
-                EventManager.shared.logPaywallEvent("purchase_failed_weekly")
+                EventManager.shared.logPaywallEvent("purchase_failed_\(tag)")
                 DispatchQueue.main.async { self.showPurchaseErrorAlert = true }
             }
         }
+    }
+
+    /// Paywall'da verilen sözü tutar: deneme bitmeden 2 gün önce yerel bildirim
+    private func scheduleTrialReminder(trialDays: Int) {
+        guard trialDays > 2 else { return }
+        let content = UNMutableNotificationContent()
+        content.title = AL.s(.paywallTrialReminderTitle)
+        content.body = AL.s(.paywallTrialReminderBody)
+        content.sound = .default
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval((trialDays - 2) * 86_400), repeats: false)
+        UNUserNotificationCenter.current().add(
+            UNNotificationRequest(identifier: "wordrem.trial_reminder", content: content, trigger: trigger))
     }
 
     private func restorePurchases() {

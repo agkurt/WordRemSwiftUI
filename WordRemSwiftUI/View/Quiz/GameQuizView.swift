@@ -623,9 +623,7 @@ struct GameQuizView: View {
     // MARK: - Hint Button
     @ViewBuilder
     private func hintButton(for question: GameQuestion) -> some View {
-        if !AIEngine.isAvailable {
-            EmptyView()
-        } else if HintManager.shared.canUseHint {
+        if HintManager.shared.canUseHint {
             Button {
                 triggerHint(for: question)
             } label: {
@@ -664,7 +662,8 @@ struct GameQuizView: View {
                 term: question.word.term,
                 targetLangCode: targetLang,
                 options: question.options,
-                correctAnswer: question.correctAnswer
+                correctAnswer: question.correctAnswer,
+                example: question.sentence?.targetText ?? question.word.exampleSentence
             )
             isLoadingHint = false
             showHintSheet = true
