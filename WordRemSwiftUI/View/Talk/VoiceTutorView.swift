@@ -15,6 +15,9 @@ struct VoiceTutorView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var session = RealtimeVoiceSession()
     @State private var phrase: (text: String, translation: String)?
+    /// Öğretmenin gösterdiği kart, sesi bitince ekrana gelir (Pingo gibi)
+    @State private var pendingPhrase: (text: String, translation: String)?
+    @Namespace private var logoNS
     @State private var showTranslation = false
     @State private var showTranscript = false
     @State private var showPaywall = false
@@ -41,12 +44,15 @@ struct VoiceTutorView: View {
         .paperBackground()
         .task { await begin() }
         .onDisappear { session.stop() }
+        .animation(.spring(response: 0.55, dampingFraction: 0.85), value: isConnecting)
         .onChange(of: session.phase) { phase in
             if case .failed(let code) = phase, code == "paywall" { showPaywall = true }
+            if phase == .listening { revealPendingPhrase() }
         }
-        // Kullanıcı kartı söyledikten sonra öğretmen cevap vermeye başlayınca kart kalkar
+        // Kullanıcı konuştuktan sonra öğretmen cevap vermeye başlayınca kart kalkar
         .onChange(of: session.responseCount) { _ in
-            if phrase != nil { withAnimation { phrase = nil } }
+            pendingPhrase = nil
+            if phrase != nil { withAnimation(.easeOut(duration: 0.25)) { phrase = nil } }
         }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
@@ -58,8 +64,8 @@ struct VoiceTutorView: View {
         session.onToolCall = { name, args in
             TutorBrain.handle(tool: name, args: args, mode: mode,
                               onPhrase: { text, tr in
-                                  showTranslation = false
-                                  phrase = (text, tr)
+                                  pendingPhrase = (text, tr)
+                                  if session.phase == .listening { revealPendingPhrase() }
                               },
                               onFinish: { success in
                                   finishedSuccess = success
@@ -67,6 +73,15 @@ struct VoiceTutorView: View {
                               })
         }
         await session.start(instructions: TutorBrain.instructions(for: mode), tools: TutorBrain.tools)
+    }
+
+    private var isConnecting: Bool { session.phase == .connecting || session.phase == .idle }
+
+    private func revealPendingPhrase() {
+        guard let p = pendingPhrase else { return }
+        pendingPhrase = nil
+        showTranslation = false
+        withAnimation(.easeOut(duration: 0.3)) { phrase = p }
     }
 
     // MARK: - Top bar
@@ -81,7 +96,10 @@ struct VoiceTutorView: View {
             }
             .accessibilityLabel(AL.s(.talkTranscript))
             Spacer()
-            VoiceLogoView(phase: session.phase, level: session.inputLevel)
+            if !isConnecting {
+                VoiceLogoView(phase: session.phase, level: session.inputLevel)
+                    .matchedGeometryEffect(id: "logo", in: logoNS)
+            }
             Spacer()
             Button { session.stop(); dismiss() } label: {
                 Image(systemName: "xmark")
@@ -101,10 +119,11 @@ struct VoiceTutorView: View {
         Group {
             switch session.phase {
             case .connecting, .idle:
-                VStack(spacing: 14) {
-                    ProgressView().tint(DS.Colors.inkSoft)
-                    Text(AL.s(.talkConnecting)).font(DS.Font.ui(15)).foregroundStyle(DS.Colors.muted)
-                }
+                // Bağlanırken logo ortada büyük; bağlanınca üste küçülerek yerleşir
+                VoiceLogoView(phase: .connecting, level: 0)
+                    .scaleEffect(2.4)
+                    .matchedGeometryEffect(id: "logo", in: logoNS)
+                    .frame(height: 120)
             case .failed(let code):
                 failureView(code)
             default:
@@ -116,11 +135,19 @@ struct VoiceTutorView: View {
                             .font(DS.Font.display(28, weight: .bold)).foregroundStyle(DS.Colors.ink)
                     }
                 } else {
+                    // En fazla ~6 satır; uzayınca eski satırlar yukarı kayıp soluklaşır
+                    let long = session.caption.count > 170
                     captionText
-                        .font(DS.Font.ui(24, weight: .medium))
+                        .font(DS.Font.ui(22, weight: .medium))
                         .lineSpacing(6)
+                        .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .animation(.easeOut(duration: 0.15), value: session.caption)
+                        .frame(maxHeight: 190, alignment: .bottom)
+                        .clipped()
+                        .mask(LinearGradient(stops: [.init(color: long ? .clear : .black, location: 0),
+                                                     .init(color: .black, location: long ? 0.28 : 0)],
+                                             startPoint: .top, endPoint: .bottom))
+                        .animation(.easeOut(duration: 0.2), value: session.caption)
                 }
             }
         }
@@ -132,11 +159,7 @@ struct VoiceTutorView: View {
         let full = session.captionFull
         let rest = full.count > shown.count ? String(full.dropFirst(shown.count)) : ""
         let next = rest.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) ?? ""
-        var visible = shown
-        if visible.count > 240, let sp = visible.dropFirst(visible.count - 240).firstIndex(of: " ") {
-            visible = String(visible[visible.index(after: sp)...])
-        }
-        return Text(visible.isEmpty && next.isEmpty ? " " : visible).foregroundColor(DS.Colors.ink)
+        return Text(shown.isEmpty && next.isEmpty ? " " : shown).foregroundColor(DS.Colors.ink)
             + Text(next).foregroundColor(DS.Colors.muted.opacity(0.45))
     }
 
@@ -161,7 +184,7 @@ struct VoiceTutorView: View {
     private func phraseCard(_ p: (text: String, translation: String)) -> some View {
         VStack(spacing: 22) {
             Text(p.text)
-                .font(DS.Font.display(36, weight: .bold))
+                .font(DS.Font.ui(32, weight: .semibold))
                 .foregroundStyle(DS.Colors.ink)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
