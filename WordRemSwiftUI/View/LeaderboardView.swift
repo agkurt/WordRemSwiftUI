@@ -11,6 +11,7 @@ struct LeaderboardView: View {
     @Binding var selectedTab: AppTab
     @StateObject private var vm = LeaderboardViewModel()
     @ObservedObject private var gameCenter = GameCenterService.shared
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -61,10 +62,20 @@ struct LeaderboardView: View {
             .frame(maxWidth: 620)
             .frame(maxWidth: .infinity)
         }
-        .refreshable {
-            guard gameCenter.isAuthenticated else { return }
-            await vm.loadLeaderboard()
+        // Sheet içinde aşağı çekmek sayfayı kapatsın diye pull-to-refresh yok; kapatma butonu da var
+        .overlay(alignment: .topTrailing) {
+            Button { dismiss() } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .frame(width: 36, height: 36)
+                    .background(DS.Colors.paperSunken, in: Circle())
+            }
+            .padding(.top, 14)
+            .padding(.trailing, 20)
+            .accessibilityLabel(AL.s(.paywallOk))
         }
+        .presentationDragIndicator(.visible)
         .paperBackground()
         .navigationBarHidden(true)
         .onAppear {
