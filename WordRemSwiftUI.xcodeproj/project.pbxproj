@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift */; };
 		C1DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */; };
 		C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */; };
 		C1DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */; };
@@ -217,6 +218,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowView.swift; sourceTree = "<group>"; };
 		C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/TutorBrain.swift; sourceTree = "<group>"; };
 		C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/TalkHomeView.swift; sourceTree = "<group>"; };
 		C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/VoiceTutorView.swift; sourceTree = "<group>"; };
@@ -442,6 +444,7 @@
 			isa = PBXGroup;
 			children = (
 				3EBEC361AE4CF403865F3330 /* WelcomeView.swift */,
+				C0DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift */,
 				FC355BD6D692ED1A1E4E912E /* LanguageSelectionView.swift */,
 				6F7E75475C4EA3F89C0A11C6 /* ProficiencyView.swift */,
 				A9C3F2E1D4B5067892ABCDEF /* ProficiencyResultView.swift */,
@@ -1317,6 +1320,7 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				C1DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift in Sources */,
 				C1DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift in Sources */,
 				C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */,
 				C1DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift in Sources */,

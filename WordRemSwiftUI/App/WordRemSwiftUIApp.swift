@@ -37,7 +37,7 @@ struct WordRemSwiftUIApp: App {
                 } else if Self.forceMainTabs {
                     MainTabView()
                 } else if !hasCompletedOnboarding {
-                    WelcomeView()
+                    OnboardingFlowView()
                 } else {
                     MainTabView()
                 }
