@@ -87,6 +87,21 @@ struct ProfileView: View {
             LoginScreenView()
                 .environmentObject(authManager)
         }
+        // Guest → Apple/Google girişi: loading + hata geri bildirimi
+        .overlay {
+            if authManager.isAuthenticating {
+                Color.black.opacity(0.35).ignoresSafeArea()
+                    .overlay(ProgressView().tint(.white).scaleEffect(1.5))
+            }
+        }
+        .alert("Sign In Failed", isPresented: Binding(
+            get: { authManager.loginError != nil && !showLoginScreen && !showGuestLoginSheet },
+            set: { if !$0 { authManager.loginError = nil } }
+        )) {
+            Button(langManager.s(.paywallOk), role: .cancel) { authManager.loginError = nil }
+        } message: {
+            Text(authManager.loginError ?? "")
+        }
     }
 
     // MARK: - Guest Login Banner

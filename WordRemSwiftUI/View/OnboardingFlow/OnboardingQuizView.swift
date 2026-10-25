@@ -161,20 +161,18 @@ struct OnboardingQuizView: View {
                             ForEach(Array(words.enumerated()), id: \.offset) { idx, word in
                                 let clean = word.trimmingCharacters(in: .punctuationCharacters)
                                 let hasMeaning = sentenceWordMeanings[clean] != nil
+                                let isTapped = tappedWordIdx == idx
+                                let textColor: Color = isTapped ? .blue : Color(hex: "#1e293b")
+                                let bgColor: Color = hasMeaning
+                                    ? Color.blue.opacity(isTapped ? 0.12 : 0.06)
+                                    : .clear
 
                                 Text(word)
                                     .font(.custom("Feather-Bold", size: 18))
-                                    .foregroundStyle(tappedWordIdx == idx
-                                        ? Color.blue
-                                        : Color(hex: "#1e293b"))
+                                    .foregroundStyle(textColor)
                                     .padding(.horizontal, hasMeaning ? 6 : 0)
                                     .padding(.vertical, hasMeaning ? 2 : 0)
-                                    .background(
-                                        hasMeaning
-                                        ? (tappedWordIdx == idx ? Color.blue.opacity(0.12) : Color.blue.opacity(0.06))
-                                        : Color.clear,
-                                        in: RoundedRectangle(cornerRadius: 5)
-                                    )
+                                    .background(bgColor, in: RoundedRectangle(cornerRadius: 5))
                                     .underline(hasMeaning, color: Color.blue.opacity(0.4))
                                     .onTapGesture {
                                         withAnimation(.spring(response: 0.25)) {

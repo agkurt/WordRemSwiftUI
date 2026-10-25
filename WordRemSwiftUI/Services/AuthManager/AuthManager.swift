@@ -19,6 +19,8 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
     @Published var userIsLoggedIn = false
     @Published var loginError: String?
     @Published var isAnonymous: Bool = true
+    /// Apple/Google girişi sürerken UI'da loading göstermek için
+    @Published var isAuthenticating: Bool = false
 
     /// Login sonrası MainTabView'da gösterilecek popup türü.
     /// MainTabView bunu consume edip nil'e çeker.
@@ -174,6 +176,7 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
         let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self
         controller.presentationContextProvider = self
+        isAuthenticating = true
         controller.performRequests()
     }
 
@@ -186,7 +189,11 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
             let nonce = currentNonce,
             let tokenData = appleCredential.identityToken,
             let idToken = String(data: tokenData, encoding: .utf8)
-        else { return }
+        else {
+            isAuthenticating = false
+            loginError = "Sign in with Apple failed. Please try again."
+            return
+        }
 
         Task {
             do {
@@ -197,11 +204,18 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                     appleCredential.fullName?.givenName,
                     appleCredential.fullName?.familyName
                 ].compactMap { $0 }.joined(separator: " ")
-                let resolvedName = name.isEmpty ? "Apple User" : name
-                try await SupabaseAuthService.shared.ensureUserRow(username: resolvedName)
+                var resolvedName = name.isEmpty ? "User-\(Int.random(in: 1000...9999))" : name
+                do {
+                    try await SupabaseAuthService.shared.ensureUserRow(username: resolvedName)
+                } catch {
+                    // Username çakışması vb. — benzersiz isimle bir kez daha dene
+                    resolvedName = "User-\(Int.random(in: 10000...99999))"
+                    try await SupabaseAuthService.shared.ensureUserRow(username: resolvedName)
+                }
                 let appleId = SupabaseAuthService.shared.currentUserId?.uuidString ?? ""
                 await MainActor.run {
                     self.pendingWelcome = self.resolveWelcomeType(userId: appleId, name: resolvedName)
+                    self.isAuthenticating = false
                     self.userIsLoggedIn = true
                     self.authState = .signedIn
                     self.isAnonymous = false
@@ -212,7 +226,10 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                 await InAppPurchaseManager.shared.syncPremiumStatus()
                 EventManager.shared.logLoginEvent(method: "apple")
             } catch {
-                await MainActor.run { self.loginError = error.localizedDescription }
+                await MainActor.run {
+                    self.isAuthenticating = false
+                    self.loginError = error.localizedDescription
+                }
                 print("❌ Apple sign-in error: \(error)")
             }
         }
@@ -220,6 +237,7 @@ class AuthManager: NSObject, ObservableObject, ASAuthorizationControllerDelegate
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         // Kullanıcı iptal ettiyse sessiz çık, gerçek hatalarda UI'ı bilgilendir
+        isAuthenticating = false
         let code = (error as? ASAuthorizationError)?.code
         guard code != .canceled else { return }
         loginError = error.localizedDescription

@@ -444,7 +444,7 @@ struct AL {
             .paywallPurchaseError:  "Bir hata oluştu. Lütfen tekrar dene veya restore kullan.",
             .paywallOk:             "Tamam",
             .paywallPrivacy:        "Gizlilik",
-            .paywallTerms:          "Kullanım Şartları",
+            .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
             // Home
@@ -709,7 +709,7 @@ struct AL {
             .paywallPurchaseError:  "Something went wrong. Please try again or use restore.",
             .paywallOk:             "OK",
             .paywallPrivacy:        "Privacy",
-            .paywallTerms:          "Terms",
+            .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
             // Home

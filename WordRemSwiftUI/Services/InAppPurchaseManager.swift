@@ -41,7 +41,9 @@ final class InAppPurchaseManager: ObservableObject {
 
     // MARK: - Configure
     static func configure(apiKey: String) {
+        #if DEBUG
         Purchases.logLevel = .debug
+        #endif
         Purchases.configure(withAPIKey: apiKey)
     }
 
@@ -79,7 +81,43 @@ final class InAppPurchaseManager: ObservableObject {
         }
     }
 
+    // MARK: - Fetch Weekly Product
+    /// Önce RevenueCat offering'ini dener; offering boş/yanlış ayarlıysa ürünü
+    /// doğrudan StoreKit'ten çeker. Paywall'da "Price unavailable" kalmasın diye.
+    func fetchWeeklyProduct(completion: @escaping (StoreProduct?) -> Void) {
+        fetchWeeklyPackage { pkg in
+            if let pkg {
+                completion(pkg.storeProduct)
+                return
+            }
+            Purchases.shared.getProducts([ProductIdentifier.weekly.rawValue]) { products in
+                if products.isEmpty {
+                    print("❌ [IAP] StoreKit product fetch returned empty")
+                }
+                DispatchQueue.main.async { completion(products.first) }
+            }
+        }
+    }
+
     // MARK: - Purchase
+    func purchase(product: StoreProduct, completion: @escaping (Bool) -> Void) {
+        Purchases.shared.purchase(product: product) { [weak self] _, customerInfo, error, userCancelled in
+            if userCancelled { completion(false); return }
+            if let error {
+                print("❌ [IAP] Purchase error: \(error.localizedDescription)")
+                DispatchQueue.main.async { self?.failCount += 1 }
+                completion(false)
+                return
+            }
+            let isActive = customerInfo?.entitlements["pro"]?.isActive == true
+                || customerInfo?.activeSubscriptions.contains(ProductIdentifier.weekly.rawValue) == true
+            DispatchQueue.main.async {
+                self?.isPremium = isActive   // didSet → UserDefaults + DailyLimitManager
+            }
+            completion(isActive)
+        }
+    }
+
     func purchase(package: Package, completion: @escaping (Bool) -> Void) {
         Purchases.shared.purchase(package: package) { [weak self] _, customerInfo, error, userCancelled in
             if userCancelled { completion(false); return }

@@ -14,7 +14,8 @@ struct OnboardingPaywallView: View {
 
     @Environment(\.presentationMode) var presentationMode
 
-    @State private var weeklyPackage: Package?
+    @State private var weeklyProduct: StoreProduct?
+    @State private var fetchAttempts: Int = 0
     @State private var fetchFailed: Bool = false
     @State private var isLoading: Bool = false
     @State private var isCloseVisible: Bool = true
@@ -104,13 +105,13 @@ struct OnboardingPaywallView: View {
 
                     // ── Plan Card ──────────────────────────────────────
                     Group {
-                        if let pkg = weeklyPackage {
+                        if let product = weeklyProduct {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(langManager.s(.paywallWeeklyPro))
                                         .font(.custom("Feather-Bold", size: 17))
                                         .foregroundStyle(.white)
-                                    Text(langManager.f(.paywallPerWeek, pkg.storeProduct.localizedPriceString))
+                                    Text(langManager.f(.paywallPerWeek, product.localizedPriceString))
                                         .font(.custom("Feather-Bold", size: 14))
                                         .foregroundStyle(.white.opacity(0.88))
                                     Text("1 week · auto-renewing")
@@ -145,7 +146,7 @@ struct OnboardingPaywallView: View {
                                 Text(langManager.s(.paywallPriceFailed))
                                     .font(.custom("Feather-Bold", size: 14))
                                     .foregroundStyle(Color(hex: "#64748b"))
-                                Button { fetchPackage() } label: {
+                                Button { fetchAttempts = 0; fetchPackage() } label: {
                                     Text(langManager.s(.paywallRetry))
                                         .font(.custom("Feather-Bold", size: 13))
                                         .foregroundStyle(proColor)
@@ -181,8 +182,8 @@ struct OnboardingPaywallView: View {
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 12)
-                    .disabled(weeklyPackage == nil || isLoading)
-                    .opacity(weeklyPackage == nil ? 0.5 : 1)
+                    .disabled(weeklyProduct == nil || isLoading)
+                    .opacity(weeklyProduct == nil ? 0.5 : 1)
 
                     // ── Legal ──────────────────────────────────────────
                     HStack(spacing: 20) {
@@ -258,16 +259,24 @@ struct OnboardingPaywallView: View {
     // MARK: - Actions
     private func fetchPackage() {
         fetchFailed = false
-        InAppPurchaseManager.shared.fetchWeeklyPackage { pkg in
-            if let pkg { weeklyPackage = pkg } else { fetchFailed = true }
+        fetchAttempts += 1
+        InAppPurchaseManager.shared.fetchWeeklyProduct { product in
+            if let product {
+                weeklyProduct = product
+            } else if fetchAttempts < 3 {
+                // Ağ / StoreKit geçici hatalarında sessizce tekrar dene
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { fetchPackage() }
+            } else {
+                fetchFailed = true
+            }
         }
     }
 
     private func purchaseWeekly() {
-        guard let pkg = weeklyPackage else { return }
+        guard let product = weeklyProduct else { return }
         isLoading = true
         EventManager.shared.logPaywallEvent("purchase_tapped_weekly")
-        InAppPurchaseManager.shared.purchase(package: pkg) { isSuccessful in
+        InAppPurchaseManager.shared.purchase(product: product) { isSuccessful in
             DispatchQueue.main.async { self.isLoading = false }
             if isSuccessful {
                 EventManager.shared.logPaywallEvent("purchase_success_weekly")

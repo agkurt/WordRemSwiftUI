@@ -8,7 +8,6 @@
 import SwiftUI
 import Firebase
 import UserNotifications
-import AppTrackingTransparency
 
 @main
 struct WordRemSwiftUIApp: App {
@@ -54,13 +53,7 @@ struct WordRemSwiftUIApp: App {
             .preferredColorScheme(.light)
             .onAppear {
                 Task {
-                    // 1) ATT — kısa gecikme: UI tam oturmuş olsun
-                    try? await Task.sleep(nanoseconds: 500_000_000)
-                    if #available(iOS 14, *) {
-                        await ATTrackingManager.requestTrackingAuthorization()
-                    }
-
-                    // 2) Bildirim izni
+                    // 1) Bildirim izni
                     let center = UNUserNotificationCenter.current()
                     if let success = try? await center.requestAuthorization(options: [.alert, .badge, .sound]),
                        success {
@@ -69,10 +62,10 @@ struct WordRemSwiftUIApp: App {
                         }
                     }
 
-                    // 3) Supabase'den kullanıcı dilini senkronize et (fallback: UserDefaults değeri korunur)
+                    // 2) Supabase'den kullanıcı dilini senkronize et (fallback: UserDefaults değeri korunur)
                     await languageManager.syncFromSupabase()
 
-                    // 4) RevenueCat'ten premium durumunu senkronize et
+                    // 3) RevenueCat'ten premium durumunu senkronize et
                     await InAppPurchaseManager.shared.syncPremiumStatus()
                 }
             }

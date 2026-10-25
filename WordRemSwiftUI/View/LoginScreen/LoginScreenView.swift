@@ -74,6 +74,12 @@ struct LoginScreenView: View {
             // ContentView already watches this — no extra work needed here
             _ = loggedIn
         }
+        .overlay {
+            if authManager.isAuthenticating {
+                Color.black.opacity(0.35).ignoresSafeArea()
+                    .overlay(ProgressView().tint(.white).scaleEffect(1.5))
+            }
+        }
         .onTapGesture {
             UIApplication.shared.hideKeyboard()
         }
