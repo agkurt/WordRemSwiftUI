@@ -26,10 +26,10 @@ struct CardDetailView: View {
                     // Empty state
                     if viewModel.wordInfo.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("No words yet")
+                            Text(AL.s(.deckNoWords))
                                 .font(DS.Font.display(26, weight: .semibold))
                                 .foregroundStyle(DS.Colors.ink)
-                            Text("Tap + to add your first word")
+                            Text(AL.s(.deckTapToAdd))
                                 .font(DS.Font.ui(16))
                                 .foregroundStyle(DS.Colors.muted)
                             Spacer()
@@ -41,7 +41,7 @@ struct CardDetailView: View {
                     } else {
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 12) {
-                                Eyebrow(text: "\(viewModel.wordInfo.count) words", color: DS.Colors.muted)
+                                Eyebrow(text: AL.f(.deckWordCount, viewModel.wordInfo.count), color: DS.Colors.muted)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.bottom, 4)
                                 ForEach(viewModel.wordInfo.indices, id: \.self) { index in
@@ -73,7 +73,7 @@ struct CardDetailView: View {
                                 HStack(spacing: 8) {
                                     Image(systemName: "checklist")
                                         .font(.system(size: 15, weight: .semibold))
-                                    Text("Quiz")
+                                    Text(AL.s(.deckQuiz))
                                         .font(DS.Font.ui(16, weight: .semibold))
                                 }
                                 .foregroundStyle(DS.Colors.paperRaised)

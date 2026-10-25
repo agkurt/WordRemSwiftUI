@@ -8,6 +8,15 @@
 import SwiftUI
 
 struct CardPlusView: View {
+    /// Tekrar seçeneklerinin değeri mantıkta kullanılır ("None"/"Weekly"/"Monthly"); ekranda çevirisi gösterilir
+    static func repeatLabel(_ option: String) -> String {
+        switch option {
+        case "Weekly":  return AL.s(.cardRepeatWeekly)
+        case "Monthly": return AL.s(.cardRepeatMonthly)
+        default:        return AL.s(.cardRepeatNone)
+        }
+    }
+
     
     @StateObject private var viewModel = CardPlusViewModel()
     @StateObject private var reminderViewModel = ReminderViewModel()
@@ -41,7 +50,7 @@ struct CardPlusView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 28) {
                     // MARK: - Title
-                    Text(editMode ? "Edit Your Word" : "Create Your Word")
+                    Text(editMode ? AL.s(.cardEditTitle) : AL.s(.cardCreateTitle))
                         .font(DS.Font.display(32, weight: .bold))
                         .foregroundStyle(DS.Colors.ink)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -49,12 +58,12 @@ struct CardPlusView: View {
 
                     // MARK: - Word Input Section
                     VStack(alignment: .leading, spacing: 12) {
-                        PaperTextField(text: $viewModel.wordName, label: "Word (in your native language)", serif: true)
+                        PaperTextField(text: $viewModel.wordName, label: AL.s(.cardWordLabel), serif: true)
 
                         if viewModel.isLoading {
-                            LoadingRow(text: "Translating...")
+                            LoadingRow(text: AL.s(.cardTranslating))
                         } else {
-                            SmallOutlineButton(title: "Translate", icon: "arrow.left.arrow.right",
+                            SmallOutlineButton(title: AL.s(.cardTranslate), icon: "arrow.left.arrow.right",
                                                enabled: !viewModel.wordName.isEmpty) {
                                 guard !viewModel.wordName.isEmpty else { return }
                                 Task {
@@ -68,15 +77,15 @@ struct CardPlusView: View {
                             .disabled(viewModel.wordName.isEmpty)
                         }
 
-                        PaperTextField(text: $viewModel.wordMean, label: "Translation (in learning language)")
+                        PaperTextField(text: $viewModel.wordMean, label: AL.s(.cardMeaningLabel))
                     }
 
                     // MARK: - Example Sentence Section
                     VStack(alignment: .leading, spacing: 12) {
                         if viewModel.isLoadingSentence {
-                            LoadingRow(text: "Generating sentence...")
+                            LoadingRow(text: AL.s(.cardGenerating))
                         } else {
-                            SmallOutlineButton(title: "Generate Example Sentence", icon: "text.quote",
+                            SmallOutlineButton(title: AL.s(.cardGenerateSentence), icon: "text.quote",
                                                enabled: !viewModel.wordMean.isEmpty) {
                                 guard !viewModel.wordMean.isEmpty else { return }
                                 Task {
@@ -86,13 +95,13 @@ struct CardPlusView: View {
                             .disabled(viewModel.wordName.isEmpty)
                         }
 
-                        PaperTextField(text: $viewModel.wordDescription, label: "Example Sentence")
+                        PaperTextField(text: $viewModel.wordDescription, label: AL.s(.cardExampleSentence))
                     }
 
                     // MARK: - Reminder Section
                     VStack(alignment: .leading, spacing: 0) {
                         Toggle(isOn: $isOnToggle) {
-                            Text("Reminder")
+                            Text(AL.s(.cardReminder))
                                 .font(DS.Font.ui(16, weight: .semibold))
                                 .foregroundStyle(DS.Colors.ink)
                         }
@@ -102,7 +111,7 @@ struct CardPlusView: View {
                         if isOnToggle {
                             Hairline()
                             DatePicker(
-                                "Reminder Date & Time",
+                                AL.s(.cardReminderDate),
                                 selection: $reminderViewModel.date,
                                 in: Date()...,
                                 displayedComponents: [.date, .hourAndMinute]
@@ -115,12 +124,12 @@ struct CardPlusView: View {
 
                             Hairline()
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("Repeat")
+                                Text(AL.s(.cardRepeat))
                                     .font(DS.Font.ui(13, weight: .medium))
                                     .foregroundStyle(DS.Colors.muted)
-                                Picker("Repeat", selection: $reminderViewModel.repeatOption) {
+                                Picker(AL.s(.cardRepeat), selection: $reminderViewModel.repeatOption) {
                                     ForEach(reminderViewModel.repeatOptions, id: \.self) { option in
-                                        Text(option).tag(option)
+                                        Text(Self.repeatLabel(option)).tag(option)
                                     }
                                 }
                                 .pickerStyle(.segmented)
@@ -133,7 +142,9 @@ struct CardPlusView: View {
                                     value: $reminderViewModel.repeatValue,
                                     in: 1...5
                                 ) {
-                                    Text("Repeat every \(reminderViewModel.repeatValue) \(reminderViewModel.repeatOption.lowercased())")
+                                    Text(reminderViewModel.repeatOption == "Monthly"
+                                         ? AL.f(.cardEveryMonths, reminderViewModel.repeatValue)
+                                         : AL.f(.cardEveryWeeks, reminderViewModel.repeatValue))
                                         .font(DS.Font.ui(15))
                                         .foregroundStyle(DS.Colors.ink)
                                 }
@@ -147,11 +158,11 @@ struct CardPlusView: View {
 
                     // MARK: - Save
                     VStack(spacing: 10) {
-                        Button(editMode ? "Save" : "Add Word") { save() }
+                        Button(editMode ? AL.s(.cardSave) : AL.s(.cardAddWord)) { save() }
                             .buttonStyle(InkButtonStyle(fill: canSave ? DS.Colors.ink : DS.Colors.line,
                                                         foreground: canSave ? DS.Colors.paperRaised : DS.Colors.muted))
                             .disabled(!canSave)
-                        Button("Cancel") { dismiss() }
+                        Button(AL.s(.cardCancel)) { dismiss() }
                             .buttonStyle(OutlineButtonStyle())
                     }
                     .padding(.top, 4)
@@ -178,8 +189,8 @@ struct CardPlusView: View {
             .onDisappear {
                 self.completion?()
             }
-            .alert("Error", isPresented: $viewModel.showError) {
-                Button("OK", role: .cancel) {
+            .alert(AL.s(.cardError), isPresented: $viewModel.showError) {
+                Button(AL.s(.paywallOk), role: .cancel) {
                     viewModel.showError = false
                 }
             } message: {
@@ -191,7 +202,7 @@ struct CardPlusView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { save() } label: {
-                        Text("Done")
+                        Text(AL.s(.cardDone))
                             .foregroundStyle(canSave ? DS.Colors.accent : DS.Colors.muted)
                             .font(DS.Font.ui(16, weight: .semibold))
                     }

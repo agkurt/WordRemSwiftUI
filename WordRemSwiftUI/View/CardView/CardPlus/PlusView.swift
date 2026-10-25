@@ -24,10 +24,10 @@ struct PlusView: View {
 
                     // MARK: Title & Subtitle
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Create a New Deck")
+                        Text(AL.s(.deckCreateTitle))
                             .font(DS.Font.display(32, weight: .bold))
                             .foregroundStyle(DS.Colors.ink)
-                        Text("Choose a flag and give your deck a memorable name.")
+                        Text(AL.s(.deckCreateSubtitle))
                             .font(DS.Font.ui(16))
                             .foregroundStyle(DS.Colors.muted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -36,29 +36,29 @@ struct PlusView: View {
 
                     // MARK: Flag Selection
                     VStack(alignment: .leading, spacing: 12) {
-                        Eyebrow(text: "Choose Flag", color: DS.Colors.muted)
+                        Eyebrow(text: AL.s(.deckChooseFlag), color: DS.Colors.muted)
                         FlagSelectionView(selectedFlag: $viewModel.selectedFlag)
                     }
 
                     // MARK: Language Cards
                     VStack(alignment: .leading, spacing: 12) {
-                        Eyebrow(text: "Translation Languages", color: DS.Colors.muted)
+                        Eyebrow(text: AL.s(.deckLanguages), color: DS.Colors.muted)
 
                         HStack(spacing: 12) {
-                            LanguagePickerCard(title: "Source", selection: $viewModel.sourceLanguage)
+                            LanguagePickerCard(title: AL.s(.deckSource), selection: $viewModel.sourceLanguage)
                             Image(systemName: "arrow.right")
                                 .foregroundStyle(DS.Colors.muted)
                                 .font(.system(size: 14, weight: .semibold))
-                            LanguagePickerCard(title: "Target", selection: $viewModel.targetLanguage)
+                            LanguagePickerCard(title: AL.s(.deckTarget), selection: $viewModel.targetLanguage)
                         }
                     }
 
                     // MARK: Deck Name
                     VStack(alignment: .leading, spacing: 12) {
-                        Eyebrow(text: "Deck Name", color: DS.Colors.muted)
+                        Eyebrow(text: AL.s(.deckName), color: DS.Colors.muted)
 
                         TextField("", text: $viewModel.cardName,
-                                  prompt: Text("E.g. Spanish Basics, Useful Verbs").foregroundStyle(DS.Colors.muted))
+                                  prompt: Text(AL.s(.deckNamePlaceholder)).foregroundStyle(DS.Colors.muted))
                             .font(DS.Font.ui(17))
                             .foregroundStyle(DS.Colors.ink)
                             .tint(DS.Colors.accent)
@@ -76,7 +76,7 @@ struct PlusView: View {
                         }
                         dismiss()
                     } label: {
-                        Text("Create Deck")
+                        Text(AL.s(.deckCreate))
                     }
                     .buttonStyle(InkButtonStyle(fill: viewModel.cardName.isEmpty ? DS.Colors.line : DS.Colors.ink,
                                                 foreground: viewModel.cardName.isEmpty ? DS.Colors.muted : DS.Colors.paperRaised))

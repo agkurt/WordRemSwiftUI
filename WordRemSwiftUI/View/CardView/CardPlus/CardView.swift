@@ -30,7 +30,7 @@ struct CardView: View {
                     .font(DS.Font.display(20))
                     .foregroundStyle(DS.Colors.ink)
                     .lineLimit(1)
-                Text(wordCount == 0 ? "No words yet" : "\(wordCount) word\(wordCount == 1 ? "" : "s")")
+                Text(wordCount == 0 ? AL.s(.deckNoWords) : (wordCount == 1 ? AL.s(.deckOneWord) : AL.f(.deckWordCount, wordCount)))
                     .font(DS.Font.ui(14))
                     .foregroundStyle(DS.Colors.muted)
             }

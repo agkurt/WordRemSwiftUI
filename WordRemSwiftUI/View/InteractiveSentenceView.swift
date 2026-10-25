@@ -81,7 +81,7 @@ struct InteractiveSentenceView: View {
                                 ProgressView()
                                     .tint(AppTheme.Colors.primaryOrange)
                                     .scaleEffect(0.8)
-                                Text("Translating...")
+                                Text(AL.s(.cardTranslating))
                                     .font(.system(size: 12, weight: .semibold))
                                     .foregroundStyle(AppTheme.Colors.textSecondary)
                             }

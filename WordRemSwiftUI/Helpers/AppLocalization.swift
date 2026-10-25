@@ -132,6 +132,42 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case deckNoWords = "deck.no_words"
+        case deckTapToAdd = "deck.tap_to_add"
+        case deckWordCount = "deck.word_count"
+        case deckOneWord = "deck.one_word"
+        case deckQuiz = "deck.quiz"
+        case deckCreateTitle = "deck.create_title"
+        case deckCreateSubtitle = "deck.create_subtitle"
+        case deckChooseFlag = "deck.choose_flag"
+        case deckLanguages = "deck.languages"
+        case deckSource = "deck.source"
+        case deckTarget = "deck.target"
+        case deckName = "deck.name"
+        case deckNamePlaceholder = "deck.name_placeholder"
+        case deckCreate = "deck.create"
+        case cardCreateTitle = "card.create_title"
+        case cardEditTitle = "card.edit_title"
+        case cardWordLabel = "card.word_label"
+        case cardTranslating = "card.translating"
+        case cardTranslate = "card.translate"
+        case cardMeaningLabel = "card.meaning_label"
+        case cardGenerating = "card.generating"
+        case cardGenerateSentence = "card.generate_sentence"
+        case cardExampleSentence = "card.example_sentence"
+        case cardReminder = "card.reminder"
+        case cardReminderDate = "card.reminder_date"
+        case cardRepeat = "card.repeat"
+        case cardRepeatNone = "card.repeat_none"
+        case cardRepeatWeekly = "card.repeat_weekly"
+        case cardRepeatMonthly = "card.repeat_monthly"
+        case cardEveryWeeks = "card.every_weeks"
+        case cardEveryMonths = "card.every_months"
+        case cardSave = "card.save"
+        case cardAddWord = "card.add_word"
+        case cardCancel = "card.cancel"
+        case cardError = "card.error"
+        case cardDone = "card.done"
         case aiQuizTitle = "aiq.title"
         case aiQuizSubtitle = "aiq.subtitle"
         case aiQuizHowMany = "aiq.how_many"
@@ -563,6 +599,42 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .deckNoWords: "Henüz kelime yok",
+            .deckTapToAdd: "İlk kelimeni eklemek için + simgesine dokun",
+            .deckWordCount: "%d kelime",
+            .deckOneWord: "1 kelime",
+            .deckQuiz: "Quiz",
+            .deckCreateTitle: "Yeni Deste Oluştur",
+            .deckCreateSubtitle: "Bir bayrak seç ve destene akılda kalıcı bir isim ver.",
+            .deckChooseFlag: "Bayrak seç",
+            .deckLanguages: "Çeviri dilleri",
+            .deckSource: "Kaynak",
+            .deckTarget: "Hedef",
+            .deckName: "Deste adı",
+            .deckNamePlaceholder: "Örn. İspanyolca Temeller, Faydalı Fiiller",
+            .deckCreate: "Deste oluştur",
+            .cardCreateTitle: "Kelimeni Oluştur",
+            .cardEditTitle: "Kelimeni Düzenle",
+            .cardWordLabel: "Kelime (ana dilinde)",
+            .cardTranslating: "Çevriliyor...",
+            .cardTranslate: "Çevir",
+            .cardMeaningLabel: "Çeviri (öğrendiğin dilde)",
+            .cardGenerating: "Cümle oluşturuluyor...",
+            .cardGenerateSentence: "Örnek cümle oluştur",
+            .cardExampleSentence: "Örnek cümle",
+            .cardReminder: "Hatırlatıcı",
+            .cardReminderDate: "Hatırlatma tarihi ve saati",
+            .cardRepeat: "Tekrarla",
+            .cardRepeatNone: "Yok",
+            .cardRepeatWeekly: "Haftalık",
+            .cardRepeatMonthly: "Aylık",
+            .cardEveryWeeks: "%d haftada bir",
+            .cardEveryMonths: "%d ayda bir",
+            .cardSave: "Kaydet",
+            .cardAddWord: "Kelime ekle",
+            .cardCancel: "İptal",
+            .cardError: "Hata",
+            .cardDone: "Bitti",
             .aiQuizTitle: "AI Quiz",
             .aiQuizSubtitle: "Gramer ve kelime pratiği",
             .aiQuizHowMany: "Kaç soru olsun?",
@@ -944,6 +1016,42 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .deckNoWords: "No words yet",
+            .deckTapToAdd: "Tap + to add your first word",
+            .deckWordCount: "%d words",
+            .deckOneWord: "1 word",
+            .deckQuiz: "Quiz",
+            .deckCreateTitle: "Create a New Deck",
+            .deckCreateSubtitle: "Choose a flag and give your deck a memorable name.",
+            .deckChooseFlag: "Choose flag",
+            .deckLanguages: "Translation languages",
+            .deckSource: "Source",
+            .deckTarget: "Target",
+            .deckName: "Deck name",
+            .deckNamePlaceholder: "E.g. Spanish Basics, Useful Verbs",
+            .deckCreate: "Create deck",
+            .cardCreateTitle: "Create Your Word",
+            .cardEditTitle: "Edit Your Word",
+            .cardWordLabel: "Word (in your native language)",
+            .cardTranslating: "Translating...",
+            .cardTranslate: "Translate",
+            .cardMeaningLabel: "Translation (in learning language)",
+            .cardGenerating: "Generating sentence...",
+            .cardGenerateSentence: "Generate example sentence",
+            .cardExampleSentence: "Example sentence",
+            .cardReminder: "Reminder",
+            .cardReminderDate: "Reminder date & time",
+            .cardRepeat: "Repeat",
+            .cardRepeatNone: "None",
+            .cardRepeatWeekly: "Weekly",
+            .cardRepeatMonthly: "Monthly",
+            .cardEveryWeeks: "Every %d week(s)",
+            .cardEveryMonths: "Every %d month(s)",
+            .cardSave: "Save",
+            .cardAddWord: "Add word",
+            .cardCancel: "Cancel",
+            .cardError: "Error",
+            .cardDone: "Done",
             .aiQuizTitle: "AI Quiz",
             .aiQuizSubtitle: "Grammar & vocabulary practice",
             .aiQuizHowMany: "How many questions?",
