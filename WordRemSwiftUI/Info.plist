@@ -16,7 +16,7 @@
 		<string>Poppins-Medium.ttf</string>
 	</array>
 	<key>VoiceAPIBaseURL</key>
-	<string>https://REPLACE.workers.dev</string>
+	<string>https://wordrem-voice.wordrem-ai.workers.dev</string>
 	<key>VoiceAppKey</key>
 	<string>ggrk5HriNGc3ZWYJUGWhffGo-RSaJguGYL5cPAUawWw</string>
 </dict>
