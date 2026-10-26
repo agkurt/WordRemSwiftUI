@@ -28,6 +28,7 @@ struct GameQuizView: View {
     @State private var pendingAnswer: String? = nil   // seçildi ama henüz kontrol edilmedi
     @State private var submittedAnswer: String? = nil // kontrol edilen seçim (yanlışı işaretlemek için)
     @State private var showQuitAlert = false          // çıkış onay uyarısı
+    @State private var talkLevel: UUID?               // seviye sonrası sesli pratik
     /// Tracks the last question index for which audio was auto-played, preventing
     /// re-triggers when the view re-renders on state transitions (.question → .answered).
     @State private var autoPlayedIndex: Int = -1
@@ -93,9 +94,12 @@ struct GameQuizView: View {
                     score: score,
                     stars: stars,
                     xpEarned: xp,
-                    levelTitle: title
-                ) {
-                    dismiss()
+                    levelTitle: title,
+                    onDone: { dismiss() },
+                    onTalk: { if case .level(let id) = sessionType { talkLevel = id } }
+                )
+                .fullScreenCover(item: Binding(get: { talkLevel.map(TalkLevel.init) }, set: { talkLevel = $0?.id })) { item in
+                    VoiceTutorView(mode: .levelReview(levelId: item.id))
                 }
             }
 
@@ -2009,3 +2013,5 @@ private struct QuizMatchPairsContent: View {
     }
 }
 
+/// fullScreenCover(item:) için
+private struct TalkLevel: Identifiable { let id: UUID }

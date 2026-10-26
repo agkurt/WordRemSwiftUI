@@ -45,6 +45,7 @@ struct MainTabView: View {
     @State private var wordsSegment: WordsView.Segment = .learned
     @State private var showCreateDeck = false
     @State private var showLeaderboard = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         Group {
@@ -79,6 +80,22 @@ struct MainTabView: View {
                 }
             ))
             .environmentObject(langManager)
+        }
+        // "Rem": alışkanlık saati, widget/bildirim cevaplarını oku, arka plana geçerken hatırlatmaları kur
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active:
+                SmartReminders.noteAppOpened()
+                ReviewScheduler.shared.reload()
+            case .background:
+                Task { await SmartReminders.reschedule() }
+            default:
+                break
+            }
+        }
+        // Bildirim/widget'tan gelince Konuş sekmesine geç (ders/tekrar orada açılır)
+        .onReceive(AppRouter.shared.$route) { route in
+            if route != nil { selectedTab = .today }
         }
     }
 

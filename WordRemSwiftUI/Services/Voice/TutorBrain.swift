@@ -67,6 +67,8 @@ enum TutorMode: Equatable {
     case roleplay, newPhrases, quickQuestion, myDay
     /// Onboarding'deki ilk tanışma: kısa, etkileyici canlı demo
     case demo
+    /// Kelimeler sekmesinden: öğrenilen kelimeleri cümle içinde kullandırma
+    case wordPractice
     /// Bir ders seviyesini konuşarak bitirme: o seviyenin kelimeleri
     case levelReview(levelId: UUID)
 }
@@ -155,6 +157,13 @@ enum TutorBrain {
             5) Wrap up: tell them proudly what they just did in under two minutes and that their personal plan is ready. Then call finish_lesson with success true.
             Keep every turn short, warm and fast-paced. Beginner-friendly \(targetName).
             """
+        case .wordPractice:
+            let list = practiceWords.map { "\($0.term) (= \($0.meaning))" }.joined(separator: ", ")
+            task = """
+            WORD PRACTICE: the learner wants to really use words they learned in lessons and chats: \(list).
+            One word at a time: set up a tiny real-life moment, and give a short natural sentence using the word as the card. \
+            When they say it, react and move to the next word. Keep it light and fast.
+            """
         case .roleplay:
             task = "Ask what scene the learner wants to roleplay (e.g. café, job interview, meeting a friend), suggest two ideas, then play the other person. Keep it fun and realistic, teach useful phrases with show_phrase along the way."
         case .newPhrases:
@@ -209,8 +218,34 @@ enum TutorBrain {
     /// Ders hedefleri (sırayla); serbest sohbette boş
     static func targets(for mode: TutorMode) -> [String] {
         if case .demo = mode { return ["introduce yourself by name", "say where you are from", "one fun real-life phrase that fits their answer"] }
+        if case .wordPractice = mode { return practiceWords.map { "a short sentence using \"\($0.term)\"" } }
+        if case .levelReview(let id) = mode {
+            return ContentStore.shared.words(levelId: id).prefix(5).map { "a short sentence using \"\($0.term)\"" }
+        }
         guard case .goal(let cId, let gId) = mode else { return [] }
         return ScenarioStore.shared.chapters.first { $0.id == cId }?.goals.first { $0.id == gId }?.targets ?? []
+    }
+
+    /// Pratik için kelimeler: önce tekrar zamanı gelenler, sonra en yeni öğrenilenler (en fazla 6)
+    static var practiceWords: [LearnedWord] {
+        let all = LearnedWordsStore.load().filter { $0.languageCode.lowercased() == targetCode && !$0.term.contains(" ") }
+        let due = ReviewScheduler.shared.dueToday.filter { w in all.contains { $0.id == w.id } }
+        var seen = Set<String>()
+        return Array((due + all).filter { seen.insert($0.id).inserted }.prefix(6))
+    }
+
+    /// Sesli sohbette verilen her cevap: kart cümlesindeki öğrenilmiş kelime tekrar planında güncellenir
+    /// (dersler, pratik ve sohbet aynı hafızayı paylaşır)
+    static func noteAnswer(card: String, correct: Bool) {
+        let lower = card.lowercased()
+        let words = LearnedWordsStore.load().filter { $0.languageCode.lowercased() == targetCode }
+        // Önce birebir kart ifadesi, sonra kart içinde geçen tek kelimeler
+        let hits = words.filter { $0.term.lowercased() == lower.trimmingCharacters(in: .punctuationCharacters) }
+            + words.filter { !$0.term.contains(" ") && lower.range(of: "\\b\($0.term.lowercased())\\b", options: .regularExpression) != nil }
+        var seen = Set<String>()
+        for w in hits where seen.insert(w.id).inserted {
+            _ = ReviewScheduler.shared.grade(w, correct ? .good : .again)
+        }
     }
 
     // MARK: Kaldığı yerden devam (ders hedefleri)
@@ -333,7 +368,10 @@ enum TutorBrain {
     /// Sohbette öğretilen kalıp → "Sohbetten" destesi (kelime defteri) + tekrar planı
     private static func savePhrase(_ phrase: String, _ translation: String) {
         guard !phrase.isEmpty, !translation.isEmpty else { return }
-        let id = "chat:" + phrase.lowercased()
+        // Noktalama farkı ("Hello!" / "Hello.") ayrı kayıt olmasın
+        let key = phrase.lowercased().components(separatedBy: CharacterSet.alphanumerics.union(.whitespaces).inverted).joined()
+            .trimmingCharacters(in: .whitespaces)
+        let id = "chat:" + key
         LearnedWordsStore.add([LearnedWord(id: id, term: phrase, meaning: translation, phonetic: nil,
                                            languageCode: targetCode.uppercased(), learnedAt: Date())],
                               nativeLangCode: OL.nativeLangCode)

@@ -69,6 +69,8 @@ final class RealtimeVoiceSession: ObservableObject {
     /// AI bir araç çağırdığında: (ad, JSON argümanlar) → çıktı metni
     var onToolCall: ((String, [String: Any]) -> String)?
     var onLimitReached: (() -> Void)?
+    /// Her değerlendirilen cevap: (kart, doğru mu) — tekrar planını beslemek için
+    var onAnswer: ((String, Bool) -> Void)?
 
     // MARK: - Private
     private var socket: URLSessionWebSocketTask?
@@ -221,6 +223,7 @@ final class RealtimeVoiceSession: ObservableObject {
         if ok { correctAnswers += 1 }
         lastAnswerCorrect = ok
         answerCount += 1
+        if let card = currentCard { onAnswer?(card, ok) }
         var note: String
 
         if targetProgress < targets.count || pendingCombine {

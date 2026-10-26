@@ -16,6 +16,8 @@ struct QuizResultView: View {
     let xpEarned: Int
     let levelTitle: String
     let onDone: () -> Void
+    /// Seviye geçildiyse: o seviyenin kelimeleriyle sesli pratik
+    var onTalk: (() -> Void)? = nil
 
     @State private var showDetails = false
 
@@ -71,6 +73,13 @@ struct QuizResultView: View {
             Spacer()
 
             // Action button
+            if passed, let onTalk {
+                Button(action: onTalk) {
+                    Label(AL.s(.talkPracticeTitle), systemImage: "waveform")
+                }
+                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                .padding(.bottom, 10)
+            }
             Button(passed ? langManager.s(.resultContinue) : langManager.s(.resultTryAgain), action: onDone)
                 .buttonStyle(InkButtonStyle())
         }

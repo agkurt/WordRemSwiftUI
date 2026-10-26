@@ -17,6 +17,7 @@ struct WordsView: View {
     @Binding var segment: Segment
 
     @State private var searchText = ""
+    @State private var showPractice = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -81,6 +82,8 @@ struct WordsView: View {
                     .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 12))
                     .padding(.bottom, 12)
 
+                    if searchText.isEmpty { practiceCard.padding(.bottom, 16) }
+
                     ForEach(filtered) { word in
                         row(word)
                         Rectangle().fill(DS.Colors.line).frame(height: 1)
@@ -89,6 +92,33 @@ struct WordsView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
             }
+        }
+    }
+
+    /// Öğrenilen kelimeleri sesli öğretmenle cümle içinde kullan
+    private var practiceCard: some View {
+        Button { showPractice = true } label: {
+            HStack(spacing: 14) {
+                VoiceLogoView(phase: .aiSpeaking, level: 0.3).scaleEffect(0.8).frame(width: 52)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(AL.s(.talkPracticeTitle))
+                        .font(DS.Font.ui(16, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                    Text(AL.s(.talkPracticeSub))
+                        .font(DS.Font.ui(13))
+                        .foregroundStyle(DS.Colors.muted)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").foregroundStyle(DS.Colors.accent)
+            }
+            .padding(16)
+            .background(DS.Colors.accent.opacity(0.07), in: RoundedRectangle(cornerRadius: DS.Radius.card))
+            .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.accent.opacity(0.25)))
+        }
+        .buttonStyle(.plain)
+        .fullScreenCover(isPresented: $showPractice) {
+            VoiceTutorView(mode: .wordPractice) { _ in scheduler.reload() }
         }
     }
 

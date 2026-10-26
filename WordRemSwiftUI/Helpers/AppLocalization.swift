@@ -132,6 +132,8 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case talkPracticeTitle = "talk.practice_title"
+        case talkPracticeSub = "talk.practice_sub"
         case lcGathering = "lc.gathering"
         case lcCongrats = "lc.congrats"
         case lcCompletedBang = "lc.completed_bang"
@@ -705,6 +707,8 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .talkPracticeTitle: "Konuşarak pekiştir",
+            .talkPracticeSub: "Öğrendiğin kelimeleri öğretmeninle cümle içinde kullan",
             .lcGathering: "İstatistiklerin toparlanıyor",
             .lcCongrats: "Tebrikler %@",
             .lcCompletedBang: "%@ tamamlandı!",
@@ -1228,6 +1232,8 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .talkPracticeTitle: "Practice by speaking",
+            .talkPracticeSub: "Use the words you learned in real sentences with your tutor",
             .lcGathering: "Gathering your stats",
             .lcCongrats: "Congrats %@",
             .lcCompletedBang: "%@ complete!",
@@ -1748,6 +1754,8 @@ struct AL {
             .paywallTerms:          "Nutzungsbedingungen",
             .paywallRestore:        "Wiederherstellen",
             .paywallDisclosure:     "Die Zahlung wird bei Kaufbestätigung Ihrem Apple-Konto belastet. Das Abonnement verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ablauf der aktuellen Laufzeit gekündigt wird. Abonnements können in den App-Store-Kontoeinstellungen verwaltet werden.",
+            .talkPracticeTitle: "Sprechend festigen",
+            .talkPracticeSub: "Nutze deine Wörter in echten Sätzen mit deinem Tutor",
             .lcGathering: "Deine Statistik wird erstellt",
             .lcCongrats: "Glückwunsch, %@",
             .lcCompletedBang: "%@ geschafft!",
@@ -2051,6 +2059,8 @@ struct AL {
             .paywallTerms:          "Conditions d'utilisation",
             .paywallRestore:        "Restaurer",
             .paywallDisclosure:     "Le paiement sera débité de votre compte Apple lors de la confirmation de l'achat. L'abonnement se renouvelle automatiquement, sauf s'il est annulé au moins 24 heures avant la fin de la période en cours. Gérez vos abonnements dans les réglages du compte App Store.",
+            .talkPracticeTitle: "Pratique à l'oral",
+            .talkPracticeSub: "Utilise tes mots dans de vraies phrases avec ton tuteur",
             .lcGathering: "On prépare tes stats",
             .lcCongrats: "Bravo %@",
             .lcCompletedBang: "%@ terminé !",
@@ -2354,6 +2364,8 @@ struct AL {
             .paywallTerms:          "Términos de uso",
             .paywallRestore:        "Restaurar",
             .paywallDisclosure:     "El pago se cargará a tu cuenta de Apple al confirmar la compra. La suscripción se renueva automáticamente a menos que se cancele al menos 24 horas antes del final del período actual. Administra las suscripciones en Configuración de cuenta de App Store.",
+            .talkPracticeTitle: "Practica hablando",
+            .talkPracticeSub: "Usa tus palabras en frases reales con tu tutor",
             .lcGathering: "Preparando tus estadísticas",
             .lcCongrats: "¡Felicidades, %@!",
             .lcCompletedBang: "¡%@ completado!",
@@ -2657,6 +2669,8 @@ struct AL {
             .paywallTerms:          "Termini di utilizzo",
             .paywallRestore:        "Ripristina",
             .paywallDisclosure:     "Il pagamento verrà addebitato sul tuo account Apple alla conferma dell'acquisto. L'abbonamento si rinnova automaticamente a meno che non venga annullato almeno 24 ore prima della fine del periodo corrente. Gestisci gli abbonamenti nelle Impostazioni account dell'App Store.",
+            .talkPracticeTitle: "Pratica parlando",
+            .talkPracticeSub: "Usa le tue parole in frasi vere con il tutor",
             .lcGathering: "Prepariamo le tue statistiche",
             .lcCongrats: "Complimenti %@",
             .lcCompletedBang: "%@ completato!",
@@ -2960,6 +2974,8 @@ struct AL {
             .paywallTerms:          "Условия использования",
             .paywallRestore:        "Восстановить",
             .paywallDisclosure:     "Оплата будет снята с вашего аккаунта Apple при подтверждении покупки. Подписка автоматически продлевается, если не будет отменена не менее чем за 24 часа до окончания текущего периода. Управляйте подписками в настройках аккаунта App Store.",
+            .talkPracticeTitle: "Закрепи в разговоре",
+            .talkPracticeSub: "Используй выученные слова в живых фразах с репетитором",
             .lcGathering: "Собираем статистику",
             .lcCongrats: "Поздравляем, %@",
             .lcCompletedBang: "«%@» пройдено!",
@@ -3263,6 +3279,8 @@ struct AL {
             .paywallTerms:          "使用条款",
             .paywallRestore:        "恢复购买",
             .paywallDisclosure:     "购买确认后，将从您的Apple账户扣款。订阅将自动续订，除非在当前期限结束前至少24小时取消。可在App Store账户设置中管理订阅。",
+            .talkPracticeTitle: "开口巩固",
+            .talkPracticeSub: "和老师一起把学过的词用进真实句子",
             .lcGathering: "正在整理你的数据",
             .lcCongrats: "恭喜你，%@",
             .lcCompletedBang: "%@ 完成！",

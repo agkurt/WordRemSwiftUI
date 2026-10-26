@@ -92,6 +92,7 @@ struct VoiceTutorView: View {
     }
 
     private func begin() async {
+        session.onAnswer = { card, ok in TutorBrain.noteAnswer(card: card, correct: ok) }
         session.onToolCall = { name, args in
             TutorBrain.handle(tool: name, args: args, mode: activeMode,
                               onPhrase: { text, tr in
