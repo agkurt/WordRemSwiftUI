@@ -280,8 +280,8 @@ struct ProfileView: View {
                     .font(DS.Font.display(20))
                     .foregroundStyle(DS.Colors.ink)
 
-                let unlockedCount = achievementService.all.filter { $0.isUnlocked }.count
-                Text("\(unlockedCount)/\(achievementService.all.count)")
+                let unlockedCount = achievementService.localized.filter { $0.isUnlocked }.count
+                Text("\(unlockedCount)/\(achievementService.localized.count)")
                     .font(DS.Font.ui(13, weight: .medium))
                     .foregroundStyle(DS.Colors.muted)
                     .monospacedDigit()
@@ -298,7 +298,7 @@ struct ProfileView: View {
             }
 
             // İlk 8 rozet (önce açılanlar, sonra kilitliler)
-            let sorted = achievementService.all.sorted {
+            let sorted = achievementService.localized.sorted {
                 if $0.isUnlocked != $1.isUnlocked { return $0.isUnlocked }
                 return false
             }
@@ -312,7 +312,7 @@ struct ProfileView: View {
             }
         }
         .sheet(isPresented: $showAllAchievements) {
-            AllAchievementsSheet(achievements: achievementService.all)
+            AllAchievementsSheet(achievements: achievementService.localized)
         }
     }
 
@@ -336,13 +336,13 @@ struct ProfileView: View {
                         Button {
                             langManager.setLanguage(code)
                         } label: {
-                            Text("\(LearningLanguages.flags[code] ?? "") \(langManager.languageName(for: code))")
+                            Text("\(LearningLanguages.flags[code] ?? "") \(Self.endonym(code))")
                         }
                     }
                 } label: {
                     settingsRow(icon: "globe",
                                 title: loc(["Ana dil", "Native language", "Muttersprache", "Langue maternelle", "Idioma nativo", "Lingua madre", "Родной язык", "母语"]),
-                                value: langManager.languageName(for: langManager.currentLanguageCode))
+                                value: Self.endonym(langManager.currentLanguageCode))
                 }
                 Divider().padding(.leading, 48)
                 Button { showPrivacy = true } label: {
@@ -358,6 +358,13 @@ struct ProfileView: View {
             .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 20))
             .overlay(RoundedRectangle(cornerRadius: 20).stroke(DS.Colors.line, lineWidth: 1))
         }
+    }
+
+    /// Dil seçicide her dil kendi adıyla görünür (Deutsch, Français…), herkes kendi dilini bulsun
+    private static func endonym(_ code: String) -> String {
+        let loc = Locale(identifier: code)
+        let name = loc.localizedString(forLanguageCode: code) ?? code
+        return name.prefix(1).uppercased(with: loc) + name.dropFirst()
     }
 
     private func settingsRow(icon: String, title: String, value: String? = nil) -> some View {

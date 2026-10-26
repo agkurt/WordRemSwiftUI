@@ -57,7 +57,7 @@ struct QuizSessionView: View {
                 if let question = viewModel.currentQuestion {
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 20) {
-                            QuizQuestionCard(question: question, modeTitle: mode.rawValue)
+                            QuizQuestionCard(question: question, modeTitle: mode.title)
 
                             // Feedback banner
                             if case .answered(let isCorrect) = viewModel.state {
@@ -136,7 +136,7 @@ struct QuizSessionView: View {
 
                             // Next button
                             if case .answered = viewModel.state {
-                                Button(viewModel.isLastQuestion ? "See Results" : "Next Question") {
+                                Button(viewModel.isLastQuestion ? AL.s(.quizSeeResults) : AL.s(.quizNextQuestion)) {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         viewModel.nextQuestion()
                                     }
@@ -209,7 +209,7 @@ private struct QuizQuestionCard: View {
         VStack(alignment: .leading, spacing: 12) {
             Eyebrow(text: modeTitle)
 
-            Text("What is the meaning of")
+            Text(AL.s(.quizMeaningOf))
                 .font(DS.Font.ui(15, weight: .medium))
                 .foregroundStyle(DS.Colors.muted)
 
@@ -309,10 +309,10 @@ private struct TrueFalseButtons: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            TFButton(title: "True", icon: "checkmark", tint: DS.Colors.success, disabled: isAnswered) {
+            TFButton(title: AL.s(.quizTrue), icon: "checkmark", tint: DS.Colors.success, disabled: isAnswered) {
                 onAnswer(true)
             }
-            TFButton(title: "False", icon: "xmark", tint: DS.Colors.danger, disabled: isAnswered) {
+            TFButton(title: AL.s(.quizFalse), icon: "xmark", tint: DS.Colors.danger, disabled: isAnswered) {
                 onAnswer(false)
             }
         }
@@ -362,7 +362,7 @@ private struct WritingInput: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            TextField("Type the meaning...", text: $text)
+            TextField(AL.s(.quizTypeMeaning), text: $text)
                 .font(DS.Font.ui(17, weight: .medium))
                 .foregroundStyle(DS.Colors.ink)
                 .tint(DS.Colors.accent)
@@ -375,7 +375,7 @@ private struct WritingInput: View {
                 .autocapitalization(.none)
 
             if !isAnswered {
-                Button("Check Answer") {
+                Button(AL.s(.quizCheckAnswer)) {
                     UIApplication.shared.hideKeyboard()
                     onSubmit()
                 }
@@ -410,7 +410,7 @@ private struct ListeningModeInput: View {
                 Button {
                     TTSManager.shared.speak(wordToPlay, langCode: langCode)
                 } label: {
-                    Label("Play", systemImage: "play.fill")
+                    Label(AL.s(.quizPlay), systemImage: "play.fill")
                         .font(DS.Font.ui(14, weight: .semibold))
                         .foregroundStyle(DS.Colors.paperRaised)
                         .padding(.horizontal, 18)
@@ -421,7 +421,7 @@ private struct ListeningModeInput: View {
                 Button {
                     TTSManager.shared.speakSlow(wordToPlay, langCode: langCode)
                 } label: {
-                    Label("Slow", systemImage: "tortoise")
+                    Label(AL.s(.quizSlow), systemImage: "tortoise")
                         .font(DS.Font.ui(14, weight: .semibold))
                         .foregroundStyle(DS.Colors.inkSoft)
                         .padding(.horizontal, 16)
@@ -521,7 +521,7 @@ private struct SentenceBuilderInput: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Eyebrow(text: "Tap the correct translation", color: DS.Colors.muted)
+            Eyebrow(text: AL.s(.quizTapTranslation), color: DS.Colors.muted)
 
             // Word chips (flexible grid)
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10),
@@ -564,11 +564,11 @@ private struct QuizFeedbackBanner: View {
                 .frame(width: 28, height: 28)
                 .overlay(Circle().stroke((isCorrect ? DS.Colors.success : DS.Colors.danger).opacity(0.5), lineWidth: 1))
             VStack(alignment: .leading, spacing: 4) {
-                Text(isCorrect ? "Correct!" : "Not quite...")
+                Text(isCorrect ? AL.s(.quizCorrectBang) : AL.s(.quizNotQuite))
                     .font(DS.Font.display(20, weight: .bold))
                     .foregroundStyle(isCorrect ? DS.Colors.success : DS.Colors.danger)
                 if !isCorrect {
-                    Text("Answer: \(correctAnswer)")
+                    Text(AL.f(.quizAnswerFmt, correctAnswer))
                         .font(DS.Font.ui(16, weight: .medium))
                         .foregroundStyle(DS.Colors.ink)
                 }

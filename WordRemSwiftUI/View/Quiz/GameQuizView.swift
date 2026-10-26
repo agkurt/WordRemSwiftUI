@@ -269,7 +269,7 @@ struct GameQuizView: View {
             } else {
                 Text(question.questionDirection == .targetToNative
                      ? AL.s(.gameWhatIsMeaning)
-                     : "What is the \(languageDisplayName(targetLang)) word for this?")
+                     : AL.f(.quizWordForFmt, languageDisplayName(targetLang)))
                     .font(DS.Font.ui(16, weight: .medium))
                     .foregroundStyle(DS.Colors.inkSoft)
                     .frame(maxWidth: .infinity, alignment: .leading)

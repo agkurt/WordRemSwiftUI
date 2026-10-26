@@ -61,6 +61,9 @@ struct MainTabView: View {
                 NavigationStack { ProfileView() }
             }
         }
+        // Dil değişince sekme içeriği baştan çizilsin: AL.s ile okunan metinler gözlemlenmiyor,
+        // yeniden kurulmazsa yarısı eski dilde kalıyor. Seçili sekme korunur.
+        .id(langManager.currentLanguageCode)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomBar
@@ -82,6 +85,8 @@ struct MainTabView: View {
             ))
             .environmentObject(langManager)
         }
+        // Bildirim butonlarının (Hatırladım/Unuttum) adları da yeni dilde olsun
+        .onChange(of: langManager.currentLanguageCode) { _ in SmartReminders.registerCategories() }
         // "Rem": alışkanlık saati, widget/bildirim cevaplarını oku, arka plana geçerken hatırlatmaları kur
         .onChange(of: scenePhase) { phase in
             switch phase {

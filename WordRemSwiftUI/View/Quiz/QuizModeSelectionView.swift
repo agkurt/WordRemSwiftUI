@@ -22,8 +22,8 @@ struct QuizModeSelectionView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
                         // Header
-                        Eyebrow(text: "\(wordInfos.count) words")
-                        Text("Quiz Mode")
+                        Eyebrow(text: AL.f(.quizWordsCount, wordInfos.count))
+                        Text(AL.s(.quizModeTitle))
                             .font(DS.Font.display(34, weight: .bold))
                             .foregroundStyle(DS.Colors.ink)
                             .padding(.top, 6)
@@ -60,7 +60,7 @@ struct QuizModeSelectionView: View {
                 Button {
                     showQuiz = true
                 } label: {
-                    Label("Start Quiz", systemImage: "play.fill")
+                    Label(AL.s(.quizStart), systemImage: "play.fill")
                 }
                 .buttonStyle(InkButtonStyle(fill: selectedMode != nil ? DS.Colors.ink : DS.Colors.line,
                                             foreground: selectedMode != nil ? DS.Colors.paperRaised : DS.Colors.muted))
@@ -123,7 +123,7 @@ private struct QuizModeRow: View {
                     .overlay(Circle().stroke(isSelected ? DS.Colors.ink : DS.Colors.line, lineWidth: 1))
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(mode.rawValue)
+                    Text(mode.title)
                         .font(DS.Font.display(20))
                         .foregroundStyle(DS.Colors.ink)
                     Text(mode.description)
@@ -131,7 +131,7 @@ private struct QuizModeRow: View {
                         .foregroundStyle(DS.Colors.inkSoft)
                         .multilineTextAlignment(.leading)
                     if !isAvailable {
-                        Text("Needs at least \(mode.minimumWordCount) words")
+                        Text(AL.f(.quizNeedsWords, mode.minimumWordCount))
                             .font(DS.Font.ui(12, weight: .semibold))
                             .foregroundStyle(DS.Colors.accent)
                     }

@@ -40,8 +40,9 @@ final class LanguageManager: ObservableObject {
         let normalized = code.lowercased()
         let resolved = Self.supportedCodes.contains(normalized) ? normalized : Self.defaultCode
         guard resolved != currentLanguageCode else { return }
-        currentLanguageCode = resolved
+        // Önce kaydet: AL.s kaydedilen dili okur; yayın (willSet) anında yeni dil hazır olsun
         UserDefaults.standard.set(resolved, forKey: userDefaultsKey)
+        currentLanguageCode = resolved
     }
 
     // MARK: - RTL Desteği

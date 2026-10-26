@@ -9,12 +9,24 @@
 //
 
 import SwiftUI
+import Combine
 
 @MainActor
 final class AchievementService: ObservableObject {
 
     static let shared = AchievementService()
-    private init() {}
+    private var languageSub: AnyCancellable?
+    private init() {
+        // Başlıklar oluşturulduğu anki dilde kalmasın: dil değişince listeyi yeniden kur
+        languageSub = LanguageManager.shared.$currentLanguageCode.dropFirst().receive(on: DispatchQueue.main).sink { [weak self] _ in
+            guard let self else { return }
+            self.all = Achievement.all().map { ach in
+                var copy = ach
+                copy.isUnlocked = self.unlockedIds.contains(ach.id)
+                return copy
+            }
+        }
+    }
 
     // MARK: - Published State
     /// Queue of achievements earned this session — shown one at a time as popups.
@@ -23,6 +35,15 @@ final class AchievementService: ObservableObject {
     @Published var unlockedIds: Set<String> = []
     /// Full list with up-to-date unlock state (used for ProfileView display).
     @Published var all: [Achievement] = Achievement.all()
+
+    /// Ekranda gösterilecek liste: başlıklar her çizimde o anki dilde üretilir (kilit durumu korunur)
+    var localized: [Achievement] {
+        Achievement.all().map { ach in
+            var copy = ach
+            copy.isUnlocked = unlockedIds.contains(ach.id) || all.first { $0.id == ach.id }?.isUnlocked == true
+            return copy
+        }
+    }
 
     // MARK: - Supabase table row model
     private struct UserAchievementRow: Decodable {

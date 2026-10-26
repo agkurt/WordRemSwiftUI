@@ -27,6 +27,23 @@ enum QuizMode: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Ekranda görünen ad (uygulama dilinde)
+    var title: String {
+        switch self {
+        case .multipleChoice:    return AL.s(.qmMultipleChoice)
+        case .trueFalse:         return AL.s(.qmTrueFalse)
+        case .writing:           return AL.s(.qmWriting)
+        case .listening:         return AL.s(.qmListening)
+        case .speaking:          return AL.s(.qmSpeaking)
+        case .fillInTheBlank:    return AL.s(.qmFillBlank)
+        case .sentenceBuilder:   return AL.s(.qmSentenceBuilder)
+        case .introduce:         return AL.s(.qmIntroduce)
+        case .translateSentence: return AL.s(.qmTranslateSentence)
+        case .buildSentence:     return AL.s(.qmBuildSentence)
+        case .matchPairs:        return AL.s(.qmMatchPairs)
+        }
+    }
+
     /// Deste quizinde seçilebilen modlar (ders akışına özel modlar hariç)
     static let deckModes: [QuizMode] = [.multipleChoice, .trueFalse, .writing, .listening, .speaking,
                                         .fillInTheBlank, .sentenceBuilder]
@@ -49,17 +66,17 @@ enum QuizMode: String, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .multipleChoice: return "Choose the correct meaning from 4 options"
-        case .trueFalse:      return "Decide if the word-meaning pair is correct"
-        case .writing:        return "Type the meaning of the word"
-        case .listening:      return "Listen to the word and choose its meaning"
-        case .speaking:       return "Hear the word and repeat it aloud"
-        case .fillInTheBlank:  return "Complete the sentence with the missing word"
-        case .sentenceBuilder: return "Arrange the words to form a correct sentence"
-        case .introduce:       return "Meet a new word"
-        case .translateSentence: return "Choose the correct translation"
-        case .buildSentence:   return "Build the sentence from word tiles"
-        case .matchPairs:      return "Match words with their meanings"
+        case .multipleChoice: return AL.s(.qmDescMultipleChoice)
+        case .trueFalse:      return AL.s(.qmDescTrueFalse)
+        case .writing:        return AL.s(.qmDescWriting)
+        case .listening:      return AL.s(.qmDescListening)
+        case .speaking:       return AL.s(.qmDescSpeaking)
+        case .fillInTheBlank:  return AL.s(.qmDescFillBlank)
+        case .sentenceBuilder: return AL.s(.qmDescSentenceBuilder)
+        case .introduce:       return AL.s(.qmDescIntroduce)
+        case .translateSentence: return AL.s(.qmDescTranslateSentence)
+        case .buildSentence:   return AL.s(.qmDescBuildSentence)
+        case .matchPairs:      return AL.s(.qmDescMatchPairs)
         }
     }
 
