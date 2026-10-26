@@ -15,6 +15,11 @@
 		<string>Poppins-Bold.ttf</string>
 		<string>Poppins-Medium.ttf</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+	</dict>
 	<key>VoiceAPIBaseURL</key>
 	<string>https://wordrem-voice.wordrem-ai.workers.dev</string>
 	<key>VoiceAppKey</key>

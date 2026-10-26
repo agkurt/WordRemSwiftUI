@@ -31,6 +31,8 @@ struct VoiceTutorView: View {
     @State private var showPaywall = false
     @State private var finishedSuccess: Bool?
     @State private var completing = false
+    /// Bu oturumda desteye kaydedilen kartlar (yer imi dolu görünür)
+    @State private var savedPhrases: Set<String> = []
 
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
 
@@ -60,7 +62,8 @@ struct VoiceTutorView: View {
         .onDisappear { saveAndStop() }
         .animation(.spring(response: 0.55, dampingFraction: 0.85), value: isConnecting)
         .onChange(of: session.phase) { phase in
-            if case .failed(let code) = phase, code == "paywall" { showPaywall = true }
+            // Pro kullanıcıya asla paywall yok: aylık süresi bittiyse yalnızca bilgi gösterilir
+            if case .failed(let code) = phase, code == "paywall", !InAppPurchaseManager.shared.isPremium { showPaywall = true }
             guard phase == .listening else { return }
             // Hedefler bitti ve öğretmen kapanışı yaptı → ders tamamlandı
             if session.lessonComplete || finishedSuccess == true {
@@ -103,12 +106,20 @@ struct VoiceTutorView: View {
         session.onAnswer = { card, ok in
             TutorBrain.noteAnswer(card: card, correct: ok)
             StudyStreak.record()
+            // Yanlış söylenen cümle "Telaffuz çalış" destesine kendiliğinden düşer
+            if !ok, !isDemo {
+                let tr = phrase?.text == card ? phrase?.translation ?? "" : ""
+                saveToDeck(card, tr, .pronunciation)
+            }
         }
         session.answerCardsOnly = isDemo
+        session.isPro = InAppPurchaseManager.shared.isPremium
         // Günlük süre doldu: AI vedalaştıktan sonra paywall (demoda onboarding'in paywall'ı)
         session.onLimitReached = {
             phrase = nil
-            if isDemo { onFinished(true) } else { showPaywall = true }
+            if isDemo { onFinished(true) }
+            else if InAppPurchaseManager.shared.isPremium { dismiss() }
+            else { showPaywall = true }
         }
         session.onToolCall = { name, args in
             TutorBrain.handle(tool: name, args: args, mode: activeMode,
@@ -325,6 +336,7 @@ struct VoiceTutorView: View {
 
     private func failureView(_ code: String) -> some View {
         VStack(spacing: 14) {
+            let code = code == "paywall" ? "limit_reached" : code   // Pro'nun aylık süresi doldu
             Image(systemName: code == "limit_reached" ? "hourglass" : "wifi.exclamationmark")
                 .font(.system(size: 36)).foregroundStyle(DS.Colors.muted)
             Text(code == "limit_reached" ? AL.s(.talkLimitReached)
@@ -383,6 +395,25 @@ struct VoiceTutorView: View {
                     Image(systemName: "speaker.wave.2").font(.system(size: 24, weight: .medium))
                 }
                 .accessibilityLabel(AL.s(.quizTapToHear))
+                // Beğendiği ifadeyi tek dokunuşla "Kaydettiklerim" destesine at (tekrar dokununca çıkar)
+                if !isDemo {
+                    let saved = savedPhrases.contains(p.text)
+                    Button {
+                        if saved {
+                            DeckService.shared.remove(phrase: p.text, from: .saved)
+                            savedPhrases.remove(p.text)
+                        } else {
+                            saveToDeck(p.text, p.translation, .saved)
+                            savedPhrases.insert(p.text)
+                            Haptics.success()
+                        }
+                    } label: {
+                        Image(systemName: saved ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 23, weight: .medium))
+                            .symbolEffect(.bounce, value: saved)
+                    }
+                    .accessibilityLabel(AL.s(.talkSaveToDeck))
+                }
             }
             .foregroundStyle(DS.Colors.accent)
         }
@@ -465,6 +496,11 @@ struct VoiceTutorView: View {
             .navigationTitle(AL.s(.talkTranscript))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                // iOS paylaşım sayfası: WhatsApp, Mesajlar, Notlar…
+                ToolbarItem(placement: .topBarLeading) {
+                    ShareLink(item: transcriptText) { Image(systemName: "square.and.arrow.up") }
+                        .disabled(session.turns.allSatisfy { $0.text.isEmpty })
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showTranscript = false } label: { Image(systemName: "xmark") }
                 }
@@ -472,6 +508,32 @@ struct VoiceTutorView: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+    }
+
+    /// Sesli dersteki kartı kullanıcının destelerine yazar
+    private func saveToDeck(_ text: String, _ translation: String, _ deck: DeckService.VoiceDeck) {
+        let code = targetCode.uppercased()
+        let flag: FlagModel = ["FR": .french, "DE": .german, "IT": .italian, "RU": .russian, "ZH": .chinese, "TR": .turkey][code] ?? .english
+        let options = RealtimeVoiceSession.cardOptions(text)
+        for (i, option) in options.enumerated() {
+            let trOptions = translation.components(separatedBy: " / ")
+            let tr = trOptions.count == options.count ? trOptions[i] : translation
+            DeckService.shared.save(phrase: option, translation: tr, to: deck,
+                                    name: AL.s(deck == .saved ? .deckSavedPhrases : .deckPronunciation),
+                                    flag: flag, nativeCode: OL.nativeLangCode.uppercased(), targetCode: code)
+        }
+        NotificationCenter.default.post(name: .pathMistakesDeckCreated, object: nil)
+    }
+
+    /// Paylaşılacak düz metin: "Öğretmen: …", "Sen: …", "SÖYLE: … (çeviri)"
+    private var transcriptText: String {
+        session.turns.filter { !$0.text.isEmpty }.map { t in
+            switch t.role {
+            case .ai:   return "\(AL.s(.talkTutorLabel)): \(t.text)"
+            case .user: return "\(AL.s(.talkYouLabel)): \(t.text)"
+            case .card: return "\(AL.s(.talkSayThis)): \(t.text)" + (t.detail.map { " (\($0))" } ?? "")
+            }
+        }.joined(separator: "\n\n") + "\n\n— WordRem AI"
     }
 
     @ViewBuilder

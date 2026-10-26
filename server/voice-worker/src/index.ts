@@ -1,3 +1,4 @@
+import { privacyPage, termsPage } from "./legal";
 /**
  * WordRem sesli öğretmen arka ucu (Cloudflare Worker).
  *
@@ -269,8 +270,11 @@ async function status(req: Request, env: Env): Promise<Response> {
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
-    if (req.headers.get("x-app-key") !== env.APP_SHARED_KEY) return json({ error: "unauthorized" }, 401);
     const { pathname } = new URL(req.url);
+    // Yasal sayfalar herkese açık (App Store incelemesi ve uygulama içi bağlantılar)
+    if (req.method === "GET" && pathname === "/privacy") return privacyPage();
+    if (req.method === "GET" && pathname === "/terms") return termsPage();
+    if (req.headers.get("x-app-key") !== env.APP_SHARED_KEY) return json({ error: "unauthorized" }, 401);
     try {
       if (req.method === "POST" && pathname === "/v1/voice/session") return await createSession(req, env);
       if (req.method === "POST" && pathname === "/v1/voice/usage") return await reportUsage(req, env);

@@ -33,14 +33,14 @@ struct OnboardingPaywallView: View {
     // AI satırları yalnızca Apple Intelligence olan cihazlarda gösterilir (vaat edilen her şey çalışmalı)
     private var features: [(String, String, String)] {
         var list = [
-            ("waveform.circle", AL.s(.paywallVoiceTitle), AL.s(.paywallVoiceSub)),
-            ("infinity",  langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
-            ("lightbulb", langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
+            ("waveform.circle", AL.s(.pwTalkTitle), AL.s(.pwTalkSub)),
+            ("map", AL.s(.pwPlanTitle), AL.s(.pwPlanSub)),
+            ("checkmark.bubble", AL.s(.pwFixTitle), AL.s(.pwFixSub)),
+            ("bookmark", AL.s(.pwRemTitle), AL.s(.pwRemSub)),
+            ("infinity", AL.s(.pwPracticeTitle), AL.s(.pwPracticeSub)),
         ]
         if AIEngine.isAvailable {
-            list += [
-                ("list.bullet.rectangle", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
-            ]
+            list.append(("list.bullet.rectangle", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)))
         }
         return list
     }
@@ -114,10 +114,10 @@ struct OnboardingPaywallView: View {
             Text(langManager.s(.paywallPurchaseError))
         }
         .sheet(isPresented: $showPrivacy) {
-            SafariWebView(url: URL(string: "https://sites.google.com/view/wordremprivacy/home")!)
+            SafariWebView(url: URL(string: "https://wordrem-voice.wordrem-ai.workers.dev/privacy")!)
         }
         .sheet(isPresented: $showTerms) {
-            SafariWebView(url: URL(string: "https://sites.google.com/view/wordremterms/home")!)
+            SafariWebView(url: URL(string: "https://wordrem-voice.wordrem-ai.workers.dev/terms")!)
         }
         .fullScreenCover(isPresented: $showWelcomePro) {
             WelcomeProView {

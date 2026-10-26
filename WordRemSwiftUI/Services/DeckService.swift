@@ -71,7 +71,11 @@ final class DeckService {
 
     func fetchCardName() async throws -> [Card] {
         read { lib in
-            lib.decks.sorted { $0.createdAt > $1.createdAt }.map {
+            lib.decks.sorted { a, b in
+                // Sesli dersten gelen desteler hep en üstte
+                let pa = a.id.hasPrefix("voice."), pb = b.id.hasPrefix("voice.")
+                return pa != pb ? pa : a.createdAt > b.createdAt
+            }.map {
                 Card(id: $0.id, name: $0.name, selectedFlag: FlagModel(rawValue: $0.flag), wordCount: $0.words.count)
             }
         }
@@ -128,6 +132,43 @@ final class DeckService {
     func addMotherTongueLanguage(motherTongue: String) async throws {}
 
     func deleteAll() { mutate { $0.decks = [] } }
+
+    // MARK: - Sesli dersten desteye (kaydedilenler / telaffuz)
+    enum VoiceDeck: String {
+        case saved = "voice.saved"                 // kartta yer imine dokunulan ifadeler
+        case pronunciation = "voice.pronunciation" // yanlış söylenen cümleler (otomatik)
+    }
+
+    /// Sesli derste kartı desteye ekler (deste yoksa sabit kimlikle oluşturur, aynı ifade iki kez eklenmez).
+    /// Kelime kartı düzeni: ön yüz ana dil (çeviri), arka yüz öğrenilen dil — diğer destelerle aynı.
+    @discardableResult
+    func save(phrase: String, translation: String, to deck: VoiceDeck, name: String,
+              flag: FlagModel, nativeCode: String, targetCode: String) -> Bool {
+        var added = false
+        mutate { lib in
+            if !lib.decks.contains(where: { $0.id == deck.rawValue }) {
+                lib.decks.insert(StoredDeck(id: deck.rawValue, name: name, flag: flag.rawValue, sourceLang: nativeCode,
+                                            targetLang: targetCode, createdAt: Date()), at: 0)
+            }
+            guard let i = lib.decks.firstIndex(where: { $0.id == deck.rawValue }),
+                  !lib.decks[i].words.contains(where: { $0.mean.caseInsensitiveCompare(phrase) == .orderedSame }) else { return }
+            lib.decks[i].words.append(StoredWord(id: UUID().uuidString, name: translation.isEmpty ? phrase : translation,
+                                                 mean: phrase, description: "", createdAt: Date()))
+            added = true
+        }
+        return added
+    }
+
+    func contains(phrase: String, in deck: VoiceDeck) -> Bool {
+        read { $0.decks.first { $0.id == deck.rawValue }?.words.contains { $0.mean.caseInsensitiveCompare(phrase) == .orderedSame } ?? false }
+    }
+
+    func remove(phrase: String, from deck: VoiceDeck) {
+        mutate { lib in
+            guard let i = lib.decks.firstIndex(where: { $0.id == deck.rawValue }) else { return }
+            lib.decks[i].words.removeAll { $0.mean.caseInsensitiveCompare(phrase) == .orderedSame }
+        }
+    }
 
     // MARK: - Storage
     private func read<T>(_ body: (Library) -> T) -> T { queue.sync { body(library) } }

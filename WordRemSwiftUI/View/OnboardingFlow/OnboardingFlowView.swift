@@ -21,6 +21,8 @@ struct OnboardingFlowView: View {
     @State private var target: String?
     @State private var name = ""
     @State private var showPaywall = false
+    @State private var paywallSeen = false
+    @State private var finished = false
     @FocusState private var nameFocused: Bool
 
     private static let flags: [String: String] = [
@@ -44,8 +46,9 @@ struct OnboardingFlowView: View {
         .frame(maxWidth: 620)
         .frame(maxWidth: .infinity)
         .paperBackground()
-        .fullScreenCover(isPresented: $showPaywall) {
-            OnboardingPaywallView { showPaywall = false; finish() }
+        // Paywall hangi yoldan kapanırsa kapansın (X, satın alma, geri yükleme) onboarding biter → ana sayfa
+        .fullScreenCover(isPresented: $showPaywall, onDismiss: finish) {
+            OnboardingPaywallView { showPaywall = false }
         }
     }
 
@@ -57,7 +60,10 @@ struct OnboardingFlowView: View {
         case .name:     nameStep
         case .demo:
             // Canlı sesli demo: öğretmen adıyla karşılar, birkaç cümle konuşturur → paywall
-            VoiceTutorView(mode: .demo, onFinished: { _ in showPaywall = true }, isDemo: true)
+            VoiceTutorView(mode: .demo, onFinished: { _ in
+                // Paywall bir kez görüldüyse demodaki X artık doğrudan ana sayfaya götürür
+                if paywallSeen { finish() } else { paywallSeen = true; showPaywall = true }
+            }, isDemo: true)
         }
     }
 
@@ -250,6 +256,8 @@ struct OnboardingFlowView: View {
     }
 
     private func finish() {
+        guard !finished else { return }
+        finished = true
         Task {
             _ = try? await DataService.shared.updateDailyLoginStreak()
             await MainActor.run { authManager.completeOnboarding() }

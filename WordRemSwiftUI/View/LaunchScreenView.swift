@@ -35,7 +35,7 @@ struct LaunchScreenView: View {
             Image("SplashLogo")
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: 520)
+                .frame(maxWidth: 320)
                 .scaleEffect(logoScale)
                 .opacity(logoOpacity)
                 .accessibilityLabel("WordRem AI")

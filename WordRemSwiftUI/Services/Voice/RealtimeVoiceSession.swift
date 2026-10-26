@@ -778,6 +778,8 @@ final class RealtimeVoiceSession: ObservableObject {
     private var translationPending: String?
     /// Kartlar yalnızca öğrencinin cevabı olabilir (soru kartı reddedilir) — onboarding demosu
     var answerCardsOnly = false
+    /// Pro kullanıcıya süre bitiminde satın alma önerilmez
+    var isPro = false
     private var silentCardPending = false
     private var cardTool: [String: Any]?
     private var silentCardActive = false
@@ -886,7 +888,9 @@ final class RealtimeVoiceSession: ObservableObject {
         timeUpAt = Date()
         currentCard = nil
         phase = .thinking
-        sendGuide("The learner's free speaking time for today is over. Say a warm goodbye in 1–2 short sentences, in the learner's native language: today's free practice is done for now (a little sad, end the sentence with 😞), praise one thing they did well, and say Pro unlocks unlimited practice. Do NOT call any tool.")
+        sendGuide(isPro
+            ? "The learner's speaking time for this period is used up. Say a warm goodbye in 1–2 short sentences, in the learner's native language: that's all the talk time for now (a little sad, end with 😞), praise one thing they did well, and say you'll be here again soon. Do NOT call any tool."
+            : "The learner's free speaking time for today is over. Say a warm goodbye in 1–2 short sentences, in the learner's native language: today's free practice is done for now (a little sad, end the sentence with 😞), praise one thing they did well, and say Pro unlocks unlimited practice. Do NOT call any tool.")
         send(["type": "response.create", "response": ["tool_choice": "none"]])
     }
 
