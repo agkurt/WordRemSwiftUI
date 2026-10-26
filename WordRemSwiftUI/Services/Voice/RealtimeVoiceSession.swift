@@ -234,6 +234,11 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Öğrencinin söylediğine göre öğretmene bir sonraki adımı söyler (Pingo tarzı: yeni parça → birleştir → yeni parça…).
     /// Sıralama arka planda; öğretmen bunu "adım" diye anlatmaz.
     private func guide(after said: String) {
+        // Serbest sohbet (hedef yok): konu/soru değiştirmek isterse hemen değiştir
+        if targets.isEmpty, !noCards, Self.wantsToSkip(said) {
+            voiceLog.info("learner asked to change topic")
+            return sendGuide("The learner wants a different question or topic. Happily switch right away, never push back or say \"let's focus\": offer two fresh, fun topics (or ask a completely different question) and follow their choice.")
+        }
         guard !targets.isEmpty, !lessonComplete else { return }
         // Hiçbir şey duyulmadı (çok kısa bastı / mikrofon sesi almadı): hata sayma, nazikçe tekrar iste
         if said.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -242,9 +247,26 @@ final class RealtimeVoiceSession: ObservableObject {
         // Öğrenilen dilde, en az 3 kelimelik kendi cümlesi: soruya gerçek bir cevap (kart birebir uymasa da) → doğru say
         let wordCount = said.split(separator: " ").count
         let inTarget = Self.isTargetLanguage(said)
+        // Öğrenci soruyu geçmek / konuyu değiştirmek istiyor: asla direnme, hemen sıradakine geç
+        if Self.wantsToSkip(said) {
+            voiceLog.info("learner asked to skip")
+            attempts = 0
+            currentCard = nil
+            let next: String
+            if pendingPersonalize || pendingCombine {
+                pendingPersonalize = false; pendingCombine = false
+                next = targetProgress < targets.count ? Self.nextPiece(targets[targetProgress]) : finishOrRoleplay("")
+            } else if targetProgress < targets.count {
+                targetProgress += 1
+                next = targetProgress < targets.count ? Self.nextPiece(targets[targetProgress]) : finishOrRoleplay("")
+            } else {
+                next = "Switch to a different situation in the roleplay, one they'd enjoy more, and continue in character."
+            }
+            return sendGuide("The learner doesn't want this question and wants to move on. Happily agree in a few words (\"Sure, no problem!\"), never push back or say \"let's focus\". \(next)")
+        }
         // Karta hiç benzemeyen ve öğrenilen dilde olmayan sözler: sohbet/şaka → keyifle karşıla, derse dön
         if let card = currentCard, wordCount >= 3, !inTarget, Self.overlap(said: said, card: card) < 0.25 {
-            return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then smoothly bring them back (\"Okay, let's focus and keep going!\") and invite them to say the current line again. Don't treat it as a mistake.")
+            return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then carry on naturally and invite them to try the current line. Don't treat it as a mistake, and if they seem to want something else, give it to them.")
         }
         // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
         let ok = currentCard.map { Self.matches(said: said, card: $0) || Self.overlap(said: said, card: $0) >= (answerCardsOnly ? 0.25 : 0.6) } ?? !said.isEmpty
@@ -930,7 +952,13 @@ final class RealtimeVoiceSession: ObservableObject {
                 completeCardRetried = false
                 currentCard = args["phrase"] as? String
                 voiceLog.info("card: \(self.currentCard ?? "", privacy: .public)")
-                if ((args["translation"] as? String) ?? "").trimmingCharacters(in: .whitespaces).isEmpty, let p = currentCard {
+                // Çeviri boşsa ya da ana dilde değilse (model bazen İspanyolca vb. yazıyor) doğrusu sessizce istenir
+                let tr = ((args["translation"] as? String) ?? "").trimmingCharacters(in: .whitespaces)
+                if !tr.isEmpty, !silentCardActive, !Self.isNativeLanguage(tr) {
+                    voiceLog.info("translation not in native language, refetching: \(tr, privacy: .public)")
+                    args["translation"] = ""
+                }
+                if ((args["translation"] as? String) ?? "").isEmpty, let p = currentCard {
                     translationPending = p
                 }
             }
@@ -1059,6 +1087,28 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     /// Küçük model kart komutunu bazen düz metin olarak yazar: ekranda/transkriptte gösterme
+    /// Kısa metinde dil tahmini şaşabilir: yalnızca açıkça başka bir dilse "değil" der
+    nonisolated static func isNativeLanguage(_ text: String) -> Bool {
+        let native = OL.nativeLangCode.lowercased()
+        let r = NLLanguageRecognizer()
+        r.processString(text)
+        let hyp = r.languageHypotheses(withMaximum: 3)
+        guard let top = hyp.max(by: { $0.value < $1.value }), top.value > 0.6 else { return true }
+        return top.key.rawValue.hasPrefix(native) || (hyp[NLLanguage(native)] ?? 0) > 0.2
+    }
+
+    /// "Bu soruyu sevmedim, geçelim", "skip", "başka bir şey konuşalım"…
+    nonisolated static func wantsToSkip(_ said: String) -> Bool {
+        let t = said.lowercased()
+        let patterns = [
+            #"\bge[çc](elim|ebilir|sene|iyorum|mek istiyorum)\b"#, #"\b(sonraki|başka) (soru|şey|konu)"#, #"(soruyu|konuyu) (değiştir|geç|sevmedim|beğenmedim)"#,
+            #"\b(beğenmedim|sevmedim)\b"#, #"\bskip\b"#, #"next question"#, #"another (question|topic)"#, #"something else"#,
+            #"change (the )?(topic|subject|question)"#, #"don'?t like (this|that) question"#, #"(talk|speak) about something"#,
+            #"\b(weiter|nächste frage|etwas anderes)\b"#, #"\b(autre chose|question suivante|on passe)\b"#, #"\b(otra cosa|siguiente pregunta)\b"#,
+        ]
+        return patterns.contains { t.range(of: $0, options: .regularExpression) != nil }
+    }
+
     nonisolated static func stripToolText(_ s: String) -> String {
         // Arka plandaki araç adları (show_phrase, finish_lesson…) kullanıcıya asla görünmesin
         let tools = #"(show_phrase|finish_lesson|remember_fact|mark_word_used|functions?\.\w+)"#
@@ -1067,6 +1117,11 @@ final class RealtimeVoiceSession: ObservableObject {
         if let r = t.range(of: tools, options: .regularExpression) { t = String(t[..<r.lowerBound]) }
         // Herhangi bir snake_case tanımlayıcı da (ör. "finish lesson" değil "finish_lesson") metinden çıkar
         t = t.replacingOccurrences(of: #"\b[a-z]+(_[a-z]+)+\b"#, with: "", options: .regularExpression)
+        // Düz konuşma metni: cümle arası tireler ("had— twice", "nice - right") virgül/boşluk olur, "e-mail" gibi kelimeler kalır
+        t = t.replacingOccurrences(of: #"\s*[—–]\s*"#, with: ", ", options: .regularExpression)
+        t = t.replacingOccurrences(of: #"(\w)-\s+"#, with: "$1 ", options: .regularExpression)
+        t = t.replacingOccurrences(of: #"\s+-\s+"#, with: ", ", options: .regularExpression)
+        t = t.replacingOccurrences(of: #",\s*([,.!?])"#, with: "$1", options: .regularExpression)
         t = t.replacingOccurrences(of: #"[ \t]{2,}"#, with: " ", options: .regularExpression)
         return t.trimmingCharacters(in: .whitespacesAndNewlines)
     }
