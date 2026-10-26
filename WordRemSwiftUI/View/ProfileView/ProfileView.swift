@@ -46,10 +46,10 @@ struct ProfileView: View {
         .navigationBarHidden(true)
         .task { await vm.loadProfile() }
         .sheet(isPresented: $showPrivacy) {
-            SafariWebView(url: URL(string: "https://wordrem-voice.wordrem-ai.workers.dev/privacy")!)
+            SafariWebView(url: URL(string: "https://api.wordremai.app/privacy")!)
         }
         .sheet(isPresented: $showTerms) {
-            SafariWebView(url: URL(string: "https://wordrem-voice.wordrem-ai.workers.dev/terms")!)
+            SafariWebView(url: URL(string: "https://api.wordremai.app/terms")!)
         }
         .fullScreenCover(isPresented: $showUsernameSetup) {
             UsernameSetupPopup(

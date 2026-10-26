@@ -21,7 +21,7 @@
 		<string>LaunchBackground</string>
 	</dict>
 	<key>VoiceAPIBaseURL</key>
-	<string>https://wordrem-voice.wordrem-ai.workers.dev</string>
+	<string>https://api.wordremai.app</string>
 	<key>VoiceAppKey</key>
 	<string>ggrk5HriNGc3ZWYJUGWhffGo-RSaJguGYL5cPAUawWw</string>
 </dict>

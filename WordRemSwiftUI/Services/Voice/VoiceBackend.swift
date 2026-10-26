@@ -33,9 +33,26 @@ final class VoiceBackend {
         let remainingSeconds: Int?
     }
 
-    private var baseURL: URL? {
+    private var primaryURL: URL? {
         (Bundle.main.object(forInfoDictionaryKey: "VoiceAPIBaseURL") as? String)
             .flatMap { $0.isEmpty || $0.contains("REPLACE") ? nil : URL(string: $0) }
+    }
+    /// Kendi alan adımıza ulaşılamazsa eski adres (aynı sunucu)
+    private let fallbackURL = URL(string: "https://wordrem-voice.wordrem-ai.workers.dev")
+    private var usingFallback = false
+    private var baseURL: URL? { usingFallback ? fallbackURL : primaryURL }
+
+    /// Ağ hatasında (sunucu cevabı değil) bir kez diğer adresi dener; çalışan adres sonraki isteklerde kullanılır
+    private func send(_ make: (URL) throws -> URLRequest) async throws -> (Data, URLResponse) {
+        guard let baseURL else { throw Failure(code: "not_configured", remainingSeconds: nil) }
+        do {
+            return try await http.data(for: make(baseURL))
+        } catch let e as URLError where primaryURL != nil && fallbackURL != nil {
+            voiceLog.info("backend unreachable (\(e.code.rawValue, privacy: .public)), trying other address")
+            usingFallback.toggle()
+            do { return try await http.data(for: make(self.baseURL!)) }
+            catch { usingFallback.toggle(); throw error }
+        }
     }
     private var appKey: String { Bundle.main.object(forInfoDictionaryKey: "VoiceAppKey") as? String ?? "" }
 
@@ -75,17 +92,19 @@ final class VoiceBackend {
     private var speechSpeed: Double { 1.0 }
 
     func createSession(instructions: String, tools: [[String: Any]]) async throws -> Grant {
-        guard let baseURL else { throw Failure(code: "not_configured", remainingSeconds: nil) }
-        var req = URLRequest(url: baseURL.appendingPathComponent("v1/voice/session"))
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
-        req.timeoutInterval = 25
-        req.httpBody = try JSONSerialization.data(withJSONObject: [
+        let payload = try JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed,
         ])
-        lastBodyBytes = req.httpBody?.count ?? 0
-        let (data, response) = try await http.data(for: req)
+        lastBodyBytes = payload.count
+        let (data, response) = try await send { base in
+            var req = URLRequest(url: base.appendingPathComponent("v1/voice/session"))
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.setValue(self.appKey, forHTTPHeaderField: "X-App-Key")
+            req.timeoutInterval = 15
+            req.httpBody = payload
+            return req
+        }
         let status = (response as? HTTPURLResponse)?.statusCode ?? 0
         if status == 200 { return try JSONDecoder().decode(Grant.self, from: data) }
         let body = (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
@@ -94,14 +113,16 @@ final class VoiceBackend {
 
     /// Öğretmenin sesiyle kısa seslendirme (MP3) — onboarding karşılaması için
     func speech(_ text: String) async throws -> Data {
-        guard let baseURL else { throw Failure(code: "not_configured", remainingSeconds: nil) }
-        var req = URLRequest(url: baseURL.appendingPathComponent("v1/voice/tts"))
-        req.httpMethod = "POST"
-        req.timeoutInterval = 15
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
-        req.httpBody = try JSONSerialization.data(withJSONObject: ["appUserId": appUserId, "text": text])
-        let (data, response) = try await http.data(for: req)
+        let body = try JSONSerialization.data(withJSONObject: ["appUserId": appUserId, "text": text])
+        let (data, response) = try await send { base in
+            var req = URLRequest(url: base.appendingPathComponent("v1/voice/tts"))
+            req.httpMethod = "POST"
+            req.timeoutInterval = 15
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.setValue(self.appKey, forHTTPHeaderField: "X-App-Key")
+            req.httpBody = body
+            return req
+        }
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw Failure(code: "network", remainingSeconds: nil) }
         return data
     }

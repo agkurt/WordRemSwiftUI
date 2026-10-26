@@ -17,7 +17,7 @@ import NaturalLanguage
 import Foundation
 import os
 
-private let voiceLog = Logger(subsystem: "com.twinflare.WordRemSwiftUI", category: "voice")
+let voiceLog = Logger(subsystem: "com.twinflare.WordRemSwiftUI", category: "voice")
 
 @MainActor
 final class RealtimeVoiceSession: ObservableObject {

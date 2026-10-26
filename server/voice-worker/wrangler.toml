@@ -2,6 +2,13 @@ name = "wordrem-voice"
 main = "src/index.ts"
 compatibility_date = "2026-09-01"
 
+# Kendi alan adımız: bazı mobil operatörler *.workers.dev adreslerini engelliyor
+# Eski sürümler workers.dev adresini kullanmaya devam eder
+workers_dev = true
+routes = [
+  { pattern = "api.wordremai.app", custom_domain = true }
+]
+
 # Kullanım sayaçları (dakika sınırları) — `npx wrangler kv namespace create USAGE` çıktısındaki id ile doldurun
 [[kv_namespaces]]
 binding = "USAGE"
