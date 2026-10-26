@@ -11,6 +11,8 @@ import SwiftUI
 struct VoiceTutorView: View {
     let mode: TutorMode
     var onFinished: (Bool) -> Void = { _ in }
+    /// Onboarding demosu: özet ekranı yok, kapatınca/bitince doğrudan onFinished
+    var isDemo = false
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var session = RealtimeVoiceSession()
@@ -102,7 +104,8 @@ struct VoiceTutorView: View {
                               })
         }
         await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: TutorBrain.tools,
-                            targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode))
+                            targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),
+                            roleplay: !isDemo)
     }
 
     private func completeLesson() {
@@ -116,7 +119,7 @@ struct VoiceTutorView: View {
         }
         phrase = nil
         session.stop()
-        showSummary = true
+        if isDemo { onFinished(true) } else { showSummary = true }
     }
 
     /// Ders özeti: kartlarda öğretilen ifadeler, ustalık, süre
@@ -170,7 +173,10 @@ struct VoiceTutorView: View {
                     .matchedGeometryEffect(id: "logo", in: logoNS)
             }
             Spacer()
-            Button { saveAndStop(); dismiss() } label: {
+            Button {
+                saveAndStop()
+                if isDemo { onFinished(false) } else { dismiss() }
+            } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(DS.Colors.inkSoft)

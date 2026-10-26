@@ -65,6 +65,8 @@ final class ScenarioStore {
 enum TutorMode: Equatable {
     case goal(chapterId: String, goalId: String)
     case roleplay, newPhrases, quickQuestion, myDay
+    /// Onboarding'deki ilk tanışma: kısa, etkileyici canlı demo
+    case demo
     /// Bir ders seviyesini konuşarak bitirme: o seviyenin kelimeleri
     case levelReview(levelId: UUID)
 }
@@ -142,6 +144,17 @@ enum TutorBrain {
             - The app will tell you (in system notes) when to move on, when to combine and when to start the roleplay — follow those notes.
             - Finish with a short real-life roleplay in the lesson's scene where you play the other person (e.g. the check-in agent), then wrap up warmly.
             """
+        case .demo:
+            task = """
+            FIRST CALL — this learner just installed the app and will decide whether to subscribe right after this short call. \
+            Make them feel "wow, I'm actually speaking \(targetName) already!" in about 4–5 quick exchanges:
+            1) Greet them by name with real energy and say in one sentence that you're their personal tutor who'll get them speaking.
+            2) Have them introduce themselves ("Hi, I'm …") — celebrate it.
+            3) Ask where they're from (give a model answer card), react with genuine curiosity about their answer.
+            4) Teach one fun, really useful real-life line that fits what they told you, and have them say it.
+            5) Wrap up: tell them proudly what they just did in under two minutes and that their personal plan is ready. Then call finish_lesson with success true.
+            Keep every turn short, warm and fast-paced. Beginner-friendly \(targetName).
+            """
         case .roleplay:
             task = "Ask what scene the learner wants to roleplay (e.g. café, job interview, meeting a friend), suggest two ideas, then play the other person. Keep it fun and realistic, teach useful phrases with show_phrase along the way."
         case .newPhrases:
@@ -195,6 +208,7 @@ enum TutorBrain {
 
     /// Ders hedefleri (sırayla); serbest sohbette boş
     static func targets(for mode: TutorMode) -> [String] {
+        if case .demo = mode { return ["introduce yourself by name", "say where you are from", "one fun real-life phrase that fits their answer"] }
         guard case .goal(let cId, let gId) = mode else { return [] }
         return ScenarioStore.shared.chapters.first { $0.id == cId }?.goals.first { $0.id == gId }?.targets ?? []
     }

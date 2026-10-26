@@ -12,7 +12,7 @@ REALTIME_MODEL = "gpt-realtime-mini"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar
-FREE_TASTE_SECONDS = "180"
+FREE_TASTE_SECONDS = "300"
 SESSION_MAX_SECONDS = "600"
 TRIAL_DAILY_SECONDS = "600"
 PRO_DAILY_SECONDS = "1800"

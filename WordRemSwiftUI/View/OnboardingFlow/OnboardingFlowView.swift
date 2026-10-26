@@ -2,27 +2,24 @@
 //  OnboardingFlowView.swift
 //  WordRemSwiftUI
 //
-//  Kısa, Pingo tarzı onboarding: karşılama → öğrenilecek dil → ad → seviye → amaç →
-//  öğretmen tanışması (sesli, kelime kelime altyazı) → paywall → uygulama.
+//  Kısa, Pingo tarzı onboarding: karşılama → öğrenilecek dil → ad →
+//  canlı sesli demo (öğretmen adıyla karşılar, birkaç cümle konuşturur) → paywall → uygulama.
 //  Seçimler dokununca kendiliğinden ilerler; ana dil telefondan gelir, istenirse değiştirilir.
 //
 
-import AVFoundation
 import SwiftUI
 
 struct OnboardingFlowView: View {
     @EnvironmentObject var langManager: LanguageManager
     @EnvironmentObject var authManager: AuthManager
 
-    private enum Step: Int { case welcome, language, name, level, goal, tutor }
+    private enum Step: Int { case welcome, language, name, demo }
 
     @State private var step: Step = .welcome
     @State private var forward = true
     @State private var native = OL.nativeLangCode
     @State private var target: String?
     @State private var name = ""
-    @State private var level: Int?
-    @State private var goal: Int?
     @State private var showPaywall = false
     @FocusState private var nameFocused: Bool
 
@@ -34,7 +31,7 @@ struct OnboardingFlowView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if step != .welcome && step != .tutor { header }
+            if step == .language || step == .name { header }
             ZStack {
                 content
                     .id(step)
@@ -58,13 +55,9 @@ struct OnboardingFlowView: View {
         case .welcome:  welcome
         case .language: languageStep
         case .name:     nameStep
-        case .level:    levelStep
-        case .goal:     goalStep
-        case .tutor:
-            TutorIntroView(name: name, languageName: targetName, languageCode: target ?? "en") {
-                savePreferences()
-                showPaywall = true
-            }
+        case .demo:
+            // Canlı sesli demo: öğretmen adıyla karşılar, birkaç cümle konuşturur → paywall
+            VoiceTutorView(mode: .demo, onFinished: { _ in showPaywall = true }, isDemo: true)
         }
     }
 
@@ -88,7 +81,7 @@ struct OnboardingFlowView: View {
                     .frame(width: 40, height: 40)
             }
             HStack(spacing: 6) {
-                ForEach(1...4, id: \.self) { i in
+                ForEach(1...2, id: \.self) { i in
                     Capsule()
                         .fill(i <= step.rawValue ? DS.Colors.accent : DS.Colors.line)
                         .frame(height: 5)
@@ -217,69 +210,8 @@ struct OnboardingFlowView: View {
         guard !trimmedName.isEmpty else { return }
         name = String(trimmedName.prefix(24))
         nameFocused = false
-        go(.level)
-    }
-
-    // MARK: - 3. Seviye
-    private var levelStep: some View {
-        VStack(spacing: 0) {
-            title(langManager.f(.howMuchFormat, targetName))
-            VStack(spacing: 10) {
-                ForEach(0..<4, id: \.self) { i in
-                    optionRow(selected: level == i) {
-                        Image("level\(i + 1)").resizable().scaledToFit().frame(width: 30, height: 30)
-                        Text(langManager.s([.level1, .level2, .level3, .level4][i]))
-                    } action: {
-                        level = i
-                        advance(after: .goal)
-                    }
-                }
-            }
-            .padding(.horizontal, 24)
-            Spacer()
-        }
-    }
-
-    // MARK: - 4. Amaç
-    private var goals: [(label: String, asset: String)] {
-        [
-            (langManager.s(.interestTravel), "travel"),
-            (langManager.s(.interestCareer), "career"),
-            (langManager.s(.interestEducation), "education"),
-            (langManager.s(.interestDaily), "daily"),
-            (langManager.s(.interestFunCulture), "funandculture"),
-            (langManager.s(.interestFamily), "friendsandfamily"),
-        ]
-    }
-
-    private var goalStep: some View {
-        VStack(spacing: 0) {
-            title(langManager.f(.interestQuestion, targetName))
-            ScrollView(showsIndicators: false) {
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                    ForEach(goals.indices, id: \.self) { i in
-                        Button {
-                            goal = i
-                            advance(after: .tutor)
-                        } label: {
-                            VStack(spacing: 10) {
-                                Image(goals[i].asset).resizable().scaledToFit().frame(height: 52)
-                                Text(goals[i].label)
-                                    .font(DS.Font.ui(15, weight: .semibold))
-                                    .foregroundStyle(DS.Colors.ink)
-                                    .multilineTextAlignment(.center)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .frame(maxWidth: .infinity, minHeight: 120)
-                            .modifier(OBSelectableCard(isSelected: goal == i))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 24)
-            }
-        }
+        savePreferences()          // öğretmen dili ve adı bilsin
+        go(.demo)
     }
 
     // MARK: - Ortak seçenek satırı
@@ -301,18 +233,18 @@ struct OnboardingFlowView: View {
     // MARK: - Kaydet & bitir
     private func savePreferences() {
         let code = target ?? "en"
-        let interest = goal.map { goals[$0].label } ?? ""
+        let interest = ""
         let d = UserDefaults.standard
         d.set(code, forKey: "selectedTargetLanguageCode")
         d.set(langManager.languageName(for: code), forKey: "selectedTargetLanguageName")
-        d.set(level ?? 0, forKey: "selectedProficiencyLevel")
+        d.set(1, forKey: "selectedProficiencyLevel")   // seviye sorulmuyor: öğretmen konuşmadan kendisi ayarlar
         d.set(10, forKey: "dailyGoalMinutes")
         if !interest.isEmpty { d.set(interest, forKey: "learningInterest") }
         langManager.setLanguage(native)
         if !trimmedName.isEmpty { DataService.shared.updateUsername(trimmedName) }
         Task {
             try? await DataService.shared.saveUserPreferences(
-                targetLangCode: code, nativeLangCode: native, proficiencyLevel: level ?? 0,
+                targetLangCode: code, nativeLangCode: native, proficiencyLevel: 1,
                 learningInterest: interest, dailyGoalMinutes: 10)
         }
     }
@@ -322,158 +254,5 @@ struct OnboardingFlowView: View {
             _ = try? await DataService.shared.updateDailyLoginStreak()
             await MainActor.run { authManager.completeOnboarding() }
         }
-    }
-}
-
-// MARK: - Öğretmen tanışması: logo konuşur, altyazı sesle kelime kelime açılır
-private struct TutorIntroView: View {
-    @EnvironmentObject var langManager: LanguageManager
-    let name: String
-    let languageName: String
-    let languageCode: String
-    var onReady: () -> Void
-
-    @StateObject private var speaker = GreetingSpeaker()
-    @State private var showButton = false
-
-    private var greeting: String {
-        let code = langManager.currentLanguageCode
-        let lang = ["fr", "es", "it", "ru"].contains(code) ? languageName.lowercased() : languageName
-        return langManager.s(.obTutorGreeting)
-            .replacingOccurrences(of: "{name}", with: name.isEmpty ? "👋" : name)
-            .replacingOccurrences(of: "{lang}", with: lang)
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            VoiceLogoView(phase: speaker.isSpeaking ? .aiSpeaking : .listening, level: 0.2)
-                .scaleEffect(1.6)
-                .frame(height: 70)
-                .padding(.top, 40)
-            Spacer()
-            captionText
-                .font(DS.Font.ui(24, weight: .medium))
-                .lineSpacing(7)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 28)
-                .animation(.easeOut(duration: 0.15), value: speaker.spoken)
-            Spacer()
-            Button(langManager.s(.obReady)) {
-                speaker.stop()
-                onReady()
-            }
-            .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-            .padding(.horizontal, 24)
-            .padding(.bottom, 24)
-            .opacity(showButton ? 1 : 0)
-            .offset(y: showButton ? 0 : 16)
-            .animation(.spring(response: 0.5, dampingFraction: 0.85), value: showButton)
-        }
-        .onAppear {
-            speaker.speak(greeting, nativeCode: langManager.currentLanguageCode)
-            // Konuşma bitince (ya da en geç 5 sn sonra) düğme belirir
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { showButton = true }
-        }
-        .onChange(of: speaker.finished) { done in if done { showButton = true } }
-        .onDisappear { speaker.stop() }
-    }
-
-    /// Söylenen kelimeler koyu, sıradaki kelime soluk
-    private var captionText: Text {
-        let full = greeting
-        let shown = String(full.prefix(speaker.spoken))
-        let rest = full.dropFirst(shown.count)
-        let next = rest.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) ?? ""
-        return Text(shown).foregroundColor(DS.Colors.ink) + Text(next).foregroundColor(DS.Colors.muted.opacity(0.45))
-    }
-}
-
-/// Karşılama, sohbetteki öğretmenle AYNI sesle (sunucudaki seslendirme) okunur; altyazı sesle birlikte açılır.
-/// İnternet yoksa cihazın kendi sesine düşer.
-@MainActor
-private final class GreetingSpeaker: NSObject, ObservableObject, AVAudioPlayerDelegate, AVSpeechSynthesizerDelegate {
-    @Published var spoken = 0
-    @Published var isSpeaking = false
-    @Published var finished = false
-
-    private var player: AVAudioPlayer?
-    private let synth = AVSpeechSynthesizer()
-    private var text = ""
-    private var timer: Timer?
-    private var task: Task<Void, Never>?
-
-    func speak(_ text: String, nativeCode: String) {
-        self.text = text
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
-        try? AVAudioSession.sharedInstance().setActive(true)
-        task = Task {
-            if let data = try? await VoiceBackend.shared.speech(text), !Task.isCancelled,
-               let p = try? AVAudioPlayer(data: data) {
-                player = p
-                p.delegate = self
-                p.prepareToPlay()
-                p.play()
-                isSpeaking = true
-                // Altyazı çalınan süreye oranla, kelime kelime
-                timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
-                    Task { @MainActor in
-                        guard let self, let p = self.player, p.duration > 0 else { return }
-                        self.reveal(upTo: Int(Double(self.text.count) * min(1, p.currentTime / p.duration)))
-                    }
-                }
-            } else if !Task.isCancelled {
-                speakOnDevice(nativeCode: nativeCode)
-            }
-        }
-    }
-
-    func stop() {
-        task?.cancel()
-        timer?.invalidate()
-        player?.stop()
-        synth.stopSpeaking(at: .immediate)
-        isSpeaking = false
-    }
-
-    private func reveal(upTo n: Int) {
-        let n = min(n, text.count)
-        if n < text.count, let sp = text.prefix(n).lastIndex(of: " ") {
-            spoken = max(spoken, text.distance(from: text.startIndex, to: sp) + 1)
-        } else {
-            spoken = max(spoken, n)
-        }
-    }
-
-    private func complete() {
-        timer?.invalidate()
-        spoken = text.count
-        isSpeaking = false
-        finished = true
-    }
-
-    // MARK: Yedek: cihaz sesi
-    private func speakOnDevice(nativeCode: String) {
-        synth.delegate = self
-        let u = AVSpeechUtterance(string: text)
-        let voices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.lowercased().hasPrefix(nativeCode.lowercased()) }
-        u.voice = voices.max { $0.quality.rawValue < $1.quality.rawValue } ?? AVSpeechSynthesisVoice(language: nativeCode)
-        synth.speak(u)
-        isSpeaking = true
-    }
-
-    nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        Task { @MainActor in self.complete() }
-    }
-
-    nonisolated func speechSynthesizer(_ s: AVSpeechSynthesizer, willSpeakRangeOfSpeechString r: NSRange, utterance: AVSpeechUtterance) {
-        let end = r.location + r.length
-        Task { @MainActor in
-            let ns = self.text as NSString
-            self.spoken = max(self.spoken, (ns.substring(to: min(end, ns.length)) as String).count)
-        }
-    }
-
-    nonisolated func speechSynthesizer(_ s: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        Task { @MainActor in self.complete() }
     }
 }

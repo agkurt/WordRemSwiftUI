@@ -104,8 +104,11 @@ final class RealtimeVoiceSession: ObservableObject {
 
     // MARK: - Lifecycle
     /// - Parameter targets: ders hedefleri (sırayla); boşsa serbest sohbet
-    func start(instructions: String, tools: [[String: Any]], targets: [String] = [], startStep: Int = 0) async {
+    /// - Parameter roleplay: hedefler bitince canlandırma yapılsın mı (onboarding demosunda hayır)
+    func start(instructions: String, tools: [[String: Any]], targets: [String] = [], startStep: Int = 0, roleplay: Bool = true) async {
         self.targets = targets
+        self.withRoleplay = roleplay
+        self.cardTool = tools.first { $0["name"] as? String == "show_phrase" }
         targetTotal = targets.count
         targetProgress = min(startStep, targets.count); attempts = 0; roleplayTurns = 0; lessonComplete = false
         pendingCombine = false; correctAnswers = 0; totalAnswers = 0; startedAt = Date()
@@ -184,7 +187,7 @@ final class RealtimeVoiceSession: ObservableObject {
         phase = .thinking
         // Cevabı, ne söylendiği yazıya dökülünce iste (ders yönlendirmesi için); en geç 1.5 sn
         awaitingReply = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
             guard let self, self.awaitingReply else { return }
             self.awaitingReply = false
             self.send(["type": "response.create"])
@@ -202,6 +205,7 @@ final class RealtimeVoiceSession: ObservableObject {
     private var attempts = 0
     private var roleplayTurns = 0
     private var pendingCombine = false
+    private var withRoleplay = true
     private var awaitingReply = false
 
     /// Öğrencinin söylediğine göre öğretmene bir sonraki adımı söyler (Pingo tarzı: yeni parça → birleştir → yeni parça…).
@@ -233,7 +237,7 @@ final class RealtimeVoiceSession: ObservableObject {
                 pendingCombine = false
                 note = targetProgress < targets.count
                     ? "\(praise) Now bring in the next new piece (\(targets[targetProgress])): give a short natural model line and have them say it."
-                    : "\(praise) \(Self.roleplayStart)"
+                    : finishOrRoleplay(praise)
             } else {
                 targetProgress += 1
                 if targetProgress >= 2 && targetProgress % 2 == 0 {
@@ -243,7 +247,7 @@ final class RealtimeVoiceSession: ObservableObject {
                 } else if targetProgress < targets.count {
                     note = "\(praise) Let's build on that — next new piece: \(targets[targetProgress]). Give a short natural model line and have them say it."
                 } else {
-                    note = "\(praise) \(Self.roleplayStart)"
+                    note = finishOrRoleplay(praise)
                 }
             }
         } else {
@@ -258,6 +262,14 @@ final class RealtimeVoiceSession: ObservableObject {
             }
         }
         sendGuide(note)
+    }
+
+    private func finishOrRoleplay(_ praise: String) -> String {
+        guard withRoleplay else {
+            lessonComplete = true
+            return "\(praise) That's the last piece — wrap up now: celebrate proudly what they just did, tell them their personal plan is ready, and call finish_lesson with success true."
+        }
+        return "\(praise) \(Self.roleplayStart)"
     }
 
     private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the learner's reply."
@@ -605,6 +617,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     private func handle(_ e: [String: Any]) {
         let type = e["type"] as? String ?? ""
+        if silentCardActive || silentCardPending { voiceLog.info("silent event: \(type, privacy: .public)") }
         switch type {
         case "session.created", "session.updated":
             if phase == .connecting {
@@ -696,16 +709,19 @@ final class RealtimeVoiceSession: ObservableObject {
 
     private var pendingToolFollowUp = false
     private var silentCardPending = false
+    private var cardTool: [String: Any]?
     private var silentCardActive = false
 
     /// Öğretmen turu kartsız bitirdiyse: sesi olmayan bir cevapla yalnızca kartı iste (kullanıcı ne diyeceğini hep görsün)
     private func requestCard() {
-        guard !silentCardPending, !silentCardActive else { return }
+        guard !silentCardPending, !silentCardActive, let cardTool else { return }
         silentCardPending = true
         voiceLog.info("no card this turn → asking silently")
+        // Araç cevabın içinde de verilmeli, yoksa model zorunlu çağrıyı yok sayıyor
         send(["type": "response.create", "response": [
             "output_modalities": ["text"],
-            "tool_choice": ["type": "function", "name": "show_phrase"],
+            "tools": [cardTool],
+            "tool_choice": "required",
             "instructions": "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a model answer, use ... for their own info) and its translation.",
         ] as [String: Any]])
     }
@@ -733,10 +749,13 @@ final class RealtimeVoiceSession: ObservableObject {
             let target = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
             let quotes = fullAIText.matches(of: try! Regex(#"[“"]([^"“”]{2,80})[”"]"#))
                 .compactMap { $0.output[1].substring.map(String.init) }
+            // Ana dilde olmayan son alıntı (isim geçen kısa cümleler yanlış dil sanılabiliyor)
+            let native = OL.nativeLangCode.lowercased()
             phrase = quotes.last { q in
                 let r = NLLanguageRecognizer()
                 r.processString(q)
-                return r.dominantLanguage?.rawValue.hasPrefix(target) ?? false
+                guard let lang = r.dominantLanguage?.rawValue else { return true }
+                return lang.hasPrefix(target) || !lang.hasPrefix(native)
             }
         }
         guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else {
