@@ -30,6 +30,7 @@ struct VoiceTutorView: View {
     @State private var showTranscript = false
     @State private var showPaywall = false
     @State private var finishedSuccess: Bool?
+    @State private var completing = false
 
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
 
@@ -62,7 +63,14 @@ struct VoiceTutorView: View {
             if case .failed(let code) = phase, code == "paywall" { showPaywall = true }
             guard phase == .listening else { return }
             // Hedefler bitti ve öğretmen kapanışı yaptı → ders tamamlandı
-            if session.lessonComplete || finishedSuccess == true { completeLesson(); return }
+            if session.lessonComplete || finishedSuccess == true {
+                // Son kelime hoparlörde biraz gecikmeli çalar: hemen kapatırsak veda yarıda kesilir.
+                // Ses ve yazı tamamen bitsin, bir nefes sonra ekran değişsin.
+                guard !completing else { return }
+                completing = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { completeLesson() }
+                return
+            }
             revealPendingPhrase()
         }
         // Kullanıcı konuştuktan sonra öğretmen cevap vermeye başlayınca kart kalkar
@@ -309,12 +317,21 @@ struct VoiceTutorView: View {
                 .opacity(cardCorrect ? 1 : 0)
                 .animation(.spring(response: 0.35, dampingFraction: 0.5), value: cardCorrect)
                 .frame(height: 44)
-            Text(p.text)
-                .font(DS.Font.ui(32, weight: .semibold))
-                .foregroundStyle(cardCorrect ? DS.Colors.success : DS.Colors.ink)
-                .animation(.easeOut(duration: 0.2), value: cardCorrect)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+            // Seçenekli kart (çay mı kahve mi): seçenekler alt alta, aralarında ince bir çizgi
+            VStack(spacing: 14) {
+                let options = RealtimeVoiceSession.cardOptions(p.text)
+                ForEach(Array(options.enumerated()), id: \.offset) { i, option in
+                    if i > 0 {
+                        Capsule().fill(DS.Colors.line).frame(width: 36, height: 2)
+                    }
+                    Text(option)
+                        .font(DS.Font.ui(options.count > 1 ? 28 : 32, weight: .semibold))
+                        .foregroundStyle(cardCorrect ? DS.Colors.success : DS.Colors.ink)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: cardCorrect)
             if showTranslation {
                 Text(p.translation)
                     .font(DS.Font.ui(19))

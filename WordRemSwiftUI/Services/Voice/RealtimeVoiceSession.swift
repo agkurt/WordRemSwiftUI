@@ -227,7 +227,7 @@ final class RealtimeVoiceSession: ObservableObject {
             return sendGuide("You couldn't hear the learner this time (no words came through). Don't quote anything or count it as a mistake — say in a few playful words you didn't catch that, and ask them to say the line again.")
         }
         // Karta hiç benzemeyen birkaç kelime: deneme değil, sohbet/şaka → keyifle karşıla, derse dön
-        if let card = currentCard, said.split(separator: " ").count >= 2, Self.overlap(said: said, card: card) < 0.25 {
+        if let card = currentCard, said.split(separator: " ").count >= 3, Self.overlap(said: said, card: card) < 0.25 {
             return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then smoothly bring them back (\"Okay, let's focus and keep going!\") and invite them to say the current line again. Don't treat it as a mistake.")
         }
         // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
@@ -260,6 +260,9 @@ final class RealtimeVoiceSession: ObservableObject {
                     // Pingo gibi: öğrendiklerini birleştirip biraz daha uzun bir cümle kurdur
                     pendingCombine = true
                     note = "\(praise) Now build on what they know: have them say one slightly longer line that combines their earlier phrases with this one (for example a greeting + their name + nice to meet you)."
+                } else if targetProgress < targets.count, answerCardsOnly {
+                    // Sohbet demosu: önce soruyu SESLİ sor, kart (olası cevaplar) ondan sonra
+                    note = "\(praise) Then, out loud, \(targets[targetProgress]). Your spoken turn MUST end with the question itself; only after asking it, call show_phrase."
                 } else if targetProgress < targets.count {
                     note = "\(praise) Let's build on that — next new piece: \(targets[targetProgress]). Give a short natural model line and have them say it."
                 } else {
@@ -302,8 +305,15 @@ final class RealtimeVoiceSession: ObservableObject {
               "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note]]]])
     }
 
+    /// "A / B" biçimindeki kartın seçenekleri
+    nonisolated static func cardOptions(_ card: String) -> [String] {
+        card.components(separatedBy: " / ").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+    }
+
     /// Karttaki kelimelerin ne kadarı söylendi (0…1)
     nonisolated static func overlap(said: String, card: String) -> Double {
+        let options = cardOptions(card)
+        if options.count > 1 { return options.map { overlap(said: said, card: $0) }.max() ?? 0 }
         let a = Set(said.lowercased().components(separatedBy: CharacterSet.letters.inverted).filter { $0.count > 1 })
         let b = card.lowercased().replacingOccurrences(of: "...", with: " ")
             .components(separatedBy: CharacterSet.letters.inverted).filter { $0.count > 1 }
@@ -313,6 +323,9 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Söylenen, karttaki cümleyle yeterince örtüşüyor mu ("..." yerleri serbest; Ahmed≈Ahmet gibi küçük farklar sayılmaz)
     nonisolated static func matches(said: String, card: String) -> Bool {
+        // Seçenekli kart ("I love coffee. / I love tea."): herhangi biri yeter
+        let options = cardOptions(card)
+        if options.count > 1 { return options.contains { matches(said: said, card: $0) } }
         let contractions = ["i'm": "i am", "you're": "you are", "it's": "it is", "what's": "what is",
                             "i'd": "i would", "don't": "do not", "can't": "cannot", "let's": "let us"]
         func words(_ s: String) -> [String] {
