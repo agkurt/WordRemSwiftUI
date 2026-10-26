@@ -216,16 +216,20 @@ struct VoiceTutorView: View {
                 if let done = finishedSuccess, session.phase == .ended {
                     completionView(done)
                 } else {
-                    // En fazla ~6 satır; uzayınca eski satırlar yukarı kayıp soluklaşır
+                    // Metin ekranın tam ortasından başlar; satır eklendikçe blok yumuşakça yukarı kayar,
+                    // hep ortada kalır. En fazla ~6 satır; uzayınca eski satırlar yukarıda soluklaşır.
                     let long = session.caption.count > 170
                     Text(session.caption.isEmpty ? " " : session.caption)
                         .foregroundStyle(DS.Colors.ink)
                         .font(DS.Font.ui(22, weight: .medium))
                         .lineSpacing(6)
+                        .contentTransition(.identity)   // kelimeler solmadan, direkt
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(maxHeight: 190, alignment: .bottom)
+                        .fixedSize(horizontal: false, vertical: true)   // kutu metin kadar: boşluk alttan doldurulmaz
                         .clipped()
+                        .animation(.easeOut(duration: 0.22), value: session.caption)
                         .mask(LinearGradient(stops: [.init(color: long ? .clear : .black, location: 0),
                                                      .init(color: .black, location: long ? 0.28 : 0)],
                                              startPoint: .top, endPoint: .bottom))
