@@ -119,6 +119,12 @@ final class RealtimeVoiceSession: ObservableObject {
         self.aiSpeaksFirst = aiSpeaksFirst
         self.targets = targets
         lastInstructions = instructions; lastTools = tools; usageBase = 0
+        #if DEBUG
+        // Geliştirirken AI'a giden tam talimatı incelemek için
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            try? instructions.write(to: dir.appendingPathComponent("prompt-\(targets.isEmpty ? "chat" : "lesson").txt"), atomically: true, encoding: .utf8)
+        }
+        #endif
         self.withRoleplay = roleplay
         self.cardTool = tools.first { $0["name"] as? String == "show_phrase" }
         targetTotal = targets.count
@@ -228,6 +234,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     // MARK: - Ders yönlendirme
     private var targets: [String] = []
+    private var chatMisses: (card: String?, count: Int) = (nil, 0)
     private var currentCard: String?
     private var attempts = 0
     private var roleplayTurns = 0
@@ -244,6 +251,30 @@ final class RealtimeVoiceSession: ObservableObject {
         if targets.isEmpty, !noCards, Self.wantsToSkip(said) {
             voiceLog.info("learner asked to change topic")
             return sendGuide("The learner wants a different question or topic. Happily switch right away, never push back or say \"let's focus\": offer two fresh, fun topics (or ask a completely different question) and follow their choice.")
+        }
+        // Serbest sohbette ders akışı yok ama karttaki cümleyi söyleyince yine ✓ yansın
+        if targets.isEmpty, let card = currentCard, !said.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let ok = Self.matches(said: said, card: card) || Self.overlap(said: said, card: card) >= 0.6
+                || (Self.isTargetLanguage(said) && said.split(separator: " ").count >= 3)
+            totalAnswers += 1
+            if ok { correctAnswers += 1 }
+            lastAnswerCorrect = ok
+            answerCount += 1
+            onAnswer?(card, ok)
+            currentCard = nil
+            if ok {
+                chatMisses = (nil, 0)
+                return sendGuide("The learner said the card line correctly (the transcript may look a bit off because of their accent, that's fine). Count it as right: praise it briefly and carry on, don't ask them to repeat it.")
+            }
+            // Aynı cümlede üst üste kaçırma: 1 ipucu → parça parça yardım → başka cümle
+            chatMisses = chatMisses.card == card ? (card, chatMisses.count + 1) : (card, 1)
+            switch chatMisses.count {
+            case 1: return sendGuide("The learner's try at \"\(card)\" wasn't quite right (unless it's close; then count it as right). Quote what you heard kindly, give ONE concrete tip for the tricky sound, and card the same line again.")
+            case 2: return sendGuide("Second miss on \"\(card)\". Help differently: break it into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language. Card the same line again.")
+            default:
+                chatMisses = (nil, 0)
+                return sendGuide("Third miss on \"\(card)\". Celebrate the effort, say cheerfully \"let's try a different one\" and card an easier or different sentence.")
+            }
         }
         guard !targets.isEmpty, !lessonComplete else { return }
         // Hiçbir şey duyulmadı (çok kısa bastı / mikrofon sesi almadı): hata sayma, nazikçe tekrar iste
@@ -291,14 +322,16 @@ final class RealtimeVoiceSession: ObservableObject {
 
         if targetProgress < targets.count || pendingCombine || pendingPersonalize {
             attempts += 1
-            guard ok || attempts >= 2 else {
-                note = "The learner's attempt wasn't quite right. Quote what you heard kindly (\"Oh, I heard: '\(said)'\"), name the tiny fix in a few words, and have them say the correct line again."
+            guard ok || attempts >= 3 else {
+                note = attempts == 1
+                    ? "The learner's attempt wasn't quite right (if it only looks off because of their accent or a transcript slip, treat it as right and move on instead). Quote what you heard kindly (\"Oh, I heard: '\(said)'\"), give ONE concrete tip for the tricky sound or word, and have them say the line again."
+                    : "Second miss on the same line (again: if it's close, count it as right). Help differently now: break the line into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language, then let them try the whole line once more. Card the same line."
                 return sendGuide(note)
             }
             attempts = 0
             currentCard = nil
             let praise = ok ? "The learner got it right — react with a short, varied, genuine praise (never the same words twice)."
-                            : "Two tries are enough here — encourage them warmly and move on."
+                            : "Three tries are enough for this line: celebrate the effort warmly, say cheerfully that you'll try a different one, and move on."
             if pendingPersonalize {
                 // Kendi versiyonunu da söyledi → şimdi parça gerçekten bitti
                 pendingPersonalize = false
@@ -1236,12 +1269,14 @@ final class RealtimeVoiceSession: ObservableObject {
                 .compactMap { $0.output[1].substring.map(String.init) }
             // Ana dilde olmayan son alıntı (isim geçen kısa cümleler yanlış dil sanılabiliyor)
             let native = OL.nativeLangCode.lowercased()
-            phrase = quotes.last { q in
+            func lang(_ q: String) -> String? {
                 let r = NLLanguageRecognizer()
                 r.processString(q)
-                guard let lang = r.dominantLanguage?.rawValue else { return true }
-                return lang.hasPrefix(target) || !lang.hasPrefix(native)
+                return r.dominantLanguage?.rawValue
             }
+            // Önce öğrenilen dildeki son alıntı ("Hallo, wie geht's?" → değil anlamı "Hi, how are you?")
+            phrase = quotes.last { lang($0)?.hasPrefix(target) == true }
+                ?? quotes.last { q in lang(q).map { !$0.hasPrefix(native) } ?? true }
         }
         guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else {
             // Öğretmen soru sorduysa kart o sorunun cevabı olsun (dersin sıradaki adımı değil)

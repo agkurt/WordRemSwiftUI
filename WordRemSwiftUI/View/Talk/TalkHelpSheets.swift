@@ -51,7 +51,7 @@ struct TalkTopic: Identifiable, Hashable {
 
     static let all: [TalkTopic] = [
         .init(id: "hello", category: .basics, icon: "hand.wave", names: ["Merhaba", "Hello", "Hallo", "Bonjour", "Hola", "Ciao", "Привет", "你好"], prompt: "greetings and introducing yourself"),
-        .init(id: "sounds", category: .basics, icon: "waveform", names: ["Sesler ve Temeller", "Sounds & Basics", "Laute & Grundlagen", "Sons et bases", "Sonidos y bases", "Suoni e basi", "Звуки и основы", "发音与基础"], prompt: "tricky sounds and basic pronunciation, with tiny practice words"),
+        .init(id: "sounds", category: .basics, icon: "waveform", names: ["Sesler ve Temeller", "Sounds & Basics", "Laute & Grundlagen", "Sons et bases", "Sonidos y bases", "Suoni e basi", "Звуки и основы", "发音与基础"], prompt: "tricky sounds and basic pronunciation, with tiny practice words. Be encouraging: accept close attempts and accented speech as right, give at most one tip per word, then move on"),
         .init(id: "everyday", category: .basics, icon: "text.bubble", names: ["Günlük İfadeler", "Everyday Phrases", "Alltagsausdrücke", "Expressions du quotidien", "Frases cotidianas", "Frasi quotidiane", "Фразы на каждый день", "日常表达"], prompt: "the most useful everyday phrases"),
         .init(id: "time", category: .basics, icon: "clock", names: ["Zaman", "Time", "Zeit", "Le temps", "El tiempo", "Il tempo", "Время", "时间"], prompt: "telling the time, days and making plans"),
         .init(id: "numbers", category: .basics, icon: "number", names: ["Sayılar", "Numbers", "Zahlen", "Nombres", "Números", "Numeri", "Числа", "数字"], prompt: "numbers, prices and phone numbers"),
