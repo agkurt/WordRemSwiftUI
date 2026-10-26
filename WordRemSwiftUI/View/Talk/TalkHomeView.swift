@@ -190,7 +190,7 @@ struct TalkHomeView: View {
     @ViewBuilder
     private var lessonCard: some View {
         if let next = store.next {
-            stage(phase: .aiSpeaking, kicker: next.chapter.localizedTitle, title: next.goal.localizedTitle) {
+            stage(phase: .connecting, kicker: next.chapter.localizedTitle, title: next.goal.localizedTitle) {
                 activeMode = .goal(chapterId: next.chapter.id, goalId: next.goal.id)
             }
         }
@@ -198,7 +198,7 @@ struct TalkHomeView: View {
 
     /// Asistanla dolu dolu serbest sohbet
     private var assistantCard: some View {
-        stage(phase: .listening, kicker: AL.s(.talkAssistantKicker), title: AL.s(.talkAssistantTitle)) {
+        stage(phase: .connecting, kicker: AL.s(.talkAssistantKicker), title: AL.s(.talkAssistantTitle)) {
             activeMode = .freeChat
         }
     }
@@ -313,7 +313,10 @@ struct TalkHomeView: View {
                     }
                     .font(DS.Font.ui(14, weight: .medium))
                     .foregroundStyle(DS.Colors.muted)
-                    .padding(.top, 4)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 14)
+                    .background(DS.Colors.paperSunken.opacity(0.7), in: RoundedRectangle(cornerRadius: 14))
+                    .contentShape(Rectangle())   // satırın tamamı dokunulabilir
                 }
                 .buttonStyle(.plain)
             }
@@ -366,6 +369,37 @@ struct TalkPlanSheet: View {
                             }
                         }
                         .opacity(i > ci ? 0.85 : 1)
+                    }
+                    // Daha ilerisi: yalnızca adlar, giderek silikleşir; yol noktalı devam edip kaybolur (bitmeyen yolculuk)
+                    let later = Array(chapters.dropFirst(ci + 3))
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(later.enumerated()), id: \.element.id) { j, chapter in
+                            HStack(spacing: 14) {
+                                Circle().stroke(DS.Colors.line, lineWidth: 2.5).frame(width: 18, height: 18)
+                                    .frame(width: 60)
+                                Text(chapter.localizedTitle)
+                                    .font(DS.Font.ui(16, weight: .medium))
+                                    .foregroundStyle(DS.Colors.inkSoft)
+                                Spacer()
+                                Image(systemName: "lock.fill").font(.system(size: 11)).foregroundStyle(DS.Colors.muted)
+                            }
+                            .frame(height: 52)
+                            .opacity(max(0.25, 0.8 - Double(j) * 0.18))
+                        }
+                        ForEach(0..<5, id: \.self) { k in
+                            Circle().fill(DS.Colors.line)
+                                .frame(width: 5, height: 5)
+                                .frame(width: 60, height: 14)
+                                .opacity(0.9 - Double(k) * 0.18)
+                        }
+                        HStack(spacing: 8) {
+                            Image(systemName: "sparkles")
+                            Text(AL.s(.talkMoreComing))
+                        }
+                        .font(DS.Font.ui(14, weight: .medium))
+                        .foregroundStyle(DS.Colors.muted)
+                        .padding(.top, 10)
+                        .padding(.leading, 18)
                     }
                 }
                 .padding(24)

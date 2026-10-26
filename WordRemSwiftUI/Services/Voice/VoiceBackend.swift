@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AVFoundation
 import RevenueCat
 
 final class VoiceBackend {
@@ -98,5 +99,16 @@ final class VoiceBackend {
         req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
         guard let (data, _) = try? await URLSession.shared.data(for: req) else { return nil }
         return try? JSONDecoder().decode(Status.self, from: data)
+    }
+}
+
+/// Kartlardaki hoparlör: seçenekli kartı ("A / B") iki cümle olarak, "..." boşluğunu okumadan seslendirir.
+/// Ses, uygulamanın geri kalanı gibi TTSManager üzerinden öğretmenin sesiyle çalar.
+@MainActor
+enum TutorVoice {
+    static let shared = TutorVoice.self
+    static func speak(_ text: String, langCode: String) {
+        let line = text.replacingOccurrences(of: " / ", with: ". ").replacingOccurrences(of: "...", with: "…")
+        TTSManager.shared.speak(line, langCode: langCode)
     }
 }

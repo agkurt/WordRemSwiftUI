@@ -139,19 +139,24 @@ final class TTSManager {
             return
         }
 
-        await MainActor.run { playData(audioData) }
+        await MainActor.run { playData(audioData, rate: speed) }
     }
 
-    /// Sesler cihazdaki sistem sesleriyle (AVSpeechSynthesizer) çalınır — ağ/anahtar gerekmez.
-    private func fetchAudio(text: String, speed: Double) async -> Data? { nil }
+    /// Uygulamanın her yerinde öğretmenle aynı ses (sunucudaki seslendirme, "marin").
+    /// Ağ yoksa ya da günlük sınır dolduysa nil → cihaz sesi (AVSpeechSynthesizer).
+    private func fetchAudio(text: String, speed: Double) async -> Data? {
+        try? await VoiceBackend.shared.speech(text)
+    }
 
     // MARK: - Playback
 
     @MainActor
-    private func playData(_ data: Data) {
+    private func playData(_ data: Data, rate: Double = 1) {
         configureAudioSession()
         do {
             audioPlayer = try AVAudioPlayer(data: data, fileTypeHint: AVFileType.mp3.rawValue)
+            // Yavaş dinleme: aynı ses, daha yavaş çalınır
+            if rate < 1 { audioPlayer?.enableRate = true; audioPlayer?.rate = Float(max(0.6, rate)) }
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
         } catch {
@@ -191,6 +196,8 @@ final class TTSManager {
     private func configureAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
+            // Sesli ders açıkken (mikrofon + hoparlör) oturuma dokunma: yoksa konuşma kaydı bozulur
+            if session.category == .playAndRecord { return }
             if session.category != .playback {
                 try session.setCategory(.playback, mode: .default, options: [.duckOthers, .mixWithOthers])
             }

@@ -403,7 +403,7 @@ struct VoiceTutorView: View {
                 .disabled(p.translation.isEmpty)
                 .opacity(p.translation.isEmpty ? 0.35 : 1)
                 .accessibilityLabel(AL.s(.talkTranslate))
-                Button { TTSManager.shared.speak(p.text, langCode: targetCode) } label: {
+                Button { TutorVoice.shared.speak(p.text, langCode: targetCode) } label: {
                     Image(systemName: "speaker.wave.2").font(.system(size: 24, weight: .medium))
                 }
                 .accessibilityLabel(AL.s(.quizTapToHear))
@@ -537,14 +537,10 @@ struct VoiceTutorView: View {
         NotificationCenter.default.post(name: .pathMistakesDeckCreated, object: nil)
     }
 
-    /// Paylaşılacak düz metin: "Öğretmen: …", "Sen: …", "SÖYLE: … (çeviri)"
+    /// Paylaşılacak düz metin: yalnızca konuşma ("Öğretmen: …", "Sen: …")
     private var transcriptText: String {
-        session.turns.filter { !$0.text.isEmpty }.map { t in
-            switch t.role {
-            case .ai:   return "\(AL.s(.talkTutorLabel)): \(t.text)"
-            case .user: return "\(AL.s(.talkYouLabel)): \(t.text)"
-            case .card: return "\(AL.s(.talkSayThis)): \(t.text)" + (t.detail.map { " (\($0))" } ?? "")
-            }
+        session.turns.filter { !$0.text.isEmpty && $0.role != .card }.map { t in
+            "\(t.role == .ai ? AL.s(.talkTutorLabel) : AL.s(.talkYouLabel)): \(t.text)"
         }.joined(separator: "\n\n") + "\n\n— WordRem AI"
     }
 
@@ -599,7 +595,7 @@ struct VoiceTutorView: View {
                     }
                 }
                 Spacer(minLength: 0)
-                Button { TTSManager.shared.speak(t.text, langCode: targetCode) } label: {
+                Button { TutorVoice.shared.speak(t.text, langCode: targetCode) } label: {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(DS.Colors.accent)
@@ -623,7 +619,7 @@ struct VoiceLogoView: View {
     private let colors: [Color] = [DS.Colors.ink, DS.Colors.accent, DS.Colors.slate, DS.Colors.accent.opacity(0.55)]
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30)) { ctx in
+        TimelineView(.animation(minimumInterval: 1.0 / 60)) { ctx in
             let t = ctx.date.timeIntervalSinceReferenceDate
             HStack(spacing: 5) {
                 ForEach(0..<4, id: \.self) { i in
@@ -638,13 +634,16 @@ struct VoiceLogoView: View {
     }
 
     private func height(_ i: Int, _ t: Double) -> CGFloat {
+        // Yumuşak dalga (0…1): abs(sin) gibi sıfırda sekmez, takılma hissi vermez
+        func wave(_ speed: Double, _ shift: Double) -> CGFloat { CGFloat(0.5 + 0.5 * sin(t * speed + Double(i) * shift)) }
         switch phase {
         case .aiSpeaking:
-            return 14 + 22 * CGFloat(abs(sin(t * 2.4 + Double(i) * 0.9)))
+            return 16 + 20 * wave(2.2, 0.9)
         case .userSpeaking:
-            return 12 + 26 * CGFloat(level) * CGFloat(0.6 + 0.4 * abs(sin(t * 3.5 + Double(i))))
+            return 12 + 26 * CGFloat(level) * (0.6 + 0.4 * wave(3.2, 1.0))
         case .thinking, .connecting:
-            return 11 + 6 * CGFloat(abs(sin(t * 1.5 + Double(i) * 0.6)))
+            // Ana sayfa, bağlanma ve düşünme: aynı sakin, orta seviye örüntü
+            return 13 + 14 * wave(1.8, 0.8)
         case .listening:
             return 11 + 10 * CGFloat(level)
         default:

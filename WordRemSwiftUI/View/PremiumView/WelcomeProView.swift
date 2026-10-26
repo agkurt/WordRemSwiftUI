@@ -13,75 +13,99 @@ struct WelcomeProView: View {
     var onContinue: () -> Void
 
     @State private var appear = false
+    @State private var burst = 0
 
-    private var features: [(String, String)] {[
-        (langManager.s(.paywallFeature1), langManager.s(.paywallFeature1Sub)),
-        (langManager.s(.paywallFeature2), langManager.s(.paywallFeature2Sub)),
-        (langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)),
-        (langManager.s(.paywallFeature4), langManager.s(.paywallFeature4Sub)),
+    // Paywall'da vaat edilenlerle birebir aynı maddeler
+    private var features: [(String, String, String)] {[
+        ("waveform.circle", AL.s(.pwTalkTitle), AL.s(.pwTalkSub)),
+        ("map", AL.s(.pwPlanTitle), AL.s(.pwPlanSub)),
+        ("checkmark.bubble", AL.s(.pwFixTitle), AL.s(.pwFixSub)),
+        ("bookmark", AL.s(.pwRemTitle), AL.s(.pwRemSub)),
     ]}
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.25)
-                .ignoresSafeArea()
-
-            GeometryReader { geo in
+            DS.Colors.paper.ignoresSafeArea()
             ScrollView(showsIndicators: false) {
-                PaperCard(padding: 28) {
-                    VStack(alignment: .leading, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Eyebrow(text: plain(langManager.s(.welcomeProTitle)), color: DS.Colors.slate)
-                            Text("WordRem Pro")
-                                .font(DS.Font.display(34, weight: .bold))
-                                .foregroundStyle(DS.Colors.ink)
-                            Text(plain(langManager.s(.welcomeProSubtitle)))
-                                .font(DS.Font.ui(16))
-                                .foregroundStyle(DS.Colors.muted)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-
-                        VStack(spacing: 0) {
-                            Rectangle().fill(DS.Colors.line).frame(height: 1)
-                            ForEach(features, id: \.0) { title, sub in
-                                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 13, weight: .bold))
-                                        .foregroundStyle(DS.Colors.accent)
-                                    VStack(alignment: .leading, spacing: 3) {
-                                        Text(title)
-                                            .font(DS.Font.ui(16, weight: .semibold))
-                                            .foregroundStyle(DS.Colors.ink)
-                                        Text(sub)
-                                            .font(DS.Font.ui(14))
-                                            .foregroundStyle(DS.Colors.muted)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                    }
-                                    Spacer(minLength: 0)
-                                }
-                                .padding(.vertical, 12)
-                                Rectangle().fill(DS.Colors.line).frame(height: 1)
-                            }
-                        }
-
-                        Button(plain(langManager.s(.welcomeProCTA)), action: onContinue)
-                            .buttonStyle(InkButtonStyle())
-                            .padding(.top, 8)
+                VStack(spacing: 0) {
+                    // Kutlama rozeti
+                    ZStack {
+                        Circle()
+                            .fill(RadialGradient(colors: [DS.Colors.accent.opacity(0.22), DS.Colors.accent.opacity(0)],
+                                                 center: .center, startRadius: 8, endRadius: 110))
+                            .frame(width: 220, height: 220)
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 40, weight: .semibold))
+                            .foregroundStyle(DS.Colors.paper)
+                            .frame(width: 92, height: 92)
+                            .background(DS.Colors.accent, in: Circle())
+                            .scaleEffect(appear ? 1 : 0.4)
+                            .rotationEffect(.degrees(appear ? 0 : -25))
                     }
+                    .frame(height: 200)
+                    .padding(.top, 24)
+
+                    Text("WORDREM PRO")
+                        .font(DS.Font.ui(13, weight: .bold))
+                        .tracking(1.6)
+                        .foregroundStyle(DS.Colors.accent)
+                        .padding(.top, 4)
+                    Text(AL.s(.proWelcomeTitle))
+                        .font(DS.Font.display(34, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, 10)
+                    Text(AL.s(.proWelcomeSub))
+                        .font(DS.Font.ui(17))
+                        .foregroundStyle(DS.Colors.muted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 10)
+                        .padding(.horizontal, 12)
+
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(features.enumerated()), id: \.offset) { i, f in
+                            HStack(alignment: .top, spacing: 16) {
+                                Image(systemName: f.0)
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundStyle(DS.Colors.accent)
+                                    .frame(width: 24)
+                                    .padding(.top, 2)
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(f.1)
+                                        .font(DS.Font.ui(17, weight: .semibold))
+                                        .foregroundStyle(DS.Colors.ink)
+                                    Text(f.2)
+                                        .font(DS.Font.ui(14))
+                                        .foregroundStyle(DS.Colors.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                Spacer(minLength: 0)
+                            }
+                            .padding(.vertical, 10)
+                            .opacity(appear ? 1 : 0)
+                            .offset(y: appear ? 0 : 10)
+                            .animation(.easeOut(duration: 0.4).delay(0.35 + Double(i) * 0.08), value: appear)
+                        }
+                    }
+                    .padding(.top, 26)
+
+                    Button(AL.s(.proWelcomeCTA), action: onContinue)
+                        .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                        .padding(.top, 26)
+                        .padding(.bottom, 24)
                 }
-                .frame(maxWidth: 440)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 40)
-                .frame(maxWidth: .infinity, minHeight: geo.size.height)
+                .padding(.horizontal, 28)
+                .frame(maxWidth: 520)
+                .frame(maxWidth: .infinity)
             }
             .scrollBounceBehavior(.basedOnSize)
-            }
-            .offset(y: appear ? 0 : 12)
-            .opacity(appear ? 1 : 0)
+            ConfettiBurst(origin: .top, count: 90, trigger: burst).ignoresSafeArea()
         }
-        .presentationBackground(.clear)
         .onAppear {
-            withAnimation(.easeOut(duration: 0.3).delay(0.1)) { appear = true }
+            Haptics.success()
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.6).delay(0.1)) { appear = true }
+            burst += 1
         }
     }
 

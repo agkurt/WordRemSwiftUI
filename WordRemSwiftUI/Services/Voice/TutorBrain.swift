@@ -237,7 +237,8 @@ enum TutorBrain {
             - Quick question: answer clearly and briefly with one example, then offer to practice it.
             - Their day / anything else: ask genuine follow-up questions, react to what they say, recast mistakes naturally.
             If they talk to you in \(nativeName), answer the request warmly (briefly in \(nativeName) if needed), then bring \(targetName) in. \
-            Keep it a real back-and-forth — never a quiz.
+            Keep it a real back-and-forth — never a quiz. Never make them repeat a line to fix pronunciation: \
+            react to what they meant and continue; at most model the correct version once in your reply.
             """
         case .myDay:
             task = "Have a friendly chat in \(targetName) about the learner's day. Ask simple follow-up questions, recast their mistakes naturally (repeat their sentence correctly), and introduce 1–2 useful phrases with show_phrase."
@@ -264,6 +265,9 @@ enum TutorBrain {
         - Correct gently by modeling: repeat the learner's sentence correctly once, no long grammar lectures.
         - Speech recognition is imperfect: if the learner's text looks garbled, short or close, assume they said it and move on.
         - NEVER get stuck: ask the learner to repeat the same phrase at most once. On the second try, whatever they said, praise them and move to the next step.
+        - Be LENIENT with pronunciation: you only see a speech-to-text transcript of a non-native speaker. If most words are there or it's \
+        roughly right, treat it as correct, praise it and keep the conversation moving. Never drill pronunciation or ask for the same line \
+        again just because a word looked slightly different. Fun and momentum matter more than perfection.
         - The learner talks by holding a button, so every turn of yours must end by handing over: \
         finish EVERY turn by calling show_phrase(phrase, translation) with the short sentence the learner should say next, in \(targetName) \
         (a model answer; use "..." where they fill in their own info, e.g. "I'm from..."). Then stop and wait silently. \

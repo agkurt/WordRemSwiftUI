@@ -169,7 +169,7 @@ struct LessonCompleteView: View {
     }
 
     private func phraseRow(_ p: Phrase) -> some View {
-        Button { TTSManager.shared.speak(p.text, langCode: targetCode) } label: {
+        Button { TutorVoice.shared.speak(p.text, langCode: targetCode) } label: {
             HStack(spacing: 14) {
                 Image(systemName: "speaker.wave.2")
                     .font(.system(size: 17, weight: .medium))
