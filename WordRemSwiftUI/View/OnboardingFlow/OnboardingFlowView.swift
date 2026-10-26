@@ -13,7 +13,7 @@ struct OnboardingFlowView: View {
     @EnvironmentObject var langManager: LanguageManager
     @EnvironmentObject var authManager: AuthManager
 
-    private enum Step: Int { case welcome, language, name, demo }
+    private enum Step: Int { case welcome, native, language, name, demo }
 
     @State private var step: Step = .welcome
     @State private var forward = true
@@ -33,7 +33,7 @@ struct OnboardingFlowView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if step == .language || step == .name { header }
+            if step == .native || step == .language || step == .name { header }
             ZStack {
                 content
                     .id(step)
@@ -56,6 +56,7 @@ struct OnboardingFlowView: View {
     private var content: some View {
         switch step {
         case .welcome:  welcome
+        case .native:   nativeStep
         case .language: languageStep
         case .name:     nameStep
         case .demo:
@@ -87,7 +88,7 @@ struct OnboardingFlowView: View {
                     .frame(width: 40, height: 40)
             }
             HStack(spacing: 6) {
-                ForEach(1...2, id: \.self) { i in
+                ForEach(1...3, id: \.self) { i in
                     Capsule()
                         .fill(i <= step.rawValue ? DS.Colors.accent : DS.Colors.line)
                         .frame(height: 5)
@@ -136,34 +137,38 @@ struct OnboardingFlowView: View {
                 .multilineTextAlignment(.center)
                 .padding(.top, 12)
             Spacer()
-            Button(langManager.s(.obLetsGo)) { go(.language) }
+            Button(langManager.s(.obLetsGo)) { go(.native) }
                 .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-            nativeMenu.padding(.top, 14).padding(.bottom, 20)
+                .padding(.bottom, 24)
         }
         .padding(.horizontal, 24)
     }
 
-    /// Ana dil telefondan gelir; yanlışsa buradan değiştirilir (arayüz dili de değişir)
-    private var nativeMenu: some View {
-        Menu {
-            ForEach(LanguageManager.supportedCodes, id: \.self) { code in
-                Button("\(Self.flags[code] ?? "") \(langManager.languageName(for: code))") {
-                    native = code
-                    langManager.setLanguage(code)
-                    if target == code { target = nil }
+    // MARK: - 1. Ana dil (telefondan gelen dil seçili gelir; seçince arayüz de o dile geçer)
+    private var nativeStep: some View {
+        VStack(spacing: 0) {
+            title(langManager.s(.obNativeTitle), langManager.s(.obNativeSub))
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 10) {
+                    ForEach(LanguageManager.supportedCodes, id: \.self) { code in
+                        optionRow(selected: native == code) {
+                            Text(Self.flags[code] ?? "").font(.system(size: 26)).frame(width: 36)
+                            Text(langManager.languageName(for: code))
+                        } action: {
+                            native = code
+                            langManager.setLanguage(code)
+                            if target == code { target = nil }
+                            advance(after: .language)
+                        }
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
             }
-        } label: {
-            HStack(spacing: 4) {
-                Text(langManager.f(.obNativeIs, "\(Self.flags[native] ?? "") \(langManager.languageName(for: native))"))
-                Image(systemName: "chevron.down").font(.system(size: 11, weight: .semibold))
-            }
-            .font(DS.Font.ui(14, weight: .medium))
-            .foregroundStyle(DS.Colors.muted)
         }
     }
 
-    // MARK: - 1. Öğrenilecek dil
+    // MARK: - 2. Öğrenilecek dil
     private var languageStep: some View {
         VStack(spacing: 0) {
             title(langManager.s(.whatToLearn))
@@ -185,7 +190,7 @@ struct OnboardingFlowView: View {
         }
     }
 
-    // MARK: - 2. Ad
+    // MARK: - 3. Ad
     private var nameStep: some View {
         VStack(spacing: 0) {
             title(langManager.s(.obNameTitle), langManager.s(.obNameSub))
