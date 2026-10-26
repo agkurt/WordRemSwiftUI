@@ -56,6 +56,16 @@ enum LearnedWordsStore {
         WidgetCenter.shared.reloadAllTimelines()
     }
 
+    /// Aynı id'li kayıtları yerinde günceller (sıra korunur)
+    static func replace(_ updated: [LearnedWord]) {
+        guard !updated.isEmpty, let defaults else { return }
+        let byId = Dictionary(updated.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        let words = load().map { byId[$0.id] ?? $0 }
+        guard let data = try? JSONEncoder().encode(words) else { return }
+        defaults.set(data, forKey: wordsKey)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
     /// Çıkış / hesap silme sonrası widget'ta eski kullanıcının kelimeleri kalmasın
     static func clear() {
         defaults?.removeObject(forKey: wordsKey)

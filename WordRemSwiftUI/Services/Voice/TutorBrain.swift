@@ -10,6 +10,7 @@
 //
 
 import Foundation
+import NaturalLanguage
 
 // MARK: - Senaryo müfredatı (Resources/scenarios.json)
 struct VoiceChapter: Decodable, Identifiable {
@@ -588,6 +589,35 @@ enum TutorBrain {
     }
 
     /// Sohbette öğretilen kalıp → "Sohbetten" destesi (kelime defteri) + tekrar planı
+    /// Kartın gerçek dili: model dil değiştirmeden önce başka dilde kart gösterirse ("Hola" Almanca planda)
+    /// kelime yanlış dilin tekrar listesine düşmesin. Yalnızca çok emin olunca beklenen dilden sapar.
+    static func phraseLanguage(_ phrase: String, expected: String) -> String {
+        let r = NLLanguageRecognizer()
+        r.languageConstraints = teachableCodes.map { NLLanguage(rawValue: $0 == "zh" ? "zh-Hans" : $0) }
+        r.processString(phrase)
+        let hyp = r.languageHypotheses(withMaximum: 3)
+        guard let (top, prob) = hyp.max(by: { $0.value < $1.value }) else { return expected }
+        let code = String(top.rawValue.prefix(2))
+        let expectedProb = hyp.first { String($0.key.rawValue.prefix(2)) == expected }?.value ?? 0
+        return code != expected && prob >= 0.85 && expectedProb < 0.1 ? code : expected
+    }
+
+    /// Bir kerelik: daha önce yanlış dille kaydedilmiş sohbet kartlarını doğru dile taşı
+    static func fixSavedPhraseLanguages() {
+        let flag = "learnedWordsLanguageFix1"
+        guard !UserDefaults.standard.bool(forKey: flag) else { return }
+        UserDefaults.standard.set(true, forKey: flag)
+        let fixed = LearnedWordsStore.load().compactMap { w -> LearnedWord? in
+            guard w.id.hasPrefix("chat:") else { return nil }
+            let code = phraseLanguage(w.term, expected: w.languageCode.lowercased()).uppercased()
+            return code == w.languageCode ? nil
+                : LearnedWord(id: w.id, term: w.term, meaning: w.meaning, phonetic: w.phonetic, languageCode: code, learnedAt: w.learnedAt)
+        }
+        guard !fixed.isEmpty else { return }
+        LearnedWordsStore.replace(fixed)
+        ReviewScheduler.shared.reload()
+    }
+
     private static func savePhrase(_ phrase: String, _ translation: String) {
         guard !phrase.isEmpty, !translation.isEmpty else { return }
         // Boşluklu şablon ("My day was...") öğrenilmiş cümle sayılmaz
@@ -607,7 +637,7 @@ enum TutorBrain {
             .trimmingCharacters(in: .whitespaces)
         let id = "chat:" + key
         LearnedWordsStore.add([LearnedWord(id: id, term: phrase, meaning: translation, phonetic: nil,
-                                           languageCode: targetCode.uppercased(), learnedAt: Date())],
+                                           languageCode: phraseLanguage(phrase, expected: targetCode).uppercased(), learnedAt: Date())],
                               nativeLangCode: OL.nativeLangCode)
         ReviewScheduler.shared.reload()
     }

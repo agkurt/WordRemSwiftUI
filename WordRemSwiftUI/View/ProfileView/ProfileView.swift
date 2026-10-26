@@ -15,6 +15,7 @@ struct ProfileView: View {
     @State private var showPaywall = false
     @State private var showPrivacy = false
     @State private var showTerms = false
+    @State private var showManageSubscription = false
     @State private var showUsernameSetup = false
     @State private var showAllAchievements = false
     @State private var showResetConfirm = false
@@ -51,6 +52,8 @@ struct ProfileView: View {
         .sheet(isPresented: $showTerms) {
             SafariWebView(url: URL(string: "https://api.wordremai.app/terms")!)
         }
+        // Apple'ın kendi abonelik ekranı: plan değiştirme / iptal
+        .manageSubscriptionsSheet(isPresented: $showManageSubscription)
         .fullScreenCover(isPresented: $showUsernameSetup) {
             UsernameSetupPopup(
                 initialUsername: vm.username,
@@ -343,6 +346,13 @@ struct ProfileView: View {
                     settingsRow(icon: "globe",
                                 title: loc(["Ana dil", "Native language", "Muttersprache", "Langue maternelle", "Idioma nativo", "Lingua madre", "Родной язык", "母语"]),
                                 value: Self.endonym(langManager.currentLanguageCode))
+                }
+                if iap.isPremium {
+                    Divider().padding(.leading, 48)
+                    Button { showManageSubscription = true } label: {
+                        settingsRow(icon: "creditcard",
+                                    title: loc(["Aboneliği yönet", "Manage subscription", "Abo verwalten", "Gérer l'abonnement", "Gestionar suscripción", "Gestisci abbonamento", "Управление подпиской", "管理订阅"]))
+                    }
                 }
                 Divider().padding(.leading, 48)
                 Button { showPrivacy = true } label: {
