@@ -22,6 +22,7 @@ struct OnboardingFlowView: View {
     @State private var name = ""
     @State private var showPaywall = false
     @State private var paywallSeen = false
+    @State private var checkingPro = false
     @State private var finished = false
     @FocusState private var nameFocused: Bool
 
@@ -61,10 +62,24 @@ struct OnboardingFlowView: View {
         case .name:     nameStep
         case .demo:
             // Canlı sesli demo: öğretmen adıyla karşılar, birkaç cümle konuşturur → paywall
-            VoiceTutorView(mode: .demo, onFinished: { _ in
-                // Paywall bir kez görüldüyse demodaki X artık doğrudan ana sayfaya götürür
-                if paywallSeen { finish() } else { paywallSeen = true; showPaywall = true }
-            }, isDemo: true)
+            VoiceTutorView(mode: .demo, onFinished: { _ in demoFinished() }, isDemo: true)
+        }
+    }
+
+    /// Demo bitti (veda, X ya da süre doldu). Pro kullanıcı (ör. silip yeniden yükleyen) paywall görmez.
+    private func demoFinished() {
+        // Paywall açıkken gelen ikinci "bitti" sinyali onu kapatmasın
+        guard !showPaywall, !checkingPro else { return }
+        if paywallSeen { return finish() }
+        checkingPro = true
+        Task {
+            let iap = InAppPurchaseManager.shared
+            let pro = iap.isPremium ? true : await iap.isPro()
+            await MainActor.run {
+                checkingPro = false
+                if pro { iap.isPremium = true; finish() }
+                else { paywallSeen = true; showPaywall = true }
+            }
         }
     }
 

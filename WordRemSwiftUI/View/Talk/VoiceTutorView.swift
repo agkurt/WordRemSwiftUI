@@ -138,6 +138,12 @@ struct VoiceTutorView: View {
         session.answerCardsOnly = isDemo
         session.noCards = isSetup
         session.completeAfterUserTurns = isSetup ? 3 : nil
+        session.cardAfterUserTurns = isSetup ? 2 : nil
+        if case .languageSetup(let code) = mode { RealtimeVoiceSession.targetOverride = code } else { RealtimeVoiceSession.targetOverride = nil }
+        switch activeMode {
+        case .languageSetup, .levelReview, .wordPractice: session.allowModelFinish = true
+        default: session.allowModelFinish = false
+        }
         session.isPro = InAppPurchaseManager.shared.isPremium
         // Günlük süre doldu: AI vedalaştıktan sonra paywall (demoda onboarding'in paywall'ı)
         session.onLimitReached = {
@@ -167,7 +173,7 @@ struct VoiceTutorView: View {
                               })
         }
         let tools = isSetup
-            ? TutorBrain.tools.filter { ["remember_fact", "finish_lesson"].contains($0["name"] as? String ?? "") }
+            ? TutorBrain.tools.filter { ["show_phrase", "remember_fact", "finish_lesson"].contains($0["name"] as? String ?? "") }
             : TutorBrain.tools
         await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: tools,
                             targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),

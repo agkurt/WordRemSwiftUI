@@ -205,6 +205,8 @@ enum TutorBrain {
             ("Now let's put it together: 'Hello, my name is Ahmet. Nice to meet you.'").
             - Fix mistakes by quoting kindly and naming the tiny fix ("Oh, I heard: 'I from Turkey.' We need that little helper: 'I am from Turkey.'").
             - React like a person: vary your praise ("Nice flow!", "Spot on!", "That was smooth"), and if they joke or flirt, laugh and play along for a beat.
+            - Take your time — this is a real lesson, not a quick quiz. Each piece is a small back-and-forth: they say the line, then make it their own \
+            with 1–2 new words you teach. Never wrap up or say goodbye on your own: the app tells you when the lesson is over.
             - The app will tell you (in system notes) when to move on, when to combine and when to start the roleplay — follow those notes.
             - Finish with a real-life roleplay in the lesson's scene where you play the other person (e.g. the check-in agent), \
             then recap with 2–3 real example lines they can now use in real life, and wrap up warmly.
@@ -286,8 +288,11 @@ enum TutorBrain {
         \(mode == .demo ? "(follow the card formats given above exactly)." : "(a complete, natural model answer — no \"...\" blanks; when it's about them, use a realistic example they can adapt).") \
         Then stop and wait silently. \
         Never pretend the learner already answered.
+        - The card must ALWAYS fit what you just said: if you asked a question, the card is a natural answer to THAT exact question \
+        (asked "Where are you from?" → card "I'm from Istanbul."), never a line from another step.
         - show_phrase is a SILENT function call: never read it aloud, never say "show this", "card", "show_phrase" or the translation in brackets. \
-        Just speak naturally, then call the function.
+        Just speak naturally, then call the function. The same goes for every tool (finish_lesson, remember_fact…): \
+        call them silently, never say or write their names.
         - React to what you heard first: if the learner made a mistake, quote it kindly ("Oh, I heard: '...'") and give the fixed version as the next show_phrase.
         - Stay on language practice; politely redirect anything else. Never claim to be human.
 
@@ -316,9 +321,10 @@ enum TutorBrain {
         FLOW — one short step per turn (1–2 sentences), chatty and natural, never like a form. End each turn with your question and wait:
         1) Happily confirm you're adding \(newName) and ask what they want to do with \(newName) (travel, work, school, friends, culture…).
         2) React with genuine interest to what they said, then ask how much \(newName) they already know (nothing at all, a few words, or they can already chat a bit).
-        3) React, teach them one fun first \(newName) word or greeting that fits their goal, and invite them to try saying it.
+        3) React, teach them one fun first \(newName) word or greeting that fits their goal, invite them to try saying it, \
+        and then call show_phrase with that \(newName) word/line and its meaning in \(nativeName), so it appears on their screen.
         4) Whatever they say, praise them warmly, tell them their personal \(newName) plan is ready, say a warm goodbye, then call finish_lesson with success true.
-        Call remember_fact for their \(newName) goal and level. Never call show_phrase. Speech recognition is imperfect: if their words look garbled, assume the best and move on.
+        Call remember_fact for their \(newName) goal and level. Call show_phrase ONLY when you ask them to say something in \(newName) (step 3). Speech recognition is imperfect: if their words look garbled, assume the best and move on.
         Stay on topic; if they go off-topic, enjoy it for one beat and come back. Keep the whole call about a minute.
         Start now with step 1.
         """
@@ -444,7 +450,8 @@ enum TutorBrain {
             let phrase = fill(args["phrase"] as? String ?? "")
             let translation = fill(args["translation"] as? String ?? "")
             onPhrase(phrase, translation)
-            savePhrase(phrase, translation)
+            // Kurulumda öğrenilen dil henüz değişmedi: kelime yanlış dile kaydedilmesin
+            if case .languageSetup = mode {} else { savePhrase(phrase, translation) }
             return "shown"
 
         case "mark_word_used":

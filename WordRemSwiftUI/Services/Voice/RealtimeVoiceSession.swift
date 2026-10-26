@@ -115,10 +115,11 @@ final class RealtimeVoiceSession: ObservableObject {
                aiSpeaksFirst: Bool = true) async {
         self.aiSpeaksFirst = aiSpeaksFirst
         self.targets = targets
+        lastInstructions = instructions; lastTools = tools; usageBase = 0
         self.withRoleplay = roleplay
         self.cardTool = tools.first { $0["name"] as? String == "show_phrase" }
         targetTotal = targets.count
-        targetProgress = min(startStep, targets.count); attempts = 0; roleplayTurns = 0; lessonComplete = false
+        targetProgress = min(startStep, targets.count); attempts = 0; roleplayTurns = 0; lessonComplete = false; pendingPersonalize = false
         pendingCombine = false; correctAnswers = 0; totalAnswers = 0; startedAt = Date()
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
@@ -225,6 +226,8 @@ final class RealtimeVoiceSession: ObservableObject {
     private var attempts = 0
     private var roleplayTurns = 0
     private var pendingCombine = false
+    /// Parçanın ikinci aşaması: öğrenci cümleyi kendine uyarlar (yeni kelimelerle) — ders aceleye gelmesin
+    private var pendingPersonalize = false
     private var withRoleplay = true
     private var awaitingReply = false
 
@@ -246,6 +249,7 @@ final class RealtimeVoiceSession: ObservableObject {
         // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
         let ok = currentCard.map { Self.matches(said: said, card: $0) || Self.overlap(said: said, card: $0) >= (answerCardsOnly ? 0.25 : 0.6) } ?? !said.isEmpty
             || (inTarget && wordCount >= 3)
+            || (pendingPersonalize && inTarget)   // kendi versiyonu: kartla birebir aynı olması beklenmez
         totalAnswers += 1
         if ok { correctAnswers += 1 }
         lastAnswerCorrect = ok
@@ -253,7 +257,7 @@ final class RealtimeVoiceSession: ObservableObject {
         if let card = currentCard { onAnswer?(card, ok) }
         var note: String
 
-        if targetProgress < targets.count || pendingCombine {
+        if targetProgress < targets.count || pendingCombine || pendingPersonalize {
             attempts += 1
             guard ok || attempts >= 2 else {
                 note = "The learner's attempt wasn't quite right. Quote what you heard kindly (\"Oh, I heard: '\(said)'\"), name the tiny fix in a few words, and have them say the correct line again."
@@ -263,29 +267,25 @@ final class RealtimeVoiceSession: ObservableObject {
             currentCard = nil
             let praise = ok ? "The learner got it right — react with a short, varied, genuine praise (never the same words twice)."
                             : "Two tries are enough here — encourage them warmly and move on."
-            if pendingCombine {
+            if pendingPersonalize {
+                // Kendi versiyonunu da söyledi → şimdi parça gerçekten bitti
+                pendingPersonalize = false
+                note = advance(praise)
+            } else if pendingCombine {
                 pendingCombine = false
                 note = targetProgress < targets.count
                     ? "\(praise) \(Self.nextPiece(targets[targetProgress]))"
                     : finishOrRoleplay(praise)
+            } else if withRoleplay {
+                // Ders: model cümleyi söyledi → hemen geçme, kendi hayatına uyarlat ve 1–2 yeni kelime öğret
+                pendingPersonalize = true
+                note = "\(praise) Don't move on yet — make it theirs: teach 1–2 useful new words that fit this moment (say each one with a tiny example, e.g. \"you can also say 'painting' or 'hiking'\"), then ask them a natural follow-up question so they say their OWN version (their real life, using one of the new words if it fits). Your spoken turn must end with that question; then card a complete sample answer that uses one of the new words."
             } else {
-                targetProgress += 1
-                if withRoleplay && targetProgress >= 2 && targetProgress % 2 == 0 {
-                    // Pingo gibi: öğrendiklerini birleştirip biraz daha uzun bir cümle kurdur
-                    pendingCombine = true
-                    note = "\(praise) Now build on what they know: have them say one slightly longer line that combines their earlier phrases with this one, built from what THEY actually said (their real name, job, city…), not the example answers. Ask them to put it together out loud, then card that line."
-                } else if targetProgress < targets.count, answerCardsOnly {
-                    // Sohbet demosu: önce soruyu SESLİ sor, kart (olası cevaplar) ondan sonra
-                    note = "\(praise) Then, out loud, \(targets[targetProgress]). Your spoken turn MUST end with the question itself; only after asking it, call show_phrase."
-                } else if targetProgress < targets.count {
-                    note = "\(praise) \(Self.nextPiece(targets[targetProgress]))"
-                } else {
-                    note = finishOrRoleplay(praise)
-                }
+                note = advance(praise)
             }
         } else {
             roleplayTurns += 1
-            if roleplayTurns < 4 {
+            if roleplayTurns < 6 {
                 note = ok || said.count > 3
                     ? "Stay in character: react naturally to what they said, then say the next line as the other person out loud, and card the LEARNER'S reply to it (never your own line)."
                     : "Stay in character but help them: give the reply they could use as the card and let them try."
@@ -295,6 +295,22 @@ final class RealtimeVoiceSession: ObservableObject {
             }
         }
         sendGuide(note)
+    }
+
+    /// Parça bitti: sıradaki parça, ara ara birleştirme, en sonda rol oyunu ya da kapanış
+    private func advance(_ praise: String) -> String {
+        targetProgress += 1
+        if withRoleplay && targetProgress >= 2 && targetProgress % 2 == 0 {
+            // Pingo gibi: öğrendiklerini birleştirip biraz daha uzun bir cümle kurdur
+            pendingCombine = true
+            return "\(praise) Now build on what they know: have them say one slightly longer line that combines their earlier phrases with this one, built from what THEY actually said (their real name, job, city…), not the example answers. Ask them to put it together out loud, then card that line."
+        }
+        if targetProgress < targets.count, answerCardsOnly {
+            // Sohbet demosu: önce soruyu SESLİ sor, kart (olası cevaplar) ondan sonra
+            return "\(praise) Then, out loud, \(targets[targetProgress]). Your spoken turn MUST end with the question itself; only after asking it, call show_phrase."
+        }
+        if targetProgress < targets.count { return "\(praise) \(Self.nextPiece(targets[targetProgress]))" }
+        return finishOrRoleplay(praise)
     }
 
     private func finishOrRoleplay(_ praise: String) -> String {
@@ -330,7 +346,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Söylenen cümle öğrenilen dilde mi (ana dildeki sohbetten ayırmak için)
     static func isTargetLanguage(_ text: String) -> Bool {
-        let target = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
+        let target = Self.currentTarget
         let r = NLLanguageRecognizer()
         r.processString(text)
         guard let lang = r.dominantLanguage?.rawValue else { return false }
@@ -506,20 +522,103 @@ final class RealtimeVoiceSession: ObservableObject {
             nc.addObserver(forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main, using: restart),
             nc.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main, using: restart),
             nc.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil, queue: .main, using: restart),
-            // Arka plandan dönünce ses motoru hemen yeniden kalksın
-            nc.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: restart),
+            // Arka plandan dönünce: ses motoru kalksın, sıra öğrenciye geçsin, bağlantı ölüyse yenilensin
+            nc.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+                Task { @MainActor in self?.resumeFromBackground() }
+            },
         ]
     }
 
     private func restartAudioIfNeeded(reinstallTap: Bool = false) {
         guard phase != .ended, phase != .idle else { return }
+        // Önce ses oturumu: etkin değilken mikrofon biçimi 0 Hz gelir ve dokunuş kurulamaz
+        try? AVAudioSession.sharedInstance().setActive(true)
         if reinstallTap { installMicTap() }
         if !engine.isRunning {
-            try? AVAudioSession.sharedInstance().setActive(true)
             engine.prepare()
             do { try engine.start() } catch { print("⚠️ audio engine restart failed: \(error)") }
         }
         if !player.isPlaying { player.play() }
+    }
+
+    // MARK: - Arka plandan dönüş & yeniden bağlanma
+    private var lastInstructions = ""
+    private var lastTools: [[String: Any]] = []
+    private var resumeNote: String?
+    private var reconnecting = false
+    private var needsReconnect = false
+    /// Yeni realtime oturumunda kullanım sayacı sıfırdan başlar (önceki oturum ayrı raporlandı)
+    private var usageBase = 0
+
+    private func resumeFromBackground() {
+        guard phase != .ended, phase != .idle, phase != .connecting else { return }
+        if case .failed = phase { return }
+        // Basılı tutarken arka plana gittiyse kayıt yarım kaldı: at
+        if isHoldingToTalk {
+            isHoldingToTalk = false
+            micMuted = true
+            send(["type": "input_audio_buffer.clear"])
+        }
+        restartAudioIfNeeded(reinstallTap: true)
+        // Arka planda yarım kalan konuşma bir daha çalınmaz: sıra öğrenciye
+        if phase == .aiSpeaking || phase == .thinking || phase == .userSpeaking {
+            stopPlayback()
+            awaitingReply = false
+            if !fullAIText.isEmpty { caption = fullAIText; captionFull = fullAIText }
+            phase = .listening
+        }
+        if needsReconnect { needsReconnect = false; Task { await reconnect() }; return }
+        // Soket sessizce ölmüş olabilir: ping atıp kontrol et
+        let task = socket
+        task?.sendPing { [weak self] error in
+            guard error != nil else { return }
+            Task { @MainActor in
+                guard let self, task === self.socket else { return }
+                await self.reconnect()
+            }
+        }
+    }
+
+    /// Bağlantı koptuysa yeni oturumla bağlan ve konuşmayı kaldığı yerden sürdür (öğrenci baştan başlamasın)
+    private func reconnect() async {
+        guard !reconnecting, phase != .ended else { return }
+        reconnecting = true
+        defer { reconnecting = false }
+        voiceLog.info("reconnecting after dropped connection")
+        reportUsage(final: true)
+        let old = socket
+        socket = nil
+        tapState.set(socket: nil)
+        old?.cancel(with: .goingAway, reason: nil)
+        let history = turns.filter { !$0.text.isEmpty }.suffix(10).map { t -> String in
+            switch t.role {
+            case .ai: return "Tutor: " + t.text
+            case .user: return "Learner: " + t.text
+            default: return "Card shown: " + t.text
+            }
+        }.joined(separator: "\n")
+        resumeNote = """
+        The connection dropped for a moment and is back. The conversation so far:
+        \(history)
+        Do NOT greet again or restart the lesson. Say "welcome back" in a few words, then continue exactly where you left off \
+        (ask your last question again\(currentCard.map { " — the learner's current line is \"\($0)\"; card it again" } ?? "")).
+        """
+        phase = .connecting
+        do {
+            let grant = try await VoiceBackend.shared.createSession(instructions: lastInstructions, tools: lastTools)
+            sessionId = grant.sessionId
+            usageBase = elapsedSeconds
+            lastUsageReport = elapsedSeconds
+            allowedSeconds = elapsedSeconds + grant.allowedSeconds
+            restartAudioIfNeeded(reinstallTap: true)
+            connect(model: grant.model, secret: grant.clientSecret)
+        } catch let e as VoiceBackend.Failure {
+            resumeNote = nil
+            phase = .failed(e.code)
+        } catch {
+            resumeNote = nil
+            phase = .failed("connection")
+        }
     }
 
     /// base64 PCM16 → Float32 tampon (arka planda çağrılır)
@@ -697,12 +796,16 @@ final class RealtimeVoiceSession: ObservableObject {
     /// JSON çözme ve ses çözme arka planda; ana iş parçacığına yalnızca hazır olay/tampon gider
     private func receive() {
         let format = outFormat
-        socket?.receive { [weak self] result in
+        let task = socket
+        task?.receive { [weak self] result in
             switch result {
             case .failure:
                 Task { @MainActor in
-                    guard let self else { return }
-                    if self.phase != .ended { self.phase = .failed("connection"); self.stop() }
+                    // Yeniden bağlanırken eski soketin hatası oturumu düşürmesin
+                    guard let self, task === self.socket, self.phase != .ended else { return }
+                    // Arka planda iOS soketi kapatır: önce sessizce yeniden bağlan, olmazsa hata göster
+                    if UIApplication.shared.applicationState == .active { await self.reconnect() }
+                    else { self.needsReconnect = true }
                 }
             case .success(let message):
                 if case .string(let text) = message, let data = text.data(using: .utf8),
@@ -716,7 +819,7 @@ final class RealtimeVoiceSession: ObservableObject {
                         Task { @MainActor in self?.handle(e) }
                     }
                 }
-                Task { @MainActor in self?.receive() }
+                Task { @MainActor in if task === self?.socket { self?.receive() } }
             }
         }
     }
@@ -730,8 +833,15 @@ final class RealtimeVoiceSession: ObservableObject {
                 phase = .listening
                 // Sunucu ses algılaması kapalı: yalnızca basılı tutunca dinlenir
                 send(["type": "session.update", "session": ["type": "realtime", "audio": ["input": ["turn_detection": NSNull()]]]])
-                // AI ilk sözü alsın (karşılama) — serbest sohbette öğrenci başlar
-                if aiSpeaksFirst { send(["type": "response.create"]) }
+                if let note = resumeNote {
+                    // Kopan bağlantı yenilendi: baştan selamlama yok, kaldığı yerden devam
+                    resumeNote = nil
+                    sendGuide(note)
+                    send(["type": "response.create"])
+                } else if aiSpeaksFirst {
+                    // AI ilk sözü alsın (karşılama) — serbest sohbette öğrenci başlar
+                    send(["type": "response.create"])
+                }
             }
 
         case "input_audio_buffer.speech_started":
@@ -779,6 +889,14 @@ final class RealtimeVoiceSession: ObservableObject {
                 send(["type": "conversation.item.create",
                       "item": ["type": "function_call_output", "call_id": callId,
                                "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
+                break
+            }
+            // Dersin ne zaman biteceğine uygulama karar verir: model erken finish_lesson çağırırsa ders kesilmesin
+            if name == "finish_lesson", !allowModelFinish, !lessonComplete, !timeUp {
+                voiceLog.info("early finish rejected")
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId,
+                               "output": "rejected: the lesson is NOT over — keep teaching. Continue with the current step and end your turn with a question for the learner."]])
                 break
             }
             // Onboarding demosunda model bazen kendi sorusunu kart yapıyor: kart her zaman öğrencinin cevabı olmalı
@@ -899,6 +1017,15 @@ final class RealtimeVoiceSession: ObservableObject {
     var noCards = false
     /// Sabit akışlı konuşma (dil kurulumu): öğrencinin bu kadar cevabından sonraki öğretmen turu kapanıştır
     var completeAfterUserTurns: Int?
+    /// Kartsız konuşmada yine de kart istenen tur: öğrenciye bir şey söyletilen an (kurulumda ilk kelime)
+    var cardAfterUserTurns: Int?
+    /// Yeni dil kurulumunda öğrenilen dil henüz değişmedi: kartlar/dil algılama bu dile göre yapılır
+    nonisolated(unsafe) static var targetOverride: String?
+    nonisolated static var currentTarget: String {
+        targetOverride ?? (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
+    }
+    /// Modelin finish_lesson ile konuşmayı kendisi bitirebildiği modlar (kurulum, kelime tekrarı)
+    var allowModelFinish = false
     /// Pro kullanıcıya süre bitiminde satın alma önerilmez
     var isPro = false
     private var silentCardPending = false
@@ -911,7 +1038,7 @@ final class RealtimeVoiceSession: ObservableObject {
         translatingPhrase = phrase
         let native = Locale(identifier: "en").localizedString(forLanguageCode: OL.nativeLangCode) ?? "the learner's native language"
         // Dil adı açıkça yazılır: "target language" deyince model bazen başka dil seçiyor
-        let targetCode = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
+        let targetCode = Self.currentTarget
         let target = Locale(identifier: "en").localizedString(forLanguageCode: targetCode) ?? "English"
         let instructions = phrase.map {
             "Do not say anything. Call show_phrase with exactly this phrase: \"\($0)\" and its natural translation into \(native)."
@@ -933,15 +1060,22 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Küçük model kart komutunu bazen düz metin olarak yazar: ekranda/transkriptte gösterme
     nonisolated static func stripToolText(_ s: String) -> String {
-        var t = s.replacingOccurrences(of: #"show_phrase\s*\([^)]*\)?"#, with: "", options: .regularExpression)
-        if let r = t.range(of: "show_phrase") { t = String(t[..<r.lowerBound]) }
+        // Arka plandaki araç adları (show_phrase, finish_lesson…) kullanıcıya asla görünmesin
+        let tools = #"(show_phrase|finish_lesson|remember_fact|mark_word_used|functions?\.\w+)"#
+        var t = s.replacingOccurrences(of: tools + #"\s*\([^)]*\)?"#, with: "", options: .regularExpression)
+        // Yarım gelen çağrı ("show_phrase(\"Hel…"): adından sonrasını kes
+        if let r = t.range(of: tools, options: .regularExpression) { t = String(t[..<r.lowerBound]) }
+        // Herhangi bir snake_case tanımlayıcı da (ör. "finish lesson" değil "finish_lesson") metinden çıkar
+        t = t.replacingOccurrences(of: #"\b[a-z]+(_[a-z]+)+\b"#, with: "", options: .regularExpression)
+        t = t.replacingOccurrences(of: #"[ \t]{2,}"#, with: " ", options: .regularExpression)
         return t.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     /// Her tur bir kartla bitmeli (Pingo gibi). Model aracı çağırmadıysa: metne yazdığı komutu ya da
     /// son tırnak içindeki ifadeyi kart yap.
     private func ensurePhraseCard() {
-        guard !noCards, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
+        let userTurns = turns.filter { $0.role == .user && !$0.text.isEmpty }.count
+        guard !noCards || cardAfterUserTurns == userTurns, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
         if needsAnswerCard {
             needsAnswerCard = false
             return requestCard(answerTo: fullAIText)
@@ -955,7 +1089,7 @@ final class RealtimeVoiceSession: ObservableObject {
         }
         if phrase == nil {
             // Tırnak içindeki ifadelerden öğrenilen dildeki sonuncusu (ana dildeki açıklamalar değil)
-            let target = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
+            let target = Self.currentTarget
             let quotes = fullAIText.matches(of: try! Regex(#"[“"]([^"“”]{2,80})[”"]"#))
                 .compactMap { $0.output[1].substring.map(String.init) }
             // Ana dilde olmayan son alıntı (isim geçen kısa cümleler yanlış dil sanılabiliyor)
@@ -968,7 +1102,9 @@ final class RealtimeVoiceSession: ObservableObject {
             }
         }
         guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else {
-            requestCard()
+            // Öğretmen soru sorduysa kart o sorunun cevabı olsun (dersin sıradaki adımı değil)
+            let asked = fullAIText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if asked.hasSuffix("?") { requestCard(answerTo: asked) } else { requestCard() }
             return
         }
         phraseShownThisResponse = true
@@ -1053,7 +1189,7 @@ final class RealtimeVoiceSession: ObservableObject {
     private func reportUsage(final: Bool) {
         guard let sessionId else { return }
         lastUsageReport = elapsedSeconds
-        let seconds = elapsedSeconds
+        let seconds = elapsedSeconds - usageBase
         Task { await VoiceBackend.shared.reportUsage(sessionId: sessionId, seconds: seconds) }
     }
 }
