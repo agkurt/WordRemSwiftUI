@@ -86,8 +86,12 @@ enum TutorBrain {
     private static var nativeName: String {
         Locale(identifier: "en").localizedString(forLanguageCode: OL.nativeLangCode) ?? "English"
     }
+    /// Serbest sohbette öğrenci başka bir dile geçmek isterse (switch_language): yalnızca bu konuşma için
+    static var sessionLanguage: String?
+    static let teachableCodes = ["en", "es", "de", "fr", "it", "ru", "zh", "tr"]
+
     private static var targetCode: String {
-        (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN").lowercased()
+        sessionLanguage ?? (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN").lowercased()
     }
     private static var targetName: String {
         Locale(identifier: "en").localizedString(forLanguageCode: targetCode) ?? "English"
@@ -102,6 +106,28 @@ enum TutorBrain {
         case 0, 1: return base + " The learner is a beginner: use very short, simple \(targetName) sentences, speak slowly and clearly."
         case 2:    return base + " The learner is around A2: simple, natural \(targetName)."
         default:   return base + " The learner is intermediate or advanced: natural pace and vocabulary."
+        }
+    }
+
+    /// Öğrenci başka bir dil isterse: asla "ben sadece X öğretmeniyim" deme
+    private static func otherLanguageRule(for mode: TutorMode) -> String {
+        let langs = teachableCodes.filter { $0 != OL.nativeLangCode.lowercased() }
+            .map { "\(Locale(identifier: "en").localizedString(forLanguageCode: $0) ?? $0) (\($0))" }.joined(separator: ", ")
+        switch mode {
+        case .freeChat:
+            return """
+            OTHER LANGUAGES: if the learner wants to practice or learn a different language (\(langs)), happily switch right away: \
+            call switch_language with its code, then continue the conversation in that language, with cards in that language and translations in \(nativeName). \
+            Never say you only teach \(targetName) or that you are a \(targetName) tutor.
+            """
+        case .demo, .languageSetup:
+            return ""
+        default:
+            return """
+            OTHER LANGUAGES: this session is part of their \(targetName) plan. If they ask about another language, never say you only teach \(targetName): \
+            answer in \(nativeName) in one or two short sentences — you'd love to teach that too — they can add it in a minute from the flag at the top of the home screen, or practice it right now in "Talk with your assistant" — \
+            then ask if they'd like to keep going with this lesson, and keep every card in \(targetName).
+            """
         }
     }
 
@@ -265,7 +291,9 @@ enum TutorBrain {
         }
 
         return """
-        You are WordRem's voice tutor: a warm, playful, emotionally smart \(targetName) teacher on a live voice call — like a fun friend who happens to be a great teacher. The learner's native language is \(nativeName).
+        You are WordRem's voice tutor: a warm, playful, emotionally smart language teacher on a live voice call — like a fun friend who happens to be a great teacher. \
+        You can teach English, Spanish, German, French, Italian, Russian, Chinese and Turkish; right now the learner is learning \(targetName). The learner's native language is \(nativeName).
+        \(otherLanguageRule(for: mode))
         VOICE & DELIVERY: speak with a charming, attractive, smiling voice — warm, playful and a little flirty-teasing, confident and full of life, like you're grinning while you talk. Never flat, never robotic.
         \(languagePolicy)
 
@@ -427,6 +455,9 @@ enum TutorBrain {
         tool("remember_fact", "Store a lasting fact about the learner for future sessions.", [
             "fact": ["type": "string", "description": "Short fact in English, e.g. 'Lives in Izmir'."],
         ], required: ["fact"]),
+        tool("switch_language", "Switch this conversation to another language the learner wants to practice. Only in free conversation.", [
+            "code": ["type": "string", "enum": teachableCodes, "description": "ISO code of the language to practice from now on."],
+        ], required: ["code"]),
         tool("finish_lesson", "Call at the end of the lesson.", [
             "summary": ["type": "string", "description": "One sentence: what was practiced and how it went."],
             "success": ["type": "boolean"],
@@ -465,6 +496,17 @@ enum TutorBrain {
                 return "recorded"
             }
             return "not a review word"
+
+        case "switch_language":
+            let code = (args["code"] as? String ?? "").lowercased()
+            guard teachableCodes.contains(code) else { return "unknown language" }
+            guard case .freeChat = mode else {
+                return "not available in lessons — tell them kindly they can add that language from the flag on the home screen, or practice it in Talk with your assistant"
+            }
+            sessionLanguage = code
+            RealtimeVoiceSession.targetOverride = code
+            let name = Locale(identifier: "en").localizedString(forLanguageCode: code) ?? code
+            return "switched — from now on speak and teach \(name); every card in \(name) with its translation in \(nativeName)"
 
         case "remember_fact":
             let fact = (args["fact"] as? String ?? "").trimmingCharacters(in: .whitespaces)

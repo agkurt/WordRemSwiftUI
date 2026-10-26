@@ -266,6 +266,10 @@ final class RealtimeVoiceSession: ObservableObject {
         }
         // Karta hiç benzemeyen ve öğrenilen dilde olmayan sözler: sohbet/şaka → keyifle karşıla, derse dön
         if let card = currentCard, wordCount >= 3, !inTarget, Self.overlap(said: said, card: card) < 0.25 {
+            let en = Locale(identifier: "en")
+            let targetName = en.localizedString(forLanguageCode: Self.currentTarget) ?? "the target language"
+            let nativeName = en.localizedString(forLanguageCode: OL.nativeLangCode) ?? "their native language"
+            sendGuide("If the learner is asking to learn or practice a DIFFERENT language: reply in \(nativeName) in one or two short sentences — you'd love to teach that too, they can add it in a minute from the flag at the top of the home screen or practice it now in \"Talk with your assistant\" — then continue this lesson in \(targetName). Don't mix languages and never say you only teach \(targetName). Otherwise:")
             return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then carry on naturally and invite them to try the current line. Don't treat it as a mistake, and if they seem to want something else, give it to them.")
         }
         // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
@@ -373,6 +377,17 @@ final class RealtimeVoiceSession: ObservableObject {
         r.processString(text)
         guard let lang = r.dominantLanguage?.rawValue else { return false }
         return lang.hasPrefix(target)
+    }
+
+    /// Kart açıkça başka bir dilde mi? (kısa ifadelerde tahmin şaşabilir: yalnızca emin olunca "evet")
+    nonisolated static func isClearlyOtherLanguage(_ text: String) -> Bool {
+        guard text.split(separator: " ").count >= 3 else { return false }
+        let r = NLLanguageRecognizer()
+        r.processString(text)
+        let hyp = r.languageHypotheses(withMaximum: 3)
+        guard let top = hyp.max(by: { $0.value < $1.value }), top.value > 0.8 else { return false }
+        let target = Self.currentTarget
+        return !top.key.rawValue.hasPrefix(target) && (hyp[NLLanguage(target)] ?? 0) < 0.1
     }
 
     /// "A / B" biçimindeki kartın seçenekleri
@@ -943,6 +958,17 @@ final class RealtimeVoiceSession: ObservableObject {
                                "output": "rejected: no '...' blanks — the card must be a complete example sentence"]])
                 break
             }
+            // Derste kart her zaman planın dilinde (model başka dil isteyince kartı o dilde açabiliyor)
+            if name == "show_phrase", !allowLanguageSwitch, !answerCardsOnly, translatingPhrase == nil,
+               let p = args["phrase"] as? String, Self.isClearlyOtherLanguage(p) {
+                voiceLog.info("card in wrong language rejected: \(p, privacy: .public)")
+                needsAnswerCard = true
+                let en = Locale(identifier: "en")
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId,
+                               "output": "rejected: cards in this lesson must be in \(en.localizedString(forLanguageCode: Self.currentTarget) ?? "the target language")"]])
+                break
+            }
             // Yalnızca çeviri istendiyse kart cümlesi değişmez (model bazen cümleyi de yeniden yazıyor)
             if name == "show_phrase", silentCardActive, let fixed = translatingPhrase {
                 args["phrase"] = fixed
@@ -1058,6 +1084,8 @@ final class RealtimeVoiceSession: ObservableObject {
     }
     /// Modelin finish_lesson ile konuşmayı kendisi bitirebildiği modlar (kurulum, kelime tekrarı)
     var allowModelFinish = false
+    /// Serbest sohbette öğrenci başka dile geçebilir (kartlar o dilde olabilir)
+    var allowLanguageSwitch = false
     /// Pro kullanıcıya süre bitiminde satın alma önerilmez
     var isPro = false
     private var silentCardPending = false

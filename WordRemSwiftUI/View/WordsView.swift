@@ -48,7 +48,7 @@ struct WordsView: View {
 
     // MARK: - Learned
     private var filtered: [LearnedWord] {
-        let words = scheduler.words
+        let words = scheduler.currentWords
         guard !searchText.isEmpty else { return words }
         return words.filter {
             $0.term.localizedCaseInsensitiveContains(searchText) ||
@@ -58,7 +58,7 @@ struct WordsView: View {
 
     @ViewBuilder
     private var learnedList: some View {
-        if scheduler.words.isEmpty {
+        if scheduler.currentWords.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
                 Text(langManager.s(.wordsEmpty))
                     .font(DS.Font.ui(16))

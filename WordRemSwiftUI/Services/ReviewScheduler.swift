@@ -52,6 +52,12 @@ final class ReviewScheduler: ObservableObject {
 
     // MARK: - Queries
     /// Bugün sonuna kadar vadesi gelen kelimeler, en gecikmiş önce
+    /// Şu an öğrenilen dilin kelimeleri (Kelimeler listesi dilleri karıştırmasın)
+    var currentWords: [LearnedWord] {
+        let lang = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
+        return words.filter { $0.languageCode.lowercased() == lang }
+    }
+
     var dueToday: [LearnedWord] {
         let end = endOfToday()
         // Yalnızca şu an öğrenilen dilin kelimeleri (dil değiştirince eski dilin tekrarları karışmasın)

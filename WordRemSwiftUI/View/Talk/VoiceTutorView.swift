@@ -140,6 +140,9 @@ struct VoiceTutorView: View {
         session.completeAfterUserTurns = isSetup ? 3 : nil
         session.cardAfterUserTurns = isSetup ? 2 : nil
         if case .languageSetup(let code) = mode { RealtimeVoiceSession.targetOverride = code } else { RealtimeVoiceSession.targetOverride = nil }
+        // Önceki sohbette başka dile geçildiyse bu konuşmaya taşınmasın
+        TutorBrain.sessionLanguage = nil
+        session.allowLanguageSwitch = activeMode == .freeChat
         switch activeMode {
         case .languageSetup, .levelReview, .wordPractice: session.allowModelFinish = true
         default: session.allowModelFinish = false
@@ -174,7 +177,8 @@ struct VoiceTutorView: View {
         }
         let tools = isSetup
             ? TutorBrain.tools.filter { ["show_phrase", "remember_fact", "finish_lesson"].contains($0["name"] as? String ?? "") }
-            : TutorBrain.tools
+            : activeMode == .freeChat ? TutorBrain.tools
+            : TutorBrain.tools.filter { ($0["name"] as? String) != "switch_language" }
         await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: tools,
                             targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),
                             roleplay: !isDemo && !isSetup, aiSpeaksFirst: activeMode != .freeChat)

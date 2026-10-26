@@ -184,7 +184,7 @@ struct LearningLanguageSheet: View {
                     .frame(width: 48, height: 48)
                     .background(DS.Colors.paper, in: Circle())
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(LanguageManager.shared.languageName(for: code))
+                    Text({ let n = LanguageManager.shared.languageName(for: code); return n.prefix(1).uppercased() + n.dropFirst() }())
                         .font(DS.Font.ui(18, weight: .semibold))
                         .foregroundStyle(DS.Colors.ink)
                     if isAdded {
