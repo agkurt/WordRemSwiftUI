@@ -395,6 +395,13 @@ struct VoiceTutorView: View {
                 .font(DS.Font.display(22, weight: .semibold))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(DS.Colors.ink)
+            if let detail = session.errorDetail, code != "limit_reached" {
+                Text(detail)
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(DS.Colors.muted)
+                    .multilineTextAlignment(.center)
+                    .textSelection(.enabled)
+            }
             if code != "limit_reached" && code != "not_configured" {
                 Button(AL.s(.paywallRetry)) { Task { await begin() } }
                     .buttonStyle(OutlineButtonStyle())

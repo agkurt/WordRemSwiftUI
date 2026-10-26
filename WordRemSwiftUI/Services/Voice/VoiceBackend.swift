@@ -41,6 +41,34 @@ final class VoiceBackend {
 
     var isConfigured: Bool { baseURL != nil }
 
+    /// Önbelleksiz, her ağda (mobil veri, Düşük Veri Modu) çalışan oturum; eski bağlantı/HTTP3 durumu taşımaz
+    private let http: URLSession = {
+        let c = URLSessionConfiguration.ephemeral
+        c.allowsCellularAccess = true
+        c.allowsExpensiveNetworkAccess = true
+        c.allowsConstrainedNetworkAccess = true
+        c.waitsForConnectivity = false
+        return URLSession(configuration: c)
+    }()
+    private(set) var lastBodyBytes = 0
+
+    /// Bağlantı hatasının ayrıntısı + küçük bir isteğin geçip geçmediği (ekranda gösterilir)
+    func diagnose(_ error: Error) async -> String {
+        let ns = error as NSError
+        var s = "\(ns.domain.replacingOccurrences(of: "NSURLErrorDomain", with: "URL")) \(ns.code)"
+        if let u = ns.userInfo[NSUnderlyingErrorKey] as? NSError { s += " / \(u.domain) \(u.code)" }
+        s += " · \(lastBodyBytes / 1024)KB"
+        if let baseURL {
+            var r = URLRequest(url: baseURL.appendingPathComponent("privacy"))
+            r.timeoutInterval = 8
+            do {
+                let (_, resp) = try await http.data(for: r)
+                s += " · probe \((resp as? HTTPURLResponse)?.statusCode ?? 0)"
+            } catch { s += " · probe \((error as NSError).code)" }
+        }
+        return s
+    }
+
     private var appUserId: String { Purchases.isConfigured ? Purchases.shared.appUserID : UserStore.shared.userId.uuidString }
 
     /// Ses hızı hep doğal (yapay yavaşlatma sesi bulanıklaştırıyor); yavaşlık talimatla sağlanır
@@ -56,7 +84,8 @@ final class VoiceBackend {
         req.httpBody = try JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed,
         ])
-        let (data, response) = try await URLSession.shared.data(for: req)
+        lastBodyBytes = req.httpBody?.count ?? 0
+        let (data, response) = try await http.data(for: req)
         let status = (response as? HTTPURLResponse)?.statusCode ?? 0
         if status == 200 { return try JSONDecoder().decode(Grant.self, from: data) }
         let body = (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
@@ -72,7 +101,7 @@ final class VoiceBackend {
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
         req.httpBody = try JSONSerialization.data(withJSONObject: ["appUserId": appUserId, "text": text])
-        let (data, response) = try await URLSession.shared.data(for: req)
+        let (data, response) = try await http.data(for: req)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw Failure(code: "network", remainingSeconds: nil) }
         return data
     }
@@ -99,7 +128,7 @@ final class VoiceBackend {
         req.httpBody = try? JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "sessionId": sessionId, "seconds": seconds,
         ])
-        _ = try? await URLSession.shared.data(for: req)
+        _ = try? await http.data(for: req)
     }
 
     func status() async -> Status? {
@@ -110,7 +139,7 @@ final class VoiceBackend {
         guard let url = comps.url else { return nil }
         var req = URLRequest(url: url)
         req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
-        guard let (data, _) = try? await URLSession.shared.data(for: req) else { return nil }
+        guard let (data, _) = try? await http.data(for: req) else { return nil }
         return try? JSONDecoder().decode(Status.self, from: data)
     }
 }

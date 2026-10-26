@@ -38,6 +38,9 @@ final class RealtimeVoiceSession: ObservableObject {
 
     // MARK: - Published
     @Published private(set) var phase: Phase = .idle
+    /// Bağlanamayınca ekranda küçük yazıyla gösterilen teknik ayrıntı
+    @Published private(set) var errorDetail: String?
+    private var lastSocketError: String?
     /// Şu anki AI konuşmasının ekranda görünen kısmı (sesle senkron açılır)
     @Published private(set) var caption: String = ""
     /// Şu anki AI cevabının tamamı (altyazıda sıradaki kelimeyi soluk göstermek için)
@@ -123,6 +126,7 @@ final class RealtimeVoiceSession: ObservableObject {
         pendingCombine = false; correctAnswers = 0; totalAnswers = 0; startedAt = Date()
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
+        errorDetail = nil; lastSocketError = nil
         turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false; timeUp = false; timeUpAt = nil
         do {
             let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools)
@@ -134,8 +138,10 @@ final class RealtimeVoiceSession: ObservableObject {
             connect(model: grant.model, secret: grant.clientSecret)
             startClock()
         } catch let e as VoiceBackend.Failure {
+            errorDetail = "http \(e.code)"
             phase = .failed(e.code)
         } catch {
+            errorDetail = await VoiceBackend.shared.diagnose(error)
             phase = .failed("network")
         }
     }
@@ -651,9 +657,11 @@ final class RealtimeVoiceSession: ObservableObject {
             connect(model: grant.model, secret: grant.clientSecret)
         } catch let e as VoiceBackend.Failure {
             resumeNote = nil
+            errorDetail = "http \(e.code)"
             phase = .failed(e.code)
         } catch {
             resumeNote = nil
+            errorDetail = await VoiceBackend.shared.diagnose(error)
             phase = .failed("connection")
         }
     }
@@ -856,6 +864,7 @@ final class RealtimeVoiceSession: ObservableObject {
             open(req)
         } else {
             resumeNote = nil
+            errorDetail = "socket " + (lastSocketError ?? "timeout")
             phase = .failed("connection")
         }
     }
@@ -872,8 +881,11 @@ final class RealtimeVoiceSession: ObservableObject {
         let task = socket
         task?.receive { [weak self] result in
             switch result {
-            case .failure:
+            case .failure(let error):
+                let ns = error as NSError
+                let desc = "\(ns.code)" + ((task?.response as? HTTPURLResponse).map { " http \($0.statusCode)" } ?? "")
                 Task { @MainActor in
+                    if let self, task === self.socket { self.lastSocketError = desc }
                     // Yeniden bağlanırken eski soketin hatası oturumu düşürmesin
                     guard let self, task === self.socket, self.phase != .ended else { return }
                     if self.phase == .connecting { self.connectFailed(); return }
