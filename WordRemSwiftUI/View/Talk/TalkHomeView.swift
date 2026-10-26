@@ -37,7 +37,8 @@ struct TalkHomeView: View {
             .id(refresh)
         }
         .paperBackground()
-        .onAppear { scheduler.reload() }
+        .onAppear { scheduler.reload(); openRoute(AppRouter.shared.route) }
+        .onReceive(AppRouter.shared.$route) { openRoute($0) }
         .fullScreenCover(item: Binding(get: { activeMode.map(ModeBox.init) }, set: { activeMode = $0?.mode })) { box in
             VoiceTutorView(mode: box.mode) { _ in refresh += 1 }
         }
@@ -45,6 +46,17 @@ struct TalkHomeView: View {
         .fullScreenCover(isPresented: $showReview) {
             ReviewSessionView(words: scheduler.dueToday).environmentObject(langManager)
         }
+    }
+
+    /// Bildirimden gelen yönlendirme: yarım ders ya da tekrar oturumu
+    private func openRoute(_ route: AppRouter.Route?) {
+        guard let route else { return }
+        switch route {
+        case .tutor(let c, let g): activeMode = .goal(chapterId: c, goalId: g)
+        case .review:              if !scheduler.dueToday.isEmpty { showReview = true }
+        case .talk:                break
+        }
+        AppRouter.shared.route = nil
     }
 
     // MARK: - Top bar: dil + seviye · seri · sıralama

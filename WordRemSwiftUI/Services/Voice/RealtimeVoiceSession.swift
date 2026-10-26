@@ -14,6 +14,9 @@
 import AVFoundation
 import NaturalLanguage
 import Foundation
+import os
+
+private let voiceLog = Logger(subsystem: "com.twinflare.WordRemSwiftUI", category: "voice")
 
 @MainActor
 final class RealtimeVoiceSession: ObservableObject {
@@ -24,10 +27,12 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     struct Turn: Identifiable, Equatable {
-        enum Role { case ai, user }
+        enum Role { case ai, user, card }
         let id = UUID()
         let role: Role
         var text: String
+        /// Kartlarda çeviri
+        var detail: String? = nil
     }
 
     // MARK: - Published
@@ -38,6 +43,12 @@ final class RealtimeVoiceSession: ObservableObject {
     @Published private(set) var captionFull: String = ""
     /// Her yeni AI cevabında artar (ekrandaki kartı kaldırmak için)
     @Published private(set) var responseCount = 0
+    /// Ders hedeflerinde ilerleme (uygulama yönetir; model takılsa da ders ilerler)
+    @Published private(set) var targetProgress = 0
+    @Published private(set) var targetTotal = 0
+    @Published private(set) var lessonComplete = false
+    /// Son kelimenin ekrana geldiği an (yumuşak belirme için)
+    @Published private(set) var captionChangedAt = Date()
     /// Tüm konuşma (Transkript çekmecesi için)
     @Published private(set) var turns: [Turn] = []
     @Published private(set) var elapsedSeconds: Int = 0
@@ -85,7 +96,11 @@ final class RealtimeVoiceSession: ObservableObject {
     private var currentUserTurnId: UUID?
 
     // MARK: - Lifecycle
-    func start(instructions: String, tools: [[String: Any]]) async {
+    /// - Parameter targets: ders hedefleri (sırayla); boşsa serbest sohbet
+    func start(instructions: String, tools: [[String: Any]], targets: [String] = [], startStep: Int = 0) async {
+        self.targets = targets
+        targetTotal = targets.count
+        targetProgress = min(startStep, targets.count); attempts = 0; roleplayTurns = 0; lessonComplete = false
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
         turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false
@@ -149,14 +164,102 @@ final class RealtimeVoiceSession: ObservableObject {
         isHoldingToTalk = false
         micMuted = true
         // Çok kısa basış: boş ses gönderme (sunucu hata verir)
-        if let start = holdStartedAt, Date().timeIntervalSince(start) < 0.35 {
+        if let start = holdStartedAt, Date().timeIntervalSince(start) < 0.2 {
             send(["type": "input_audio_buffer.clear"])
             phase = .listening
             return
         }
+        let stats = tapState.takeStats()
+        voiceLog.info("mic sent \(stats.bytes, privacy: .public) bytes, peak level \(stats.peak, privacy: .public), format \(self.engine.inputNode.outputFormat(forBus: 0).description, privacy: .public)")
+        voiceLog.info("hold released after \(Date().timeIntervalSince(self.holdStartedAt ?? Date()), privacy: .public)s → commit")
         send(["type": "input_audio_buffer.commit"])
-        send(["type": "response.create"])
         phase = .thinking
+        // Cevabı, ne söylendiği yazıya dökülünce iste (ders yönlendirmesi için); en geç 1.5 sn
+        awaitingReply = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            guard let self, self.awaitingReply else { return }
+            self.awaitingReply = false
+            self.send(["type": "response.create"])
+        }
+    }
+
+    /// Ekranda gösterilen kartı transkripte ekle
+    func appendCard(_ phrase: String, translation: String) {
+        turns.append(Turn(role: .card, text: phrase, detail: translation.isEmpty ? nil : translation))
+    }
+
+    // MARK: - Ders yönlendirme
+    private var targets: [String] = []
+    private var currentCard: String?
+    private var attempts = 0
+    private var roleplayTurns = 0
+    private var awaitingReply = false
+
+    /// Öğrencinin söylediğine göre öğretmene bir sonraki adımı söyler
+    private func guide(after said: String) {
+        guard !targets.isEmpty, !lessonComplete else { return }
+        var note: String
+        if targetProgress < targets.count {
+            let ok = currentCard.map { Self.matches(said: said, card: $0) } ?? !said.isEmpty
+            attempts += 1
+            if ok || attempts >= 2 {
+                let how = ok ? "The learner said it correctly." : "The learner tried twice; that's enough for this step."
+                targetProgress += 1
+                attempts = 0
+                currentCard = nil
+                note = targetProgress < targets.count
+                    ? "\(how) Praise in a few words, then teach step \(targetProgress + 1) of \(targets.count): \(targets[targetProgress]). Do not repeat the previous phrase."
+                    : "\(how) All steps are done! Start a short roleplay RIGHT NOW in this same turn: set the scene in a few words, then SAY OUT LOUD the other person's first line in character (e.g. "Hi! I'm Sam. How are you?"), and only then call show_phrase with the learner's reply."
+            } else {
+                note = "The learner's attempt wasn't quite right (heard: \"\(said)\"). Kindly give the correct phrase once and let them try one more time."
+            }
+        } else {
+            roleplayTurns += 1
+            guard roleplayTurns >= 2 else {
+                guide(roleplay: "Stay in character: react briefly to what the learner said, say the next line as the other person, and give the learner's reply as the card.")
+                return
+            }
+            note = "The roleplay is done. Celebrate warmly in one or two sentences, say the lesson is complete, and call finish_lesson with success true."
+            lessonComplete = true
+        }
+        voiceLog.info("guide: \(note, privacy: .public)")
+        send(["type": "conversation.item.create",
+              "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note]]]])
+    }
+
+    private func guide(roleplay note: String) {
+        voiceLog.info("guide: \(note, privacy: .public)")
+        send(["type": "conversation.item.create",
+              "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note]]]])
+    }
+
+    /// Söylenen, karttaki cümleyle yeterince örtüşüyor mu ("..." yerleri serbest; Ahmed≈Ahmet gibi küçük farklar sayılmaz)
+    nonisolated static func matches(said: String, card: String) -> Bool {
+        let contractions = ["i'm": "i am", "you're": "you are", "it's": "it is", "what's": "what is",
+                            "i'd": "i would", "don't": "do not", "can't": "cannot", "let's": "let us"]
+        func words(_ s: String) -> [String] {
+            var t = s.lowercased().replacingOccurrences(of: "’", with: "'")
+            for (k, v) in contractions { t = t.replacingOccurrences(of: k, with: v) }
+            return t.components(separatedBy: CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "'")).inverted)
+                .filter { !$0.isEmpty }
+        }
+        func close(_ a: String, _ b: String) -> Bool {
+            if a == b { return true }
+            let x = Array(a), y = Array(b)
+            guard abs(x.count - y.count) <= 2, max(x.count, y.count) >= 4 else { return false }
+            var prev = Array(0...y.count)
+            for i in 1...x.count {
+                var cur = [i] + Array(repeating: 0, count: y.count)
+                for j in 1...y.count { cur[j] = min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (x[i - 1] == y[j - 1] ? 0 : 1)) }
+                prev = cur
+            }
+            return prev[y.count] <= max(1, x.count / 4)
+        }
+        let expected = words(card.replacingOccurrences(of: "...", with: " ").replacingOccurrences(of: "…", with: " "))
+        guard !expected.isEmpty else { return true }
+        let heard = words(said)
+        let hit = expected.filter { e in heard.contains { close($0, e) } }.count
+        return Double(hit) / Double(expected.count) >= 0.5
     }
 
     /// AI konuşurken ekrana dokununca sözünü kes (mikrofon AI konuşurken kapalı olduğundan sesle kesilemez)
@@ -220,6 +323,7 @@ final class RealtimeVoiceSession: ObservableObject {
             guard err == nil, out.frameLength > 0, let ch = out.int16ChannelData else { return }
             let b64 = Data(bytes: ch[0], count: Int(out.frameLength) * 2).base64EncodedString()
             socket.send(.string("{\"type\":\"input_audio_buffer.append\",\"audio\":\"\(b64)\"}")) { _ in }
+            state.record(bytes: Int(out.frameLength) * 2, level: level)
             Task { @MainActor in self?.inputLevel = level }
         }
     }
@@ -264,39 +368,89 @@ final class RealtimeVoiceSession: ObservableObject {
         return buf
     }
 
+    /// Gelen ses parçası. Her cevabın başında ~0.3 sn biriktirilir (titreme tamponu): parçalar arasında
+    /// boşluk olup ses takılmasın.
     private func playAudio(_ buf: AVAudioPCMBuffer) {
-        let n = Int(buf.frameLength)
         restartAudioIfNeeded()
+        if phase != .aiSpeaking { phase = .aiSpeaking }
+        guard prerolled else {
+            preroll.append(buf)
+            if preroll.reduce(0, { $0 + Double($1.frameLength) }) >= outFormat.sampleRate * 0.3 { flushPreroll() }
+            return
+        }
+        schedule(buf)
+    }
+
+    private func flushPreroll() {
+        prerolled = true
+        let queued = preroll
+        preroll = []
+        queued.forEach(schedule)
+    }
+
+    private func schedule(_ buf: AVAudioPCMBuffer) {
+        let n = Double(buf.frameLength)
         if playbackStart == nil {
             playbackStart = player.lastRenderTime
             playbackWallStart = Date()
+            anchorSample = playerSampleTime
+            gapSamples = 0
             startCaptionTimer()
+        } else if let pos = rawPosition, pos > scheduledSamples {
+            // Tampon boşaldı (ses parçası geç geldi): aradaki sessizliği konumdan düş
+            gapSamples += pos - scheduledSamples
         }
-        scheduledSamples += Double(n)
-        // Gerçekten hoparlörden çıkan örnekleri say (oynatıcı saati sessizlikte de ilerlediği için güvenilmez)
+        scheduledSamples += n
         let gen = playbackGeneration
         player.scheduleBuffer(buf, completionCallbackType: .dataPlayedBack) { [weak self] _ in
             Task { @MainActor in
                 guard let self, self.playbackGeneration == gen else { return }
-                self.playedSamples += Double(n)
+                self.playedSamples += n
             }
         }
-        if phase != .aiSpeaking { phase = .aiSpeaking }
+    }
+
+    /// Oynatıcının o anki örnek konumu
+    private var playerSampleTime: Double? {
+        guard engine.isRunning, let node = player.lastRenderTime, let t = player.playerTime(forNodeTime: node) else { return nil }
+        return Double(t.sampleTime)
+    }
+
+    /// Bu cevabın başından beri (boşluklar düşülmeden) geçen örnek
+    private var rawPosition: Double? {
+        guard let anchorSample, let now = playerSampleTime else { return nil }
+        return now - anchorSample - gapSamples
+    }
+
+    /// Şu an çalınan konum (örnek): oynatıcı saatinden sürekli; yoksa tamamlanan parçalardan / duvar saatinden
+    private var playbackPosition: Double {
+        if let pos = rawPosition { return min(max(pos, playedSamples), scheduledSamples) }
+        if !engine.isRunning, let start = playbackWallStart {
+            return min(scheduledSamples, Date().timeIntervalSince(start) * outFormat.sampleRate)
+        }
+        return playedSamples
     }
 
     /// Bu cevabın çalınmış örnek sayısı; stopPlayback'te nesil değişir, eski geri çağrılar sayılmaz
     private var playedSamples: Double = 0
     private var playbackGeneration = 0
+    private var anchorSample: Double?
+    private var gapSamples: Double = 0
+    private var preroll: [AVAudioPCMBuffer] = []
+    private var prerolled = false
     /// Ses üretimi bitti mi (bu andan itibaren yazı/ses oranı kesin)
-    private var audioComplete = false
+    private var audioComplete = false { didSet { if audioComplete && !prerolled { flushPreroll() } } }
     /// Öğretmenin ölçülen konuşma hızı (karakter/sn); her cevapta güncellenir
     private var charsPerSecond = 14.0
+    /// Yazı sesin biraz önünde aksın (sn)
+    private static let captionLead = 0.45
 
     /// Kullanıcı araya girince AI'ın sesini hemen kes
     private func stopPlayback() {
         playbackGeneration += 1
         player.stop(); player.play()
         scheduledSamples = 0; playedSamples = 0; playbackStart = nil; playbackWallStart = nil
+        anchorSample = nil; gapSamples = 0; preroll = []; prerolled = false
         captionTimer?.invalidate()
         if !fullAIText.isEmpty { caption = fullAIText; captionFull = fullAIText }
     }
@@ -311,20 +465,18 @@ final class RealtimeVoiceSession: ObservableObject {
 
     private func tickCaption() {
         guard scheduledSamples > 0 else { return }
-        // Gerçekten çalınan örnekler; motor durduysa duvar saatine göre tahmin
-        var done = playedSamples
-        if !engine.isRunning, let start = playbackWallStart {
-            done = max(done, Date().timeIntervalSince(start) * outFormat.sampleRate)
-        }
+        let done = playbackPosition
         let played = min(1, done / scheduledSamples)
+        // Yazı ~0.3 sn önde: kelime söylenirken ekranda olsun
+        let ahead = min(1, (done + Self.captionLead * outFormat.sampleRate) / scheduledSamples)
         captionFull = fullAIText
         // Altyazı sesle aynı hızda: cevap tamamlandıysa toplam süreye oranla, değilse ortalama konuşma hızıyla
         let n = fullAIText.count
         let revealed: Int = audioComplete
-            ? Int(Double(n) * played)
-            : min(n, Int(done / outFormat.sampleRate * charsPerSecond))
+            ? Int(Double(n) * ahead)
+            : min(n, Int((done / outFormat.sampleRate + Self.captionLead) * charsPerSecond))
         let target = Self.wordBoundary(in: fullAIText, upTo: revealed)
-        if target > caption.count { caption = String(fullAIText.prefix(target)) }
+        if target > caption.count { caption = String(fullAIText.prefix(target)); captionChangedAt = Date() }
         if played >= 0.999 && responseFinished && audioComplete {
             // Ölçülen hızı bir sonraki cevabın ilk saniyeleri için sakla
             let seconds = scheduledSamples / outFormat.sampleRate
@@ -333,6 +485,7 @@ final class RealtimeVoiceSession: ObservableObject {
             captionTimer?.invalidate()
             scheduledSamples = 0; playedSamples = 0; playbackGeneration += 1
             playbackStart = nil; playbackWallStart = nil
+            anchorSample = nil; gapSamples = 0; prerolled = false
             echoGuardUntil = Date().addingTimeInterval(0.6)
             send(["type": "input_audio_buffer.clear"])
             if phase == .aiSpeaking { phase = .listening }
@@ -421,11 +574,18 @@ final class RealtimeVoiceSession: ObservableObject {
             phase = .thinking
 
         case "conversation.item.input_audio_transcription.completed":
+            voiceLog.info("heard: \((e["transcript"] as? String) ?? "", privacy: .public)")
             let t = (e["transcript"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             if !t.isEmpty { turns.append(Turn(role: .user, text: t)) }
+            if awaitingReply {
+                awaitingReply = false
+                guide(after: t)
+                send(["type": "response.create"])
+            }
 
         case "response.created":
             fullAIText = ""; rawAIText = ""; phraseShownThisResponse = false; audioComplete = false
+            preroll = []; prerolled = false
             caption = ""; captionFull = ""; responseFinished = false
             responseCount += 1
             turns.append(Turn(role: .ai, text: ""))
@@ -442,7 +602,11 @@ final class RealtimeVoiceSession: ObservableObject {
             let callId = e["call_id"] as? String ?? ""
             let args = (e["arguments"] as? String).flatMap { $0.data(using: .utf8) }
                 .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] } ?? [:]
-            if name == "show_phrase" { phraseShownThisResponse = true }
+            if name == "show_phrase" {
+                phraseShownThisResponse = true
+                currentCard = args["phrase"] as? String
+                voiceLog.info("card: \(self.currentCard ?? "", privacy: .public)")
+            }
             let output = onToolCall?(name, args) ?? "ok"
             send(["type": "conversation.item.create",
                   "item": ["type": "function_call_output", "call_id": callId, "output": output]])
@@ -456,6 +620,7 @@ final class RealtimeVoiceSession: ObservableObject {
             audioComplete = true
 
         case "response.done":
+            voiceLog.info("tutor said: \(self.fullAIText, privacy: .public)")
             responseFinished = true
             audioComplete = true
             ensurePhraseCard()
@@ -469,7 +634,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
         case "error":
             let msg = (e["error"] as? [String: Any])?["message"] as? String ?? "error"
-            print("⚠️ Realtime error: \(msg)")
+            voiceLog.error("realtime error: \(msg, privacy: .public)")
 
         default:
             break
@@ -509,6 +674,8 @@ final class RealtimeVoiceSession: ObservableObject {
         }
         guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         phraseShownThisResponse = true
+        currentCard = phrase
+        voiceLog.info("card: \(phrase, privacy: .public)")
         _ = onToolCall?("show_phrase", ["phrase": phrase, "translation": translation])
     }
 
@@ -559,6 +726,13 @@ final class TapState: @unchecked Sendable {
     private var socket: URLSessionWebSocketTask?
 
     func set(stream: Bool) { lock.lock(); self.stream = stream; lock.unlock() }
+    private var sentBytes = 0
+    private var peak: Float = 0
+    func record(bytes: Int, level: Float) { lock.lock(); sentBytes += bytes; peak = max(peak, level); lock.unlock() }
+    func takeStats() -> (bytes: Int, peak: Float) {
+        lock.lock(); defer { sentBytes = 0; peak = 0; lock.unlock() }
+        return (sentBytes, peak)
+    }
     func set(socket: URLSessionWebSocketTask?) { lock.lock(); self.socket = socket; lock.unlock() }
     /// Mikrofon akışı açıksa gönderilecek soket
     var streamingSocket: URLSessionWebSocketTask? { lock.lock(); defer { lock.unlock() }; return stream ? socket : nil }

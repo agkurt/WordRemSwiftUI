@@ -176,4 +176,6 @@ struct VoiceProgress: Codable, Equatable {
     }
     var lines: [Line]
     var updatedAt: Date
+    /// Tamamlanan ders hedefi sayısı
+    var step: Int? = nil
 }

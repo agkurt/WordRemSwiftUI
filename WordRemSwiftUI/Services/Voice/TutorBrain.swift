@@ -133,8 +133,12 @@ enum TutorBrain {
             LESSON: "\(chapter?.title["EN"] ?? cId)" — goal "\(goal?.title["EN"] ?? gId)".
             \(goal?.brief ?? "")
             Targets: \(goal?.targets.joined(separator: "; ") ?? "").
-            Teach one phrase at a time: call show_phrase, say it, ask the learner to repeat. Then combine phrases and finish with a short roleplay where you play the other person. \
-            When the learner has used all targets successfully, praise them and call finish_lesson with success true.
+            Teach the targets IN ORDER, one per turn. Keep moving forward:
+            1) Introduce the next target and have the learner say it.
+            2) As soon as they say it (even roughly), praise in a few words and go straight to the NEXT target in the same turn. \
+            Never ask them to repeat a phrase they already said correctly, and never "say it together".
+            3) After the last target, do a short roleplay where you play the other person and the learner uses the phrases.
+            When the roleplay is done, praise them and call finish_lesson with success true.
             """
         case .roleplay:
             task = "Ask what scene the learner wants to roleplay (e.g. café, job interview, meeting a friend), suggest two ideas, then play the other person. Keep it fun and realistic, teach useful phrases with show_phrase along the way."
@@ -164,7 +168,8 @@ enum TutorBrain {
         STYLE
         - Short turns: 1–3 sentences, then hand the turn back with a clear prompt or question.
         - Correct gently by modeling: repeat the learner's sentence correctly once, no long grammar lectures.
-        - Speech recognition is imperfect: if the learner's text looks garbled but close, assume they tried and move on.
+        - Speech recognition is imperfect: if the learner's text looks garbled, short or close, assume they said it and move on.
+        - NEVER get stuck: ask the learner to repeat the same phrase at most once. On the second try, whatever they said, praise them and move to the next step.
         - The learner talks by holding a button, so every turn of yours must end by handing over: \
         finish EVERY turn by calling show_phrase(phrase, translation) with the short sentence the learner should say next, in \(targetName) \
         (a model answer; use "..." where they fill in their own info, e.g. "I'm from..."). Then stop and wait silently. \
@@ -186,6 +191,12 @@ enum TutorBrain {
         """
     }
 
+    /// Ders hedefleri (sırayla); serbest sohbette boş
+    static func targets(for mode: TutorMode) -> [String] {
+        guard case .goal(let cId, let gId) = mode else { return [] }
+        return ScenarioStore.shared.chapters.first { $0.id == cId }?.goals.first { $0.id == gId }?.targets ?? []
+    }
+
     // MARK: Kaldığı yerden devam (ders hedefleri)
     private static func progressKey(for mode: TutorMode) -> String? {
         if case .goal(_, let gId) = mode { return "goal:\(gId)" }
@@ -201,19 +212,27 @@ enum TutorBrain {
         return """
         RESUMING: the learner left this lesson in the middle last time. Their last exchange was:
         \(transcript)
-        Welcome them back warmly, recap in one short sentence where you left off, and continue from exactly that step (don't restart the lesson).
+        They have completed \(savedStep(for: mode)) of the lesson steps. Welcome them back warmly, recap in one short sentence where you left off, \
+        and continue from exactly the next step (don't restart the lesson).
         """
     }
 
-    static func saveProgress(for mode: TutorMode, turns: [RealtimeVoiceSession.Turn]) {
+    static func saveProgress(for mode: TutorMode, turns: [RealtimeVoiceSession.Turn], step: Int) {
         guard let key = progressKey(for: mode) else { return }
-        let lines = turns.filter { !$0.text.isEmpty }.suffix(10).map { VoiceProgress.Line(ai: $0.role == .ai, text: $0.text) }
+        let lines = turns.filter { !$0.text.isEmpty && $0.role != .card }.suffix(10).map { VoiceProgress.Line(ai: $0.role == .ai, text: $0.text) }
         guard lines.count >= 2 else { return }
         UserStore.shared.update { s in
             var all = s.voiceProgress ?? [:]
-            all[key] = VoiceProgress(lines: Array(lines), updatedAt: Date())
+            all[key] = VoiceProgress(lines: Array(lines), updatedAt: Date(), step: step)
             s.voiceProgress = all
         }
+    }
+
+    /// Yarım kalan derste tamamlanmış hedef sayısı
+    static func savedStep(for mode: TutorMode) -> Int {
+        guard let key = progressKey(for: mode), let p = UserStore.shared.snapshot.voiceProgress?[key],
+              Date().timeIntervalSince(p.updatedAt) < 14 * 86_400 else { return 0 }
+        return p.step ?? 0
     }
 
     static func clearProgress(for mode: TutorMode) {

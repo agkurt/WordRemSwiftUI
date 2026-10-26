@@ -47,11 +47,13 @@ struct VoiceTutorView: View {
         .animation(.spring(response: 0.55, dampingFraction: 0.85), value: isConnecting)
         .onChange(of: session.phase) { phase in
             if case .failed(let code) = phase, code == "paywall" { showPaywall = true }
-            if phase == .listening { revealPendingPhrase() }
+            guard phase == .listening else { return }
+            // Hedefler bitti ve öğretmen kapanışı yaptı → ders tamamlandı
+            if session.lessonComplete || finishedSuccess == true { completeLesson(); return }
+            revealPendingPhrase()
         }
         // Kullanıcı konuştuktan sonra öğretmen cevap vermeye başlayınca kart kalkar
         .onChange(of: session.responseCount) { _ in
-            pendingPhrase = nil
             if phrase != nil { withAnimation(.easeOut(duration: 0.25)) { phrase = nil } }
         }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
@@ -72,12 +74,26 @@ struct VoiceTutorView: View {
                                   onFinished(success)
                               })
         }
-        await session.start(instructions: TutorBrain.instructions(for: mode), tools: TutorBrain.tools)
+        await session.start(instructions: TutorBrain.instructions(for: mode), tools: TutorBrain.tools,
+                            targets: TutorBrain.targets(for: mode), startStep: TutorBrain.savedStep(for: mode))
+    }
+
+    private func completeLesson() {
+        if finishedSuccess != true {
+            _ = TutorBrain.handle(tool: "finish_lesson", args: ["success": true, "summary": ""], mode: mode,
+                                  onPhrase: { _, _ in },
+                                  onFinish: { success in
+                                      finishedSuccess = success
+                                      onFinished(success)
+                                  })
+        }
+        phrase = nil
+        session.stop()
     }
 
     /// Ders yarım kaldıysa son konuşmaları sakla (bir dahaki sefere oradan devam)
     private func saveAndStop() {
-        if finishedSuccess != true { TutorBrain.saveProgress(for: mode, turns: session.turns) }
+        if finishedSuccess != true { TutorBrain.saveProgress(for: mode, turns: session.turns, step: session.targetProgress) }
         session.stop()
     }
 
@@ -87,6 +103,7 @@ struct VoiceTutorView: View {
         guard let p = pendingPhrase else { return }
         pendingPhrase = nil
         showTranslation = false
+        session.appendCard(p.text, translation: p.translation)
         withAnimation(.easeOut(duration: 0.3)) { phrase = p }
     }
 
@@ -118,6 +135,21 @@ struct VoiceTutorView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
+        .overlay(alignment: .bottom) {
+            if session.targetTotal > 0 { targetDots.offset(y: 22) }
+        }
+    }
+
+    /// Ders hedefleri: tamamlananlar dolu
+    private var targetDots: some View {
+        HStack(spacing: 6) {
+            ForEach(0..<session.targetTotal, id: \.self) { i in
+                Capsule()
+                    .fill(i < session.targetProgress ? DS.Colors.accent : DS.Colors.line)
+                    .frame(width: i == session.targetProgress ? 22 : 14, height: 5)
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: session.targetProgress)
     }
 
     // MARK: - Caption (son satırlar, eskiler soluk)
@@ -143,7 +175,9 @@ struct VoiceTutorView: View {
                 } else {
                     // En fazla ~6 satır; uzayınca eski satırlar yukarı kayıp soluklaşır
                     let long = session.caption.count > 170
-                    captionText
+                    TimelineView(.animation(minimumInterval: 1.0 / 30, paused: session.phase != .aiSpeaking)) { ctx in
+                        captionText(at: ctx.date)
+                    }
                         .font(DS.Font.ui(22, weight: .medium))
                         .lineSpacing(6)
                         .fixedSize(horizontal: false, vertical: true)
@@ -159,13 +193,22 @@ struct VoiceTutorView: View {
         }
     }
 
-    /// Söylenmiş kelimeler koyu, sıradaki kelime soluk (Pingo gibi). Uzun cevapta son ~240 karakter.
-    private var captionText: Text {
+    /// Söylenmiş kelimeler koyu; en son gelen kelime yumuşakça belirir, sıradaki kelime soluk (Pingo gibi)
+    private func captionText(at now: Date) -> Text {
         let shown = session.caption
         let full = session.captionFull
         let rest = full.count > shown.count ? String(full.dropFirst(shown.count)) : ""
         let next = rest.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) ?? ""
-        return Text(shown.isEmpty && next.isEmpty ? " " : shown).foregroundColor(DS.Colors.ink)
+        guard !shown.isEmpty else { return Text(next.isEmpty ? " " : next).foregroundColor(DS.Colors.muted.opacity(0.45)) }
+        // Son kelimeyi ayır ve 0.22 sn'de soluktan koyuya geçir
+        let trimmed = shown.hasSuffix(" ") ? String(shown.dropLast()) : shown
+        let cut = trimmed.lastIndex(of: " ").map { trimmed.index(after: $0) } ?? trimmed.startIndex
+        let before = String(trimmed[..<cut])
+        let last = String(trimmed[cut...]) + (shown.hasSuffix(" ") ? " " : "")
+        let t = min(1, max(0, now.timeIntervalSince(session.captionChangedAt) / 0.22))
+        let fadeIn = 0.45 + 0.55 * t
+        return Text(before).foregroundColor(DS.Colors.ink)
+            + Text(last).foregroundColor(DS.Colors.ink.opacity(fadeIn))
             + Text(next).foregroundColor(DS.Colors.muted.opacity(0.45))
     }
 
@@ -277,28 +320,105 @@ struct VoiceTutorView: View {
     // MARK: - Transcript
     private var transcriptSheet: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 14) {
-                    ForEach(session.turns.filter { !$0.text.isEmpty }) { t in
-                        HStack {
-                            if t.role == .user { Spacer(minLength: 40) }
-                            Text(t.text)
-                                .font(DS.Font.ui(16))
-                                .foregroundStyle(DS.Colors.ink)
-                                .padding(12)
-                                .background(t.role == .user ? DS.Colors.accent.opacity(0.12) : DS.Colors.paperRaised,
-                                            in: RoundedRectangle(cornerRadius: 16))
-                            if t.role == .ai { Spacer(minLength: 40) }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 16) {
+                        if session.turns.filter({ !$0.text.isEmpty }).isEmpty {
+                            Text(AL.s(.talkTranscriptEmpty))
+                                .font(DS.Font.ui(15))
+                                .foregroundStyle(DS.Colors.muted)
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 60)
+                        }
+                        ForEach(session.turns.filter { !$0.text.isEmpty }) { t in
+                            transcriptRow(t).id(t.id)
                         }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 24)
+                    .frame(maxWidth: 620)
+                    .frame(maxWidth: .infinity)
                 }
-                .padding(20)
+                .defaultScrollAnchor(.bottom)
+                .onAppear { if let last = session.turns.last { proxy.scrollTo(last.id, anchor: .bottom) } }
             }
             .paperBackground()
             .navigationTitle(AL.s(.talkTranscript))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showTranscript = false } label: { Image(systemName: "xmark") }
+                }
+            }
         }
         .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+
+    @ViewBuilder
+    private func transcriptRow(_ t: RealtimeVoiceSession.Turn) -> some View {
+        switch t.role {
+        case .ai:
+            VStack(alignment: .leading, spacing: 6) {
+                Label(AL.s(.talkTutorLabel), systemImage: "waveform")
+                    .font(DS.Font.ui(12, weight: .semibold))
+                    .foregroundStyle(DS.Colors.accent)
+                Text(t.text)
+                    .font(DS.Font.ui(16))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineSpacing(3)
+                    .textSelection(.enabled)
+                    .padding(.horizontal, 14).padding(.vertical, 12)
+                    .background(DS.Colors.paperRaised, in: UnevenRoundedRectangle(topLeadingRadius: 4, bottomLeadingRadius: 18,
+                                                                                  bottomTrailingRadius: 18, topTrailingRadius: 18))
+                    .overlay(UnevenRoundedRectangle(topLeadingRadius: 4, bottomLeadingRadius: 18,
+                                                    bottomTrailingRadius: 18, topTrailingRadius: 18).stroke(DS.Colors.line))
+            }
+            .padding(.trailing, 48)
+        case .user:
+            VStack(alignment: .trailing, spacing: 6) {
+                Text(AL.s(.talkYouLabel))
+                    .font(DS.Font.ui(12, weight: .semibold))
+                    .foregroundStyle(DS.Colors.muted)
+                Text(t.text)
+                    .font(DS.Font.ui(16))
+                    .foregroundStyle(DS.Colors.paper)
+                    .lineSpacing(3)
+                    .textSelection(.enabled)
+                    .padding(.horizontal, 14).padding(.vertical, 12)
+                    .background(DS.Colors.accent, in: UnevenRoundedRectangle(topLeadingRadius: 18, bottomLeadingRadius: 18,
+                                                                             bottomTrailingRadius: 18, topTrailingRadius: 4))
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.leading, 48)
+        case .card:
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(AL.s(.talkSayThis))
+                        .font(DS.Font.ui(10, weight: .bold))
+                        .tracking(1.2)
+                        .foregroundStyle(DS.Colors.accent)
+                    Text(t.text)
+                        .font(DS.Font.ui(18, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                    if let tr = t.detail {
+                        Text(tr).font(DS.Font.ui(14)).foregroundStyle(DS.Colors.muted)
+                    }
+                }
+                Spacer(minLength: 0)
+                Button { TTSManager.shared.speak(t.text, langCode: targetCode) } label: {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(DS.Colors.accent)
+                        .frame(width: 38, height: 38)
+                        .background(DS.Colors.accent.opacity(0.1), in: Circle())
+                }
+                .accessibilityLabel(AL.s(.quizTapToHear))
+            }
+            .padding(14)
+            .background(DS.Colors.accent.opacity(0.06), in: RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(DS.Colors.accent.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 3])))
+        }
     }
 }
 
