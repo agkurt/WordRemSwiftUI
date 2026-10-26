@@ -22,7 +22,7 @@ struct WordRemSwiftUIApp: App {
     @State private var startupDone = false
 
     init () {
-        // Firebase is now configured in AppDelegate
+        // Firebase (analitik) AppDelegate'te kurulur: Track.configure()
     }
 
     var body: some Scene {

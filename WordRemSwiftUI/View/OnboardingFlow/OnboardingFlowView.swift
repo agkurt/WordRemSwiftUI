@@ -25,6 +25,16 @@ struct OnboardingFlowView: View {
     @State private var checkingPro = false
     @State private var finished = false
     @FocusState private var nameFocused: Bool
+    @State private var stepStartedAt = Date()
+
+    private static let stepNames: [Step: String] = [
+        .welcome: "welcome", .native: "native_language", .language: "target_language", .name: "name", .demo: "demo",
+    ]
+    private func trackStep(_ action: String, _ s: Step) {
+        Track.onboarding(action, step: Self.stepNames[s] ?? "\(s.rawValue)", index: s.rawValue,
+                         timeOnStep: action == "view" ? nil : Date().timeIntervalSince(stepStartedAt),
+                         native: native, target: target, hasName: !name.trimmingCharacters(in: .whitespaces).isEmpty)
+    }
 
     private static let flags: [String: String] = [
         "tr": "🇹🇷", "en": "🇬🇧", "de": "🇩🇪", "fr": "🇫🇷", "es": "🇪🇸", "it": "🇮🇹", "ru": "🇷🇺", "zh": "🇨🇳",
@@ -47,9 +57,10 @@ struct OnboardingFlowView: View {
         .frame(maxWidth: 620)
         .frame(maxWidth: .infinity)
         .paperBackground()
+        .onAppear { stepStartedAt = Date(); trackStep("view", step); Track.screen("onboarding") }
         // Paywall hangi yoldan kapanırsa kapansın (X, satın alma, geri yükleme) onboarding biter → ana sayfa
         .fullScreenCover(isPresented: $showPaywall, onDismiss: finish) {
-            OnboardingPaywallView { showPaywall = false }
+            OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "onboarding")
         }
     }
 
@@ -70,6 +81,7 @@ struct OnboardingFlowView: View {
     private func demoFinished() {
         // Paywall açıkken gelen ikinci "bitti" sinyali onu kapatmasın
         guard !showPaywall, !checkingPro else { return }
+        if !paywallSeen { trackStep("complete", .demo) }
         if paywallSeen { return finish() }
         checkingPro = true
         Task {
@@ -84,6 +96,10 @@ struct OnboardingFlowView: View {
     }
 
     private func go(_ next: Step) {
+        guard next != step else { return }
+        trackStep(next.rawValue > step.rawValue ? "complete" : "back", step)
+        stepStartedAt = Date()
+        trackStep("view", next)
         forward = next.rawValue > step.rawValue
         withAnimation(.spring(response: 0.45, dampingFraction: 0.9)) { step = next }
     }
@@ -278,6 +294,8 @@ struct OnboardingFlowView: View {
     private func finish() {
         guard !finished else { return }
         finished = true
+        Track.onboarding("finish", step: Self.stepNames[step] ?? "demo", index: step.rawValue,
+                         native: native, target: target, hasName: !name.trimmingCharacters(in: .whitespaces).isEmpty)
         Task {
             _ = try? await DataService.shared.updateDailyLoginStreak()
             await MainActor.run { authManager.completeOnboarding() }

@@ -37,7 +37,18 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     // MARK: - Published
-    @Published private(set) var phase: Phase = .idle
+    @Published private(set) var phase: Phase = .idle {
+        didSet {
+            // Bağlanamadı / süre-limit: oturum özetiyle birlikte analitiğe
+            guard case .failed(let code) = phase, oldValue != phase else { return }
+            trackLesson(code == "paywall" || code == "limit_reached" ? "limit_hit" : "connect_fail", ["error_code": code])
+        }
+    }
+    /// Analitik için dersin kimliği (mode, lesson_id, topic…); VoiceTutorView doldurur
+    var analyticsContext: [String: Any?] = [:]
+    private var connectStartedAt: Date?
+    private var reconnectCount = 0
+    private var lessonTracked = false
     /// Bağlanamayınca ekranda küçük yazıyla gösterilen teknik ayrıntı
     @Published private(set) var errorDetail: String?
     private var lastSocketError: String?
@@ -132,12 +143,15 @@ final class RealtimeVoiceSession: ObservableObject {
         pendingCombine = false; correctAnswers = 0; totalAnswers = 0; startedAt = Date()
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
+        connectStartedAt = Date(); reconnectCount = 0; lessonTracked = false
         errorDetail = nil; lastSocketError = nil
         turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false; timeUp = false; timeUpAt = nil
+        trackLesson("start")
         do {
             let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools)
             sessionId = grant.sessionId
             allowedSeconds = grant.allowedSeconds
+            Track.setTier(grant.tier)
             // İzin penceresi ses motorunu yarıda kesmesin: önce izni al
             _ = await AVAudioApplication.requestRecordPermission()
             try configureAudio()
@@ -152,8 +166,33 @@ final class RealtimeVoiceSession: ObservableObject {
         }
     }
 
+    /// Ders özeti: ne kadar konuştu, ne kadar doğru, dersin neresinde
+    private func trackLesson(_ action: String, _ extra: [String: Any?] = [:]) {
+        let userTurns = turns.filter { $0.role == .user && !$0.text.isEmpty }.count
+        let stage: String = lessonComplete ? "done"
+            : userTurns == 0 ? "warmup"
+            : (!targets.isEmpty && targetProgress >= targets.count) ? "roleplay" : "teaching"
+        var params: [String: Any?] = analyticsContext
+        params["target_lang"] = Self.currentTarget
+        params["duration_sec"] = elapsedSeconds
+        params["user_turns"] = userTurns
+        params["answers"] = totalAnswers
+        params["correct"] = correctAnswers
+        params["accuracy_pct"] = totalAnswers > 0 ? correctAnswers * 100 / totalAnswers : nil
+        params["progress_pct"] = targetTotal > 0 ? targetProgress * 100 / targetTotal : nil
+        params["stage"] = stage
+        params["via_relay"] = viaRelay
+        params["reconnects"] = reconnectCount
+        params["error_detail"] = errorDetail
+        Track.lesson(action, params.merging(extra) { _, new in new })
+    }
+
     func stop() {
         guard phase != .ended else { return }
+        if !lessonTracked, phase != .connecting, phase != .idle, { if case .failed = phase { return false }; return true }() {
+            lessonTracked = true
+            trackLesson(lessonComplete ? "complete" : timeUp ? "time_up" : "exit")
+        }
         reportUsage(final: true)
         socket?.cancel(with: .normalClosure, reason: nil)
         socket = nil
@@ -250,6 +289,7 @@ final class RealtimeVoiceSession: ObservableObject {
         // Serbest sohbet (hedef yok): konu/soru değiştirmek isterse hemen değiştir
         if targets.isEmpty, !noCards, Self.wantsToSkip(said) {
             voiceLog.info("learner asked to change topic")
+            Track.tutor("skip_request", mode: (analyticsContext["mode"] as? String) ?? "free_chat")
             return sendGuide("The learner wants a different question or topic. Happily switch right away, never push back or say \"let's focus\": offer two fresh, fun topics (or ask a completely different question) and follow their choice.")
         }
         // Serbest sohbette ders akışı yok ama karttaki cümleyi söyleyince yine ✓ yansın
@@ -269,11 +309,11 @@ final class RealtimeVoiceSession: ObservableObject {
             // Aynı cümlede üst üste kaçırma: 1 ipucu → parça parça yardım → başka cümle
             chatMisses = chatMisses.card == card ? (card, chatMisses.count + 1) : (card, 1)
             switch chatMisses.count {
-            case 1: return sendGuide("The learner's try at \"\(card)\" wasn't quite right (unless it's close; then count it as right). Quote what you heard kindly, give ONE concrete tip for the tricky sound, and card the same line again.")
-            case 2: return sendGuide("Second miss on \"\(card)\". Help differently: break it into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language. Card the same line again.")
+            case 1: return sendGuide("The learner's try at \"\(card)\" wasn't quite right (unless it's close; then count it as right). Quote what you heard kindly, give ONE concrete tip for the tricky sound, and show the same line again.")
+            case 2: return sendGuide("Second miss on \"\(card)\". Help differently: break it into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language. Show the same line again.")
             default:
                 chatMisses = (nil, 0)
-                return sendGuide("Third miss on \"\(card)\". Celebrate the effort, say cheerfully \"let's try a different one\" and card an easier or different sentence.")
+                return sendGuide("Third miss on \"\(card)\". Celebrate the effort, cheerfully suggest a different one and show an easier or different sentence.")
             }
         }
         guard !targets.isEmpty, !lessonComplete else { return }
@@ -287,6 +327,7 @@ final class RealtimeVoiceSession: ObservableObject {
         // Öğrenci soruyu geçmek / konuyu değiştirmek istiyor: asla direnme, hemen sıradakine geç
         if Self.wantsToSkip(said) {
             voiceLog.info("learner asked to skip")
+            Track.tutor("skip_request", mode: (analyticsContext["mode"] as? String) ?? "goal")
             attempts = 0
             currentCard = nil
             let next: String
@@ -325,7 +366,7 @@ final class RealtimeVoiceSession: ObservableObject {
             guard ok || attempts >= 3 else {
                 note = attempts == 1
                     ? "The learner's attempt wasn't quite right (if it only looks off because of their accent or a transcript slip, treat it as right and move on instead). Quote what you heard kindly (they said: '\(said)') in the language you are explaining in, not in English unless that is it, give ONE concrete tip for the tricky sound or word, and have them say the line again."
-                    : "Second miss on the same line (again: if it's close, count it as right). Help differently now: break the line into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language, then let them try the whole line once more. Card the same line."
+                    : "Second miss on the same line (again: if it's close, count it as right). Help differently now: break the line into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language, then let them try the whole line once more. Show the same line."
                 return sendGuide(note)
             }
             attempts = 0
@@ -344,7 +385,7 @@ final class RealtimeVoiceSession: ObservableObject {
             } else if withRoleplay {
                 // Ders: model cümleyi söyledi → hemen geçme, kendi hayatına uyarlat ve 1–2 yeni kelime öğret
                 pendingPersonalize = true
-                note = "\(praise) Don't move on yet — make it theirs: teach 1–2 useful new words that fit this moment (say each one with a tiny example, e.g. \"you can also say 'painting' or 'hiking'\"), then ask them a natural follow-up question so they say their OWN version (their real life, using one of the new words if it fits). Your spoken turn must end with that question; then card a complete sample answer that uses one of the new words."
+                note = "\(praise) Don't move on yet — make it theirs: teach 1–2 useful new words that fit this moment (say each one with a tiny example, e.g. \"you can also say 'painting' or 'hiking'\"), then ask them a natural follow-up question so they say their OWN version (their real life, using one of the new words if it fits). Your spoken turn must end with that question; then show a complete sample answer that uses one of the new words."
             } else {
                 note = advance(praise)
             }
@@ -352,7 +393,7 @@ final class RealtimeVoiceSession: ObservableObject {
             roleplayTurns += 1
             if roleplayTurns < 6 {
                 note = ok || said.count > 3
-                    ? "Stay in character: react naturally to what they said, then say the next line as the other person out loud, and card the LEARNER'S reply to it (never your own line)."
+                    ? "Stay in character: react naturally to what they said, then say the next line as the other person out loud, and show the LEARNER'S reply to it (never your own line)."
                     : "Stay in character but help them: give the reply they could use as the card and let them try."
             } else {
                 note = "End the roleplay warmly. Then, like a real teacher, recap with 2–3 real-life example lines they can now use (quote them), celebrate in one sentence and say you'll continue next time. Say all of this OUT LOUD first, then call finish_lesson with success true. No new card."
@@ -368,7 +409,7 @@ final class RealtimeVoiceSession: ObservableObject {
         if withRoleplay && targetProgress >= 2 && targetProgress % 2 == 0 {
             // Pingo gibi: öğrendiklerini birleştirip biraz daha uzun bir cümle kurdur
             pendingCombine = true
-            return "\(praise) Now build on what they know: have them say one slightly longer line that combines their earlier phrases with this one, built from what THEY actually said (their real name, job, city…), not the example answers. Ask them to put it together out loud, then card that line."
+            return "\(praise) Now build on what they know: have them say one slightly longer line that combines their earlier phrases with this one, built from what THEY actually said (their real name, job, city…), not the example answers. Ask them to put it together out loud, then show that line."
         }
         if targetProgress < targets.count, answerCardsOnly {
             // Sohbet demosu: önce soruyu SESLİ sor, kart (olası cevaplar) ondan sonra
@@ -390,9 +431,9 @@ final class RealtimeVoiceSession: ObservableObject {
     private static func nextPiece(_ target: String) -> String {
         // Öğrencinin soru sorduğu parçalar ("ask what someone does"): kart öğrencinin SORUSU olur
         if target.lowercased().hasPrefix("ask") {
-            return "Next piece: \(target). Here the LEARNER asks the question: play the other person in the scene, say one short line about yourself, then invite them to ask you (\"Now you ask me!\"). Card the learner's QUESTION (e.g. \"What do you do?\"), not an answer."
+            return "Next piece: \(target). Here the LEARNER asks the question: play the other person in the scene, say one short line about yourself, then invite them to ask you (\"Now you ask me!\"). Show the learner's QUESTION (e.g. \"What do you do?\"), not an answer."
         }
-        return "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, then ASK the learner the natural question out loud (the way a real person would) — your spoken turn MUST end with that question (never just \"let's move on\"). Only then card the learner's answer as a complete, natural sentence. Only a real either/or choice gets two options separated by \" / \"."
+        return "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, then ASK the learner the natural question out loud (the way a real person would) — your spoken turn MUST end with that question (never just \"let's move on\"). Only then show the learner's answer as a complete, natural sentence. Only a real either/or choice gets two options separated by \" / \"."
     }
 
     private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the LEARNER'S reply — never your own line. Example: you say \"Hi, I'm Emma. What's your name?\" → card \"Nice to meet you, Emma! I'm Ahmet.\""
@@ -506,7 +547,7 @@ final class RealtimeVoiceSession: ObservableObject {
         if phase == .aiSpeaking || phase == .thinking { interrupt() }
         guard phase == .listening else { return }
         turns.append(Turn(role: .user, text: "→ \(display)"))
-        sendGuide("The learner picked a topic: \(topic). Switch to it now: one warm line about the topic, then start a natural, step-by-step conversation around it — ask them something real and card their answer.")
+        sendGuide("The learner picked a topic: \(topic). Switch to it now: one warm line about the topic, then start a natural, step-by-step conversation around it — ask them something real and show their answer.")
         send(["type": "response.create"])
         phase = .thinking
     }
@@ -664,6 +705,7 @@ final class RealtimeVoiceSession: ObservableObject {
         reconnecting = true
         defer { reconnecting = false }
         voiceLog.info("reconnecting after dropped connection")
+        reconnectCount += 1
         reportUsage(final: true)
         let old = socket
         socket = nil
@@ -680,7 +722,7 @@ final class RealtimeVoiceSession: ObservableObject {
         The connection dropped for a moment and is back. The conversation so far:
         \(history)
         Do NOT greet again or restart the lesson. Briefly say you're glad they're back (in your own words, in the language you are speaking to them), then continue exactly where you left off \
-        (ask your last question again\(currentCard.map { " — the learner's current line is \"\($0)\"; card it again" } ?? "")).
+        (ask your last question again\(currentCard.map { " — the learner's current line is \"\($0)\"; show it with show_phrase again" } ?? "")).
         """
         phase = .connecting
         do {
@@ -951,6 +993,10 @@ final class RealtimeVoiceSession: ObservableObject {
         if silentCardActive || silentCardPending { voiceLog.info("silent event: \(type, privacy: .public)") }
         switch type {
         case "session.created", "session.updated":
+            if phase == .connecting, resumeNote == nil, let started = connectStartedAt {
+                connectStartedAt = nil
+                trackLesson("connected", ["connect_ms": Int(Date().timeIntervalSince(started) * 1000)])
+            }
             if phase == .connecting {
                 phase = .listening
                 // Sunucu ses algılaması kapalı: yalnızca basılı tutunca dinlenir
@@ -1194,7 +1240,7 @@ final class RealtimeVoiceSession: ObservableObject {
             "Do not say anything. You just said: \"\($0)\". Call show_phrase with a short, natural example answer to exactly that question that the learner can say back to you (in \(target), first person), never a question, and its translation into \(native)."
                 + (complete ? " Make it a complete, realistic example sentence — fill in real details, no '...' or blanks." : "")
         } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in \(target) (a complete, natural model answer — never placeholders like [your name]) and its translation into \(native)."
-            + (targetProgress < targets.count ? " The current step is: \(targets[targetProgress]) — use the card it specifies." : "")
+            + (targetProgress < targets.count ? " The current step is: \(targets[targetProgress]) — show the line it specifies with show_phrase." : "")
         silentCardPending = true
         voiceLog.info("no card this turn → asking silently")
         // Araç cevabın içinde de verilmeli, yoksa model zorunlu çağrıyı yok sayıyor
@@ -1235,6 +1281,9 @@ final class RealtimeVoiceSession: ObservableObject {
         var t = s.replacingOccurrences(of: tools + #"\s*\([^)]*\)?"#, with: "", options: .regularExpression)
         // Yarım gelen çağrı ("show_phrase(\"Hel…"): adından sonrasını kes
         if let r = t.range(of: tools, options: .regularExpression) { t = String(t[..<r.lowerBound]) }
+        // "Card: Hallo!" / "Kart: …" gibi etiketli satırlar: kart zaten açılıyor, metinde tekrar yazılmasın
+        let label = #"(?i)(card|kart|karte|carte|tarjeta|carta|scheda|карточка|卡片)\s*[:：]\s*[^\n]*"#
+        t = t.replacingOccurrences(of: label, with: "", options: .regularExpression)
         // Sahne notları: "(showing you the phrase now)", "[card]", "*pauses*" gibi parantez içi anlatımlar
         let stage = #"(phrase|card|showing|show|shown|screen|tool|function|pause|waits?|waiting|smiles?|laughs?|kart|ifade|gösteri)"#
         t = t.replacingOccurrences(of: #"[\(\[\*][^\)\]\*\n]{0,80}"# + stage + #"[^\)\]\*\n]{0,80}[\)\]\*]"#,

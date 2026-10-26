@@ -76,18 +76,27 @@ struct TalkHomeView: View {
         .fullScreenCover(item: Binding(get: { activeMode.map(ModeBox.init) }, set: { activeMode = $0?.mode })) { box in
             VoiceTutorView(mode: box.mode) { ok in
                 // Yeni dil kurulumu tamamlandı → öğrenilen dil değişir, plan o dilde baştan
-                if ok, case .languageSetup(let code) = box.mode { LearningLanguages.switchTo(code) }
+                if case .languageSetup(let code) = box.mode {
+                    let from = LearningLanguages.current
+                    if ok { LearningLanguages.switchTo(code) }
+                    Track.language(ok ? "add_complete" : "add_abandon", from: from, to: code, entryPoint: "learning_sheet")
+                }
                 refresh += 1
             }
         }
         // Kurulum konuşması, dil sayfası tamamen kapandıktan sonra açılır (üst üste sunum oturumu bozuyor)
+        .onChange(of: showLanguages) { open in
+            if open { Track.language("sheet_open", from: LearningLanguages.current); Track.screen("learning_sheet") }
+        }
         .sheet(isPresented: $showLanguages, onDismiss: {
             if let code = pendingSetup { pendingSetup = nil; activeMode = .languageSetup(code: code) }
         }) {
             LearningLanguageSheet(onSwitch: { code in
+                Track.language("switch", from: LearningLanguages.current, to: code, entryPoint: "learning_sheet")
                 LearningLanguages.switchTo(code)
                 refresh += 1
             }, onSetup: { code in
+                Track.language("add_start", from: LearningLanguages.current, to: code, entryPoint: "learning_sheet")
                 pendingSetup = code
             }, onSettings: onOpenSettings)
         }

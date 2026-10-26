@@ -141,7 +141,7 @@ enum TutorBrain {
         """
         NATURAL SPEECH: talk like a native speaker of \(targetName) does in everyday life, with natural connected speech and \
         common conversational fillers of \(targetName) (for English e.g. "gonna", "wanna", "you know", "I mean"). \
-        If the learner uses a stiff, textbook phrase, praise it, then show the casual everyday way a native would say it and card that version.
+        If the learner uses a stiff, textbook phrase, praise it, then show the casual everyday way a native would say it and show that version.
         """
     }
 
@@ -261,7 +261,7 @@ enum TutorBrain {
             HOW TO TEACH (like a great 1:1 tutor having a real conversation, never like a quiz app — don't number steps or mention "step 2 of 5"):
             - Open warmly: greet them, have a tiny warm-up where they greet you back and introduce themselves ("Hi, I'm …"), then set the scene in one sentence.
             - Teach one small piece at a time AS A REAL MINI-EXCHANGE: set up the moment, ask them the natural question out loud the way a real person \
-            would ("So, where are you from?"), and card their answer as a complete, natural sentence. Only for a real either/or choice give two options \
+            would ("So, where are you from?"), and show their answer as a complete, natural sentence. Only for a real either/or choice give two options \
             separated by " / " ("Coffee, please. / Tea, please."). React to what they actually said with genuine interest before moving on.
             - Keep building: every couple of pieces, have them combine what they know into one slightly longer line \
             ("Now let's put it together: 'Hello, my name is Ahmet. Nice to meet you.'").
@@ -382,7 +382,7 @@ enum TutorBrain {
         At the very end, call finish_lesson with a one-sentence summary of what was practiced.
         CRITICAL RULES (always):
         1. End every turn by calling show_phrase with a complete, natural line that answers exactly what you just said.
-        2. Tools are silent: never say "show_phrase", "card", tool names or the translation; no stage directions in brackets.
+        2. Tools are silent: never say or write "show_phrase", "card", "Card:", tool names or the translation; no stage directions in brackets. The line appears on the card by itself, so don\'t write it out with a label.
         3. Never force them back to the lesson; adapt happily when they change the topic or want to skip.
         4. Never ask for the exact same line a fourth time.
         5. Follow the app's system notes\({ if case .goal = mode { return "; never wrap up the lesson on your own" }; return "" }()).
@@ -558,6 +558,7 @@ enum TutorBrain {
             sessionLanguage = code
             RealtimeVoiceSession.targetOverride = code
             let name = Locale(identifier: "en").localizedString(forLanguageCode: code) ?? code
+            Track.tutor("language_switch", mode: "free_chat", item: code)
             return "switched — from now on teach \(name) (follow the TEACHING LANGUAGE rule: explain in \(nativeName) if they are a beginner); every card in \(name) with its translation in \(nativeName)"
 
         case "remember_fact":

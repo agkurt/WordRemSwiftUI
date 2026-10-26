@@ -17,6 +17,16 @@ struct QuizSessionView: View {
     @StateObject private var viewModel = QuizViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var showResult = false
+    @State private var startedAt = Date()
+    @State private var tracked = false
+
+    private func trackEnd(_ action: String) {
+        guard !tracked else { return }
+        tracked = true
+        let r = viewModel.quizResult
+        Track.practice(action, type: mode.rawValue, wordCount: wordInfos.count, correct: r.score, total: r.total,
+                       duration: Date().timeIntervalSince(startedAt), entryPoint: "words")
+    }
 
     var body: some View {
         ZStack {
@@ -24,7 +34,7 @@ struct QuizSessionView: View {
 
             if case .finished = viewModel.state {
                 // Auto-open result
-                Color.clear.onAppear { showResult = true }
+                Color.clear.onAppear { showResult = true; trackEnd("complete") }
             }
 
             VStack(spacing: 0) {
@@ -156,7 +166,10 @@ struct QuizSessionView: View {
         }
         .onAppear {
             viewModel.setup(wordInfos: wordInfos, mode: mode, cardId: cardId)
+            startedAt = Date()
+            Track.practice("start", type: mode.rawValue, wordCount: wordInfos.count, entryPoint: "words")
         }
+        .onDisappear { trackEnd("exit") }
         .fullScreenCover(isPresented: $showResult) {
             QuizResultView(
                 score: Int(viewModel.quizResult.percentage),

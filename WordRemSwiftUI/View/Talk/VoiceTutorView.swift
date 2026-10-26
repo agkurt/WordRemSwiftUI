@@ -59,7 +59,12 @@ struct VoiceTutorView: View {
             .padding(.horizontal, 28)
             .animation(.spring(response: 0.42, dampingFraction: 0.68), value: phrase?.text)
             .contentShape(Rectangle())
-            .onTapGesture { if phrase == nil { session.interrupt() } }
+            .onTapGesture {
+                if phrase == nil, session.phase == .aiSpeaking || session.phase == .thinking {
+                    Track.tutor("interrupt", mode: modeName)
+                    session.interrupt()
+                }
+            }
             Spacer(minLength: 0)
             bottomArea
         }
@@ -114,14 +119,20 @@ struct VoiceTutorView: View {
             Text(LearningText.leaveMessage)
         }
         .sheet(isPresented: $showHelp) {
-            StuckHelpSheet { need in session.requestHelp(slower: need == .slower) }
+            StuckHelpSheet { need in
+                Track.tutor(need == .slower ? "help_slower" : "help_explain", mode: modeName)
+                session.requestHelp(slower: need == .slower)
+            }
         }
         .sheet(isPresented: $showTopics) {
-            TopicPickerSheet { display, topic in session.startTopic(display: display, topic: topic) }
+            TopicPickerSheet { display, topic in
+                Track.tutor("topic_pick", mode: modeName, item: display)
+                session.startTopic(display: display, topic: topic)
+            }
         }
         .fullScreenCover(isPresented: $showSummary) { lessonSummary }
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
-            OnboardingPaywallView(onContinue: { showPaywall = false })
+            OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "lesson_limit")
         }
     }
 
@@ -179,6 +190,8 @@ struct VoiceTutorView: View {
             ? TutorBrain.tools.filter { ["show_phrase", "remember_fact", "finish_lesson"].contains($0["name"] as? String ?? "") }
             : activeMode == .freeChat ? TutorBrain.tools
             : TutorBrain.tools.filter { ($0["name"] as? String) != "switch_language" }
+        session.analyticsContext = analyticsContext
+        Track.screen("lesson")
         await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: tools,
                             targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),
                             roleplay: !isDemo && !isSetup, aiSpeaksFirst: activeMode != .freeChat)
@@ -240,12 +253,27 @@ struct VoiceTutorView: View {
         withAnimation(.easeOut(duration: 0.3)) { phrase = p }
     }
 
+    /// Analitikte dersin kimliği: mod + hangi ders
+    private var analyticsContext: [String: Any?] {
+        switch activeMode {
+        case .goal(let c, let g): return ["mode": "goal", "lesson_id": "\(c)/\(g)"]
+        case .levelReview(let id): return ["mode": "level_review", "lesson_id": id.uuidString]
+        case .languageSetup(let code): return ["mode": "setup", "lesson_id": code]
+        case .freeChat: return ["mode": "free_chat"]
+        case .demo: return ["mode": "demo"]
+        case .wordPractice: return ["mode": "word_practice"]
+        default: return ["mode": "\(activeMode)"]
+        }
+    }
+    private var modeName: String { (analyticsContext["mode"] as? String) ?? "other" }
+
     // MARK: - Top bar
     private var topBar: some View {
         HStack {
             // Pingo gibi: serbest sohbette konu seç, derste "Takıldın mı?" (transkript alttaki çubukta)
             Button {
                 if activeMode == .freeChat { showTopics = true } else { showHelp = true }
+                Track.tutor(activeMode == .freeChat ? "topic_picker_open" : "help_open", mode: modeName)
             } label: {
                 Image(systemName: activeMode == .freeChat ? "square.grid.2x2" : "questionmark")
                     .font(.system(size: 16, weight: .semibold))
@@ -443,13 +471,19 @@ struct VoiceTutorView: View {
             }
             HStack(spacing: 36) {
                 // Çeviri birkaç yüz ms sonra gelebilir: düğme hep yerinde, gelene kadar soluk
-                Button { withAnimation { showTranslation.toggle() } } label: {
+                Button {
+                    if !showTranslation { Track.tutor("card_translate", mode: modeName) }
+                    withAnimation { showTranslation.toggle() }
+                } label: {
                     Image(systemName: "character.bubble").font(.system(size: 24, weight: .medium))
                 }
                 .disabled(p.translation.isEmpty)
                 .opacity(p.translation.isEmpty ? 0.35 : 1)
                 .accessibilityLabel(AL.s(.talkTranslate))
-                Button { TutorVoice.shared.speak(p.text, langCode: targetCode) } label: {
+                Button {
+                    Track.tutor("card_speak", mode: modeName)
+                    TutorVoice.shared.speak(p.text, langCode: targetCode)
+                } label: {
                     Image(systemName: "speaker.wave.2").font(.system(size: 24, weight: .medium))
                 }
                 .accessibilityLabel(AL.s(.quizTapToHear))
@@ -463,6 +497,7 @@ struct VoiceTutorView: View {
                         } else {
                             saveToDeck(p.text, p.translation, .saved)
                             savedPhrases.insert(p.text)
+                            Track.tutor("card_save", mode: modeName)
                             Haptics.success()
                         }
                     } label: {
@@ -516,7 +551,7 @@ struct VoiceTutorView: View {
                 }
                 .onEnded { v in
                     if session.isHoldingToTalk { session.endHold() }
-                    else if !canTalk, abs(v.translation.height) < 10 { showTranscript = true }
+                    else if !canTalk, abs(v.translation.height) < 10 { showTranscript = true; Track.tutor("transcript_open", mode: modeName) }
                 }
         )
         .accessibilityAddTraits(.isButton)

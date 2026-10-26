@@ -12,6 +12,8 @@ struct OnboardingPaywallView: View {
 
     @EnvironmentObject var langManager: LanguageManager
     var onContinue: () -> Void
+    /// Paywall'un nereden açıldığı (analitik): onboarding, lesson_limit, profile, ai_quiz, grammar_voice
+    var entryPoint: String = "other"
 
     @Environment(\.presentationMode) var presentationMode
 
@@ -28,6 +30,8 @@ struct OnboardingPaywallView: View {
     @State private var restoreMessage: String?
     /// 0: değer · 1: plan seçimi · 2: deneme hatırlatma sözü (yalnızca deneme varsa)
     @State private var step = 0
+    @State private var visit: Track.PaywallVisit?
+    @State private var purchased = false
 
     // (SF Symbol, title, subtitle) — Pro'nun gerçekten açtığı özellikler
     // AI satırları yalnızca Apple Intelligence olan cihazlarda gösterilir (vaat edilen her şey çalışmalı)
@@ -76,7 +80,6 @@ struct OnboardingPaywallView: View {
                         }
                     } else if isCloseVisible {
                         Button {
-                            EventManager.shared.logPaywallEvent("close_tapped")
                             presentationMode.wrappedValue.dismiss()
                             onContinue()
                         } label: {
@@ -94,7 +97,19 @@ struct OnboardingPaywallView: View {
             }
         }
         .onAppear {
+            if visit == nil {
+                let v = Track.PaywallVisit(entryPoint: entryPoint)
+                visit = v
+                Track.paywall("view", v, step: 0)
+            }
             fetchPlans()
+        }
+        // Hangi yoldan kapanırsa kapansın: ne kadar kaldı, nereye kadar geldi, hangi plana bakıyordu
+        .onDisappear {
+            if let visit, !purchased { Track.paywall("close", visit, step: step, plan: selectedPlan) }
+        }
+        .onChange(of: step) { newStep in
+            if let visit { Track.paywall("step_view", visit, step: newStep, plan: selectedPlan) }
         }
         .alert(langManager.s(.paywallRestoreTitle), isPresented: Binding(
             get: { restoreMessage != nil },
@@ -219,6 +234,7 @@ struct OnboardingPaywallView: View {
             .padding(.bottom, 24)
 
             Button(selectedPlan?.trialDays != nil ? langManager.s(.paywallContinue) : ctaTitle) {
+                if let visit { Track.paywall("cta_tap", visit, step: step, plan: selectedPlan) }
                 if selectedPlan?.trialDays != nil { withAnimation { step = 2 } } else { purchaseSelected() }
             }
             .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
@@ -270,8 +286,14 @@ struct OnboardingPaywallView: View {
     private var legalFooter: some View {
         VStack(spacing: 10) {
             HStack(spacing: 20) {
-                legalButton(langManager.s(.paywallPrivacy)) { showPrivacy = true }
-                legalButton(langManager.s(.paywallTerms))   { showTerms = true }
+                legalButton(langManager.s(.paywallPrivacy)) {
+                    if let visit { Track.paywall("legal_open", visit, step: step, legalDoc: "privacy") }
+                    showPrivacy = true
+                }
+                legalButton(langManager.s(.paywallTerms)) {
+                    if let visit { Track.paywall("legal_open", visit, step: step, legalDoc: "terms") }
+                    showTerms = true
+                }
             }
             Text(langManager.s(.paywallDisclosure))
                 .font(DS.Font.ui(11))
@@ -339,6 +361,10 @@ struct OnboardingPaywallView: View {
     private func planCard(_ plan: SubscriptionPlan) -> some View {
         let selected = plan.id == selectedId
         Button {
+            if selectedId != plan.id, let visit {
+                visit.planSwitches += 1
+                Track.paywall("plan_select", visit, step: step, plan: plan)
+            }
             selectedId = plan.id
         } label: {
             HStack(alignment: .center, spacing: 14) {
@@ -451,26 +477,33 @@ struct OnboardingPaywallView: View {
                 fetchPlans()
             } else {
                 fetchFailed = true
+                if let visit { Track.paywall("plans_load_fail", visit, step: step) }
             }
         }
     }
 
     private func purchaseSelected() {
         guard let plan = selectedPlan else { return }
-        let tag = plan.isAnnual ? "annual" : "weekly"
         isLoading = true
-        EventManager.shared.logPaywallEvent("purchase_tapped_\(tag)")
+        let visit = visit
+        if let visit { Track.paywall("purchase_start", visit, step: step, plan: plan) }
         InAppPurchaseManager.shared.purchase(product: plan.product) { outcome in
             DispatchQueue.main.async { self.isLoading = false }
             switch outcome {
-            case .success:
-                EventManager.shared.logPaywallEvent("purchase_success_\(tag)")
+            case .success(let transactionId):
+                DispatchQueue.main.async {
+                    self.purchased = true
+                    if let visit {
+                        Track.paywall("purchase_success", visit, step: self.step, plan: plan)
+                        Track.purchase(plan, visit, transactionId: transactionId)
+                    }
+                }
                 if let days = plan.trialDays { scheduleTrialReminder(trialDays: days) }
                 DispatchQueue.main.async { self.showWelcomePro = true }
             case .cancelled:
-                EventManager.shared.logPaywallEvent("purchase_cancelled_\(tag)")
-            case .failed:
-                EventManager.shared.logPaywallEvent("purchase_failed_\(tag)")
+                DispatchQueue.main.async { if let visit { Track.paywall("purchase_cancel", visit, step: self.step, plan: plan) } }
+            case .failed(let code):
+                DispatchQueue.main.async { if let visit { Track.paywall("purchase_fail", visit, step: self.step, plan: plan, error: code) } }
                 DispatchQueue.main.async { self.showPurchaseErrorAlert = true }
             }
         }
@@ -490,18 +523,19 @@ struct OnboardingPaywallView: View {
 
     private func restorePurchases() {
         isLoading = true
-        EventManager.shared.logPaywallEvent("restore_tapped")
+        if let visit { Track.paywall("restore_start", visit, step: step) }
         InAppPurchaseManager.shared.restorePurchases { result in
             DispatchQueue.main.async { self.isLoading = false }
             switch result {
             case .success:
-                EventManager.shared.logPaywallEvent("restore_success")
                 DispatchQueue.main.async {
+                    self.purchased = true
+                    if let visit = self.visit { Track.paywall("restore_success", visit, step: self.step) }
                     self.showWelcomePro = true
                 }
             case .failure:
-                EventManager.shared.logPaywallEvent("restore_failed")
                 DispatchQueue.main.async {
+                    if let visit = self.visit { Track.paywall("restore_fail", visit, step: self.step) }
                     self.restoreMessage = langManager.s(.paywallRestoreNothing)
                 }
             }

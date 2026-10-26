@@ -48,9 +48,10 @@ enum PurchaseResult {
 }
 
 enum PurchaseOutcome {
-    case success
+    case success(transactionId: String?)
     case cancelled
-    case failed
+    /// code: RevenueCat hata kodu (analitik), ör. "purchase_not_allowed", "not_entitled"
+    case failed(code: String)
 }
 
 // MARK: - InAppPurchaseManager
@@ -139,19 +140,20 @@ final class InAppPurchaseManager: ObservableObject {
 
     // MARK: - Purchase
     func purchase(product: StoreProduct, completion: @escaping (PurchaseOutcome) -> Void) {
-        Purchases.shared.purchase(product: product) { [weak self] _, customerInfo, error, userCancelled in
+        Purchases.shared.purchase(product: product) { [weak self] transaction, customerInfo, error, userCancelled in
             if userCancelled { completion(.cancelled); return }
             if let error {
                 print("❌ [IAP] Purchase error: \(error.localizedDescription)")
                 DispatchQueue.main.async { self?.failCount += 1 }
-                completion(.failed)
+                let code = (error as? ErrorCode).map { "\($0)" } ?? "error_\((error as NSError).code)"
+                completion(.failed(code: code))
                 return
             }
             let isActive = self?.isActive(customerInfo) == true
             DispatchQueue.main.async {
                 self?.isPremium = isActive   // didSet → UserDefaults + DailyLimitManager
             }
-            completion(isActive ? .success : .failed)
+            completion(isActive ? .success(transactionId: transaction?.transactionIdentifier) : .failed(code: "not_entitled"))
         }
     }
 

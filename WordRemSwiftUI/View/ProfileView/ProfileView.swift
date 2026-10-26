@@ -68,7 +68,7 @@ struct ProfileView: View {
             )
         }
         .fullScreenCover(isPresented: $showPaywall) {
-            OnboardingPaywallView(onContinue: { showPaywall = false })
+            OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "profile")
         }
         // Profil sekmesine her dönüşte (ör. quiz sonrası) güncel ilerlemeyi göster
         .onReceive(NotificationCenter.default.publisher(for: UserStore.didChangeNotification)) { _ in
@@ -123,7 +123,6 @@ struct ProfileView: View {
             if !iap.isPremium {
                 // Upgrade Pro butonu
                 Button {
-                    EventManager.shared.logPaywallEvent("upgrade_tapped_profile")
                     showPaywall = true
                 } label: {
                     Label(langManager.s(.profileUpgradePro), systemImage: "crown")
@@ -337,6 +336,7 @@ struct ProfileView: View {
                 Menu {
                     ForEach(LanguageManager.supportedCodes.filter { $0 != target }, id: \.self) { code in
                         Button {
+                            Track.language("ui_change", from: langManager.currentLanguageCode, to: code, entryPoint: "profile")
                             langManager.setLanguage(code)
                         } label: {
                             Text("\(LearningLanguages.flags[code] ?? "") \(Self.endonym(code))")

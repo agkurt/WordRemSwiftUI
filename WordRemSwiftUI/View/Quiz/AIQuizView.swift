@@ -104,7 +104,7 @@ struct AIQuizView: View {
         }
         // ── Paywall ───────────────────────────────────────────────────
         .fullScreenCover(isPresented: $showPaywall) {
-            OnboardingPaywallView(onContinue: { showPaywall = false })
+            OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "ai_quiz")
                 .environmentObject(langManager)
         }
     }

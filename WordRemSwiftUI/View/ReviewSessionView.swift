@@ -18,6 +18,10 @@ struct ReviewSessionView: View {
     @State private var reviewedCount = 0
     @State private var glow = false
     @State private var shakes = 0
+    @State private var startedAt = Date()
+    @State private var answers = 0
+    @State private var misses = 0
+    @State private var tracked = false
     private let total: Int
 
     init(words: [LearnedWord]) {
@@ -46,6 +50,18 @@ struct ReviewSessionView: View {
         .frame(maxWidth: 620)
         .frame(maxWidth: .infinity)
         .paperBackground()
+        .onAppear {
+            startedAt = Date()
+            Track.practice("start", type: "review", wordCount: total, entryPoint: "home")
+        }
+        .onDisappear { trackEnd("exit") }
+    }
+
+    private func trackEnd(_ action: String) {
+        guard !tracked else { return }
+        tracked = true
+        Track.practice(action, type: "review", wordCount: total, correct: answers - misses, total: answers,
+                       duration: Date().timeIntervalSince(startedAt), entryPoint: "home")
     }
 
     // MARK: - Top bar
@@ -181,7 +197,7 @@ struct ReviewSessionView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(ConfettiBurst(origin: .top, count: 70).padding(.horizontal, -24).ignoresSafeArea())
-        .onAppear { Haptics.success() }
+        .onAppear { Haptics.success(); trackEnd("complete") }
     }
 
     // MARK: - Actions
@@ -192,6 +208,8 @@ struct ReviewSessionView: View {
 
     private func answer(_ word: LearnedWord, _ grade: ReviewGrade) {
         scheduler.grade(word, grade)
+        answers += 1
+        if grade == .again { misses += 1 }
         // Önce tepki (doğru: parlama, yanlış: sallanma), sonra sıradaki kart
         if grade == .again {
             Haptics.warning()

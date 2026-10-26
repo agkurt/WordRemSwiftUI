@@ -41,6 +41,14 @@ final class GameQuizViewModel: ObservableObject {
 
     // MARK: - Inputs
     private(set) var sessionType: QuizSessionType = .level(UUID())
+    private var startedAt = Date()
+    private var practiceType: String {
+        switch sessionType {
+        case .level: return "path_level"
+        case .mistakes: return "mistakes"
+        case .aiGenerated: return "ai_quiz"
+        }
+    }
     private var sessionMistakes: Set<String> = []
     private var levelTitle: String = ""
     private var targetLangCode: String = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
@@ -72,6 +80,8 @@ final class GameQuizViewModel: ObservableObject {
                pool: [SBSentence] = [], levelTitle: String = "") {
         self.sessionType    = sessionType
         self.levelTitle     = levelTitle
+        startedAt = Date()
+        Track.practice("start", type: practiceType, wordCount: words.count, entryPoint: "practice")
         self.targetLangCode = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
         let proficiency     = UserDefaults.standard.integer(forKey: "selectedProficiencyLevel")
         var isLevel = false
@@ -114,6 +124,8 @@ final class GameQuizViewModel: ObservableObject {
     func setupAIQuiz(questions: [GameQuestion], title: String) {
         self.sessionType     = .aiGenerated(title: title)
         self.levelTitle      = title
+        startedAt = Date()
+        Track.practice("start", type: "ai_quiz", wordCount: questions.count, entryPoint: "ai_quiz")
         self.targetLangCode  = UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN"
         self.questions       = questions
         self.currentIndex    = 0
@@ -288,6 +300,8 @@ final class GameQuizViewModel: ObservableObject {
     // MARK: - Finish & Save
     private func finishQuiz() async {
         isSaving = true
+        Track.practice("complete", type: practiceType, wordCount: questions.count, correct: correctCount,
+                       total: questions.count, duration: Date().timeIntervalSince(startedAt), entryPoint: "practice")
 
         switch sessionType {
         case .level(let levelId):

@@ -87,6 +87,8 @@ struct MainTabView: View {
         }
         // Bildirim butonlarının (Hatırladım/Unuttum) adları da yeni dilde olsun
         .onChange(of: langManager.currentLanguageCode) { _ in SmartReminders.registerCategories() }
+        .onChange(of: selectedTab) { Track.screen(Self.screenName($0)) }
+        .onAppear { Track.screen(Self.screenName(selectedTab)) }
         // "Rem": alışkanlık saati, widget/bildirim cevaplarını oku, arka plana geçerken hatırlatmaları kur
         .onChange(of: scenePhase) { phase in
             switch phase {
@@ -150,6 +152,16 @@ struct MainTabView: View {
             .background(DS.Colors.paper.ignoresSafeArea(edges: .bottom))
         }
         .animation(.easeOut(duration: 0.2), value: showsAddButton)
+    }
+
+    private static func screenName(_ tab: AppTab) -> String {
+        switch tab {
+        case .today: return "home"
+        case .words: return "words"
+        case .path: return "practice"
+        case .profile: return "profile"
+        case .leaderboard: return "leaderboard"
+        }
     }
 }
 

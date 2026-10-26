@@ -107,7 +107,7 @@ struct AIGrammarVoiceIntroView: View {
             AITranscriptSheet(history: history)
         }
         .fullScreenCover(isPresented: $showPaywall) {
-            OnboardingPaywallView(onContinue: { showPaywall = false })
+            OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "grammar_voice")
                 .environmentObject(LanguageManager.shared)
         }
         // Konuşma sırasında tap → kes (typewriter da durur)

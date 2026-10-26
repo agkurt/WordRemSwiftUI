@@ -4,7 +4,7 @@
  *   GET /terms    → Kullanım şartları: Apple standart EULA + abonelik koşulları
  */
 
-const UPDATED = "October 26, 2026";
+const UPDATED = "October 27, 2026";
 
 function page(title: string, body: string): Response {
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -35,6 +35,8 @@ export function privacyPage(): Response {
 <li>To enforce talk-time limits, our server keeps an anonymous app user ID and the number of seconds used. This contains no name, email or audio.</li></ul>
 <h2>Purchases</h2>
 <p>Subscriptions are processed by Apple. We use RevenueCat to check whether your subscription is active, using an anonymous app user ID. We never see your payment details.</p>
+<h2>App analytics</h2>
+<p>We use Google Analytics for Firebase to understand how the app is used (for example which screens are opened, how lessons go and where people stop) so we can improve it. It uses an anonymous app user ID and an app instance ID, plus basic device and app information. It does not include your name, email, voice or conversation text, we do not use the advertising identifier (IDFA), and the data is not used for advertising.</p>
 <h2>Speech recognition and microphone</h2>
 <p>The microphone is used only while you hold the talk button or use speaking exercises. On-device speech recognition is provided by Apple.</p>
 <h2>Children</h2><p>WordRem AI is not directed at children under 13 and we do not knowingly collect their data.</p>
@@ -54,6 +56,8 @@ export function privacyPage(): Response {
 <li>Konuşma süresi sınırları için sunucumuz yalnızca anonim bir uygulama kimliği ve kullanılan saniye sayısını tutar; ad, e-posta veya ses içermez.</li></ul>
 <h2>Satın almalar</h2>
 <p>Abonelikler Apple tarafından işlenir. Aboneliğinin aktif olup olmadığını anonim bir kimlikle RevenueCat üzerinden kontrol ederiz. Ödeme bilgilerini asla görmeyiz.</p>
+<h2>Uygulama analitiği</h2>
+<p>Uygulamanın nasıl kullanıldığını anlamak ve geliştirmek için Google Analytics for Firebase kullanırız (ör. hangi ekranların açıldığı, derslerin nasıl geçtiği, kullanıcıların nerede bıraktığı). Bunun için anonim bir uygulama kullanıcı kimliği, uygulama kurulum kimliği ve temel cihaz/uygulama bilgileri kullanılır. Adın, e-postan, sesin veya konuşma metinlerin dahil değildir; reklam kimliğini (IDFA) kullanmayız ve bu veriler reklam için kullanılmaz.</p>
 <h2>Mikrofon ve konuşma tanıma</h2>
 <p>Mikrofon yalnızca konuşma düğmesine basılıyken veya konuşma alıştırmalarında kullanılır. Cihaz üzerinde konuşma tanımayı Apple sağlar.</p>
 <h2>Çocuklar</h2><p>WordRem AI 13 yaşından küçük çocuklara yönelik değildir ve bilerek onlardan veri toplamayız.</p>

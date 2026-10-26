@@ -92,11 +92,9 @@ struct PlanSelectionView: View {
                 Button {
                     if selectedPlan == 0 {
                         // Pro seçili → paywall aç
-                        EventManager.shared.logPaywallEvent("pro_selected_onboarding")
                         showPaywall = true
                     } else {
                         // Free seçili → direkt loading
-                        EventManager.shared.logPaywallEvent("free_selected_onboarding")
                         navigateToLoading = true
                     }
                 } label: {

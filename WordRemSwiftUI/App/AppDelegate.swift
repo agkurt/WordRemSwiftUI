@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
         Task { @MainActor in SmartReminders.registerCategories() }
         InAppPurchaseManager.configure(apiKey: "appl_AIYIRTwVqPvcdVpfrGdzmqAYbox")
+        Track.configure()   // RevenueCat'ten sonra: user_id olarak onun kimliği kullanılır
         return true
     }
 
