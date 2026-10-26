@@ -3,7 +3,7 @@
 //  WordRemSwiftUI
 //
 //  "Konuş" ana ekranı: üstte dil/seviye ve seri, bugünün tekrar şeridi, ortada tek ders kartı
-//  ("Başla"), altında serbest sohbet modları ve "Planım" yol haritası.
+//  ("Başla") ile "Asistanınla konuş" yana kaydırılır; altında "Planım" yol haritası.
 //
 
 import SwiftUI
@@ -20,6 +20,8 @@ struct TalkHomeView: View {
     /// Seri artınca kutla (son görülen değer)
     @AppStorage("talk.lastSeenStreak") private var lastSeenStreak = 0
     @State private var streakCelebration = 0
+    /// Yana kaydırılan kartlar: 0 = sıradaki ders, 1 = asistanla serbest sohbet
+    @State private var page = 0
 
     private var store: ScenarioStore { ScenarioStore.shared }
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
@@ -29,8 +31,8 @@ struct TalkHomeView: View {
             VStack(spacing: 26) {
                 topBar
                 if !scheduler.dueToday.isEmpty { reviewStrip }
-                lessonCard
-                modes
+                pager
+                planButton
             }
             .padding(.horizontal, 24)
             .padding(.top, 8)
@@ -174,54 +176,66 @@ struct TalkHomeView: View {
                 }
                 .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
                 .frame(maxWidth: 240)
-                Button { showPlan = true } label: {
-                    Label(AL.s(.talkPlan), systemImage: "map")
-                        .font(DS.Font.ui(15, weight: .semibold))
-                        .foregroundStyle(DS.Colors.accent)
-                }
             }
             .padding(.vertical, 30)
             .padding(.horizontal, 20)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 28))
             .overlay(RoundedRectangle(cornerRadius: 28).stroke(DS.Colors.line))
         }
     }
 
-    // MARK: - Serbest modlar
-    private var modes: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(AL.s(.talkWhatToPractice))
-                .font(DS.Font.display(22, weight: .semibold))
-                .foregroundStyle(DS.Colors.ink)
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                modeTile(AL.s(.talkModeRoleplay), "theatermasks", .roleplay)
-                modeTile(AL.s(.talkModeNewPhrases), "text.quote", .newPhrases)
-                modeTile(AL.s(.talkModeQuestion), "questionmark.bubble", .quickQuestion)
-                modeTile(AL.s(.talkModeMyDay), "sun.max", .myDay)
+    // MARK: - Yana kaydırılan kartlar (Pingo gibi)
+    private var pager: some View {
+        VStack(spacing: 14) {
+            TabView(selection: $page) {
+                lessonCard.padding(.horizontal, 2).tag(0)
+                assistantCard.padding(.horizontal, 2).tag(1)
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(height: 400)
+            HStack(spacing: 6) {
+                ForEach(0..<2, id: \.self) { i in
+                    Capsule()
+                        .fill(page == i ? DS.Colors.accent : DS.Colors.line)
+                        .frame(width: page == i ? 18 : 7, height: 7)
+                }
+            }
+            .animation(.spring(response: 0.3), value: page)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func modeTile(_ title: String, _ icon: String, _ mode: TutorMode) -> some View {
-        Button { activeMode = mode } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(DS.Colors.accent)
-                Text(title)
-                    .font(DS.Font.ui(15, weight: .semibold))
-                    .foregroundStyle(DS.Colors.ink)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, minHeight: 84, alignment: .topLeading)
-            .padding(16)
-            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.line))
+    /// Asistanla dolu dolu serbest sohbet
+    private var assistantCard: some View {
+        VStack(spacing: 18) {
+            VoiceLogoView(phase: .listening, level: 0.2)
+                .scaleEffect(1.8)
+                .frame(height: 90)
+            Text(AL.s(.talkAssistantKicker))
+                .font(DS.Font.ui(15, weight: .medium))
+                .foregroundStyle(DS.Colors.muted)
+            Text(AL.s(.talkAssistantTitle))
+                .font(DS.Font.display(34, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            Button(AL.s(.talkStart)) { activeMode = .freeChat }
+                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                .frame(maxWidth: 240)
         }
-        .buttonStyle(.plain)
+        .padding(.vertical, 30)
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 28))
+        .overlay(RoundedRectangle(cornerRadius: 28).stroke(DS.Colors.line))
+    }
+
+    private var planButton: some View {
+        Button { showPlan = true } label: {
+            Label(AL.s(.talkPlan), systemImage: "map")
+                .font(DS.Font.ui(15, weight: .semibold))
+                .foregroundStyle(DS.Colors.accent)
+        }
     }
 }
 

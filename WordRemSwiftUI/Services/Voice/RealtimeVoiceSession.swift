@@ -110,7 +110,9 @@ final class RealtimeVoiceSession: ObservableObject {
     // MARK: - Lifecycle
     /// - Parameter targets: ders hedefleri (sırayla); boşsa serbest sohbet
     /// - Parameter roleplay: hedefler bitince canlandırma yapılsın mı (onboarding demosunda hayır)
-    func start(instructions: String, tools: [[String: Any]], targets: [String] = [], startStep: Int = 0, roleplay: Bool = true) async {
+    func start(instructions: String, tools: [[String: Any]], targets: [String] = [], startStep: Int = 0, roleplay: Bool = true,
+               aiSpeaksFirst: Bool = true) async {
+        self.aiSpeaksFirst = aiSpeaksFirst
         self.targets = targets
         self.withRoleplay = roleplay
         self.cardTool = tools.first { $0["name"] as? String == "show_phrase" }
@@ -231,7 +233,7 @@ final class RealtimeVoiceSession: ObservableObject {
             return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then smoothly bring them back (\"Okay, let's focus and keep going!\") and invite them to say the current line again. Don't treat it as a mistake.")
         }
         // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
-        let ok = currentCard.map { Self.matches(said: said, card: $0) || (answerCardsOnly && Self.overlap(said: said, card: $0) >= 0.25) } ?? !said.isEmpty
+        let ok = currentCard.map { Self.matches(said: said, card: $0) || Self.overlap(said: said, card: $0) >= (answerCardsOnly ? 0.25 : 0.6) } ?? !said.isEmpty
         totalAnswers += 1
         if ok { correctAnswers += 1 }
         lastAnswerCorrect = ok
@@ -252,7 +254,7 @@ final class RealtimeVoiceSession: ObservableObject {
             if pendingCombine {
                 pendingCombine = false
                 note = targetProgress < targets.count
-                    ? "\(praise) Now bring in the next new piece (\(targets[targetProgress])): give a short natural model line and have them say it."
+                    ? "\(praise) \(Self.nextPiece(targets[targetProgress]))"
                     : finishOrRoleplay(praise)
             } else {
                 targetProgress += 1
@@ -264,19 +266,19 @@ final class RealtimeVoiceSession: ObservableObject {
                     // Sohbet demosu: önce soruyu SESLİ sor, kart (olası cevaplar) ondan sonra
                     note = "\(praise) Then, out loud, \(targets[targetProgress]). Your spoken turn MUST end with the question itself; only after asking it, call show_phrase."
                 } else if targetProgress < targets.count {
-                    note = "\(praise) Let's build on that — next new piece: \(targets[targetProgress]). Give a short natural model line and have them say it."
+                    note = "\(praise) \(Self.nextPiece(targets[targetProgress]))"
                 } else {
                     note = finishOrRoleplay(praise)
                 }
             }
         } else {
             roleplayTurns += 1
-            if roleplayTurns < 3 {
+            if roleplayTurns < 4 {
                 note = ok || said.count > 3
                     ? "Stay in character: react naturally to what they said, then say the next line as the other person and give the learner's reply as the card."
                     : "Stay in character but help them: give the reply they could use as the card and let them try."
             } else {
-                note = "End the roleplay. Wrap up like a warm real teacher: celebrate in one or two sentences, mention what they can now do, and say you'll continue next time. Then call finish_lesson with success true."
+                note = "End the roleplay warmly. Then, like a real teacher, recap with 2–3 real-life example lines they can now use (quote them), celebrate in one sentence and say you'll continue next time. Say all of this OUT LOUD first, then call finish_lesson with success true. No new card."
                 lessonComplete = true
             }
         }
@@ -289,6 +291,11 @@ final class RealtimeVoiceSession: ObservableObject {
             return "\(praise) That's the last piece — wrap up now: celebrate proudly what they just did, tell them their personal plan is ready, say a warm \"see you soon\" — say all of this OUT LOUD first, and only after speaking call finish_lesson with success true. No new card."
         }
         return "\(praise) \(Self.roleplayStart)"
+    }
+
+    /// Yeni parça: gerçek bir mini sohbet olarak (soru sesli, cevap kartta; doğal bir seçim varsa iki seçenek)
+    private static func nextPiece(_ target: String) -> String {
+        "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, ask the learner the natural question out loud (the way a real person would), then card the learner's answer. When there's a natural choice, put two answer options separated by \" / \"."
     }
 
     private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the learner's reply."
@@ -364,6 +371,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Kullanıcı yazıyla bir şey göndermek isterse (ör. konu seçimi çipleri)
     func sendText(_ text: String) {
+        guard phase == .listening else { return }
         send(["type": "conversation.item.create",
               "item": ["type": "message", "role": "user", "content": [["type": "input_text", "text": text]]]])
         send(["type": "response.create"])
@@ -653,8 +661,8 @@ final class RealtimeVoiceSession: ObservableObject {
                 phase = .listening
                 // Sunucu ses algılaması kapalı: yalnızca basılı tutunca dinlenir
                 send(["type": "session.update", "session": ["type": "realtime", "audio": ["input": ["turn_detection": NSNull()]]]])
-                // AI ilk sözü alsın (karşılama)
-                send(["type": "response.create"])
+                // AI ilk sözü alsın (karşılama) — serbest sohbette öğrenci başlar
+                if aiSpeaksFirst { send(["type": "response.create"]) }
             }
 
         case "input_audio_buffer.speech_started":
@@ -764,6 +772,8 @@ final class RealtimeVoiceSession: ObservableObject {
     private var pendingToolFollowUp = false
     private var followUpWithoutTools = false
     private var needsAnswerCard = false
+    private var aiSpeaksFirst = true
+
     /// Çevirisiz gösterilen kart: cevap bitince çevirisi sessizce istenir
     private var translationPending: String?
     /// Kartlar yalnızca öğrencinin cevabı olabilir (soru kartı reddedilir) — onboarding demosu

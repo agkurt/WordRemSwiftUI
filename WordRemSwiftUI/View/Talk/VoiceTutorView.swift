@@ -132,7 +132,7 @@ struct VoiceTutorView: View {
         }
         await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: TutorBrain.tools,
                             targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),
-                            roleplay: !isDemo)
+                            roleplay: !isDemo, aiSpeaksFirst: activeMode != .freeChat)
     }
 
     private func completeLesson() {
@@ -232,6 +232,8 @@ struct VoiceTutorView: View {
             default:
                 if let done = finishedSuccess, session.phase == .ended {
                     completionView(done)
+                } else if showSuggestions {
+                    suggestionsView
                 } else {
                     // Metin ekranın tam ortasından başlar; satır eklendikçe blok yumuşakça yukarı kayar,
                     // hep ortada kalır. En fazla ~6 satır; uzayınca eski satırlar yukarıda soluklaşır.
@@ -254,6 +256,37 @@ struct VoiceTutorView: View {
                 }
             }
         }
+    }
+
+    /// Serbest sohbet açılışı (Pingo gibi): öğrenci ne yapmak istediğini söyler ya da bir balona dokunur
+    private var showSuggestions: Bool {
+        activeMode == .freeChat && session.caption.isEmpty && !session.turns.contains { $0.role == .user }
+    }
+
+    private var suggestionsView: some View {
+        VStack(spacing: 14) {
+            Text(AL.s(.talkWhatToPractice))
+                .font(DS.Font.display(28, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .padding(.bottom, 10)
+            ForEach(Array([AL.s(.talkSayRoleplay), AL.s(.talkSayNewPhrases), AL.s(.talkSayQuestion), AL.s(.talkSayMyDay)].enumerated()),
+                    id: \.offset) { i, line in
+                Button { session.sendText(line) } label: {
+                    Text("“\(line)”")
+                        .font(DS.Font.ui(16, weight: .medium))
+                        .foregroundStyle(DS.Colors.accent)
+                        .multilineTextAlignment(.leading)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 13)
+                        .background(DS.Colors.accent.opacity(0.09), in: RoundedRectangle(cornerRadius: 22))
+                }
+                .buttonStyle(.plain)
+                // Pingo'daki gibi balonlar hafif sağa-sola kayık dizilir
+                .frame(maxWidth: .infinity, alignment: i % 2 == 0 ? .leading : .trailing)
+                .padding(.horizontal, i % 2 == 0 ? 0 : 6)
+            }
+        }
+        .opacity(session.phase == .listening ? 1 : 0.55)
     }
 
     /// Ders bitti: kutla ve sıradaki derse geçir

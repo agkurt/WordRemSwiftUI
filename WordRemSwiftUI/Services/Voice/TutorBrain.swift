@@ -65,6 +65,8 @@ final class ScenarioStore {
 enum TutorMode: Equatable {
     case goal(chapterId: String, goalId: String)
     case roleplay, newPhrases, quickQuestion, myDay
+    /// Ana sayfadaki "Asistanınla konuş": öğrenci ne yapmak istediğini söyler, dolu dolu serbest sohbet
+    case freeChat
     /// Onboarding'deki ilk tanışma: kısa, etkileyici canlı demo
     case demo
     /// Kelimeler sekmesinden: öğrenilen kelimeleri cümle içinde kullandırma
@@ -181,15 +183,18 @@ enum TutorBrain {
             LESSON: "\(chapter?.title["EN"] ?? cId)" — goal "\(goal?.title["EN"] ?? gId)".
             \(goal?.brief ?? "")
             Targets: \(goal?.targets.joined(separator: "; ") ?? "").
-            HOW TO TEACH (like a great 1:1 tutor, never like a quiz app — don't number steps or mention "step 2 of 5"):
-            - Open with a quick, friendly warm-up using something they already know (e.g. "Let's warm up — say: 'Hello.'"), then move on.
-            - Teach one small new piece at a time with a short natural model line, then let them say it.
+            HOW TO TEACH (like a great 1:1 tutor having a real conversation, never like a quiz app — don't number steps or mention "step 2 of 5"):
+            - Open warmly: greet them, have a tiny warm-up where they greet you back and introduce themselves ("Hi, I'm …"), then set the scene in one sentence.
+            - Teach one small piece at a time AS A REAL MINI-EXCHANGE: set up the moment, ask them the natural question out loud the way a real person \
+            would ("So, where are you from?"), and card their answer. When there's a natural choice, give two answer options separated by " / " \
+            ("I'm from Turkey. / I'm from Spain."). React to what they actually said with genuine interest before moving on.
             - Keep building: every couple of pieces, have them combine what they know into one slightly longer line \
             ("Now let's put it together: 'Hello, my name is Ahmet. Nice to meet you.'").
             - Fix mistakes by quoting kindly and naming the tiny fix ("Oh, I heard: 'I from Turkey.' We need that little helper: 'I am from Turkey.'").
             - React like a person: vary your praise ("Nice flow!", "Spot on!", "That was smooth"), and if they joke or flirt, laugh and play along for a beat.
             - The app will tell you (in system notes) when to move on, when to combine and when to start the roleplay — follow those notes.
-            - Finish with a short real-life roleplay in the lesson's scene where you play the other person (e.g. the check-in agent), then wrap up warmly.
+            - Finish with a real-life roleplay in the lesson's scene where you play the other person (e.g. the check-in agent), \
+            then recap with 2–3 real example lines they can now use in real life, and wrap up warmly.
             """
         case .demo:
             task = """
@@ -199,7 +204,9 @@ enum TutorBrain {
             1) Greet them warmly with energy, say you're their personal \(targetName) tutor, and ask their name. Then call show_phrase with the \(targetName) for "\(demoNameCard)" (their answer).
             2) React to their name, then ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)" — keep both options separated by " / ", translation in the same format.
             3) React to their answer with genuine interest, then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)" — both options, " / " between them.
-            4) React (\(demoScenario.closer)), then wrap up: tell them proudly they just had a real conversation in \(targetName), \
+            4) React (\(demoScenario.closer)), then the real-life finale: ask them to introduce themselves to a new friend in one go, \
+            and card ONE full line built from what THEY actually said (e.g. "Hi, I'm Ahmet. I'm a night person and I love rock music.").
+            5) After they say it, wrap up: tell them proudly they just had a real conversation in \(targetName), \
             their personal plan is ready, and say a warm "see you soon!". Then call finish_lesson with success true.
             Keep every turn very short (1–2 sentences), beginner-friendly \(targetName).
             IMPORTANT: the card is the learner's ANSWER, never your question.
@@ -219,6 +226,18 @@ enum TutorBrain {
             task = "Teach useful everyday \(targetName) expressions one at a time (call show_phrase for each), give a tiny real-life example, have the learner say it and use it in their own sentence."
         case .quickQuestion:
             task = "The learner has a quick question about \(targetName) (a word, grammar, how to say something). Answer clearly and briefly, give one example with show_phrase, then ask if they want to practice it."
+        case .freeChat:
+            task = """
+            OPEN CONVERSATION — the learner opened "talk with your assistant" and speaks first, telling you what they want: \
+            a roleplay, new phrases, a quick question, talking about their day, or anything else. Follow their lead and have a rich, \
+            natural, flowing conversation like a fun friend who's a great teacher:
+            - Roleplay: ask which scene (suggest two), then play the other person and keep the scene alive.
+            - New phrases: teach useful everyday lines one at a time, each with a tiny real-life example, and let them use it.
+            - Quick question: answer clearly and briefly with one example, then offer to practice it.
+            - Their day / anything else: ask genuine follow-up questions, react to what they say, recast mistakes naturally.
+            If they talk to you in \(nativeName), answer the request warmly (briefly in \(nativeName) if needed), then bring \(targetName) in. \
+            Keep it a real back-and-forth — never a quiz.
+            """
         case .myDay:
             task = "Have a friendly chat in \(targetName) about the learner's day. Ask simple follow-up questions, recast their mistakes naturally (repeat their sentence correctly), and introduce 1–2 useful phrases with show_phrase."
         case .levelReview(let levelId):
@@ -261,7 +280,7 @@ enum TutorBrain {
 
         When you learn a lasting fact about the learner (name, city, job, goal, interests), call remember_fact. \
         At the very end, call finish_lesson with a one-sentence summary of what was practiced.
-        Start now with a short, friendly greeting and the first step.
+        \(mode == .freeChat ? "Wait for the learner to speak first." : "Start now with a short, friendly greeting and the first step.")
         """
     }
 
@@ -271,7 +290,7 @@ enum TutorBrain {
             let sc = demoScenario
             return ["their name (card \"\(demoNameCard)\")"] + sc.steps.map {
                 "ask \($0.ask) like a friend would (offer both choices in your question), then call show_phrase with the \(targetName) for \"\($0.answer)\" — both options separated by \" / \""
-            }
+            } + ["react with interest, then ask them to introduce themselves to a new friend in one go — the card is ONE full line built from their name and the answers THEY actually gave (e.g. \"Hi, I'm Ahmet. I'm a night person and I love rock music.\")"]
         }
         if case .wordPractice = mode { return practiceWords.map { "a short sentence using \"\($0.term)\"" } }
         if case .levelReview(let id) = mode {

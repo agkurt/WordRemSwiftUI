@@ -29,16 +29,16 @@ struct LaunchScreenView: View {
 
     var body: some View {
         ZStack {
-            DS.Colors.paper.ignoresSafeArea()
+            // Uygulama ikonunun zemin rengi: logo kenarsız, ikonla birebir aynı görünür
+            Color(red: 247 / 255, green: 233 / 255, blue: 232 / 255).ignoresSafeArea()
 
-            VStack(spacing: 28) {
-                WordRemLogoText(size: 48)
-                    .scaleEffect(logoScale)
-                    .opacity(logoOpacity)
-
-                ProgressView().tint(DS.Colors.muted)
-                    .opacity(logoOpacity)
-            }
+            Image("SplashLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: 520)
+                .scaleEffect(logoScale)
+                .opacity(logoOpacity)
+                .accessibilityLabel("WordRem AI")
         }
         .task {
             withAnimation(.spring(response: 0.7, dampingFraction: 0.72)) {
