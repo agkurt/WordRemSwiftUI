@@ -12,6 +12,7 @@
 //
 
 import AVFoundation
+import NaturalLanguage
 import Foundation
 
 @MainActor
@@ -79,13 +80,15 @@ final class RealtimeVoiceSession: ObservableObject {
     private var captionTimer: Timer?
     private var clock: Timer?
     private var lastUsageReport = 0
+    private var wallSeconds = 0
+    private var warnedTimeUp = false
     private var currentUserTurnId: UUID?
 
     // MARK: - Lifecycle
     func start(instructions: String, tools: [[String: Any]]) async {
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
-        turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0
+        turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false
         do {
             let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools)
             sessionId = grant.sessionId
@@ -467,8 +470,15 @@ final class RealtimeVoiceSession: ObservableObject {
             if parts.count >= 4 { translation = parts[3] }
         }
         if phrase == nil {
+            // Tırnak içindeki ifadelerden öğrenilen dildeki sonuncusu (ana dildeki açıklamalar değil)
+            let target = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
             let quotes = fullAIText.matches(of: try! Regex(#"[“"]([^"“”]{2,80})[”"]"#))
-            if let last = quotes.last, let sub = last.output[1].substring { phrase = String(sub) }
+                .compactMap { $0.output[1].substring.map(String.init) }
+            phrase = quotes.last { q in
+                let r = NLLanguageRecognizer()
+                r.processString(q)
+                return r.dominantLanguage?.rawValue.hasPrefix(target) ?? false
+            }
         }
         guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         phraseShownThisResponse = true
@@ -483,11 +493,18 @@ final class RealtimeVoiceSession: ObservableObject {
         }
     }
 
+    /// Yalnızca gerçek konuşma süresi sayılır (kullanıcı basılı tutarken + AI sesi çalarken);
+    /// sessizlik/kart okuma ücretsiz. Kötüye kullanıma karşı duvar saatinde de bir tavan var.
     private func tickClock() {
         guard phase != .connecting, phase != .ended else { return }
-        elapsedSeconds += 1
+        wallSeconds += 1
+        if isHoldingToTalk || scheduledSamples > 0 { elapsedSeconds += 1 }
         if elapsedSeconds - lastUsageReport >= 30 { reportUsage(final: false) }
-        if allowedSeconds > 0 && elapsedSeconds == max(0, allowedSeconds - 30) {
+        if allowedSeconds > 0 && wallSeconds >= max(allowedSeconds * 3, 900) {
+            onLimitReached?(); stop(); return
+        }
+        if allowedSeconds > 0 && !warnedTimeUp && elapsedSeconds >= max(0, allowedSeconds - 30) {
+            warnedTimeUp = true
             // 30 sn kala AI'dan kibarca toparlamasını iste
             send(["type": "conversation.item.create",
                   "item": ["type": "message", "role": "system",
