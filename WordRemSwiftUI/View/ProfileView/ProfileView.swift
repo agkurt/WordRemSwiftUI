@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import GameKit
 
 struct ProfileView: View {
 
@@ -12,6 +13,7 @@ struct ProfileView: View {
     @StateObject private var vm = ProfileScreenViewModel()
     @ObservedObject private var achievementService = AchievementService.shared
     @ObservedObject private var iap = InAppPurchaseManager.shared
+    @ObservedObject private var gameCenter = GameCenterService.shared
     @State private var showPaywall = false
     @State private var showPrivacy = false
     @State private var showTerms = false
@@ -97,6 +99,11 @@ struct ProfileView: View {
                     if iap.isPremium {
                         Eyebrow(text: "WordRem Pro", color: DS.Colors.slate)
                     }
+                    // Bu ad yalnızca öğretmenin hitabı; sıralamada Game Center adı görünür (aşağıda)
+                    Text(loc(["Öğretmen sana böyle seslenir", "Your tutor calls you", "Dein Tutor nennt dich", "Ton tuteur t'appelle",
+                              "Tu tutor te llama", "Il tutor ti chiama", "Репетитор называет тебя", "老师这样称呼你"]))
+                        .font(DS.Font.ui(12, weight: .medium))
+                        .foregroundStyle(DS.Colors.muted)
                     HStack(spacing: 8) {
                         Text(vm.username)
                             .font(DS.Font.display(24))
@@ -116,6 +123,8 @@ struct ProfileView: View {
                     Text("\(langManager.f(.profileLevelFormat, vm.userLevel)) · \(vm.user?.totalXp ?? 0) XP")
                         .font(DS.Font.ui(13))
                         .foregroundStyle(DS.Colors.muted)
+                    leaderboardNameRow
+                        .padding(.top, 2)
                 }
                 Spacer(minLength: 0)
             }
@@ -319,6 +328,38 @@ struct ProfileView: View {
     }
 
     // MARK: - Account (hesap yok: iCloud senkron notu + ilerlemeyi sıfırla)
+    /// Sıralamadaki ad Game Center'dan gelir; uygulama içinden değişmez, Game Center profilinden değişir
+    @ViewBuilder
+    private var leaderboardNameRow: some View {
+        if gameCenter.isAuthenticated, let name = gameCenter.playerName {
+            HStack(spacing: 6) {
+                Image(systemName: "trophy").font(.system(size: 11, weight: .semibold))
+                Text(loc(["Sıralamada: ", "On leaderboard: ", "In der Rangliste: ", "Au classement : ",
+                          "En la clasificación: ", "In classifica: ", "В рейтинге: ", "排行榜：" ]) + name)
+                    .lineLimit(1)
+                Button(loc(["Değiştir", "Change", "Ändern", "Modifier", "Cambiar", "Modifica", "Изменить", "更改"])) {
+                    GKAccessPoint.shared.trigger(state: .localPlayerProfile) {}
+                }
+                .font(DS.Font.ui(12, weight: .semibold))
+                .foregroundStyle(DS.Colors.accent)
+            }
+            .font(DS.Font.ui(12))
+            .foregroundStyle(DS.Colors.muted)
+        } else {
+            Text(loc(["Sıralamada görünmek için Ayarlar → Game Center'dan giriş yap",
+                      "To appear on the leaderboard, sign in under Settings → Game Center",
+                      "Für die Rangliste: Einstellungen → Game Center anmelden",
+                      "Pour le classement : Réglages → Game Center",
+                      "Para la clasificación: Ajustes → Game Center",
+                      "Per la classifica: Impostazioni → Game Center",
+                      "Для рейтинга войдите: Настройки → Game Center",
+                      "要上排行榜，请在 设置 → Game Center 登录"]))
+                .font(DS.Font.ui(12))
+                .foregroundStyle(DS.Colors.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
     // MARK: - Ayarlar: ana dil + yasal metinler
     private func loc(_ v: [String]) -> String {
         let order = ["tr", "en", "de", "fr", "es", "it", "ru", "zh"]
@@ -773,8 +814,14 @@ private struct UsernameSetupPopup: View {
     @State private var isSaving = false
     @FocusState private var focused: Bool
 
+    private static func loc(_ code: String, _ v: [String]) -> String {
+        let order = ["tr", "en", "de", "fr", "es", "it", "ru", "zh"]
+        let i = order.firstIndex(of: code) ?? 1
+        return v.indices.contains(i) ? v[i] : v[1]
+    }
+
     private var isValid: Bool {
-        username.trimmingCharacters(in: .whitespaces).count >= 3
+        username.trimmingCharacters(in: .whitespaces).count >= 2
     }
 
     var body: some View {
@@ -786,7 +833,9 @@ private struct UsernameSetupPopup: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // Close butonu — her zaman (ilk kurulumda da atlanabilir; Apple 4.8 / 5.1.1)
                     HStack(alignment: .top) {
-                        Text(isFirstSetup ? langManager.s(.profileSetUsername) : langManager.s(.profileChangeUsername))
+                        Text(Self.loc(langManager.currentLanguageCode, ["Öğretmen sana nasıl seslensin?", "What should your tutor call you?",
+                            "Wie soll dich dein Tutor nennen?", "Comment ton tuteur doit-il t'appeler ?", "¿Cómo quieres que te llame tu tutor?",
+                            "Come vuoi che ti chiami il tuo tutor?", "Как репетитору тебя называть?", "老师该怎么称呼你？"]))
                             .font(DS.Font.display(24))
                             .foregroundStyle(DS.Colors.ink)
                             .fixedSize(horizontal: false, vertical: true)
@@ -804,9 +853,15 @@ private struct UsernameSetupPopup: View {
                         .accessibilityLabel(langManager.s(.usernameSkip))
                     }
 
-                    Text(isFirstSetup
-                         ? langManager.s(.profileUsernameLeaderboard)
-                         : langManager.s(.profileUsernameOneChange))
+                    Text(Self.loc(langManager.currentLanguageCode, [
+                        "Sesli derslerde öğretmen seni bu isimle çağırır. İstediğin zaman değiştirebilirsin. Sıralamada Game Center adın görünür.",
+                        "Your tutor uses this name in voice lessons. You can change it anytime. The leaderboard shows your Game Center name.",
+                        "Dein Tutor nutzt diesen Namen in den Sprachlektionen. Du kannst ihn jederzeit ändern. In der Rangliste steht dein Game-Center-Name.",
+                        "Ton tuteur utilise ce prénom pendant les leçons. Tu peux le changer à tout moment. Le classement affiche ton nom Game Center.",
+                        "Tu tutor usa este nombre en las clases de voz. Puedes cambiarlo cuando quieras. En la clasificación aparece tu nombre de Game Center.",
+                        "Il tutor usa questo nome nelle lezioni vocali. Puoi cambiarlo quando vuoi. In classifica appare il tuo nome Game Center.",
+                        "Репетитор обращается к тебе по этому имени. Его можно изменить в любой момент. В рейтинге показывается имя из Game Center.",
+                        "老师会在语音课中这样称呼你，随时可以修改。排行榜显示你的 Game Center 名称。"]))
                         .font(DS.Font.ui(14))
                         .foregroundStyle(DS.Colors.muted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -824,7 +879,7 @@ private struct UsernameSetupPopup: View {
                                 .stroke(focused ? DS.Colors.inkSoft : DS.Colors.line, lineWidth: 1)
                         )
                         .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
+                        .textInputAutocapitalization(.words)
                         .focused($focused)
                         .padding(.top, 20)
 
