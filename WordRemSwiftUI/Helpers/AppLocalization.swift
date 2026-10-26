@@ -132,6 +132,8 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case talkNextUp = "talk.next_up"
+        case talkContinueNext = "talk.continue_next"
         case talkTutorLabel = "talk.tutor_label"
         case talkYouLabel = "talk.you_label"
         case talkSayThis = "talk.say_this"
@@ -694,6 +696,8 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .talkNextUp: "SIRADAKİ",
+            .talkContinueNext: "Devam et",
             .talkTutorLabel: "Öğretmen",
             .talkYouLabel: "Sen",
             .talkSayThis: "SÖYLE",
@@ -1206,6 +1210,8 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .talkNextUp: "NEXT UP",
+            .talkContinueNext: "Continue",
             .talkTutorLabel: "Tutor",
             .talkYouLabel: "You",
             .talkSayThis: "SAY THIS",
@@ -1715,6 +1721,8 @@ struct AL {
             .paywallTerms:          "Nutzungsbedingungen",
             .paywallRestore:        "Wiederherstellen",
             .paywallDisclosure:     "Die Zahlung wird bei Kaufbestätigung Ihrem Apple-Konto belastet. Das Abonnement verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ablauf der aktuellen Laufzeit gekündigt wird. Abonnements können in den App-Store-Kontoeinstellungen verwaltet werden.",
+            .talkNextUp: "ALS NÄCHSTES",
+            .talkContinueNext: "Weiter",
             .talkTutorLabel: "Tutor",
             .talkYouLabel: "Du",
             .talkSayThis: "SAG ES",
@@ -2007,6 +2015,8 @@ struct AL {
             .paywallTerms:          "Conditions d'utilisation",
             .paywallRestore:        "Restaurer",
             .paywallDisclosure:     "Le paiement sera débité de votre compte Apple lors de la confirmation de l'achat. L'abonnement se renouvelle automatiquement, sauf s'il est annulé au moins 24 heures avant la fin de la période en cours. Gérez vos abonnements dans les réglages du compte App Store.",
+            .talkNextUp: "ENSUITE",
+            .talkContinueNext: "Continuer",
             .talkTutorLabel: "Tuteur",
             .talkYouLabel: "Toi",
             .talkSayThis: "DIS-LE",
@@ -2299,6 +2309,8 @@ struct AL {
             .paywallTerms:          "Términos de uso",
             .paywallRestore:        "Restaurar",
             .paywallDisclosure:     "El pago se cargará a tu cuenta de Apple al confirmar la compra. La suscripción se renueva automáticamente a menos que se cancele al menos 24 horas antes del final del período actual. Administra las suscripciones en Configuración de cuenta de App Store.",
+            .talkNextUp: "SIGUIENTE",
+            .talkContinueNext: "Continuar",
             .talkTutorLabel: "Tutor",
             .talkYouLabel: "Tú",
             .talkSayThis: "DILO",
@@ -2591,6 +2603,8 @@ struct AL {
             .paywallTerms:          "Termini di utilizzo",
             .paywallRestore:        "Ripristina",
             .paywallDisclosure:     "Il pagamento verrà addebitato sul tuo account Apple alla conferma dell'acquisto. L'abbonamento si rinnova automaticamente a meno che non venga annullato almeno 24 ore prima della fine del periodo corrente. Gestisci gli abbonamenti nelle Impostazioni account dell'App Store.",
+            .talkNextUp: "PROSSIMO",
+            .talkContinueNext: "Continua",
             .talkTutorLabel: "Tutor",
             .talkYouLabel: "Tu",
             .talkSayThis: "DILLO",
@@ -2883,6 +2897,8 @@ struct AL {
             .paywallTerms:          "Условия использования",
             .paywallRestore:        "Восстановить",
             .paywallDisclosure:     "Оплата будет снята с вашего аккаунта Apple при подтверждении покупки. Подписка автоматически продлевается, если не будет отменена не менее чем за 24 часа до окончания текущего периода. Управляйте подписками в настройках аккаунта App Store.",
+            .talkNextUp: "ДАЛЕЕ",
+            .talkContinueNext: "Продолжить",
             .talkTutorLabel: "Репетитор",
             .talkYouLabel: "Ты",
             .talkSayThis: "СКАЖИ",
@@ -3175,6 +3191,8 @@ struct AL {
             .paywallTerms:          "使用条款",
             .paywallRestore:        "恢复购买",
             .paywallDisclosure:     "购买确认后，将从您的Apple账户扣款。订阅将自动续订，除非在当前期限结束前至少24小时取消。可在App Store账户设置中管理订阅。",
+            .talkNextUp: "下一个",
+            .talkContinueNext: "继续",
             .talkTutorLabel: "老师",
             .talkYouLabel: "你",
             .talkSayThis: "跟我说",

@@ -18,6 +18,9 @@ struct VoiceTutorView: View {
     /// Öğretmenin gösterdiği kart, sesi bitince ekrana gelir (Pingo gibi)
     @State private var pendingPhrase: (text: String, translation: String)?
     @Namespace private var logoNS
+    /// "Devam et" ile sıradaki derse geçince değişir
+    @State private var nextMode: TutorMode?
+    private var activeMode: TutorMode { nextMode ?? mode }
     @State private var showTranslation = false
     @State private var showTranscript = false
     @State private var showPaywall = false
@@ -64,7 +67,7 @@ struct VoiceTutorView: View {
 
     private func begin() async {
         session.onToolCall = { name, args in
-            TutorBrain.handle(tool: name, args: args, mode: mode,
+            TutorBrain.handle(tool: name, args: args, mode: activeMode,
                               onPhrase: { text, tr in
                                   pendingPhrase = (text, tr)
                                   if session.phase == .listening { revealPendingPhrase() }
@@ -74,13 +77,13 @@ struct VoiceTutorView: View {
                                   onFinished(success)
                               })
         }
-        await session.start(instructions: TutorBrain.instructions(for: mode), tools: TutorBrain.tools,
-                            targets: TutorBrain.targets(for: mode), startStep: TutorBrain.savedStep(for: mode))
+        await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: TutorBrain.tools,
+                            targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode))
     }
 
     private func completeLesson() {
         if finishedSuccess != true {
-            _ = TutorBrain.handle(tool: "finish_lesson", args: ["success": true, "summary": ""], mode: mode,
+            _ = TutorBrain.handle(tool: "finish_lesson", args: ["success": true, "summary": ""], mode: activeMode,
                                   onPhrase: { _, _ in },
                                   onFinish: { success in
                                       finishedSuccess = success
@@ -93,7 +96,7 @@ struct VoiceTutorView: View {
 
     /// Ders yarım kaldıysa son konuşmaları sakla (bir dahaki sefere oradan devam)
     private func saveAndStop() {
-        if finishedSuccess != true { TutorBrain.saveProgress(for: mode, turns: session.turns, step: session.targetProgress) }
+        if finishedSuccess != true { TutorBrain.saveProgress(for: activeMode, turns: session.turns, step: session.targetProgress) }
         session.stop()
     }
 
@@ -166,18 +169,12 @@ struct VoiceTutorView: View {
                 failureView(code)
             default:
                 if let done = finishedSuccess, session.phase == .ended {
-                    VStack(spacing: 12) {
-                        Image(systemName: done ? "checkmark.seal.fill" : "hand.thumbsup.fill")
-                            .font(.system(size: 44)).foregroundStyle(DS.Colors.accent)
-                        Text(done ? AL.s(.talkLessonComplete) : AL.s(.talkSessionEnded))
-                            .font(DS.Font.display(28, weight: .bold)).foregroundStyle(DS.Colors.ink)
-                    }
+                    completionView(done)
                 } else {
                     // En fazla ~6 satır; uzayınca eski satırlar yukarı kayıp soluklaşır
                     let long = session.caption.count > 170
-                    TimelineView(.animation(minimumInterval: 1.0 / 30, paused: session.phase != .aiSpeaking)) { ctx in
-                        captionText(at: ctx.date)
-                    }
+                    Text(session.caption.isEmpty ? " " : session.caption)
+                        .foregroundStyle(DS.Colors.ink)
                         .font(DS.Font.ui(22, weight: .medium))
                         .lineSpacing(6)
                         .fixedSize(horizontal: false, vertical: true)
@@ -193,23 +190,38 @@ struct VoiceTutorView: View {
         }
     }
 
-    /// Söylenmiş kelimeler koyu; en son gelen kelime yumuşakça belirir, sıradaki kelime soluk (Pingo gibi)
-    private func captionText(at now: Date) -> Text {
-        let shown = session.caption
-        let full = session.captionFull
-        let rest = full.count > shown.count ? String(full.dropFirst(shown.count)) : ""
-        let next = rest.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) ?? ""
-        guard !shown.isEmpty else { return Text(next.isEmpty ? " " : next).foregroundColor(DS.Colors.muted.opacity(0.45)) }
-        // Son kelimeyi ayır ve 0.22 sn'de soluktan koyuya geçir
-        let trimmed = shown.hasSuffix(" ") ? String(shown.dropLast()) : shown
-        let cut = trimmed.lastIndex(of: " ").map { trimmed.index(after: $0) } ?? trimmed.startIndex
-        let before = String(trimmed[..<cut])
-        let last = String(trimmed[cut...]) + (shown.hasSuffix(" ") ? " " : "")
-        let t = min(1, max(0, now.timeIntervalSince(session.captionChangedAt) / 0.22))
-        let fadeIn = 0.45 + 0.55 * t
-        return Text(before).foregroundColor(DS.Colors.ink)
-            + Text(last).foregroundColor(DS.Colors.ink.opacity(fadeIn))
-            + Text(next).foregroundColor(DS.Colors.muted.opacity(0.45))
+    /// Ders bitti: kutla ve sıradaki derse geçir
+    private func completionView(_ done: Bool) -> some View {
+        VStack(spacing: 14) {
+            Image(systemName: done ? "checkmark.seal.fill" : "hand.thumbsup.fill")
+                .font(.system(size: 48)).foregroundStyle(DS.Colors.accent)
+            Text(done ? AL.s(.talkLessonComplete) : AL.s(.talkSessionEnded))
+                .font(DS.Font.display(30, weight: .bold)).foregroundStyle(DS.Colors.ink)
+            if done, let next = ScenarioStore.shared.next {
+                VStack(spacing: 6) {
+                    Text(AL.s(.talkNextUp))
+                        .font(DS.Font.ui(11, weight: .bold)).tracking(1.2)
+                        .foregroundStyle(DS.Colors.muted)
+                    Text(next.goal.localizedTitle)
+                        .font(DS.Font.ui(20, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top, 18)
+                Button(AL.s(.talkContinueNext)) { startNext(next.chapter.id, next.goal.id) }
+                    .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                    .frame(maxWidth: 280)
+                    .padding(.top, 6)
+            }
+        }
+    }
+
+    private func startNext(_ chapterId: String, _ goalId: String) {
+        nextMode = .goal(chapterId: chapterId, goalId: goalId)
+        finishedSuccess = nil
+        phrase = nil
+        pendingPhrase = nil
+        Task { await begin() }
     }
 
     private func failureView(_ code: String) -> some View {

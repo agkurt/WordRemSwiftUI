@@ -209,7 +209,7 @@ final class RealtimeVoiceSession: ObservableObject {
                 currentCard = nil
                 note = targetProgress < targets.count
                     ? "\(how) Praise in a few words, then teach step \(targetProgress + 1) of \(targets.count): \(targets[targetProgress]). Do not repeat the previous phrase."
-                    : "\(how) All steps are done! Start a short roleplay RIGHT NOW in this same turn: set the scene in a few words, then SAY OUT LOUD the other person's first line in character (e.g. "Hi! I'm Sam. How are you?"), and only then call show_phrase with the learner's reply."
+                    : "\(how) All steps are done! Start a short roleplay RIGHT NOW in this same turn: set the scene in a few words, then SAY OUT LOUD the other person's first line in character (e.g. 'Hi! I am Sam. How are you?'), and only then call show_phrase with the learner's reply."
             } else {
                 note = "The learner's attempt wasn't quite right (heard: \"\(said)\"). Kindly give the correct phrase once and let them try one more time."
             }
