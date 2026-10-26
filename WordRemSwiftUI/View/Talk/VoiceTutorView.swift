@@ -93,6 +93,12 @@ struct VoiceTutorView: View {
 
     private func begin() async {
         session.onAnswer = { card, ok in TutorBrain.noteAnswer(card: card, correct: ok) }
+        session.answerCardsOnly = isDemo
+        // Günlük süre doldu: AI vedalaştıktan sonra paywall (demoda onboarding'in paywall'ı)
+        session.onLimitReached = {
+            phrase = nil
+            if isDemo { onFinished(true) } else { showPaywall = true }
+        }
         session.onToolCall = { name, args in
             TutorBrain.handle(tool: name, args: args, mode: activeMode,
                               onPhrase: { text, tr in
@@ -101,7 +107,7 @@ struct VoiceTutorView: View {
                               },
                               onFinish: { success in
                                   finishedSuccess = success
-                                  onFinished(success)
+                                  if !isDemo { onFinished(success) }
                               })
         }
         await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: TutorBrain.tools,
@@ -336,11 +342,6 @@ struct VoiceTutorView: View {
                  : AL.s(.talkTranscript))
                 .font(DS.Font.ui(17, weight: .semibold))
                 .foregroundStyle(DS.Colors.accent)
-            if session.allowedSeconds > 0, session.phase != .ended {
-                Text(timeLeftText)
-                    .font(DS.Font.ui(12))
-                    .foregroundStyle(DS.Colors.muted)
-            }
         }
         .frame(maxWidth: .infinity, minHeight: 120)
         .padding(.bottom, 12)
@@ -365,11 +366,6 @@ struct VoiceTutorView: View {
         .accessibilityAddTraits(.isButton)
         .animation(.spring(response: 0.25), value: holding)
         .animation(.easeOut(duration: 0.2), value: session.phase)
-    }
-
-    private var timeLeftText: String {
-        let left = max(0, session.allowedSeconds - session.elapsedSeconds)
-        return AL.f(.talkMinutesLeft, Int((Double(left) / 60).rounded(.up)))
     }
 
     // MARK: - Transcript

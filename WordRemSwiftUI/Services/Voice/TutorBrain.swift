@@ -99,6 +99,44 @@ enum TutorBrain {
         }
     }
 
+    // MARK: Onboarding demosu
+    /// Her yükleyen aynı sohbeti yaşamasın: tanışma hep adla başlar, sonra rastgele bir senaryo.
+    /// (soru, öğrencinin örnek cevabı — İngilizce anlamı; model öğrenilen dile çevirir)
+    struct DemoScenario { let steps: [(ask: String, answer: String)]; let closer: String }
+
+    static let demoScenarios: [DemoScenario] = [
+        DemoScenario(steps: [("how old they are", "I'm 25 years old."), ("where they live", "I live in Istanbul.")],
+                     closer: "one fun line about their city"),
+        DemoScenario(steps: [("what they do — work or study", "I'm a student."), ("coffee or tea", "I love coffee.")],
+                     closer: "a playful line about their coffee/tea choice"),
+        DemoScenario(steps: [("where they are from", "I'm from Turkey."), ("their favorite food", "My favorite food is pizza.")],
+                     closer: "say that food makes you hungry, playfully"),
+        DemoScenario(steps: [("what they like doing in free time", "I like playing football."), ("their plan for the weekend", "I'm going to relax this weekend.")],
+                     closer: "wish them a great weekend in a fun way"),
+        DemoScenario(steps: [("where they dream to travel", "I want to travel to Japan."), ("why that place", "I love the food there.")],
+                     closer: "get excited about their dream trip"),
+        DemoScenario(steps: [("if they are a morning or night person", "I'm a night person."), ("their favorite music", "I love pop music.")],
+                     closer: "a fun line about their music taste"),
+        DemoScenario(steps: [("if they have a pet", "I have a cat."), ("their favorite movie or series", "My favorite series is Friends.")],
+                     closer: "a fun line about their favorite movie or series"),
+    ]
+
+    /// Kurulum başına bir kez seçilir (demo yeniden açılırsa aynı senaryo)
+    static var demoScenario: DemoScenario {
+        let key = "demo.scenario"
+        var i = UserDefaults.standard.object(forKey: key) as? Int ?? -1
+        if !demoScenarios.indices.contains(i) {
+            i = Int.random(in: demoScenarios.indices)
+            UserDefaults.standard.set(i, forKey: key)
+        }
+        return demoScenarios[i]
+    }
+
+    private static var demoNameCard: String {
+        let name = UserStore.shared.snapshot.username
+        return name.isEmpty ? "My name is …" : "My name is \(name)."
+    }
+
     // MARK: Hafıza
     private static var memoryBlock: String {
         let s = UserStore.shared.snapshot
@@ -149,13 +187,15 @@ enum TutorBrain {
         case .demo:
             task = """
             FIRST CALL — this learner just installed the app and will decide whether to subscribe right after this short call. \
-            Make them feel "wow, I'm actually speaking \(targetName) already!" in about 4–5 quick exchanges:
-            1) Greet them by name with real energy and say in one sentence that you're their personal tutor who'll get them speaking.
-            2) Have them introduce themselves ("Hi, I'm …") — celebrate it.
-            3) Ask where they're from (give a model answer card), react with genuine curiosity about their answer.
-            4) Teach one fun, really useful real-life line that fits what they told you, and have them say it.
-            5) Wrap up: tell them proudly what they just did in under two minutes and that their personal plan is ready. Then call finish_lesson with success true.
-            Keep every turn short, warm and fast-paced. Beginner-friendly \(targetName).
+            It should feel like meeting a fun new friend who happens to be a great teacher — and make them think "wow, I'm actually speaking \(targetName)!". \
+            Follow this sequence, one short step per turn, chatty and natural (never like a form):
+            1) Greet them warmly with energy, say you're their personal \(targetName) tutor, and ask their name. Then call show_phrase with the \(targetName) for "\(demoNameCard)" (their answer).
+            2) React to their name, then ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)" (an example answer they adapt).
+            3) React to their answer with genuine interest, then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)".
+            4) React (\(demoScenario.closer)), then wrap up: tell them proudly they just had a real conversation in \(targetName), \
+            their personal plan is ready, and say a warm "see you soon!". Then call finish_lesson with success true.
+            Keep every turn very short (1–2 sentences), beginner-friendly \(targetName).
+            IMPORTANT: the card is the learner's ANSWER, never your question.
             """
         case .wordPractice:
             let list = practiceWords.map { "\($0.term) (= \($0.meaning))" }.joined(separator: ", ")
@@ -217,7 +257,12 @@ enum TutorBrain {
 
     /// Ders hedefleri (sırayla); serbest sohbette boş
     static func targets(for mode: TutorMode) -> [String] {
-        if case .demo = mode { return ["introduce yourself by name", "say where you are from", "one fun real-life phrase that fits their answer"] }
+        if case .demo = mode {
+            let sc = demoScenario
+            return ["their name (card \"\(demoNameCard)\")"] + sc.steps.map {
+                "ask \($0.ask) like a friend would, then call show_phrase with the \(targetName) for \"\($0.answer)\""
+            }
+        }
         if case .wordPractice = mode { return practiceWords.map { "a short sentence using \"\($0.term)\"" } }
         if case .levelReview(let id) = mode {
             return ContentStore.shared.words(levelId: id).prefix(5).map { "a short sentence using \"\($0.term)\"" }

@@ -60,6 +60,8 @@ final class RealtimeVoiceSession: ObservableObject {
     @Published private(set) var turns: [Turn] = []
     @Published private(set) var elapsedSeconds: Int = 0
     @Published private(set) var allowedSeconds: Int = 0
+    /// Günlük süre doldu: AI vedalaşıyor, ardından paywall
+    @Published private(set) var timeUp = false
     /// Bas-konuş modu (ifade kartı tekrarında)
     @Published private(set) var pushToTalk = true
     @Published private(set) var isHoldingToTalk = false
@@ -102,6 +104,7 @@ final class RealtimeVoiceSession: ObservableObject {
     private var lastUsageReport = 0
     private var wallSeconds = 0
     private var warnedTimeUp = false
+    private var timeUpAt: Date?
     private var currentUserTurnId: UUID?
 
     // MARK: - Lifecycle
@@ -116,7 +119,7 @@ final class RealtimeVoiceSession: ObservableObject {
         pendingCombine = false; correctAnswers = 0; totalAnswers = 0; startedAt = Date()
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
-        turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false
+        turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false; timeUp = false; timeUpAt = nil
         do {
             let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools)
             sessionId = grant.sessionId
@@ -214,11 +217,16 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Sıralama arka planda; öğretmen bunu "adım" diye anlatmaz.
     private func guide(after said: String) {
         guard !targets.isEmpty, !lessonComplete else { return }
+        // Hiçbir şey duyulmadı (çok kısa bastı / mikrofon sesi almadı): hata sayma, nazikçe tekrar iste
+        if said.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return sendGuide("You couldn't hear the learner this time (no words came through). Don't quote anything or count it as a mistake — say in a few playful words you didn't catch that, and ask them to say the line again.")
+        }
         // Karta hiç benzemeyen birkaç kelime: deneme değil, sohbet/şaka → keyifle karşıla, derse dön
         if let card = currentCard, said.split(separator: " ").count >= 2, Self.overlap(said: said, card: card) < 0.25 {
             return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then smoothly bring them back (\"Okay, let's focus and keep going!\") and invite them to say the current line again. Don't treat it as a mistake.")
         }
-        let ok = currentCard.map { Self.matches(said: said, card: $0) } ?? !said.isEmpty
+        // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
+        let ok = currentCard.map { Self.matches(said: said, card: $0) || (answerCardsOnly && Self.overlap(said: said, card: $0) >= 0.25) } ?? !said.isEmpty
         totalAnswers += 1
         if ok { correctAnswers += 1 }
         lastAnswerCorrect = ok
@@ -243,7 +251,7 @@ final class RealtimeVoiceSession: ObservableObject {
                     : finishOrRoleplay(praise)
             } else {
                 targetProgress += 1
-                if targetProgress >= 2 && targetProgress % 2 == 0 {
+                if withRoleplay && targetProgress >= 2 && targetProgress % 2 == 0 {
                     // Pingo gibi: öğrendiklerini birleştirip biraz daha uzun bir cümle kurdur
                     pendingCombine = true
                     note = "\(praise) Now build on what they know: have them say one slightly longer line that combines their earlier phrases with this one (for example a greeting + their name + nice to meet you)."
@@ -270,7 +278,7 @@ final class RealtimeVoiceSession: ObservableObject {
     private func finishOrRoleplay(_ praise: String) -> String {
         guard withRoleplay else {
             lessonComplete = true
-            return "\(praise) That's the last piece — wrap up now: celebrate proudly what they just did, tell them their personal plan is ready, and call finish_lesson with success true."
+            return "\(praise) That's the last piece — wrap up now: celebrate proudly what they just did, tell them their personal plan is ready, say a warm \"see you soon\" — say all of this OUT LOUD first, and only after speaking call finish_lesson with success true. No new card."
         }
         return "\(praise) \(Self.roleplayStart)"
     }
@@ -670,6 +678,16 @@ final class RealtimeVoiceSession: ObservableObject {
             let callId = e["call_id"] as? String ?? ""
             let args = (e["arguments"] as? String).flatMap { $0.data(using: .utf8) }
                 .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] } ?? [:]
+            // Onboarding demosunda model bazen kendi sorusunu kart yapıyor: kart her zaman öğrencinin cevabı olmalı
+            if name == "show_phrase", answerCardsOnly, let p = args["phrase"] as? String,
+               let last = p.trimmingCharacters(in: .whitespacesAndNewlines).last, "?？".contains(last) {
+                voiceLog.info("question card rejected: \(p, privacy: .public)")
+                needsAnswerCard = true
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId,
+                               "output": "rejected: the card must be the learner's ANSWER, not your question"]])
+                break
+            }
             if name == "show_phrase" {
                 phraseShownThisResponse = true
                 currentCard = args["phrase"] as? String
@@ -680,8 +698,10 @@ final class RealtimeVoiceSession: ObservableObject {
                   "item": ["type": "function_call_output", "call_id": callId, "output": output]])
             // Kart gösterildiyse sıra kullanıcıda: AI'ı tekrar konuşturma (yoksa kendi kendine devam eder).
             // Diğer araçlarda yalnızca AI bu yanıtta hiç konuşmadıysa devam ettir.
-            if name != "show_phrase" && name != "finish_lesson" && fullAIText.isEmpty {
+            // Ders konuşmadan bitirildiyse vedayı söylesin (araçsız), ekran ondan sonra kapanır.
+            if name != "show_phrase" && fullAIText.isEmpty {
                 pendingToolFollowUp = true
+                followUpWithoutTools = name == "finish_lesson"
             }
 
         case "response.output_audio.done", "response.audio.done":
@@ -695,7 +715,13 @@ final class RealtimeVoiceSession: ObservableObject {
             ensurePhraseCard()
             if pendingToolFollowUp {
                 pendingToolFollowUp = false
-                send(["type": "response.create"])
+                if followUpWithoutTools {
+                    followUpWithoutTools = false
+                    sendGuide("Now say your warm goodbye out loud in 1–2 short sentences, as planned. No tools.")
+                    send(["type": "response.create", "response": ["tool_choice": "none"]])
+                } else {
+                    send(["type": "response.create"])
+                }
             } else if scheduledSamples == 0 {
                 caption = fullAIText; captionFull = fullAIText
                 phase = .listening
@@ -711,13 +737,20 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     private var pendingToolFollowUp = false
+    private var followUpWithoutTools = false
+    private var needsAnswerCard = false
+    /// Kartlar yalnızca öğrencinin cevabı olabilir (soru kartı reddedilir) — onboarding demosu
+    var answerCardsOnly = false
     private var silentCardPending = false
     private var cardTool: [String: Any]?
     private var silentCardActive = false
 
     /// Öğretmen turu kartsız bitirdiyse: sesi olmayan bir cevapla yalnızca kartı iste (kullanıcı ne diyeceğini hep görsün)
-    private func requestCard() {
+    private func requestCard(answerTo question: String? = nil) {
         guard !silentCardPending, !silentCardActive, let cardTool else { return }
+        let instructions = question.map {
+            "Do not say anything. You just said: \"\($0)\". Call show_phrase with a short example ANSWER the learner can say back to you (in the target language, first person, e.g. \"I'm 25 years old.\"), never a question, and its translation."
+        } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a model answer, use ... for their own info) and its translation."
         silentCardPending = true
         voiceLog.info("no card this turn → asking silently")
         // Araç cevabın içinde de verilmeli, yoksa model zorunlu çağrıyı yok sayıyor
@@ -725,7 +758,7 @@ final class RealtimeVoiceSession: ObservableObject {
             "output_modalities": ["text"],
             "tools": [cardTool],
             "tool_choice": "required",
-            "instructions": "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a model answer, use ... for their own info) and its translation.",
+            "instructions": instructions,
         ] as [String: Any]])
     }
 
@@ -739,7 +772,11 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Her tur bir kartla bitmeli (Pingo gibi). Model aracı çağırmadıysa: metne yazdığı komutu ya da
     /// son tırnak içindeki ifadeyi kart yap.
     private func ensurePhraseCard() {
-        guard !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty else { return }
+        guard !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
+        if needsAnswerCard {
+            needsAnswerCard = false
+            return requestCard(answerTo: fullAIText)
+        }
         var phrase: String?, translation = ""
         let q = #"["“”]"#
         if let r = rawAIText.range(of: #"show_phrase\s*\(\s*\#(q)([^"“”]+)\#(q)\s*,\s*\#(q)([^"“”]*)\#(q)"#, options: .regularExpression) {
@@ -787,20 +824,35 @@ final class RealtimeVoiceSession: ObservableObject {
         if isHoldingToTalk || scheduledSamples > 0 { elapsedSeconds += 1 }
         if elapsedSeconds - lastUsageReport >= 30 { reportUsage(final: false) }
         if allowedSeconds > 0 && wallSeconds >= max(allowedSeconds * 3, 900) {
-            onLimitReached?(); stop(); return
+            endForLimit(); return
         }
-        if allowedSeconds > 0 && !warnedTimeUp && elapsedSeconds >= max(0, allowedSeconds - 30) {
-            warnedTimeUp = true
-            // 30 sn kala AI'dan kibarca toparlamasını iste
-            send(["type": "conversation.item.create",
-                  "item": ["type": "message", "role": "system",
-                           "content": [["type": "input_text", "text": "Time is almost up. In one or two short sentences, praise the learner and say goodbye."]]]])
-            send(["type": "response.create"])
+        guard allowedSeconds > 0 else { return }
+        // Süre bitiyor: sıra kullanıcıdayken (kimsenin sözü kesilmeden) AI son bir veda cümlesi söyler
+        if !warnedTimeUp && elapsedSeconds >= max(0, allowedSeconds - 20) && phase == .listening && !isHoldingToTalk {
+            sayTimeUp()
         }
-        if allowedSeconds > 0 && elapsedSeconds >= allowedSeconds {
-            onLimitReached?()
-            stop()
+        // Veda bitti (ya da takıldı) → paywall
+        if let at = timeUpAt, (phase == .listening && Date().timeIntervalSince(at) > 1.5) || Date().timeIntervalSince(at) > 20 {
+            endForLimit(); return
         }
+        // Kullanıcı süreyi aşıp konuşmaya devam ederse kesin sınır
+        if elapsedSeconds >= allowedSeconds + 45 { endForLimit() }
+    }
+
+    private func sayTimeUp() {
+        warnedTimeUp = true
+        timeUp = true
+        timeUpAt = Date()
+        currentCard = nil
+        phase = .thinking
+        sendGuide("The learner's free speaking time for today is over. Say a warm goodbye in 1–2 short sentences, in the learner's native language: today's free practice is done for now (a little sad, end the sentence with 😞), praise one thing they did well, and say Pro unlocks unlimited practice. Do NOT call any tool.")
+        send(["type": "response.create", "response": ["tool_choice": "none"]])
+    }
+
+    private func endForLimit() {
+        timeUpAt = nil
+        onLimitReached?()
+        stop()
     }
 
     private func reportUsage(final: Bool) {
