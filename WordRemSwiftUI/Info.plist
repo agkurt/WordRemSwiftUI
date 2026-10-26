@@ -7,7 +7,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>WordRem uses your microphone so you can speak with your AI language tutor and practice pronunciation.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>WordRem uses speech recognition to evaluate your pronunciation during the Speaking quiz mode.</string>
+	<string>WordRem uses speech recognition to understand what you say to your AI tutor and to check your pronunciation.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>feather_bold.ttf</string>

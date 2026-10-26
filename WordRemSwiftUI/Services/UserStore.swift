@@ -41,6 +41,8 @@ struct UserState: Codable, Equatable {
     var tutorFacts: [String]?
     /// Son sohbetlerin 1–2 cümlelik özetleri (en yeni sonda, en fazla 10)
     var tutorSummaries: [String]?
+    /// Sesli derste kaldığı yer: ders anahtarı → son konuşmalar (geri gelince oradan devam edilir)
+    var voiceProgress: [String: VoiceProgress]?
     /// Toplam sesli pratik süresi (saniye)
     var voiceSeconds: Int?
 }
@@ -132,6 +134,7 @@ final class UserStore {
         out.voiceGoalsDone = (a.voiceGoalsDone ?? [:]).merging(b.voiceGoalsDone ?? [:]) { min($0, $1) }
         out.voiceSeconds = max(a.voiceSeconds ?? 0, b.voiceSeconds ?? 0)
         out.tutorFacts = Array(Array(Set((a.tutorFacts ?? []) + (b.tutorFacts ?? []))).sorted().suffix(30))
+        out.voiceProgress = (a.voiceProgress ?? [:]).merging(b.voiceProgress ?? [:]) { $0.updatedAt >= $1.updatedAt ? $0 : $1 }
         for (levelId, theirs) in other.progress {
             guard let mine = out.progress[levelId] else { out.progress[levelId] = theirs; continue }
             out.progress[levelId] = mine.status.rank >= theirs.status.rank
@@ -163,4 +166,14 @@ extension JSONEncoder {
 }
 extension JSONDecoder {
     static let iso: JSONDecoder = { let d = JSONDecoder(); d.dateDecodingStrategy = .iso8601; return d }()
+}
+
+/// Sesli dersin kaydedilmiş hali (son ~10 konuşma satırı)
+struct VoiceProgress: Codable, Equatable {
+    struct Line: Codable, Equatable {
+        let ai: Bool
+        let text: String
+    }
+    var lines: [Line]
+    var updatedAt: Date
 }

@@ -388,54 +388,55 @@ private struct TutorIntroView: View {
     }
 }
 
-/// Cihaz içi seslendirme (ücretsiz, mikrofon izni gerekmez); söylenen kelimeyi yayınlar
+/// Karşılama, sohbetteki öğretmenle AYNI sesle (sunucudaki seslendirme) okunur; altyazı sesle birlikte açılır.
+/// İnternet yoksa cihazın kendi sesine düşer.
 @MainActor
-private final class GreetingSpeaker: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+private final class GreetingSpeaker: NSObject, ObservableObject, AVAudioPlayerDelegate, AVSpeechSynthesizerDelegate {
     @Published var spoken = 0
     @Published var isSpeaking = false
     @Published var finished = false
 
+    private var player: AVAudioPlayer?
     private let synth = AVSpeechSynthesizer()
     private var text = ""
-    private var fallback: Timer?
-    private var started = false   // seslendirme gerçekten başladı mı
+    private var timer: Timer?
+    private var task: Task<Void, Never>?
 
     func speak(_ text: String, nativeCode: String) {
         self.text = text
-        synth.delegate = self
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
         try? AVAudioSession.sharedInstance().setActive(true)
-
-        let u = AVSpeechUtterance(string: text)
-        u.voice = Self.bestVoice(for: nativeCode)
-        u.rate = AVSpeechUtteranceDefaultSpeechRate * 0.98
-        u.preUtteranceDelay = 0.4
-        synth.speak(u)
-        isSpeaking = true
-
-        // Altyazı sesi bekler (kelimeler seslendirme ilerledikçe açılır). Ses 2.5 sn içinde hiç başlamazsa
-        // (sessiz mod vb.) altyazı okuma hızında kendiliğinden akar.
-        let start = Date()
-        fallback = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                guard let self, !self.started else { return }
-                let waited = Date().timeIntervalSince(start) - 2.5
-                guard waited > 0 else { return }
-                self.reveal(upTo: Int(waited * 14))
-                if self.spoken >= self.text.count { self.complete() }
+        task = Task {
+            if let data = try? await VoiceBackend.shared.speech(text), !Task.isCancelled,
+               let p = try? AVAudioPlayer(data: data) {
+                player = p
+                p.delegate = self
+                p.prepareToPlay()
+                p.play()
+                isSpeaking = true
+                // Altyazı çalınan süreye oranla, kelime kelime
+                timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+                    Task { @MainActor in
+                        guard let self, let p = self.player, p.duration > 0 else { return }
+                        self.reveal(upTo: Int(Double(self.text.count) * min(1, p.currentTime / p.duration)))
+                    }
+                }
+            } else if !Task.isCancelled {
+                speakOnDevice(nativeCode: nativeCode)
             }
         }
     }
 
     func stop() {
+        task?.cancel()
+        timer?.invalidate()
+        player?.stop()
         synth.stopSpeaking(at: .immediate)
-        fallback?.invalidate()
         isSpeaking = false
     }
 
     private func reveal(upTo n: Int) {
         let n = min(n, text.count)
-        // kelime sınırına yuvarla
         if n < text.count, let sp = text.prefix(n).lastIndex(of: " ") {
             spoken = max(spoken, text.distance(from: text.startIndex, to: sp) + 1)
         } else {
@@ -444,29 +445,32 @@ private final class GreetingSpeaker: NSObject, ObservableObject, AVSpeechSynthes
     }
 
     private func complete() {
+        timer?.invalidate()
         spoken = text.count
         isSpeaking = false
         finished = true
-        fallback?.invalidate()
     }
 
-    private static func bestVoice(for code: String) -> AVSpeechSynthesisVoice? {
-        let voices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.lowercased().hasPrefix(code.lowercased()) }
-        return voices.max { $0.quality.rawValue < $1.quality.rawValue } ?? AVSpeechSynthesisVoice(language: code)
+    // MARK: Yedek: cihaz sesi
+    private func speakOnDevice(nativeCode: String) {
+        synth.delegate = self
+        let u = AVSpeechUtterance(string: text)
+        let voices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.lowercased().hasPrefix(nativeCode.lowercased()) }
+        u.voice = voices.max { $0.quality.rawValue < $1.quality.rawValue } ?? AVSpeechSynthesisVoice(language: nativeCode)
+        synth.speak(u)
+        isSpeaking = true
+    }
+
+    nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        Task { @MainActor in self.complete() }
     }
 
     nonisolated func speechSynthesizer(_ s: AVSpeechSynthesizer, willSpeakRangeOfSpeechString r: NSRange, utterance: AVSpeechUtterance) {
         let end = r.location + r.length
         Task { @MainActor in
-            // söylenen kelimenin sonuna kadar aç (UTF-16 → karakter)
             let ns = self.text as NSString
-            let upTo = (ns.substring(to: min(end, ns.length)) as String).count
-            self.spoken = max(self.spoken, upTo)
+            self.spoken = max(self.spoken, (ns.substring(to: min(end, ns.length)) as String).count)
         }
-    }
-
-    nonisolated func speechSynthesizer(_ s: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
-        Task { @MainActor in self.started = true }
     }
 
     nonisolated func speechSynthesizer(_ s: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {

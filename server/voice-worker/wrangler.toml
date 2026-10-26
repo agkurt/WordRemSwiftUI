@@ -9,6 +9,8 @@ id = "218266adf42b40ecbb1c2a88bd34d8de"
 
 [vars]
 REALTIME_MODEL = "gpt-realtime"
+# Zincirleme öğretmenin metin modeli
+TUTOR_MODEL = "gpt-4.1-mini"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar
@@ -19,8 +21,8 @@ PRO_DAILY_SECONDS = "1800"
 # Aylık sınır ödenen fiyattan hesaplanır, bu aralıkta tutulur
 MIN_MONTHLY_SECONDS = "1800"
 PRO_MONTHLY_SECONDS = "18000"
-# Konuşma dakikası başı OpenAI maliyeti (gpt-realtime, temkinli; sessizlik sayılmaz) ve net gelirin AI'a ayrılan payı
-COST_PER_MIN_USD = "0.06"
+# Öğretmenin konuşma dakikası başı maliyet (metin modeli + seslendirme, temkinli) ve net gelirin AI'a ayrılan payı
+COST_PER_MIN_USD = "0.02"
 AI_BUDGET_SHARE = "0.7"
 APPLE_COMMISSION = "0.15"
 
