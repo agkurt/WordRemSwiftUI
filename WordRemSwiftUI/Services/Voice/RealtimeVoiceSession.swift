@@ -48,6 +48,9 @@ final class RealtimeVoiceSession: ObservableObject {
     @Published private(set) var targetTotal = 0
     @Published private(set) var lessonComplete = false
     /// Ders özeti için: doğru / toplam cevap, başlangıç zamanı
+    /// Son cevabın değerlendirmesi (kartta ✓ / sallanma için); her cevapta `answerCount` artar
+    @Published private(set) var lastAnswerCorrect = false
+    @Published private(set) var answerCount = 0
     @Published private(set) var correctAnswers = 0
     @Published private(set) var totalAnswers = 0
     private(set) var startedAt = Date()
@@ -208,6 +211,8 @@ final class RealtimeVoiceSession: ObservableObject {
         let ok = currentCard.map { Self.matches(said: said, card: $0) } ?? !said.isEmpty
         totalAnswers += 1
         if ok { correctAnswers += 1 }
+        lastAnswerCorrect = ok
+        answerCount += 1
         var note: String
 
         if targetProgress < targets.count || pendingCombine {

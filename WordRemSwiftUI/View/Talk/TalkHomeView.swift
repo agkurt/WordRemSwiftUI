@@ -17,6 +17,9 @@ struct TalkHomeView: View {
     @State private var showPlan = false
     @State private var showReview = false
     @State private var refresh = 0   // hedef tamamlanınca kartı yenile
+    /// Seri artınca kutla (son görülen değer)
+    @AppStorage("talk.lastSeenStreak") private var lastSeenStreak = 0
+    @State private var streakCelebration = 0
 
     private var store: ScenarioStore { ScenarioStore.shared }
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
@@ -99,10 +102,26 @@ struct TalkHomeView: View {
                 Text("\(s.streakDays)")
                     .font(DS.Font.ui(15, weight: .semibold))
                     .foregroundStyle(DS.Colors.ink)
-                Image(systemName: "flame.fill").foregroundStyle(DS.Colors.accent)
+                    .contentTransition(.numericText(value: Double(s.streakDays)))
+                LiveFlame(size: 16)
             }
             .padding(.horizontal, 14).padding(.vertical, 8)
             .background(DS.Colors.paperSunken, in: Capsule())
+            .scaleEffect(streakCelebration > 0 ? 1.0 : 1.0)
+            .phaseAnimator([1.0, 1.25, 1.0], trigger: streakCelebration) { v, scale in v.scaleEffect(scale) }
+            .overlay(ConfettiBurst(origin: .center, count: 40, trigger: streakCelebration)
+                        .frame(width: 220, height: 220).allowsHitTesting(false)
+                        .opacity(streakCelebration > 0 ? 1 : 0))
+            .onAppear {
+                // Seri arttıysa kutla
+                if s.streakDays > lastSeenStreak, lastSeenStreak > 0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        Haptics.success()
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) { streakCelebration += 1 }
+                    }
+                }
+                lastSeenStreak = s.streakDays
+            }
         }
     }
 

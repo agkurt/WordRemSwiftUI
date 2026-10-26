@@ -40,6 +40,7 @@ struct LessonCompleteView: View {
         .task {
             try? await Task.sleep(nanoseconds: 1_300_000_000)
             stage = .celebrate
+            Haptics.success()
             withAnimation(.spring(response: 0.7, dampingFraction: 0.6)) { burst = true }
             try? await Task.sleep(nanoseconds: 2_400_000_000)
             if stage == .celebrate { stage = .summary }
@@ -93,6 +94,7 @@ struct LessonCompleteView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DS.Colors.accent.ignoresSafeArea())
+        .overlay(ConfettiBurst(origin: .center, count: 110).ignoresSafeArea())
         .contentShape(Rectangle())
         .onTapGesture { stage = .summary }
     }
@@ -139,6 +141,7 @@ struct LessonCompleteView: View {
             }
         }
         .paperBackground()
+        .overlay(ConfettiBurst(origin: .top, count: 60).ignoresSafeArea())
         .overlay(alignment: .bottom) {
             Button(AL.s(.talkContinueNext), action: onContinue)
                 .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))

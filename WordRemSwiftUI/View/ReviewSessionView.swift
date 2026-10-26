@@ -16,6 +16,8 @@ struct ReviewSessionView: View {
     @State private var queue: [LearnedWord]
     @State private var revealed = false
     @State private var reviewedCount = 0
+    @State private var glow = false
+    @State private var shakes = 0
     private let total: Int
 
     init(words: [LearnedWord]) {
@@ -28,6 +30,8 @@ struct ReviewSessionView: View {
             topBar
             if let word = queue.first {
                 card(word)
+                    .successGlow(glow)
+                    .shake(shakes)
                     .id(word.id + "\(reviewedCount)")
                     .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                             removal: .move(edge: .leading).combined(with: .opacity)))
@@ -176,6 +180,8 @@ struct ReviewSessionView: View {
                 .buttonStyle(InkButtonStyle())
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(ConfettiBurst(origin: .top, count: 70).padding(.horizontal, -24).ignoresSafeArea())
+        .onAppear { Haptics.success() }
     }
 
     // MARK: - Actions
@@ -186,7 +192,19 @@ struct ReviewSessionView: View {
 
     private func answer(_ word: LearnedWord, _ grade: ReviewGrade) {
         scheduler.grade(word, grade)
-        UIImpactFeedbackGenerator(style: grade == .again ? .rigid : .soft).impactOccurred()
+        // Önce tepki (doğru: parlama, yanlış: sallanma), sonra sıradaki kart
+        if grade == .again {
+            Haptics.warning()
+            withAnimation(.linear(duration: 0.4)) { shakes += 1 }
+        } else {
+            Haptics.success()
+            glow = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.42) { advance(grade) }
+    }
+
+    private func advance(_ grade: ReviewGrade) {
+        glow = false
         withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
             var q = queue
             let first = q.removeFirst()

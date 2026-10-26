@@ -21,6 +21,8 @@ struct VoiceTutorView: View {
     /// "Devam et" ile sıradaki derse geçince değişir
     @State private var nextMode: TutorMode?
     @State private var showSummary = false
+    @State private var cardCorrect = false
+    @State private var cardShakes = 0
     private var activeMode: TutorMode { nextMode ?? mode }
     @State private var showTranslation = false
     @State private var showTranscript = false
@@ -34,12 +36,17 @@ struct VoiceTutorView: View {
             topBar
             Spacer(minLength: 0)
             ZStack {
-                if let phrase { phraseCard(phrase).transition(.opacity.combined(with: .scale(scale: 0.96))) }
+                if let phrase {
+                    phraseCard(phrase)
+                        .shake(cardShakes)
+                        .transition(.asymmetric(insertion: .scale(scale: 0.82).combined(with: .opacity),
+                                                removal: .opacity.combined(with: .move(edge: .top))))
+                }
                 else { captionView.transition(.opacity) }
             }
             .frame(maxWidth: 620)
             .padding(.horizontal, 28)
-            .animation(.easeOut(duration: 0.25), value: phrase?.text)
+            .animation(.spring(response: 0.42, dampingFraction: 0.68), value: phrase?.text)
             .contentShape(Rectangle())
             .onTapGesture { if phrase == nil { session.interrupt() } }
             Spacer(minLength: 0)
@@ -57,8 +64,23 @@ struct VoiceTutorView: View {
             revealPendingPhrase()
         }
         // Kullanıcı konuştuktan sonra öğretmen cevap vermeye başlayınca kart kalkar
+        // Cevaba anında tepki: doğruysa ✓ ve titreşim, değilse kart sallanır
+        .onChange(of: session.answerCount) { _ in
+            guard phrase != nil else { return }
+            if session.lastAnswerCorrect {
+                Haptics.success()
+                cardCorrect = true
+            } else {
+                Haptics.warning()
+                withAnimation(.linear(duration: 0.45)) { cardShakes += 1 }
+            }
+        }
         .onChange(of: session.responseCount) { _ in
-            if phrase != nil { withAnimation(.easeOut(duration: 0.25)) { phrase = nil } }
+            // Tepki görünsün diye kart biraz sonra kalkar
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if phrase != nil { withAnimation(.easeOut(duration: 0.25)) { phrase = nil } }
+                cardCorrect = false
+            }
         }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
         .fullScreenCover(isPresented: $showSummary) { lessonSummary }
@@ -250,9 +272,17 @@ struct VoiceTutorView: View {
     // MARK: - Phrase card
     private func phraseCard(_ p: (text: String, translation: String)) -> some View {
         VStack(spacing: 22) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 44))
+                .foregroundStyle(DS.Colors.success)
+                .scaleEffect(cardCorrect ? 1 : 0.2)
+                .opacity(cardCorrect ? 1 : 0)
+                .animation(.spring(response: 0.35, dampingFraction: 0.5), value: cardCorrect)
+                .frame(height: 44)
             Text(p.text)
                 .font(DS.Font.ui(32, weight: .semibold))
-                .foregroundStyle(DS.Colors.ink)
+                .foregroundStyle(cardCorrect ? DS.Colors.success : DS.Colors.ink)
+                .animation(.easeOut(duration: 0.2), value: cardCorrect)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             if showTranslation {
