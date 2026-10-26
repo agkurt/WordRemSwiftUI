@@ -105,6 +105,15 @@ struct VoiceTutorView: View {
         session.onToolCall = { name, args in
             TutorBrain.handle(tool: name, args: args, mode: activeMode,
                               onPhrase: { text, tr in
+                                  // Aynı kartın sonradan gelen çevirisi: kartı değiştirme, çeviriyi ekle
+                                  if let cur = phrase, cur.text == text {
+                                      if !tr.isEmpty, cur.translation.isEmpty {
+                                          phrase = (text, tr)
+                                          session.updateCardTranslation(text, translation: tr)
+                                      }
+                                      return
+                                  }
+                                  if let p = pendingPhrase, p.text == text, tr.isEmpty || !p.translation.isEmpty { return }
                                   pendingPhrase = (text, tr)
                                   if session.phase == .listening { revealPendingPhrase() }
                               },
@@ -313,12 +322,13 @@ struct VoiceTutorView: View {
                     .multilineTextAlignment(.center)
             }
             HStack(spacing: 36) {
-                if !p.translation.isEmpty {
-                    Button { withAnimation { showTranslation.toggle() } } label: {
-                        Image(systemName: "character.bubble").font(.system(size: 24, weight: .medium))
-                    }
-                    .accessibilityLabel(AL.s(.talkTranslate))
+                // Çeviri birkaç yüz ms sonra gelebilir: düğme hep yerinde, gelene kadar soluk
+                Button { withAnimation { showTranslation.toggle() } } label: {
+                    Image(systemName: "character.bubble").font(.system(size: 24, weight: .medium))
                 }
+                .disabled(p.translation.isEmpty)
+                .opacity(p.translation.isEmpty ? 0.35 : 1)
+                .accessibilityLabel(AL.s(.talkTranslate))
                 Button { TTSManager.shared.speak(p.text, langCode: targetCode) } label: {
                     Image(systemName: "speaker.wave.2").font(.system(size: 24, weight: .medium))
                 }

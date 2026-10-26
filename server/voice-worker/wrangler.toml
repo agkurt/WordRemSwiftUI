@@ -9,7 +9,7 @@ id = "218266adf42b40ecbb1c2a88bd34d8de"
 
 [vars]
 REALTIME_MODEL = "gpt-realtime-mini"
-VOICE = "marin"
+VOICE = "coral"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar
 FREE_TASTE_SECONDS = "300"

@@ -204,6 +204,11 @@ final class RealtimeVoiceSession: ObservableObject {
         turns.append(Turn(role: .card, text: phrase, detail: translation.isEmpty ? nil : translation))
     }
 
+    /// Sonradan gelen çeviriyi transkriptteki karta da yaz
+    func updateCardTranslation(_ phrase: String, translation: String) {
+        if let i = turns.lastIndex(where: { $0.role == .card && $0.text == phrase }) { turns[i].detail = translation }
+    }
+
     // MARK: - Ders yönlendirme
     private var targets: [String] = []
     private var currentCard: String?
@@ -692,6 +697,9 @@ final class RealtimeVoiceSession: ObservableObject {
                 phraseShownThisResponse = true
                 currentCard = args["phrase"] as? String
                 voiceLog.info("card: \(self.currentCard ?? "", privacy: .public)")
+                if ((args["translation"] as? String) ?? "").trimmingCharacters(in: .whitespaces).isEmpty, let p = currentCard {
+                    translationPending = p
+                }
             }
             let output = onToolCall?(name, args) ?? "ok"
             send(["type": "conversation.item.create",
@@ -708,11 +716,15 @@ final class RealtimeVoiceSession: ObservableObject {
             audioComplete = true
 
         case "response.done":
-            if silentCardActive { silentCardActive = false; break }
+            if silentCardActive { silentCardActive = false; translationPending = nil; break }
             voiceLog.info("tutor said: \(self.fullAIText, privacy: .public)")
             responseFinished = true
             audioComplete = true
             ensurePhraseCard()
+            if let p = translationPending {
+                translationPending = nil
+                requestCard(translating: p)
+            }
             if pendingToolFollowUp {
                 pendingToolFollowUp = false
                 if followUpWithoutTools {
@@ -739,6 +751,8 @@ final class RealtimeVoiceSession: ObservableObject {
     private var pendingToolFollowUp = false
     private var followUpWithoutTools = false
     private var needsAnswerCard = false
+    /// Çevirisiz gösterilen kart: cevap bitince çevirisi sessizce istenir
+    private var translationPending: String?
     /// Kartlar yalnızca öğrencinin cevabı olabilir (soru kartı reddedilir) — onboarding demosu
     var answerCardsOnly = false
     private var silentCardPending = false
@@ -746,9 +760,12 @@ final class RealtimeVoiceSession: ObservableObject {
     private var silentCardActive = false
 
     /// Öğretmen turu kartsız bitirdiyse: sesi olmayan bir cevapla yalnızca kartı iste (kullanıcı ne diyeceğini hep görsün)
-    private func requestCard(answerTo question: String? = nil) {
+    private func requestCard(answerTo question: String? = nil, translating phrase: String? = nil) {
         guard !silentCardPending, !silentCardActive, let cardTool else { return }
-        let instructions = question.map {
+        let native = Locale(identifier: "en").localizedString(forLanguageCode: OL.nativeLangCode) ?? "the learner's native language"
+        let instructions = phrase.map {
+            "Do not say anything. Call show_phrase with exactly this phrase: \"\($0)\" and its natural translation into \(native)."
+        } ?? question.map {
             "Do not say anything. You just said: \"\($0)\". Call show_phrase with a short example ANSWER the learner can say back to you (in the target language, first person, e.g. \"I'm 25 years old.\"), never a question, and its translation."
         } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a model answer, use ... for their own info) and its translation."
         silentCardPending = true
@@ -806,6 +823,7 @@ final class RealtimeVoiceSession: ObservableObject {
         currentCard = phrase
         voiceLog.info("card: \(phrase, privacy: .public)")
         _ = onToolCall?("show_phrase", ["phrase": phrase, "translation": translation])
+        if translation.trimmingCharacters(in: .whitespaces).isEmpty { requestCard(translating: phrase) }
     }
 
     // MARK: - Süre & kullanım

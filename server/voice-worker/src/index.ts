@@ -239,7 +239,7 @@ function speech(env: Env, text: string, format: "pcm" | "mp3"): Promise<Response
       model: "gpt-4o-mini-tts",
       voice: env.VOICE,
       input: text,
-      instructions: "Warm, friendly, upbeat language tutor. Very clear pronunciation, natural pace, expressive.",
+      instructions: "Charming, attractive young woman tutor: warm, smiling, playful and a little flirty-teasing. Very clear pronunciation, natural pace, expressive.",
       response_format: format,
     }),
   });
