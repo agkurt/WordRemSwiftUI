@@ -107,23 +107,23 @@ enum TutorBrain {
     struct DemoScenario { let steps: [(ask: String, answer: String)]; let closer: String }
 
     static let demoScenarios: [DemoScenario] = [
-        DemoScenario(steps: [("how old they are", "I'm 25 years old. / I'm 30 years old."),
-                             ("where they live", "I live in Istanbul. / I live in a small town.")],
+        DemoScenario(steps: [("how old they are", "I'm ... years old."),
+                             ("where they live", "I live in ...")],
                      closer: "one fun line about their city"),
-        DemoScenario(steps: [("what they do — work or study", "I'm a student. / I work in an office."),
+        DemoScenario(steps: [("what they do — work or study", "I'm a student. / I work as a ..."),
                              ("coffee or tea", "I love coffee. / I love tea.")],
                      closer: "a playful line about their coffee/tea choice"),
-        DemoScenario(steps: [("where they are from", "I'm from Turkey. / I'm from Germany."),
-                             ("their favorite food", "I love pizza. / I love kebab.")],
+        DemoScenario(steps: [("where they are from", "I'm from ..."),
+                             ("their favorite food", "My favorite food is ...")],
                      closer: "say that food makes you hungry, playfully"),
-        DemoScenario(steps: [("what they like doing in free time", "I like playing football. / I like reading books."),
-                             ("their plan for the weekend", "I'm going to relax. / I'm going to meet my friends.")],
+        DemoScenario(steps: [("what they like doing in free time", "In my free time, I like ..."),
+                             ("their plan for the weekend", "This weekend, I'm going to ...")],
                      closer: "wish them a great weekend in a fun way"),
-        DemoScenario(steps: [("where they dream to travel", "I want to go to Japan. / I want to go to Italy."),
+        DemoScenario(steps: [("where they dream to travel", "I want to go to ..."),
                              ("beach or mountains", "I love the beach. / I love the mountains.")],
                      closer: "get excited about their dream trip"),
         DemoScenario(steps: [("if they are a morning or night person", "I'm a morning person. / I'm a night person."),
-                             ("their favorite music", "I love pop music. / I love rock music.")],
+                             ("their favorite music", "I love ... music.")],
                      closer: "a fun line about their music taste"),
         DemoScenario(steps: [("cats or dogs", "I love cats. / I love dogs."),
                              ("movies or series", "I like movies. / I like series.")],
@@ -186,8 +186,9 @@ enum TutorBrain {
             HOW TO TEACH (like a great 1:1 tutor having a real conversation, never like a quiz app — don't number steps or mention "step 2 of 5"):
             - Open warmly: greet them, have a tiny warm-up where they greet you back and introduce themselves ("Hi, I'm …"), then set the scene in one sentence.
             - Teach one small piece at a time AS A REAL MINI-EXCHANGE: set up the moment, ask them the natural question out loud the way a real person \
-            would ("So, where are you from?"), and card their answer. When there's a natural choice, give two answer options separated by " / " \
-            ("I'm from Turkey. / I'm from Spain."). React to what they actually said with genuine interest before moving on.
+            would ("So, where are you from?"), and card their answer. For personal answers (age, city, job, likes…) card a fill-in template with "..." \
+            ("I'm from ...", "I live in ..."), because they can say anything; only for a real either/or choice give two options \
+            separated by " / " ("Coffee, please. / Tea, please."). React to what they actually said with genuine interest before moving on.
             - Keep building: every couple of pieces, have them combine what they know into one slightly longer line \
             ("Now let's put it together: 'Hello, my name is Ahmet. Nice to meet you.'").
             - Fix mistakes by quoting kindly and naming the tiny fix ("Oh, I heard: 'I from Turkey.' We need that little helper: 'I am from Turkey.'").
@@ -202,8 +203,8 @@ enum TutorBrain {
             It should feel like meeting a fun new friend who happens to be a great teacher — and make them think "wow, I'm actually speaking \(targetName)!". \
             Follow this sequence, one short step per turn, chatty and natural (never like a form):
             1) Greet them warmly with energy, say you're their personal \(targetName) tutor, and ask their name. Then call show_phrase with the \(targetName) for "\(demoNameCard)" (their answer).
-            2) React to their name, then ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)" — keep both options separated by " / ", translation in the same format.
-            3) React to their answer with genuine interest, then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)" — both options, " / " between them.
+            2) React to their name, then ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)" — exactly as written (" / " = two choices, "..." = the learner fills in their own answer), translation in the same format.
+            3) React to their answer with genuine interest, then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)" — exactly as written.
             4) React (\(demoScenario.closer)), then the real-life finale: ask them to introduce themselves to a new friend in one go, \
             and card ONE full line built from what THEY actually said (e.g. "Hi, I'm Ahmet. I'm a night person and I love rock music.").
             5) After they say it, wrap up: tell them proudly they just had a real conversation in \(targetName), \
@@ -289,7 +290,7 @@ enum TutorBrain {
         if case .demo = mode {
             let sc = demoScenario
             return ["their name (card \"\(demoNameCard)\")"] + sc.steps.map {
-                "ask \($0.ask) like a friend would (offer both choices in your question), then call show_phrase with the \(targetName) for \"\($0.answer)\" — both options separated by \" / \""
+                "ask \($0.ask) like a friend would (offer both choices in your question), then call show_phrase with the \(targetName) for \"\($0.answer)\" exactly as written (\" / \" = two choices, \"...\" = they fill in their own answer)"
             } + ["react with interest, then ask them to introduce themselves to a new friend in one go — the card is ONE full line built from their name and the answers THEY actually gave (e.g. \"Hi, I'm Ahmet. I'm a night person and I love rock music.\")"]
         }
         if case .wordPractice = mode { return practiceWords.map { "a short sentence using \"\($0.term)\"" } }

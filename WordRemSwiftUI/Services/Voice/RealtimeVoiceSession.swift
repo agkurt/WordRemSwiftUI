@@ -295,7 +295,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Yeni parça: gerçek bir mini sohbet olarak (soru sesli, cevap kartta; doğal bir seçim varsa iki seçenek)
     private static func nextPiece(_ target: String) -> String {
-        "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, ask the learner the natural question out loud (the way a real person would), then card the learner's answer. When there's a natural choice, put two answer options separated by \" / \"."
+        "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, ask the learner the natural question out loud (the way a real person would), then card the learner's answer. Personal answers (age, city, job, likes…) get a fill-in template with \"...\" (\"I live in ...\") since they can say anything; only a real either/or choice gets two options separated by \" / \"."
     }
 
     private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the learner's reply."

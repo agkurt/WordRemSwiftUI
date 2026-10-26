@@ -31,18 +31,14 @@ struct OnboardingPaywallView: View {
 
     // (SF Symbol, title, subtitle) — Pro'nun gerçekten açtığı özellikler
     // AI satırları yalnızca Apple Intelligence olan cihazlarda gösterilir (vaat edilen her şey çalışmalı)
+    // iPhone'da kaydırmadan tek ekrana sığsın diye en güçlü 4 madde
     private var features: [(String, String, String)] {
-        var list = [
+        [
             ("waveform.circle", AL.s(.pwTalkTitle), AL.s(.pwTalkSub)),
             ("map", AL.s(.pwPlanTitle), AL.s(.pwPlanSub)),
             ("checkmark.bubble", AL.s(.pwFixTitle), AL.s(.pwFixSub)),
             ("bookmark", AL.s(.pwRemTitle), AL.s(.pwRemSub)),
-            ("infinity", AL.s(.pwPracticeTitle), AL.s(.pwPracticeSub)),
         ]
-        if AIEngine.isAvailable {
-            list.append(("list.bullet.rectangle", langManager.s(.paywallFeature3), langManager.s(.paywallFeature3Sub)))
-        }
-        return list
     }
 
     var body: some View {
@@ -139,15 +135,15 @@ struct OnboardingPaywallView: View {
                     .foregroundStyle(DS.Colors.ink)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(.top, 16)
-            .padding(.bottom, 24)
+            .padding(.top, 12)
+            .padding(.bottom, 16)
 
             VoiceLogoView(phase: .aiSpeaking, level: 0.4)
-                .scaleEffect(2.2)
+                .scaleEffect(1.8)
                 .frame(maxWidth: .infinity)
-                .frame(height: 110)
+                .frame(height: 80)
 
-            featureList.padding(.vertical, 20)
+            featureList.padding(.vertical, 12)
 
             Button(langManager.s(.paywallContinue)) { withAnimation { step = 1 } }
                 .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
@@ -180,7 +176,7 @@ struct OnboardingPaywallView: View {
                     }
                     Spacer(minLength: 0)
                 }
-                .padding(.vertical, 12)
+                .padding(.vertical, 9)
             }
         }
     }

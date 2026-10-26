@@ -261,6 +261,8 @@ final class GameQuizViewModel: ObservableObject {
             return
         }
 
+        // Önceki kelimenin sesi yeni soruya taşmasın
+        TTSManager.shared.stop()
         currentIndex += 1
         state = .question
     }
@@ -491,26 +493,23 @@ struct GameQuestion: Identifiable {
             return question(for: w, mode: kind, reverse: reverse, in: words, native: native)
         }
 
+        // 5'li gruplar: yeni kelime tanıtılır ve (seçili kelimelerde) HEMEN o kelime sorulur —
+        // başka kelimeye geçmeden; grup sonunda tümünü pekiştiren eşleştirme. Kısa ve anlaşılır (~18 adım).
         let chunks = stride(from: 0, to: words.count, by: 5).map { Array(words[$0..<min($0 + 5, words.count)]) }
         for chunk in chunks {
             for (i, w) in chunk.enumerated() {
-                if introduceNew && !known.contains(w.id.uuidString) {
-                    steps.append(introduce(w, native: native))
-                }
-                if i >= 1 { steps.append(practice(chunk[i - 1])) }
+                let isNew = introduceNew && !known.contains(w.id.uuidString)
+                if isNew { steps.append(introduce(w, native: native)) }
+                // Yeni kelimelerde 1., 3. ve 5. kelime; bilinenlerde ilk 3 kelime sorulur (gerisini eşleştirme yoklar)
+                let ask = isNew ? i % 2 == 0 : i < 3
+                if ask { steps.append(practice(w)) }
             }
-            if let last = chunk.last { steps.append(practice(last)) }
             if chunk.count >= 3 { steps.append(match(chunk, native: native)) }
-        }
-
-        // Kısa tekrar: 3 kelime, ters yönde
-        for w in words.shuffled().prefix(min(3, words.count)) {
-            steps.append(question(for: w, mode: .multipleChoice, reverse: true, in: words, native: native))
         }
 
         // Cümleler
         let spaced = !["ZH", "JA"].contains(target)
-        for (i, s) in sentences.enumerated() {
+        for (i, s) in sentences.prefix(2).enumerated() {
             if i == 0, let q = wordInContext(s, words: words, native: native) { steps.append(q) }
             if i % 2 == 1 && spaced, let q = buildSentence(s, pool: pool) {
                 steps.append(q)
