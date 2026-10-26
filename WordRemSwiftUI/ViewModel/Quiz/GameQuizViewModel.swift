@@ -197,6 +197,7 @@ final class GameQuizViewModel: ObservableObject {
     private func recordAnswer(isCorrect: Bool) {
         // Günlük soru hakkını kullan
         DailyLimitManager.shared.recordQuestion()
+        StudyStreak.record()
 
         if isCorrect {
             score += 1

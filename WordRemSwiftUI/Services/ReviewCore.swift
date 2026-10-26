@@ -49,6 +49,10 @@ enum ReviewCore {
         WidgetCenter.shared.reloadTimelines(ofKind: reviewWidgetKind)
     }
 
+    static func save(activeDays: Set<String>) {
+        defaults?.set(Array(activeDays), forKey: daysKey)
+    }
+
     static func loadActiveDays() -> Set<String> { Set(defaults?.stringArray(forKey: daysKey) ?? []) }
 
     static var revealedWordId: String? {

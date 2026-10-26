@@ -75,6 +75,7 @@ struct TalkHomeView: View {
     // MARK: - Top bar: dil + seviye · seri · sıralama
     private var topBar: some View {
         let s = UserStore.shared.snapshot
+        let streak = StudyStreak.current
         let lang = ContentStore.shared.language(code: targetCode)
         let goalsDone = s.voiceGoalsDone?.count ?? 0
         return HStack(spacing: 10) {
@@ -99,10 +100,10 @@ struct TalkHomeView: View {
             .accessibilityLabel(AL.s(.tabRank))
 
             HStack(spacing: 6) {
-                Text("\(s.streakDays)")
+                Text("\(streak)")
                     .font(DS.Font.ui(15, weight: .semibold))
                     .foregroundStyle(DS.Colors.ink)
-                    .contentTransition(.numericText(value: Double(s.streakDays)))
+                    .contentTransition(.numericText(value: Double(streak)))
                 LiveFlame(size: 16)
             }
             .padding(.horizontal, 14).padding(.vertical, 8)
@@ -114,13 +115,13 @@ struct TalkHomeView: View {
                         .opacity(streakCelebration > 0 ? 1 : 0))
             .onAppear {
                 // Seri arttıysa kutla
-                if s.streakDays > lastSeenStreak, lastSeenStreak > 0 {
+                if streak > lastSeenStreak, lastSeenStreak > 0 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                         Haptics.success()
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) { streakCelebration += 1 }
                     }
                 }
-                lastSeenStreak = s.streakDays
+                lastSeenStreak = streak
             }
         }
     }

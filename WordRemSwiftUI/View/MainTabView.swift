@@ -86,6 +86,7 @@ struct MainTabView: View {
             switch phase {
             case .active:
                 SmartReminders.noteAppOpened()
+                StudyStreak.sync()
                 ReviewScheduler.shared.reload()
             case .background:
                 Task { await SmartReminders.reschedule() }

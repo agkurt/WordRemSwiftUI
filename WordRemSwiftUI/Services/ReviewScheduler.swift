@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import WidgetKit
 
 @MainActor
 final class ReviewScheduler: ObservableObject {
@@ -86,6 +87,7 @@ final class ReviewScheduler: ObservableObject {
         states[word.id] = s
         activeDays.insert(key(calendar.startOfDay(for: now)))
         save()
+        StudyStreak.record()
         return s
     }
 
@@ -106,5 +108,43 @@ final class ReviewScheduler: ObservableObject {
 
     private func startOfTomorrow(from date: Date) -> Date {
         calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: date)) ?? date
+    }
+}
+
+/// Tek seri kaynağı: o gün yapılan herhangi bir çalışma (quiz, ders, sesli sohbet, kelime tekrarı) seriyi sürdürür.
+/// Günler App Group'ta (widget ve bildirimler görsün) ve kullanıcı kaydında (bulut, cihazlar arası) birlikte tutulur.
+enum StudyStreak {
+    static var days: Set<String> {
+        ReviewCore.loadActiveDays().union(UserStore.shared.snapshot.studyDays ?? [])
+    }
+    static var current: Int { ReviewCore.streak(activeDays: days) }
+
+    /// Bugün çalışıldı
+    static func record() { sync(addingToday: true) }
+
+    /// Widget/bildirimden yapılan tekrarları ve diğer cihazı birleştirir (uygulama açılınca da çağrılır)
+    static func sync(addingToday: Bool = false) {
+        let today = ReviewCore.dayKey(Date())
+        let local = ReviewCore.loadActiveDays()
+        let snap = UserStore.shared.snapshot
+        var cloud = Set(snap.studyDays ?? [])
+        // Tek seferlik geçiş: eski "açılış serisi" günlerini koru ki kimsenin serisi sıfırlanmasın
+        if snap.studyDays == nil, snap.streakDays > 0, let last = snap.lastActivityAt {
+            for i in 0..<min(snap.streakDays, 400) {
+                if let d = Calendar.current.date(byAdding: .day, value: -i, to: last) { cloud.insert(ReviewCore.dayKey(d)) }
+            }
+        }
+        var all = local.union(cloud)
+        if addingToday { all.insert(today) }
+        let streak = ReviewCore.streak(activeDays: all)
+        guard all != local || all != Set(snap.studyDays ?? []) || snap.streakDays != streak else { return }
+        if all != local { ReviewCore.save(activeDays: all) }
+        UserStore.shared.update { s in
+            s.studyDays = all.sorted().suffix(400).map { $0 }
+            s.streakDays = streak
+            if addingToday { s.lastActivityAt = Date() }
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+        Task { @MainActor in ReviewScheduler.shared.reload() }
     }
 }

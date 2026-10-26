@@ -92,7 +92,10 @@ struct VoiceTutorView: View {
     }
 
     private func begin() async {
-        session.onAnswer = { card, ok in TutorBrain.noteAnswer(card: card, correct: ok) }
+        session.onAnswer = { card, ok in
+            TutorBrain.noteAnswer(card: card, correct: ok)
+            StudyStreak.record()
+        }
         session.answerCardsOnly = isDemo
         // Günlük süre doldu: AI vedalaştıktan sonra paywall (demoda onboarding'in paywall'ı)
         session.onLimitReached = {
@@ -149,6 +152,7 @@ struct VoiceTutorView: View {
 
     /// Ders yarım kaldıysa son konuşmaları sakla (bir dahaki sefere oradan devam)
     private func saveAndStop() {
+        if session.turns.contains(where: { $0.role == .user && !$0.text.isEmpty }) { StudyStreak.record() }
         if finishedSuccess != true { TutorBrain.saveProgress(for: activeMode, turns: session.turns, step: session.targetProgress) }
         session.stop()
     }

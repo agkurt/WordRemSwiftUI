@@ -45,6 +45,8 @@ struct UserState: Codable, Equatable {
     var voiceProgress: [String: VoiceProgress]?
     /// Toplam sesli pratik süresi (saniye)
     var voiceSeconds: Int?
+    /// Çalışılan günler ("yyyy-MM-dd"): quiz, ders, sesli sohbet ya da tekrar — tek seri kaynağı
+    var studyDays: [String]?
 }
 
 final class UserStore {
@@ -133,6 +135,7 @@ final class UserStore {
         out.usernameChanges = max(a.usernameChanges, b.usernameChanges)
         out.voiceGoalsDone = (a.voiceGoalsDone ?? [:]).merging(b.voiceGoalsDone ?? [:]) { min($0, $1) }
         out.voiceSeconds = max(a.voiceSeconds ?? 0, b.voiceSeconds ?? 0)
+        out.studyDays = Array(Set((a.studyDays ?? []) + (b.studyDays ?? []))).sorted().suffix(400).map { $0 }
         out.tutorFacts = Array(Array(Set((a.tutorFacts ?? []) + (b.tutorFacts ?? []))).sorted().suffix(30))
         out.voiceProgress = (a.voiceProgress ?? [:]).merging(b.voiceProgress ?? [:]) { $0.updatedAt >= $1.updatedAt ? $0 : $1 }
         for (levelId, theirs) in other.progress {

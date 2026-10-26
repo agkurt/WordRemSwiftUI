@@ -194,37 +194,16 @@ final class DataService {
         }
     }
 
-    /// Uygulama açılışında çağrılır: aynı gün → değişmez, ardışık gün → +1, ara → 1.
+    /// Uygulama açılışında çağrılır. Seri artık açılışla değil çalışmayla (quiz, ders, sesli, tekrar) ilerler;
+    /// burada yalnızca widget/bildirim/diğer cihazdan gelen günler birleştirilir.
     @discardableResult
     func updateDailyLoginStreak() async throws -> Int {
-        var result = 0
-        store.update { s in
-            let cal = Calendar.current
-            let today = cal.startOfDay(for: Date())
-            if let last = s.lastActivityAt, cal.startOfDay(for: last) == today {
-                result = max(s.streakDays, 1)
-                s.streakDays = result
-                return
-            }
-            if let last = s.lastActivityAt,
-               let yesterday = cal.date(byAdding: .day, value: -1, to: today),
-               cal.startOfDay(for: last) == yesterday {
-                s.streakDays += 1
-            } else {
-                s.streakDays = 1
-            }
-            s.lastActivityAt = Date()
-            result = s.streakDays
-        }
-        return result
+        StudyStreak.sync()
+        return StudyStreak.current
     }
 
-    /// Bugün ya da dün aktif değilse seri bozulmuştur
     private func currentStreak(_ s: UserState) -> Int {
-        guard let last = s.lastActivityAt else { return 0 }
-        let cal = Calendar.current
-        let days = cal.dateComponents([.day], from: cal.startOfDay(for: last), to: cal.startOfDay(for: Date())).day ?? 99
-        return days <= 1 ? s.streakDays : 0
+        ReviewCore.streak(activeDays: ReviewCore.loadActiveDays().union(s.studyDays ?? []))
     }
 
     // MARK: - Stats
