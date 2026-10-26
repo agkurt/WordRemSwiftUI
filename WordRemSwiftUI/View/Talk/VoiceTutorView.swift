@@ -31,6 +31,7 @@ struct VoiceTutorView: View {
     @State private var showPaywall = false
     @State private var finishedSuccess: Bool?
     @State private var completing = false
+    @Environment(\.horizontalSizeClass) private var sizeClass
     /// Bu oturumda desteye kaydedilen kartlar (yer imi dolu görünür)
     @State private var savedPhrases: Set<String> = []
 
@@ -506,7 +507,8 @@ struct VoiceTutorView: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        // iPhone'da alttan yarım sayfa; iPad'de ekranın ortasında form penceresi
+        .presentationDetents(sizeClass == .regular ? [.large] : [.medium, .large])
         .presentationDragIndicator(.visible)
     }
 
