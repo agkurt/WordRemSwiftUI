@@ -100,14 +100,39 @@ async function getNum(env: Env, key: string): Promise<number> {
   return Number((await env.USAGE.get(key)) ?? 0);
 }
 
+/** KV yazma sınırı dolsa bile ders açılmaya devam etsin: sayaç yazılamazsa oturum düşmez */
+async function safePut(env: Env, key: string, value: string, opts?: KVNamespacePutOptions): Promise<void> {
+  try { await env.USAGE.put(key, value, opts); } catch (e) { console.log("kv put failed", key, String(e)); }
+}
+
+/** Kısa ömürlü önbellek/sayaçlar KV yerine Cache API'de (KV yazma kotası harcamaz) */
+const cacheURL = (key: string) => `https://cache.wordrem.internal/${encodeURIComponent(key)}`;
+async function cacheGet(key: string): Promise<string | null> {
+  const res = await caches.default.match(cacheURL(key));
+  return res ? await res.text() : null;
+}
+async function cachePut(key: string, value: string, ttl: number): Promise<void> {
+  await caches.default.put(cacheURL(key), new Response(value, { headers: { "cache-control": `max-age=${ttl}` } }));
+}
+
+/** Ücretli/deneme kullanıcının günlük + aylık sayacı tek kayıtta (rapor başına tek yazma) */
+type PaidUsage = { d: string; ds: number; m: string; ms: number };
+async function paidUsage(env: Env, user: string): Promise<PaidUsage> {
+  const raw = await env.USAGE.get(`p:${user}`);
+  const u = raw ? (JSON.parse(raw) as PaidUsage) : { d: dayKey(), ds: 0, m: monthKey(), ms: 0 };
+  if (u.d !== dayKey()) { u.d = dayKey(); u.ds = 0; }
+  if (u.m !== monthKey()) { u.m = monthKey(); u.ms = 0; }
+  return u;
+}
+
 /** RevenueCat: kullanıcının Pro hakkı var mı, deneme süresinde mi, ne ödüyor? */
 async function planFor(env: Env, appUserId: string): Promise<Plan> {
   // Her turda RevenueCat'e gitmemek için 5 dk önbellek
   const cacheKey = `plan:${appUserId}`;
-  const cached = await env.USAGE.get(cacheKey);
+  const cached = await cacheGet(cacheKey);
   if (cached) return JSON.parse(cached) as Plan;
   const plan = await fetchPlan(env, appUserId);
-  await env.USAGE.put(cacheKey, JSON.stringify(plan), { expirationTtl: 300 });
+  await cachePut(cacheKey, JSON.stringify(plan), 300);
   return plan;
 }
 
@@ -138,15 +163,14 @@ async function allowance(env: Env, user: string, plan: Plan): Promise<number> {
     return Math.max(0, Number(env.FREE_TASTE_SECONDS) - used);
   }
   const daily = plan.tier === "trial" ? Number(env.TRIAL_DAILY_SECONDS) : Number(env.PRO_DAILY_SECONDS);
-  const usedDay = await getNum(env, `d:${user}:${dayKey()}`);
-  const usedMonth = await getNum(env, `m:${user}:${monthKey()}`);
-  return Math.max(0, Math.min(session, daily - usedDay, plan.monthlySeconds - usedMonth));
+  const u = await paidUsage(env, user);
+  return Math.max(0, Math.min(session, daily - u.ds, plan.monthlySeconds - u.ms));
 }
 
 async function createSession(req: Request, env: Env): Promise<Response> {
   const body = (await req.json().catch(() => null)) as SessionRequest | null;
   if (!body?.appUserId || !body.instructions) return json({ error: "bad_request" }, 400);
-  if (body.instructions.length > 12000) return json({ error: "instructions_too_long" }, 400);
+  if (body.instructions.length > 24000) return json({ error: "instructions_too_long" }, 400);
 
   const plan = await planFor(env, body.appUserId);
   const { tier } = plan;
@@ -187,7 +211,7 @@ async function createSession(req: Request, env: Env): Promise<Response> {
 
   const sessionId = crypto.randomUUID();
   // Oturum kaydı: kullanım raporlarında üst sınır kontrolü için
-  await env.USAGE.put(`s:${sessionId}`, JSON.stringify({ user: body.appUserId, plan, seconds, reported: 0 }), {
+  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, plan, seconds, reported: 0 }), {
     expirationTtl: 60 * 60 * 3,
   });
 
@@ -215,15 +239,14 @@ async function reportUsage(req: Request, env: Env): Promise<Response> {
   const delta = Math.max(0, total - s.reported);
   if (delta > 0) {
     if (s.plan.tier === "free") {
-      await env.USAGE.put(`free:${s.user}`, String((await getNum(env, `free:${s.user}`)) + delta));
+      await safePut(env, `free:${s.user}`, String((await getNum(env, `free:${s.user}`)) + delta));
     } else {
-      const dk = `d:${s.user}:${dayKey()}`;
-      const mk = `m:${s.user}:${monthKey()}`;
-      await env.USAGE.put(dk, String((await getNum(env, dk)) + delta), { expirationTtl: 60 * 60 * 48 });
-      await env.USAGE.put(mk, String((await getNum(env, mk)) + delta), { expirationTtl: 60 * 60 * 24 * 40 });
+      const u = await paidUsage(env, s.user);
+      u.ds += delta; u.ms += delta;
+      await safePut(env, `p:${s.user}`, JSON.stringify(u), { expirationTtl: 60 * 60 * 24 * 40 });
     }
     s.reported = total;
-    await env.USAGE.put(`s:${body.sessionId}`, JSON.stringify(s), { expirationTtl: 60 * 60 * 3 });
+    await safePut(env, `s:${body.sessionId}`, JSON.stringify(s), { expirationTtl: 60 * 60 * 3 });
   }
   return json({ ok: true, remainingSeconds: await allowance(env, s.user, s.plan) });
 }
@@ -251,9 +274,9 @@ async function tts(req: Request, env: Env): Promise<Response> {
   const text = (body?.text ?? "").trim();
   if (!body?.appUserId || !text || text.length > 600) return json({ error: "bad_request" }, 400);
   const key = `tts:${body.appUserId}:${dayKey()}`;
-  const used = await getNum(env, key);
+  const used = Number((await cacheGet(key)) ?? 0);
   if (used >= 400) return json({ error: "limit_reached" }, 429);
-  await env.USAGE.put(key, String(used + 1), { expirationTtl: 60 * 60 * 48 });
+  await cachePut(key, String(used + 1), 60 * 60 * 24);
   const pcm = body.format === "pcm";
   const res = await speech(env, text, pcm ? "pcm" : "mp3");
   if (!res.ok) return json({ error: "upstream", status: res.status, detail: await res.text() }, 502);
