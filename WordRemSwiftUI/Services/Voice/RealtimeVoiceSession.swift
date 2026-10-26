@@ -814,14 +814,50 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     // MARK: - Socket
+    /// Doğrudan bağlantı bir kez kurulamadıysa (bazı mobil operatörler) uygulama açık kaldıkça hep aktarıcı kullanılır
+    private static var preferRelay = false
+    private var viaRelay = false
+    private var lastGrant: (model: String, secret: String)?
+
     private func connect(model: String, secret: String) {
+        lastGrant = (model, secret)
+        let relayReq = VoiceBackend.shared.relayRequest(model: model, secret: secret)
+        viaRelay = Self.preferRelay && relayReq != nil
         var req = URLRequest(url: URL(string: "wss://api.openai.com/v1/realtime?model=\(model)")!)
         req.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
+        open(viaRelay ? relayReq! : req)
+    }
+
+    private func open(_ req: URLRequest) {
+        voiceLog.info("socket open (relay: \(self.viaRelay, privacy: .public))")
         let task = URLSession.shared.webSocketTask(with: req)
         socket = task
         tapState.set(socket: task)
         task.resume()
         receive()
+        // Oturum birkaç saniyede açılmazsa (soket asılı kaldı) aktarıcıya geç
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 6_000_000_000)
+            guard let self, task === self.socket, self.phase == .connecting else { return }
+            self.connectFailed()
+        }
+    }
+
+    /// Oturum açılmadan düştü: doğrudan bağlantıdaysak aktarıcıyı dene, o da olmazsa hata göster
+    private func connectFailed() {
+        let old = socket
+        socket = nil
+        tapState.set(socket: nil)
+        old?.cancel(with: .goingAway, reason: nil)
+        if !viaRelay, let g = lastGrant, let req = VoiceBackend.shared.relayRequest(model: g.model, secret: g.secret) {
+            voiceLog.info("direct socket failed, switching to relay")
+            Self.preferRelay = true
+            viaRelay = true
+            open(req)
+        } else {
+            resumeNote = nil
+            phase = .failed("connection")
+        }
     }
 
     private func send(_ event: [String: Any]) {
@@ -840,6 +876,7 @@ final class RealtimeVoiceSession: ObservableObject {
                 Task { @MainActor in
                     // Yeniden bağlanırken eski soketin hatası oturumu düşürmesin
                     guard let self, task === self.socket, self.phase != .ended else { return }
+                    if self.phase == .connecting { self.connectFailed(); return }
                     // Arka planda iOS soketi kapatır: önce sessizce yeniden bağlan, olmazsa hata göster
                     if UIApplication.shared.applicationState == .active { await self.reconnect() }
                     else { self.needsReconnect = true }

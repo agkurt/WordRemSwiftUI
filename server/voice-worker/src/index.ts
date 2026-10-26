@@ -268,6 +268,34 @@ async function status(req: Request, env: Env): Promise<Response> {
   return json({ tier: plan.tier, monthlySeconds: plan.monthlySeconds, remainingSeconds: await allowance(env, user, plan) });
 }
 
+// Bazı mobil operatörlerde api.openai.com'a doğrudan WebSocket kurulamıyor: ses bu sunucu üzerinden aktarılır.
+// Uygulama kısa ömürlü oturum anahtarını (client secret) gönderir; kalıcı OpenAI anahtarı hiç kullanılmaz.
+async function realtimeRelay(req: Request, env: Env): Promise<Response> {
+  if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") return json({ error: "bad_request" }, 426);
+  const auth = req.headers.get("authorization");
+  if (!auth) return json({ error: "unauthorized" }, 401);
+  const model = new URL(req.url).searchParams.get("model") || env.REALTIME_MODEL;
+  const upstream = await fetch(`https://api.openai.com/v1/realtime?model=${encodeURIComponent(model)}`, {
+    headers: { Upgrade: "websocket", Authorization: auth },
+  });
+  const remote = upstream.webSocket;
+  if (!remote) return json({ error: "upstream", status: upstream.status }, 502);
+  remote.accept();
+  const [client, server] = Object.values(new WebSocketPair());
+  server.accept();
+  // 1005/1006 gönderilemez kodlar: normal kapanışa çevir
+  const close = (ws: WebSocket, code = 1000, reason = "") => {
+    try { ws.close(code === 1005 || code === 1006 ? 1000 : code, reason); } catch {}
+  };
+  server.addEventListener("message", (e) => { try { remote.send(e.data); } catch { close(server, 1011); } });
+  remote.addEventListener("message", (e) => { try { server.send(e.data); } catch { close(remote); } });
+  server.addEventListener("close", (e) => close(remote, e.code, e.reason));
+  remote.addEventListener("close", (e) => close(server, e.code, e.reason));
+  server.addEventListener("error", () => close(remote));
+  remote.addEventListener("error", () => close(server, 1011));
+  return new Response(null, { status: 101, webSocket: client });
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(req.url);
@@ -280,6 +308,7 @@ export default {
       if (req.method === "POST" && pathname === "/v1/voice/usage") return await reportUsage(req, env);
       if (req.method === "GET" && pathname === "/v1/voice/status") return await status(req, env);
       if (req.method === "POST" && pathname === "/v1/voice/tts") return await tts(req, env);
+      if (req.method === "GET" && pathname === "/v1/voice/realtime") return await realtimeRelay(req, env);
       return json({ error: "not_found" }, 404);
     } catch (e) {
       return json({ error: "internal", detail: String(e) }, 500);

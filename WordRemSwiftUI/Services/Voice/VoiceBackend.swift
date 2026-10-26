@@ -52,7 +52,7 @@ final class VoiceBackend {
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
-        req.timeoutInterval = 15
+        req.timeoutInterval = 25
         req.httpBody = try JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed,
         ])
@@ -75,6 +75,19 @@ final class VoiceBackend {
         let (data, response) = try await URLSession.shared.data(for: req)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw Failure(code: "network", remainingSeconds: nil) }
         return data
+    }
+
+    /// OpenAI'a sunucu üzerinden bağlanan WebSocket isteği (doğrudan bağlantı kurulamayan ağlar için)
+    func relayRequest(model: String, secret: String) -> URLRequest? {
+        guard let baseURL, var comps = URLComponents(url: baseURL.appendingPathComponent("v1/voice/realtime"), resolvingAgainstBaseURL: false)
+        else { return nil }
+        comps.scheme = comps.scheme == "http" ? "ws" : "wss"
+        comps.queryItems = [URLQueryItem(name: "model", value: model)]
+        guard let url = comps.url else { return nil }
+        var req = URLRequest(url: url)
+        req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
+        req.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
+        return req
     }
 
     func reportUsage(sessionId: String, seconds: Int) async {
