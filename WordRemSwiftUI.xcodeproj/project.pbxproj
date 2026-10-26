@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift */; };
 		B0B0C0DE00000000000F21 /* ReviewCardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE00000000000F20 /* ReviewCardWidget.swift */; };
 		C1DE3C31A4A927E9150A025A /* SmartReminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE3C31A4A927E9150A025A /* SmartReminders.swift */; };
 		B0B0C0DE00000000000F11 /* ReviewCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE00000000000F10 /* ReviewCore.swift */; };
@@ -222,6 +223,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/LessonCompleteView.swift; sourceTree = "<group>"; };
 		B0B0C0DE00000000000F20 /* ReviewCardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCardWidget.swift; sourceTree = "<group>"; };
 		C0DE3C31A4A927E9150A025A /* SmartReminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartReminders.swift; sourceTree = "<group>"; };
 		B0B0C0DE00000000000F10 /* ReviewCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCore.swift; sourceTree = "<group>"; };
@@ -954,6 +956,7 @@
 				C0DEB9507D0476F5EEF60D9B /* TodayView.swift */,
 				C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */,
 				C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */,
+				C0DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift */,
 				C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */,
 				E81C0AEA2F6607C600ACF8BB /* InteractiveSentenceView.swift */,
 				E8AEB0182BDACEBF004E8664 /* MotherTongueView */,
@@ -1332,6 +1335,7 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				C1DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift in Sources */,
 				C1DE3C31A4A927E9150A025A /* SmartReminders.swift in Sources */,
 				C1DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift in Sources */,
 				C1DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift in Sources */,

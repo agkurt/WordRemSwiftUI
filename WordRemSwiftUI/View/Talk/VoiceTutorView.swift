@@ -20,6 +20,7 @@ struct VoiceTutorView: View {
     @Namespace private var logoNS
     /// "Devam et" ile sıradaki derse geçince değişir
     @State private var nextMode: TutorMode?
+    @State private var showSummary = false
     private var activeMode: TutorMode { nextMode ?? mode }
     @State private var showTranslation = false
     @State private var showTranscript = false
@@ -60,6 +61,7 @@ struct VoiceTutorView: View {
             if phrase != nil { withAnimation(.easeOut(duration: 0.25)) { phrase = nil } }
         }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
+        .fullScreenCover(isPresented: $showSummary) { lessonSummary }
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
             OnboardingPaywallView(onContinue: { showPaywall = false })
         }
@@ -92,6 +94,25 @@ struct VoiceTutorView: View {
         }
         phrase = nil
         session.stop()
+        showSummary = true
+    }
+
+    /// Ders özeti: kartlarda öğretilen ifadeler, ustalık, süre
+    private var lessonSummary: LessonCompleteView {
+        var seen = Set<String>()
+        let phrases = session.turns.filter { $0.role == .card && seen.insert($0.text.lowercased()).inserted }
+            .map { LessonCompleteView.Phrase(text: $0.text, translation: $0.detail) }
+        let mastery = session.totalAnswers > 0 ? Int((Double(session.correctAnswers) / Double(session.totalAnswers) * 100).rounded()) : 100
+        var title = ""
+        if case .goal(let c, let g) = activeMode {
+            title = ScenarioStore.shared.chapters.first { $0.id == c }?.goals.first { $0.id == g }?.localizedTitle ?? ""
+        }
+        return LessonCompleteView(lessonTitle: title, learnerName: UserStore.shared.snapshot.username,
+                                  phrases: phrases, mastery: mastery,
+                                  duration: Date().timeIntervalSince(session.startedAt)) {
+            showSummary = false
+            dismiss()      // ana sayfa sıradaki dersi gösterir
+        }
     }
 
     /// Ders yarım kaldıysa son konuşmaları sakla (bir dahaki sefere oradan devam)
@@ -138,21 +159,6 @@ struct VoiceTutorView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
-        .overlay(alignment: .bottom) {
-            if session.targetTotal > 0 { targetDots.offset(y: 22) }
-        }
-    }
-
-    /// Ders hedefleri: tamamlananlar dolu
-    private var targetDots: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<session.targetTotal, id: \.self) { i in
-                Capsule()
-                    .fill(i < session.targetProgress ? DS.Colors.accent : DS.Colors.line)
-                    .frame(width: i == session.targetProgress ? 22 : 14, height: 5)
-            }
-        }
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: session.targetProgress)
     }
 
     // MARK: - Caption (son satırlar, eskiler soluk)

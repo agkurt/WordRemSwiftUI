@@ -43,6 +43,16 @@ struct TalkHomeView: View {
             VoiceTutorView(mode: box.mode) { _ in refresh += 1 }
         }
         .sheet(isPresented: $showPlan) { TalkPlanSheet() }
+        #if DEBUG
+        // Ekran görüntüsü/test: -DemoLessonComplete YES ile ders sonu akışını doğrudan aç
+        .fullScreenCover(isPresented: .constant(UserDefaults.standard.bool(forKey: "DemoLessonComplete"))) {
+            LessonCompleteView(lessonTitle: "Selamlaşma ve kendini tanıtma", learnerName: "Ahmet",
+                               phrases: [.init(text: "Nice to meet you.", translation: "Tanıştığıma memnun oldum."),
+                                         .init(text: "Hello, my name is Ahmet.", translation: "Merhaba, benim adım Ahmet."),
+                                         .init(text: "I'm good, thank you.", translation: "İyiyim, teşekkür ederim.")],
+                               mastery: 92, duration: 628) {}
+        }
+        #endif
         .fullScreenCover(isPresented: $showReview) {
             ReviewSessionView(words: scheduler.dueToday).environmentObject(langManager)
         }

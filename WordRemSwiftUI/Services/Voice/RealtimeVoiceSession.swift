@@ -47,6 +47,10 @@ final class RealtimeVoiceSession: ObservableObject {
     @Published private(set) var targetProgress = 0
     @Published private(set) var targetTotal = 0
     @Published private(set) var lessonComplete = false
+    /// Ders özeti için: doğru / toplam cevap, başlangıç zamanı
+    @Published private(set) var correctAnswers = 0
+    @Published private(set) var totalAnswers = 0
+    private(set) var startedAt = Date()
     /// Son kelimenin ekrana geldiği an (yumuşak belirme için)
     @Published private(set) var captionChangedAt = Date()
     /// Tüm konuşma (Transkript çekmecesi için)
@@ -101,6 +105,7 @@ final class RealtimeVoiceSession: ObservableObject {
         self.targets = targets
         targetTotal = targets.count
         targetProgress = min(startStep, targets.count); attempts = 0; roleplayTurns = 0; lessonComplete = false
+        pendingCombine = false; correctAnswers = 0; totalAnswers = 0; startedAt = Date()
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
         turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false
@@ -193,35 +198,62 @@ final class RealtimeVoiceSession: ObservableObject {
     private var currentCard: String?
     private var attempts = 0
     private var roleplayTurns = 0
+    private var pendingCombine = false
     private var awaitingReply = false
 
-    /// Öğrencinin söylediğine göre öğretmene bir sonraki adımı söyler
+    /// Öğrencinin söylediğine göre öğretmene bir sonraki adımı söyler (Pingo tarzı: yeni parça → birleştir → yeni parça…).
+    /// Sıralama arka planda; öğretmen bunu "adım" diye anlatmaz.
     private func guide(after said: String) {
         guard !targets.isEmpty, !lessonComplete else { return }
+        let ok = currentCard.map { Self.matches(said: said, card: $0) } ?? !said.isEmpty
+        totalAnswers += 1
+        if ok { correctAnswers += 1 }
         var note: String
-        if targetProgress < targets.count {
-            let ok = currentCard.map { Self.matches(said: said, card: $0) } ?? !said.isEmpty
+
+        if targetProgress < targets.count || pendingCombine {
             attempts += 1
-            if ok || attempts >= 2 {
-                let how = ok ? "The learner said it correctly." : "The learner tried twice; that's enough for this step."
-                targetProgress += 1
-                attempts = 0
-                currentCard = nil
+            guard ok || attempts >= 2 else {
+                note = "The learner's attempt wasn't quite right. Quote what you heard kindly (\"Oh, I heard: '\(said)'\"), name the tiny fix in a few words, and have them say the correct line again."
+                return sendGuide(note)
+            }
+            attempts = 0
+            currentCard = nil
+            let praise = ok ? "The learner got it right — react with a short, varied, genuine praise (never the same words twice)."
+                            : "Two tries are enough here — encourage them warmly and move on."
+            if pendingCombine {
+                pendingCombine = false
                 note = targetProgress < targets.count
-                    ? "\(how) Praise in a few words, then teach step \(targetProgress + 1) of \(targets.count): \(targets[targetProgress]). Do not repeat the previous phrase."
-                    : "\(how) All steps are done! Start a short roleplay RIGHT NOW in this same turn: set the scene in a few words, then SAY OUT LOUD the other person's first line in character (e.g. 'Hi! I am Sam. How are you?'), and only then call show_phrase with the learner's reply."
+                    ? "\(praise) Now bring in the next new piece (\(targets[targetProgress])): give a short natural model line and have them say it."
+                    : "\(praise) \(Self.roleplayStart)"
             } else {
-                note = "The learner's attempt wasn't quite right (heard: \"\(said)\"). Kindly give the correct phrase once and let them try one more time."
+                targetProgress += 1
+                if targetProgress >= 2 && targetProgress % 2 == 0 {
+                    // Pingo gibi: öğrendiklerini birleştirip biraz daha uzun bir cümle kurdur
+                    pendingCombine = true
+                    note = "\(praise) Now build on what they know: have them say one slightly longer line that combines their earlier phrases with this one (for example a greeting + their name + nice to meet you)."
+                } else if targetProgress < targets.count {
+                    note = "\(praise) Let's build on that — next new piece: \(targets[targetProgress]). Give a short natural model line and have them say it."
+                } else {
+                    note = "\(praise) \(Self.roleplayStart)"
+                }
             }
         } else {
             roleplayTurns += 1
-            guard roleplayTurns >= 2 else {
-                guide(roleplay: "Stay in character: react briefly to what the learner said, say the next line as the other person, and give the learner's reply as the card.")
-                return
+            if roleplayTurns < 3 {
+                note = ok || said.count > 3
+                    ? "Stay in character: react naturally to what they said, then say the next line as the other person and give the learner's reply as the card."
+                    : "Stay in character but help them: give the reply they could use as the card and let them try."
+            } else {
+                note = "End the roleplay. Wrap up like a warm real teacher: celebrate in one or two sentences, mention what they can now do, and say you'll continue next time. Then call finish_lesson with success true."
+                lessonComplete = true
             }
-            note = "The roleplay is done. Celebrate warmly in one or two sentences, say the lesson is complete, and call finish_lesson with success true."
-            lessonComplete = true
         }
+        sendGuide(note)
+    }
+
+    private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the learner's reply."
+
+    private func sendGuide(_ note: String) {
         voiceLog.info("guide: \(note, privacy: .public)")
         send(["type": "conversation.item.create",
               "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note]]]])

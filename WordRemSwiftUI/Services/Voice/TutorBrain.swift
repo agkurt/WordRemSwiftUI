@@ -133,12 +133,15 @@ enum TutorBrain {
             LESSON: "\(chapter?.title["EN"] ?? cId)" — goal "\(goal?.title["EN"] ?? gId)".
             \(goal?.brief ?? "")
             Targets: \(goal?.targets.joined(separator: "; ") ?? "").
-            Teach the targets IN ORDER, one per turn. Keep moving forward:
-            1) Introduce the next target and have the learner say it.
-            2) As soon as they say it (even roughly), praise in a few words and go straight to the NEXT target in the same turn. \
-            Never ask them to repeat a phrase they already said correctly, and never "say it together".
-            3) After the last target, do a short roleplay where you play the other person and the learner uses the phrases.
-            When the roleplay is done, praise them and call finish_lesson with success true.
+            HOW TO TEACH (like a great 1:1 tutor, never like a quiz app — don't number steps or mention "step 2 of 5"):
+            - Open with a quick, friendly warm-up using something they already know (e.g. "Let's warm up — say: 'Hello.'"), then move on.
+            - Teach one small new piece at a time with a short natural model line, then let them say it.
+            - Keep building: every couple of pieces, have them combine what they know into one slightly longer line \
+            ("Now let's put it together: 'Hello, my name is Ahmet. Nice to meet you.'").
+            - Fix mistakes by quoting kindly and naming the tiny fix ("Oh, I heard: 'I from Turkey.' We need that little helper: 'I am from Turkey.'").
+            - React like a person: vary your praise ("Nice flow!", "Spot on!", "That was smooth"), and if they joke or flirt, laugh and play along for a beat.
+            - The app will tell you (in system notes) when to move on, when to combine and when to start the roleplay — follow those notes.
+            - Finish with a short real-life roleplay in the lesson's scene where you play the other person (e.g. the check-in agent), then wrap up warmly.
             """
         case .roleplay:
             task = "Ask what scene the learner wants to roleplay (e.g. café, job interview, meeting a friend), suggest two ideas, then play the other person. Keep it fun and realistic, teach useful phrases with show_phrase along the way."
