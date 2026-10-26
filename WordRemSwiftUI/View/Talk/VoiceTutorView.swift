@@ -13,7 +13,7 @@ struct VoiceTutorView: View {
     var onFinished: (Bool) -> Void = { _ in }
 
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var session = VoiceTutorSession()
+    @StateObject private var session = RealtimeVoiceSession()
     @State private var phrase: (text: String, translation: String)?
     /// Öğretmenin gösterdiği kart, sesi bitince ekrana gelir (Pingo gibi)
     @State private var pendingPhrase: (text: String, translation: String)?
@@ -51,6 +51,7 @@ struct VoiceTutorView: View {
         }
         // Kullanıcı konuştuktan sonra öğretmen cevap vermeye başlayınca kart kalkar
         .onChange(of: session.responseCount) { _ in
+            pendingPhrase = nil
             if phrase != nil { withAnimation(.easeOut(duration: 0.25)) { phrase = nil } }
         }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
@@ -60,21 +61,21 @@ struct VoiceTutorView: View {
     }
 
     private func begin() async {
-        session.onReply = { reply in
-            TutorBrain.apply(reply, mode: mode)
-            // Kart, öğretmenin sesi bitince çıkar
-            let card = reply.cardPhrase.trimmingCharacters(in: .whitespaces)
-            pendingPhrase = card.isEmpty ? nil : (card, reply.cardTranslation)
-            if reply.lessonComplete {
-                finishedSuccess = true
-                onFinished(true)
-            }
+        session.onToolCall = { name, args in
+            TutorBrain.handle(tool: name, args: args, mode: mode,
+                              onPhrase: { text, tr in
+                                  pendingPhrase = (text, tr)
+                                  if session.phase == .listening { revealPendingPhrase() }
+                              },
+                              onFinish: { success in
+                                  finishedSuccess = success
+                                  onFinished(success)
+                              })
         }
-        // Ders hedefinde yarım kalan konuşma varsa oradan devam
-        let history = TutorBrain.savedHistory(for: mode)
-        await session.start(instructions: TutorBrain.instructions(for: mode, resuming: !history.isEmpty), history: history)
+        await session.start(instructions: TutorBrain.instructions(for: mode), tools: TutorBrain.tools)
     }
 
+    /// Ders yarım kaldıysa son konuşmaları sakla (bir dahaki sefere oradan devam)
     private func saveAndStop() {
         if finishedSuccess != true { TutorBrain.saveProgress(for: mode, turns: session.turns) }
         session.stop()
@@ -131,12 +132,6 @@ struct VoiceTutorView: View {
                     .frame(height: 120)
             case .failed(let code):
                 failureView(code)
-            case .userSpeaking:
-                // Basılı tutarken söylenenler canlı yazılır
-                Text(session.userPartial.isEmpty ? "…" : session.userPartial)
-                    .font(DS.Font.ui(22, weight: .medium))
-                    .foregroundStyle(DS.Colors.muted)
-                    .frame(maxWidth: .infinity, alignment: .leading)
             default:
                 if let done = finishedSuccess, session.phase == .ended {
                     VStack(spacing: 12) {
@@ -309,7 +304,7 @@ struct VoiceTutorView: View {
 
 // MARK: - Durum logosu (uygulama renkleriyle)
 struct VoiceLogoView: View {
-    let phase: VoiceTutorSession.Phase
+    let phase: RealtimeVoiceSession.Phase
     let level: Float
 
     private let colors: [Color] = [DS.Colors.ink, DS.Colors.accent, DS.Colors.slate, DS.Colors.accent.opacity(0.55)]

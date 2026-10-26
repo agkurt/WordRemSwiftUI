@@ -12,7 +12,7 @@
 		C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */; };
 		C1DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */; };
 		C1DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift */; };
-		C1DECC9962B3FE68670F142E /* Voice/VoiceTutorSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECC9962B3FE68670F142E /* Voice/VoiceTutorSession.swift */; };
+		C1DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift */; };
 		C1DE90653F7CB3D0B2785546 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE90653F7CB3D0B2785546 /* DemoData.swift */; };
 		C1DE11A019AF810A0B827D3F /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */; };
 		C1DEEBE4900BF6326E432FB4 /* AIEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */; };
@@ -223,7 +223,7 @@
 		C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/TalkHomeView.swift; sourceTree = "<group>"; };
 		C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/VoiceTutorView.swift; sourceTree = "<group>"; };
 		C0DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/VoiceBackend.swift; sourceTree = "<group>"; };
-		C0DECC9962B3FE68670F142E /* Voice/VoiceTutorSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/VoiceTutorSession.swift; sourceTree = "<group>"; };
+		C0DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/RealtimeVoiceSession.swift; sourceTree = "<group>"; };
 		C0DE90653F7CB3D0B2785546 /* DemoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoData.swift; sourceTree = "<group>"; };
 		C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 		C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIEngine.swift; sourceTree = "<group>"; };
@@ -636,7 +636,7 @@
 				C0DE2C64156D00AA753A9481 /* DataService.swift */,
 				C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */,
 				C0DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift */,
-				C0DECC9962B3FE68670F142E /* Voice/VoiceTutorSession.swift */,
+				C0DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift */,
 				C0DEEBE4900BF6326E432FB4 /* AIEngine.swift */,
 				C0DE905666683AA6BB0AC894 /* UserStore.swift */,
 				C0DE89944ECAD01F4969F163 /* ContentStore.swift */,
@@ -1325,7 +1325,7 @@
 				C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */,
 				C1DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift in Sources */,
 				C1DE1E879A028488DF99EA61 /* Voice/VoiceBackend.swift in Sources */,
-				C1DECC9962B3FE68670F142E /* Voice/VoiceTutorSession.swift in Sources */,
+				C1DECC9962B3FE68670F142E /* Voice/RealtimeVoiceSession.swift in Sources */,
 				C1DE90653F7CB3D0B2785546 /* DemoData.swift in Sources */,
 				C1DE11A019AF810A0B827D3F /* LaunchScreenView.swift in Sources */,
 				C1DEEBE4900BF6326E432FB4 /* AIEngine.swift in Sources */,
@@ -1382,7 +1382,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = WordRemWidget/WordRemWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemWidget/Info.plist;
@@ -1414,7 +1414,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = WordRemWidget/WordRemWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemWidget/Info.plist;
@@ -1565,7 +1565,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				ENABLE_PREVIEWS = YES;
@@ -1603,7 +1603,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				ENABLE_PREVIEWS = YES;

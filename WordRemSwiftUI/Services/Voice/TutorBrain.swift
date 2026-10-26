@@ -118,12 +118,12 @@ enum TutorBrain {
         return """
         Spaced-repetition words due today: \(list).
         Weave 2–4 of them into the conversation naturally (ask questions that make the learner use them). \
-        Each time the learner uses one correctly, list it in used_review_words. Don't announce this as a test.
+        Each time the learner uses one correctly, call mark_word_used with that word. Don't announce this as a test.
         """
     }
 
     // MARK: Talimatlar
-    static func instructions(for mode: TutorMode, resuming: Bool = false) -> String {
+    static func instructions(for mode: TutorMode) -> String {
         var task: String
         switch mode {
         case .goal(let cId, let gId):
@@ -133,115 +133,82 @@ enum TutorBrain {
             LESSON: "\(chapter?.title["EN"] ?? cId)" — goal "\(goal?.title["EN"] ?? gId)".
             \(goal?.brief ?? "")
             Targets: \(goal?.targets.joined(separator: "; ") ?? "").
-            Teach ONE phrase at a time and have the learner say it. Then combine phrases and finish with a short roleplay where you play the other person. \
-            When the learner has used all targets successfully, praise them and set lesson_complete to true.
+            Teach one phrase at a time: call show_phrase, say it, ask the learner to repeat. Then combine phrases and finish with a short roleplay where you play the other person. \
+            When the learner has used all targets successfully, praise them and call finish_lesson with success true.
             """
         case .roleplay:
-            task = "Ask what scene the learner wants to roleplay (e.g. café, job interview, meeting a friend), suggest two ideas, then play the other person. Keep it fun and realistic, teach useful phrases along the way."
+            task = "Ask what scene the learner wants to roleplay (e.g. café, job interview, meeting a friend), suggest two ideas, then play the other person. Keep it fun and realistic, teach useful phrases with show_phrase along the way."
         case .newPhrases:
-            task = "Teach useful everyday \(targetName) expressions one at a time, give a tiny real-life example, have the learner say it and then use it in their own sentence."
+            task = "Teach useful everyday \(targetName) expressions one at a time (call show_phrase for each), give a tiny real-life example, have the learner say it and use it in their own sentence."
         case .quickQuestion:
-            task = "The learner has a quick question about \(targetName) (a word, grammar, how to say something). Answer clearly and briefly with one example, then offer to practice it."
+            task = "The learner has a quick question about \(targetName) (a word, grammar, how to say something). Answer clearly and briefly, give one example with show_phrase, then ask if they want to practice it."
         case .myDay:
-            task = "Have a friendly chat in \(targetName) about the learner's day. Ask simple follow-up questions, recast their mistakes naturally (repeat their sentence correctly), and introduce 1–2 useful phrases."
+            task = "Have a friendly chat in \(targetName) about the learner's day. Ask simple follow-up questions, recast their mistakes naturally (repeat their sentence correctly), and introduce 1–2 useful phrases with show_phrase."
         case .levelReview(let levelId):
             let words = ContentStore.shared.words(levelId: levelId)
             let list = words.map { "\($0.term) (= \($0.displayTranslation(phoneCode: OL.nativeLangCode)))" }.joined(separator: ", ")
-            task = "LEVEL REVIEW: the learner just finished a lesson with these words: \(list). Have a short, natural conversation that makes them use at least 5 of these words (list each in used_review_words); set lesson_complete when they used 5+."
+            task = "LEVEL REVIEW: the learner just finished a lesson with these words: \(list). Have a short, natural 2–3 minute conversation that makes them use at least 5 of these words. Call mark_word_used for each one used correctly, then finish_lesson with success true if they used 5+."
         }
 
-        let resume = resuming ? """
-        RESUMING: the earlier messages are from the learner's previous session on this same lesson. \
-        Welcome them back warmly, recap in one short sentence where you left off, and continue from exactly that step (don't restart the lesson).
-        """ : ""
-
         return """
-        You are WordRem's voice tutor: a warm, playful, emotionally smart \(targetName) teacher on a voice call — like a fun friend who happens to be a great teacher. The learner's native language is \(nativeName).
+        You are WordRem's voice tutor: a warm, playful, emotionally smart \(targetName) teacher on a live voice call — like a fun friend who happens to be a great teacher. The learner's native language is \(nativeName).
         \(languagePolicy)
-        Your "say" text is read aloud by a voice, so write it exactly as it should sound: no markdown, no emojis, no lists.
 
         PERSONALITY
         - Be genuinely human: react to what the learner actually says before teaching. If they joke, flirt, tease or say something silly \
-        (e.g. call you "aşkım", "babe", "my love"), get the joke, laugh naturally ("Haha!"), play along for a beat with a witty one-liner, then turn it into a mini lesson \
+        (e.g. call you "aşkım", "babe", "my love"), get the joke, laugh naturally ("haha"), play along for a beat with a witty one-liner, then turn it into a mini lesson \
         (e.g. how to say it in \(targetName)).
-        - Show curiosity about their life, celebrate small wins with real enthusiasm, and match their energy.
-        - Vary your wording; never sound scripted. Use their name now and then.
+        - Show curiosity about their life, celebrate small wins with real enthusiasm, and match their energy (calm if tired, excited if excited).
+        - Vary your wording; never sound scripted or robotic. Use their name now and then.
 
-        HOW EACH TURN WORKS
-        - The learner talks by holding a button; their words come from speech recognition (imperfect: if it looks garbled but close, assume they tried).
-        - "say": 1–3 short sentences. First react to what you heard; if they made a mistake, quote it kindly ("I heard: '…'") and give the fixed version. \
-        End by clearly telling them what to say next.
-        - "card_phrase": EVERY turn, the exact short sentence the learner should say next in \(targetName) (a model answer; use "..." where they fill in their own info). \
-        "card_translation": its meaning in \(nativeName).
-        - Never pretend the learner already answered. Stay on language practice; politely redirect anything else. Never claim to be human.
-        - "new_facts": lasting facts you learned about the learner (name, city, job, goal, interests).
+        STYLE
+        - Short turns: 1–3 sentences, then hand the turn back with a clear prompt or question.
+        - Correct gently by modeling: repeat the learner's sentence correctly once, no long grammar lectures.
+        - Speech recognition is imperfect: if the learner's text looks garbled but close, assume they tried and move on.
+        - The learner talks by holding a button, so every turn of yours must end by handing over: \
+        finish EVERY turn by calling show_phrase(phrase, translation) with the short sentence the learner should say next, in \(targetName) \
+        (a model answer; use "..." where they fill in their own info, e.g. "I'm from..."). Then stop and wait silently. \
+        Never pretend the learner already answered.
+        - show_phrase is a SILENT function call: never read it aloud, never say "show this", "card", "show_phrase" or the translation in brackets. \
+        Just speak naturally, then call the function.
+        - React to what you heard first: if the learner made a mistake, quote it kindly ("Oh, I heard: '...'") and give the fixed version as the next show_phrase.
+        - Stay on language practice; politely redirect anything else. Never claim to be human.
 
         \(memoryBlock)
         \(reviewBlock)
 
         \(task)
-        \(resume)
+        \(resumeBlock(for: mode))
+
+        When you learn a lasting fact about the learner (name, city, job, goal, interests), call remember_fact. \
+        At the very end, call finish_lesson with a one-sentence summary of what was practiced.
+        Start now with a short, friendly greeting and the first step.
         """
     }
 
-    // MARK: Cevap paketini uygula (dersler ↔ sohbet köprüleri)
-    static func apply(_ reply: VoiceBackend.TutorReply, mode: TutorMode) {
-        savePhrase(reply.cardPhrase, reply.cardTranslation)
-
-        for used in reply.usedReviewWords {
-            let w = used.lowercased()
-            if let word = reviewWords.first(where: { $0.term.lowercased() == w || w.contains($0.term.lowercased()) }) {
-                _ = ReviewScheduler.shared.grade(word, .good)
-            }
-        }
-
-        let facts = reply.newFacts.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-        if !facts.isEmpty {
-            UserStore.shared.update { s in
-                var f = s.tutorFacts ?? []
-                for fact in facts where !f.contains(fact) { f.append(fact) }
-                s.tutorFacts = Array(f.suffix(30))
-            }
-        }
-
-        if reply.lessonComplete {
-            UserStore.shared.update { s in
-                var sums = s.tutorSummaries ?? []
-                if !reply.summary.isEmpty { sums.append(reply.summary) }
-                s.tutorSummaries = Array(sums.suffix(10))
-            }
-            if case .goal(let cId, let gId) = mode,
-               let goal = ScenarioStore.shared.chapters.first(where: { $0.id == cId })?.goals.first(where: { $0.id == gId }) {
-                ScenarioStore.shared.markDone(goal)
-            }
-            clearProgress(for: mode)
-        }
+    // MARK: Kaldığı yerden devam (ders hedefleri)
+    private static func progressKey(for mode: TutorMode) -> String? {
+        if case .goal(_, let gId) = mode { return "goal:\(gId)" }
+        return nil   // serbest sohbet her seferinde taze başlar
     }
 
-    // MARK: Kaldığı yerden devam
-    private static func progressKey(for mode: TutorMode) -> String {
-        switch mode {
-        case .goal(_, let gId):            return "goal:\(gId)"
-        case .levelReview(let id):         return "level:\(id.uuidString)"
-        case .roleplay:                    return "roleplay"
-        case .newPhrases:                  return "phrases"
-        case .quickQuestion:               return "question"
-        case .myDay:                       return "myday"
-        }
+    /// Son 14 gün içinde yarım kalan ders konuşması → talimata eklenir
+    private static func resumeBlock(for mode: TutorMode) -> String {
+        guard let key = progressKey(for: mode),
+              let p = UserStore.shared.snapshot.voiceProgress?[key],
+              Date().timeIntervalSince(p.updatedAt) < 14 * 86_400, !p.lines.isEmpty else { return "" }
+        let transcript = p.lines.map { ($0.ai ? "Tutor: " : "Learner: ") + $0.text }.joined(separator: "\n")
+        return """
+        RESUMING: the learner left this lesson in the middle last time. Their last exchange was:
+        \(transcript)
+        Welcome them back warmly, recap in one short sentence where you left off, and continue from exactly that step (don't restart the lesson).
+        """
     }
 
-    /// Son 14 gün içinde yarım kalan konuşma (yoksa boş)
-    static func savedHistory(for mode: TutorMode) -> [VoiceTutorSession.Turn] {
-        guard case .goal = mode,   // ders hedeflerinde devam et; serbest sohbet her seferinde taze başlar
-              let p = UserStore.shared.snapshot.voiceProgress?[progressKey(for: mode)],
-              Date().timeIntervalSince(p.updatedAt) < 14 * 86_400 else { return [] }
-        return p.lines.map { VoiceTutorSession.Turn(role: $0.ai ? .ai : .user, text: $0.text) }
-    }
-
-    static func saveProgress(for mode: TutorMode, turns: [VoiceTutorSession.Turn]) {
+    static func saveProgress(for mode: TutorMode, turns: [RealtimeVoiceSession.Turn]) {
+        guard let key = progressKey(for: mode) else { return }
         let lines = turns.filter { !$0.text.isEmpty }.suffix(10).map { VoiceProgress.Line(ai: $0.role == .ai, text: $0.text) }
         guard lines.count >= 2 else { return }
-        let key = progressKey(for: mode)
         UserStore.shared.update { s in
             var all = s.voiceProgress ?? [:]
             all[key] = VoiceProgress(lines: Array(lines), updatedAt: Date())
@@ -250,14 +217,87 @@ enum TutorBrain {
     }
 
     static func clearProgress(for mode: TutorMode) {
-        let key = progressKey(for: mode)
+        guard let key = progressKey(for: mode) else { return }
         UserStore.shared.update { s in s.voiceProgress?[key] = nil }
+    }
+
+    // MARK: Araçlar (OpenAI Realtime function tools)
+    static let tools: [[String: Any]] = [
+        tool("show_phrase", "Show a phrase card on the learner's screen when you teach a phrase they should say.", [
+            "phrase": ["type": "string", "description": "The phrase in the target language."],
+            "translation": ["type": "string", "description": "Its meaning in the learner's native language."],
+        ], required: ["phrase", "translation"]),
+        tool("mark_word_used", "Call when the learner correctly used one of today's review words.", [
+            "word": ["type": "string"],
+        ], required: ["word"]),
+        tool("remember_fact", "Store a lasting fact about the learner for future sessions.", [
+            "fact": ["type": "string", "description": "Short fact in English, e.g. 'Lives in Izmir'."],
+        ], required: ["fact"]),
+        tool("finish_lesson", "Call at the end of the lesson.", [
+            "summary": ["type": "string", "description": "One sentence: what was practiced and how it went."],
+            "success": ["type": "boolean"],
+        ], required: ["summary", "success"]),
+    ]
+
+    private static func tool(_ name: String, _ description: String, _ props: [String: Any], required: [String]) -> [String: Any] {
+        ["type": "function", "name": name, "description": description,
+         "parameters": ["type": "object", "properties": props, "required": required]]
+    }
+
+    // MARK: Araç çağrılarını uygula (köprüler)
+    /// - Returns: AI'a dönen kısa çıktı
+    static func handle(tool name: String, args: [String: Any], mode: TutorMode,
+                       onPhrase: (String, String) -> Void, onFinish: (Bool) -> Void) -> String {
+        switch name {
+        case "show_phrase":
+            let phrase = args["phrase"] as? String ?? ""
+            let translation = args["translation"] as? String ?? ""
+            onPhrase(phrase, translation)
+            savePhrase(phrase, translation)
+            return "shown"
+
+        case "mark_word_used":
+            let w = (args["word"] as? String ?? "").lowercased()
+            if let word = reviewWords.first(where: { $0.term.lowercased() == w || w.contains($0.term.lowercased()) }) {
+                _ = ReviewScheduler.shared.grade(word, .good)
+                return "recorded"
+            }
+            return "not a review word"
+
+        case "remember_fact":
+            let fact = (args["fact"] as? String ?? "").trimmingCharacters(in: .whitespaces)
+            guard !fact.isEmpty else { return "empty" }
+            UserStore.shared.update { s in
+                var f = s.tutorFacts ?? []
+                if !f.contains(fact) { f.append(fact) }
+                s.tutorFacts = Array(f.suffix(30))
+            }
+            return "remembered"
+
+        case "finish_lesson":
+            let success = args["success"] as? Bool ?? false
+            let summary = args["summary"] as? String ?? ""
+            UserStore.shared.update { s in
+                var sums = s.tutorSummaries ?? []
+                if !summary.isEmpty { sums.append(summary) }
+                s.tutorSummaries = Array(sums.suffix(10))
+            }
+            if success, case .goal(let cId, let gId) = mode,
+               let goal = ScenarioStore.shared.chapters.first(where: { $0.id == cId })?.goals.first(where: { $0.id == gId }) {
+                ScenarioStore.shared.markDone(goal)
+            }
+            if success { clearProgress(for: mode) }
+            onFinish(success)
+            return "saved"
+
+        default:
+            return "unknown tool"
+        }
     }
 
     /// Sohbette öğretilen kalıp → "Sohbetten" destesi (kelime defteri) + tekrar planı
     private static func savePhrase(_ phrase: String, _ translation: String) {
-        let phrase = phrase.trimmingCharacters(in: .whitespaces)
-        guard !phrase.isEmpty, !translation.isEmpty, !phrase.contains("...") else { return }
+        guard !phrase.isEmpty, !translation.isEmpty else { return }
         let id = "chat:" + phrase.lowercased()
         LearnedWordsStore.add([LearnedWord(id: id, term: phrase, meaning: translation, phonetic: nil,
                                            languageCode: targetCode.uppercased(), learnedAt: Date())],

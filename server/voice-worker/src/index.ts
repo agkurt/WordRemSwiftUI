@@ -32,7 +32,6 @@ export interface Env {
   COST_PER_MIN_USD: string;
   AI_BUDGET_SHARE: string;
   APPLE_COMMISSION: string;
-  TUTOR_MODEL: string;
 }
 
 type Tier = "free" | "trial" | "pro";
@@ -261,112 +260,6 @@ async function tts(req: Request, env: Env): Promise<Response> {
   return new Response(res.body, { headers: { "content-type": pcm ? "audio/pcm" : "audio/mpeg" } });
 }
 
-// MARK: - Zincirleme öğretmen: cihazda ses tanıma → metin modeli (bu uç) → aynı sesle seslendirme (/tts)
-
-interface TurnRequest {
-  appUserId: string;
-  instructions: string;
-  history?: { role: "user" | "assistant"; content: string }[];
-  userText?: string;
-}
-
-/** Modelin her turda döndürdüğü paket (katı JSON şeması) */
-const TURN_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: ["say", "card_phrase", "card_translation", "used_review_words", "new_facts", "lesson_complete", "summary"],
-  properties: {
-    say: { type: "string", description: "What you say out loud this turn (1–3 short sentences). Never include the card text markup." },
-    card_phrase: { type: "string", description: "The short sentence the learner should say next, in the target language (a model answer; use ... for their own info)." },
-    card_translation: { type: "string", description: "card_phrase translated into the learner's native language." },
-    used_review_words: { type: "array", items: { type: "string" }, description: "Review words the learner used correctly in their last message." },
-    new_facts: { type: "array", items: { type: "string" }, description: "Lasting facts learned about the learner this turn (short, English)." },
-    lesson_complete: { type: "boolean", description: "True only when the lesson goal is fully achieved." },
-    summary: { type: "string", description: "If lesson_complete: one sentence on what was practiced; otherwise empty." },
-  },
-} as const;
-
-/** Konuşma süresi tahmini (sn): ~14 karakter/sn */
-const speechSeconds = (text: string) => Math.max(1, Math.ceil(text.length / 14));
-
-async function tutorTurn(req: Request, env: Env): Promise<Response> {
-  const body = (await req.json().catch(() => null)) as TurnRequest | null;
-  if (!body?.appUserId || !body.instructions) return json({ error: "bad_request" }, 400);
-  if (body.instructions.length > 12000) return json({ error: "instructions_too_long" }, 400);
-
-  const plan = await planFor(env, body.appUserId);
-  const remaining = await allowance(env, body.appUserId, plan);
-  if (remaining < 5) {
-    return json({ error: plan.tier === "free" ? "paywall" : "limit_reached", tier: plan.tier, remainingSeconds: remaining }, 402);
-  }
-
-  const history = (body.history ?? []).slice(-20).map((m) => ({
-    role: m.role === "assistant" ? "assistant" : "user",
-    content: String(m.content ?? "").slice(0, 1000),
-  }));
-  const userText = (body.userText ?? "").slice(0, 1000).trim();
-  const messages = [
-    { role: "system", content: body.instructions },
-    ...history,
-    { role: "user", content: userText || "(The call just started. Greet the learner and begin.)" },
-  ];
-
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, "content-type": "application/json" },
-    body: JSON.stringify({
-      model: env.TUTOR_MODEL,
-      messages,
-      temperature: 0.8,
-      max_tokens: 400,
-      response_format: { type: "json_schema", json_schema: { name: "tutor_turn", strict: true, schema: TURN_SCHEMA } },
-    }),
-  });
-  if (!res.ok) return json({ error: "upstream", status: res.status, detail: await res.text() }, 502);
-  const data: any = await res.json();
-  let reply: any;
-  try {
-    reply = JSON.parse(data.choices?.[0]?.message?.content ?? "{}");
-  } catch {
-    return json({ error: "bad_model_output" }, 502);
-  }
-
-  // Ücret: öğretmenin konuşma süresi (sunucu tarafında, metinden)
-  const charge = Math.min(speechSeconds(reply.say ?? ""), remaining);
-  if (plan.tier === "free") {
-    await env.USAGE.put(`free:${body.appUserId}`, String((await getNum(env, `free:${body.appUserId}`)) + charge));
-  } else {
-    const dk = `d:${body.appUserId}:${dayKey()}`, mk = `m:${body.appUserId}:${monthKey()}`;
-    await env.USAGE.put(dk, String((await getNum(env, dk)) + charge), { expirationTtl: 60 * 60 * 48 });
-    await env.USAGE.put(mk, String((await getNum(env, mk)) + charge), { expirationTtl: 60 * 60 * 24 * 40 });
-  }
-  const meta = { reply, tier: plan.tier, remainingSeconds: Math.max(0, remaining - charge) };
-  if (new URL(req.url).searchParams.get("audio") !== "pcm" || !reply.say) return json(meta);
-
-  // Tek cevapta: [4 bayt JSON uzunluğu][JSON][PCM akışı] — uygulama ikinci isteği beklemez
-  const voicePromise = speech(env, reply.say, "pcm");
-  const header = new TextEncoder().encode(JSON.stringify(meta));
-  const len = new Uint8Array(4);
-  new DataView(len.buffer).setUint32(0, header.length);
-  const { readable, writable } = new TransformStream();
-  const writer = writable.getWriter();
-  (async () => {
-    await writer.write(len);
-    await writer.write(header);
-    const voice = await voicePromise;
-    if (voice.ok && voice.body) {
-      const reader = voice.body.getReader();
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        await writer.write(value);
-      }
-    }
-    await writer.close();
-  })();
-  return new Response(readable, { headers: { "content-type": "application/octet-stream" } });
-}
-
 async function status(req: Request, env: Env): Promise<Response> {
   const user = new URL(req.url).searchParams.get("appUserId");
   if (!user) return json({ error: "bad_request" }, 400);
@@ -383,7 +276,6 @@ export default {
       if (req.method === "POST" && pathname === "/v1/voice/usage") return await reportUsage(req, env);
       if (req.method === "GET" && pathname === "/v1/voice/status") return await status(req, env);
       if (req.method === "POST" && pathname === "/v1/voice/tts") return await tts(req, env);
-      if (req.method === "POST" && pathname === "/v1/tutor/turn") return await tutorTurn(req, env);
       return json({ error: "not_found" }, 404);
     } catch (e) {
       return json({ error: "internal", detail: String(e) }, 500);
