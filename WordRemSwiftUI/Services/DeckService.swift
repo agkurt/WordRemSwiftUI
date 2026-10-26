@@ -151,23 +151,29 @@ final class DeckService {
                                             targetLang: targetCode, createdAt: Date()), at: 0)
             }
             guard let i = lib.decks.firstIndex(where: { $0.id == deck.rawValue }),
-                  !lib.decks[i].words.contains(where: { $0.mean.caseInsensitiveCompare(phrase) == .orderedSame }) else { return }
-            lib.decks[i].words.append(StoredWord(id: UUID().uuidString, name: translation.isEmpty ? phrase : translation,
-                                                 mean: phrase, description: "", createdAt: Date()))
+                  !lib.decks[i].words.contains(where: { Self.matches($0, phrase) }) else { return }
+            // Kartın ön yüzü (name) öğrenilen dildeki cümle, arka yüzü (mean) çevirisi
+            lib.decks[i].words.append(StoredWord(id: UUID().uuidString, name: phrase,
+                                                 mean: translation, description: "", createdAt: Date()))
             added = true
         }
         return added
     }
 
     func contains(phrase: String, in deck: VoiceDeck) -> Bool {
-        read { $0.decks.first { $0.id == deck.rawValue }?.words.contains { $0.mean.caseInsensitiveCompare(phrase) == .orderedSame } ?? false }
+        read { $0.decks.first { $0.id == deck.rawValue }?.words.contains { Self.matches($0, phrase) } ?? false }
     }
 
     func remove(phrase: String, from deck: VoiceDeck) {
         mutate { lib in
             guard let i = lib.decks.firstIndex(where: { $0.id == deck.rawValue }) else { return }
-            lib.decks[i].words.removeAll { $0.mean.caseInsensitiveCompare(phrase) == .orderedSame }
+            lib.decks[i].words.removeAll { Self.matches($0, phrase) }
         }
+    }
+
+    /// Eski kayıtlarda cümle "mean" alanındaydı: iki alana da bakılır
+    private static func matches(_ w: StoredWord, _ phrase: String) -> Bool {
+        w.name.caseInsensitiveCompare(phrase) == .orderedSame || w.mean.caseInsensitiveCompare(phrase) == .orderedSame
     }
 
     // MARK: - Storage

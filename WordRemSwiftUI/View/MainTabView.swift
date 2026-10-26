@@ -52,7 +52,7 @@ struct MainTabView: View {
         Group {
             switch selectedTab {
             case .today, .leaderboard:
-                TalkHomeView(onOpenLeaderboard: { showLeaderboard = true })
+                TalkHomeView(onOpenLeaderboard: { showLeaderboard = true }, onOpenSettings: { selectedTab = .profile })
             case .words:
                 WordsView(homeVM: homeVM, showCreateDeck: $showCreateDeck, segment: $wordsSegment)
             case .path:

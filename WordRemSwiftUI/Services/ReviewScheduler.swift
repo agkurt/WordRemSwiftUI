@@ -54,8 +54,10 @@ final class ReviewScheduler: ObservableObject {
     /// Bugün sonuna kadar vadesi gelen kelimeler, en gecikmiş önce
     var dueToday: [LearnedWord] {
         let end = endOfToday()
+        // Yalnızca şu an öğrenilen dilin kelimeleri (dil değiştirince eski dilin tekrarları karışmasın)
+        let lang = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
         return words
-            .filter { (states[$0.id]?.due ?? .distantPast) <= end }
+            .filter { $0.languageCode.lowercased() == lang && (states[$0.id]?.due ?? .distantPast) <= end }
             .sorted { (states[$0.id]?.due ?? .distantPast) < (states[$1.id]?.due ?? .distantPast) }
     }
 

@@ -26,6 +26,9 @@ struct VoiceTutorView: View {
     @State private var cardCorrect = false
     @State private var cardShakes = 0
     private var activeMode: TutorMode { nextMode ?? mode }
+    /// Yeni dil kurulumu: kartsız, özet ekranı yok; yarıda çıkarken onay sorulur
+    private var isSetup: Bool { if case .languageSetup = mode { return true }; return false }
+    @State private var confirmLeave = false
     @State private var showTranslation = false
     @State private var showTranscript = false
     @State private var showPaywall = false
@@ -99,6 +102,17 @@ struct VoiceTutorView: View {
             }
         }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
+        // Kurulum yarıda bırakılırsa dil değişmez
+        .alert(LearningText.leaveTitle, isPresented: $confirmLeave) {
+            Button(LearningText.stay, role: .cancel) {}
+            Button(LearningText.leave, role: .destructive) {
+                session.stop()
+                onFinished(false)
+                dismiss()
+            }
+        } message: {
+            Text(LearningText.leaveMessage)
+        }
         .sheet(isPresented: $showHelp) {
             StuckHelpSheet { need in session.requestHelp(slower: need == .slower) }
         }
@@ -122,6 +136,8 @@ struct VoiceTutorView: View {
             }
         }
         session.answerCardsOnly = isDemo
+        session.noCards = isSetup
+        session.completeAfterUserTurns = isSetup ? 3 : nil
         session.isPro = InAppPurchaseManager.shared.isPremium
         // Günlük süre doldu: AI vedalaştıktan sonra paywall (demoda onboarding'in paywall'ı)
         session.onLimitReached = {
@@ -147,15 +163,25 @@ struct VoiceTutorView: View {
                               },
                               onFinish: { success in
                                   finishedSuccess = success
-                                  if !isDemo { onFinished(success) }
+                                  if !isDemo, !isSetup { onFinished(success) }
                               })
         }
-        await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: TutorBrain.tools,
+        let tools = isSetup
+            ? TutorBrain.tools.filter { ["remember_fact", "finish_lesson"].contains($0["name"] as? String ?? "") }
+            : TutorBrain.tools
+        await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: tools,
                             targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),
-                            roleplay: !isDemo, aiSpeaksFirst: activeMode != .freeChat)
+                            roleplay: !isDemo && !isSetup, aiSpeaksFirst: activeMode != .freeChat)
     }
 
     private func completeLesson() {
+        if isSetup {
+            phrase = nil
+            session.stop()
+            onFinished(true)
+            dismiss()
+            return
+        }
         if finishedSuccess != true {
             _ = TutorBrain.handle(tool: "finish_lesson", args: ["success": true, "summary": ""], mode: activeMode,
                                   onPhrase: { _, _ in },
@@ -217,7 +243,8 @@ struct VoiceTutorView: View {
                     .frame(width: 44, height: 44)
                     .background(DS.Colors.paperSunken, in: Circle())
             }
-            .opacity(isConnecting ? 0 : 1)
+            .opacity(isConnecting || isSetup ? 0 : 1)
+            .disabled(isSetup)
             Spacer()
             if !isConnecting {
                 VoiceLogoView(phase: session.phase, level: session.inputLevel)
@@ -225,6 +252,7 @@ struct VoiceTutorView: View {
             }
             Spacer()
             Button {
+                if isSetup, !completing, !session.turns.isEmpty, !isConnecting { confirmLeave = true; return }
                 saveAndStop()
                 if isDemo { onFinished(false) } else { dismiss() }
             } label: {

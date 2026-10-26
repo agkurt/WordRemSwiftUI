@@ -44,7 +44,8 @@ final class ScenarioStore {
             .flatMap { try? JSONDecoder().decode(File.self, from: $0) }?.chapters ?? []
     }
 
-    func isDone(_ goal: VoiceGoal) -> Bool { UserStore.shared.snapshot.voiceGoalsDone?[goal.id] != nil }
+    /// Plan ilerlemesi dil başına ayrı (bkz. LearningLanguages.goalKey)
+    func isDone(_ goal: VoiceGoal) -> Bool { UserStore.shared.snapshot.voiceGoalsDone?[LearningLanguages.goalKey(goal.id)] != nil }
 
     /// Sıradaki hedef: ilk tamamlanmamış hedef (hepsi bittiyse ilk bölüm baştan)
     var next: (chapter: VoiceChapter, goal: VoiceGoal)? {
@@ -55,7 +56,8 @@ final class ScenarioStore {
     func markDone(_ goal: VoiceGoal) {
         UserStore.shared.update { s in
             var d = s.voiceGoalsDone ?? [:]
-            if d[goal.id] == nil { d[goal.id] = Date() }
+            let key = LearningLanguages.goalKey(goal.id)
+            if d[key] == nil { d[key] = Date() }
             s.voiceGoalsDone = d
         }
     }
@@ -73,6 +75,8 @@ enum TutorMode: Equatable {
     case wordPractice
     /// Bir ders seviyesini konuşarak bitirme: o seviyenin kelimeleri
     case levelReview(levelId: UUID)
+    /// Yeni dil ekleme: ana dilde kısa kurulum konuşması, bitince öğrenilen dil değişir
+    case languageSetup(code: String)
 }
 
 @MainActor
@@ -141,6 +145,12 @@ enum TutorBrain {
         return demoScenarios[i]
     }
 
+    /// Onboarding'de verilen ad (yoksa nazik bir genel hitap)
+    private static var demoLearnerName: String {
+        let name = UserStore.shared.snapshot.username
+        return name.isEmpty ? "friend" : name
+    }
+
     private static var demoNameCard: String {
         let name = UserStore.shared.snapshot.username
         return name.isEmpty ? "My name is …" : "My name is \(name)."
@@ -174,8 +184,11 @@ enum TutorBrain {
 
     // MARK: Talimatlar
     static func instructions(for mode: TutorMode) -> String {
+        if case .languageSetup(let code) = mode { return setupInstructions(code: code) }
         var task: String
         switch mode {
+        case .languageSetup:
+            task = ""
         case .goal(let cId, let gId):
             let chapter = ScenarioStore.shared.chapters.first { $0.id == cId }
             let goal = chapter?.goals.first { $0.id == gId }
@@ -201,16 +214,17 @@ enum TutorBrain {
             FIRST CALL — this learner just installed the app and will decide whether to subscribe right after this short call. \
             It should feel like meeting a fun new friend who happens to be a great teacher — and make them think "wow, I'm actually speaking \(targetName)!". \
             Follow this sequence, one short step per turn, chatty and natural (never like a form):
-            1) Greet them warmly with energy, say you're their personal \(targetName) tutor, and ask their name. Then call show_phrase with the \(targetName) for "\(demoNameCard)" (their answer).
-            2) React to their name, then ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)" — exactly as written (" / " = two choices, "..." = the learner fills in their own answer), translation in the same format.
-            3) React to their answer with genuine interest, then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)" — exactly as written.
-            4) React (\(demoScenario.closer)), then the real-life finale: ask them to introduce themselves to a new friend in one go, \
+            You ALREADY KNOW their name: \(demoLearnerName). Never ask for it and never say "Hi there" — use their name.
+            1) Greet them by name with real warmth and energy ("Hi \(demoLearnerName)! …"), say in one sentence that you're their personal \(targetName) tutor, \
+            then right away ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)" — exactly as written (" / " = two choices, "..." = the learner fills in their own answer), translation in the same format.
+            2) React to their answer with genuine interest, then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)" — exactly as written.
+            3) React (\(demoScenario.closer)), then the real-life finale: ask them to introduce themselves to a new friend in one go, \
             and card ONE full line built from what THEY actually said (e.g. "Hi, I'm Ahmet. I'm a night person and I love rock music.").
-            5) After they say it, wrap up: tell them proudly they just had a real conversation in \(targetName), \
+            4) After they say it, wrap up: tell them proudly they just had a real conversation in \(targetName), \
             their personal plan is ready, and say a warm "see you soon!". Then call finish_lesson with success true.
             Keep every turn very short (1–2 sentences), beginner-friendly \(targetName).
             IMPORTANT: the card is the learner's ANSWER, never your question.
-            EVERY TURN: react → then actually ASK the question out loud (e.g. "So, what's your name?", "Coffee or tea?") → only then call show_phrase. \
+            EVERY TURN: react → then actually ASK the question out loud (e.g. "So, coffee or tea?") → only then call show_phrase. \
             Never say "let's start with a question" without asking it — your spoken words must end with the question itself.
             """
         case .wordPractice:
@@ -289,11 +303,32 @@ enum TutorBrain {
         """
     }
 
+    /// Yeni dil kurulumu: öğrenci yeni dili bilmiyor olabilir, konuşma ana dilde geçer, kart yok
+    private static func setupInstructions(code: String) -> String {
+        let newName = Locale(identifier: "en").localizedString(forLanguageCode: code) ?? code
+        let name = UserStore.shared.snapshot.username
+        return """
+        You are WordRem's voice tutor: a warm, playful, emotionally smart language teacher on a live voice call, like a fun friend. \
+        The learner\(name.isEmpty ? "" : " (\(name))") already studies \(targetName) with you and just chose to ADD \(newName). \
+        This is a short setup call to build their personal \(newName) plan.
+        VOICE: charming, smiling, full of life. Never robotic.
+        LANGUAGE: speak \(nativeName) for the whole call — they may not know any \(newName) yet. You may say one tiny \(newName) word or greeting, always with its meaning.
+        FLOW — one short step per turn (1–2 sentences), chatty and natural, never like a form. End each turn with your question and wait:
+        1) Happily confirm you're adding \(newName) and ask what they want to do with \(newName) (travel, work, school, friends, culture…).
+        2) React with genuine interest to what they said, then ask how much \(newName) they already know (nothing at all, a few words, or they can already chat a bit).
+        3) React, teach them one fun first \(newName) word or greeting that fits their goal, and invite them to try saying it.
+        4) Whatever they say, praise them warmly, tell them their personal \(newName) plan is ready, say a warm goodbye, then call finish_lesson with success true.
+        Call remember_fact for their \(newName) goal and level. Never call show_phrase. Speech recognition is imperfect: if their words look garbled, assume the best and move on.
+        Stay on topic; if they go off-topic, enjoy it for one beat and come back. Keep the whole call about a minute.
+        Start now with step 1.
+        """
+    }
+
     /// Ders hedefleri (sırayla); serbest sohbette boş
     static func targets(for mode: TutorMode) -> [String] {
         if case .demo = mode {
             let sc = demoScenario
-            return ["their name (card \"\(demoNameCard)\")"] + sc.steps.map {
+            return sc.steps.map {
                 "ask \($0.ask) like a friend would (offer both choices in your question), then call show_phrase with the \(targetName) for \"\($0.answer)\" exactly as written (\" / \" = two choices, \"...\" = they fill in their own answer)"
             } + ["react with interest, then ask them to introduce themselves to a new friend in one go — the card is ONE full line built from their name and the answers THEY actually gave (e.g. \"Hi, I'm Ahmet. I'm a night person and I love rock music.\")"]
         }
@@ -329,7 +364,7 @@ enum TutorBrain {
 
     // MARK: Kaldığı yerden devam (ders hedefleri)
     private static func progressKey(for mode: TutorMode) -> String? {
-        if case .goal(_, let gId) = mode { return "goal:\(gId)" }
+        if case .goal(_, let gId) = mode { return "goal:" + LearningLanguages.goalKey(gId) }
         return nil   // serbest sohbet her seferinde taze başlar
     }
 
@@ -371,9 +406,9 @@ enum TutorBrain {
     }
 
     // MARK: Araçlar (OpenAI Realtime function tools)
-    static let tools: [[String: Any]] = [
+    static var tools: [[String: Any]] { [
         tool("show_phrase", "Show a phrase card on the learner's screen when you teach a phrase they should say.", [
-            "phrase": ["type": "string", "description": "The phrase in the target language."],
+            "phrase": ["type": "string", "description": "The phrase in \(targetName) (the language being learned)."],
             "translation": ["type": "string", "description": "Its meaning in the learner's native language."],
         ], required: ["phrase", "translation"]),
         tool("mark_word_used", "Call when the learner correctly used one of today's review words.", [
@@ -386,7 +421,7 @@ enum TutorBrain {
             "summary": ["type": "string", "description": "One sentence: what was practiced and how it went."],
             "success": ["type": "boolean"],
         ], required: ["summary", "success"]),
-    ]
+    ] }
 
     private static func tool(_ name: String, _ description: String, _ props: [String: Any], required: [String]) -> [String: Any] {
         ["type": "function", "name": name, "description": description,
@@ -454,6 +489,18 @@ enum TutorBrain {
     /// Sohbette öğretilen kalıp → "Sohbetten" destesi (kelime defteri) + tekrar planı
     private static func savePhrase(_ phrase: String, _ translation: String) {
         guard !phrase.isEmpty, !translation.isEmpty else { return }
+        // Boşluklu şablon ("My day was...") öğrenilmiş cümle sayılmaz
+        guard !phrase.contains("..."), !phrase.contains("…") else { return }
+        // Seçenekli kart ("Tea / Coffee") tek kelime gibi kaydedilmesin; her seçenek kendi çevirisiyle
+        let options = phrase.components(separatedBy: " / ")
+        if options.count > 1 {
+            let meanings = translation.components(separatedBy: " / ")
+            for (i, option) in options.enumerated() {
+                let meaning = meanings.count == options.count ? meanings[i] : translation
+                savePhrase(option.trimmingCharacters(in: .whitespaces), meaning.trimmingCharacters(in: .whitespaces))
+            }
+            return
+        }
         // Noktalama farkı ("Hello!" / "Hello.") ayrı kayıt olmasın
         let key = phrase.lowercased().components(separatedBy: CharacterSet.alphanumerics.union(.whitespaces).inverted).joined()
             .trimmingCharacters(in: .whitespaces)

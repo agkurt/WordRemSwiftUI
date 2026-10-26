@@ -12,6 +12,7 @@ struct TalkHomeView: View {
     @EnvironmentObject var langManager: LanguageManager
     @ObservedObject private var scheduler = ReviewScheduler.shared
     var onOpenLeaderboard: () -> Void
+    var onOpenSettings: () -> Void = {}
 
     @State private var activeMode: TutorMode?
     @State private var showPlan = false
@@ -22,6 +23,8 @@ struct TalkHomeView: View {
     @State private var streakCelebration = 0
     /// Yana kaydırılan kartlar: 0 = sıradaki ders, 1 = asistanla serbest sohbet
     @State private var page = 0
+    @State private var showLanguages = false
+    @State private var pendingSetup: String?
 
     private var store: ScenarioStore { ScenarioStore.shared }
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
@@ -71,7 +74,22 @@ struct TalkHomeView: View {
         .onAppear { scheduler.reload(); openRoute(AppRouter.shared.route) }
         .onReceive(AppRouter.shared.$route) { openRoute($0) }
         .fullScreenCover(item: Binding(get: { activeMode.map(ModeBox.init) }, set: { activeMode = $0?.mode })) { box in
-            VoiceTutorView(mode: box.mode) { _ in refresh += 1 }
+            VoiceTutorView(mode: box.mode) { ok in
+                // Yeni dil kurulumu tamamlandı → öğrenilen dil değişir, plan o dilde baştan
+                if ok, case .languageSetup(let code) = box.mode { LearningLanguages.switchTo(code) }
+                refresh += 1
+            }
+        }
+        // Kurulum konuşması, dil sayfası tamamen kapandıktan sonra açılır (üst üste sunum oturumu bozuyor)
+        .sheet(isPresented: $showLanguages, onDismiss: {
+            if let code = pendingSetup { pendingSetup = nil; activeMode = .languageSetup(code: code) }
+        }) {
+            LearningLanguageSheet(onSwitch: { code in
+                LearningLanguages.switchTo(code)
+                refresh += 1
+            }, onSetup: { code in
+                pendingSetup = code
+            }, onSettings: onOpenSettings)
         }
         .sheet(isPresented: $showPlan) {
             TalkPlanSheet { chapter, goal in
@@ -110,16 +128,22 @@ struct TalkHomeView: View {
         let s = UserStore.shared.snapshot
         let streak = StudyStreak.current
         let lang = ContentStore.shared.language(code: targetCode)
-        let goalsDone = s.voiceGoalsDone?.count ?? 0
         return HStack(spacing: 10) {
-            HStack(spacing: 8) {
-                Text(lang?.flagEmoji ?? "🌐").font(.system(size: 22))
-                Text("L\(1 + goalsDone / 5)")
-                    .font(DS.Font.ui(15, weight: .semibold))
-                    .foregroundStyle(DS.Colors.ink)
+            // Pingo gibi: dile dokununca öğrenilen diller / yeni dil ekleme
+            Button { showLanguages = true } label: {
+                HStack(spacing: 8) {
+                    Text(lang?.flagEmoji ?? LearningLanguages.flags[targetCode.lowercased()] ?? "🌐").font(.system(size: 22))
+                    Text("L\(LearningLanguages.level(targetCode.lowercased()))")
+                        .font(DS.Font.ui(15, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                }
+                .padding(.horizontal, 14).padding(.vertical, 8)
+                .background(DS.Colors.paperSunken, in: Capsule())
             }
-            .padding(.horizontal, 14).padding(.vertical, 8)
-            .background(DS.Colors.paperSunken, in: Capsule())
+            .buttonStyle(.plain)
 
             Spacer()
 

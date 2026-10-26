@@ -53,15 +53,18 @@ struct LaunchScreenView: View {
                 logoOpacity = 1.0
             }
 
+            // Profil gelince geç; yavaş ağda en fazla 4 sn bekle, logo da en az 1.2 sn görünsün
+            let start = Date()
+            // Profil isteği iptal edilmesin; geç gelirse arka planda tamamlansın
+            let profile = Task { _ = try? await DataService.shared.fetchUserProfile() }
             await withTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    _ = try? await DataService.shared.fetchUserProfile()
-                }
-                group.addTask {
-                    try? await Task.sleep(nanoseconds: 2_500_000_000)
-                }
-                await group.waitForAll()
+                group.addTask { await profile.value }
+                group.addTask { try? await Task.sleep(nanoseconds: 4_000_000_000) }
+                await group.next()
+                group.cancelAll()
             }
+            let remaining = 1.2 - Date().timeIntervalSince(start)
+            if remaining > 0 { try? await Task.sleep(nanoseconds: UInt64(remaining * 1_000_000_000)) }
 
             onReady()
         }

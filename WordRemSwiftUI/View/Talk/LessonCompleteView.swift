@@ -30,7 +30,7 @@ struct LessonCompleteView: View {
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
 
     private var headline: String {
-        lessonTitle.isEmpty ? AL.s(.talkSessionEnded) : AL.f(.lcCompletedBang, lessonTitle)
+        lessonTitle.isEmpty ? AL.s(.talkSessionEnded) : lessonTitle
     }
 
     var body: some View {
@@ -50,6 +50,14 @@ struct LessonCompleteView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 8)
                         .padding(.horizontal, 8)
+                    if !lessonTitle.isEmpty {
+                        Label(AL.s(.talkLessonComplete), systemImage: "checkmark.seal.fill")
+                            .font(DS.Font.ui(14, weight: .semibold))
+                            .foregroundStyle(DS.Colors.accent)
+                            .padding(.horizontal, 12).padding(.vertical, 6)
+                            .background(DS.Colors.accent.opacity(0.12), in: Capsule())
+                            .padding(.top, 10)
+                    }
 
                     HStack(spacing: 12) {
                         statTile("\(shownPhrases)", AL.s(.lcPhrases), "text.bubble")

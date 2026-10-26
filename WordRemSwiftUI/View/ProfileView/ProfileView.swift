@@ -13,6 +13,8 @@ struct ProfileView: View {
     @ObservedObject private var achievementService = AchievementService.shared
     @ObservedObject private var iap = InAppPurchaseManager.shared
     @State private var showPaywall = false
+    @State private var showPrivacy = false
+    @State private var showTerms = false
     @State private var showUsernameSetup = false
     @State private var showAllAchievements = false
     @State private var showResetConfirm = false
@@ -26,6 +28,7 @@ struct ProfileView: View {
                 streakCard
                 learningProgressCard
                 achievementsSection
+                settingsSection
                 accountSection
                     .padding(.top, 4)
             }
@@ -35,9 +38,19 @@ struct ProfileView: View {
             .frame(maxWidth: 620)
             .frame(maxWidth: .infinity)
         }
+        // Kaydırınca içerik saat/pil satırının altına girmesin
+        .overlay(alignment: .top) {
+            DS.Colors.paper.frame(height: 0).ignoresSafeArea(edges: .top)
+        }
         .paperBackground()
         .navigationBarHidden(true)
         .task { await vm.loadProfile() }
+        .sheet(isPresented: $showPrivacy) {
+            SafariWebView(url: URL(string: "https://wordrem-voice.wordrem-ai.workers.dev/privacy")!)
+        }
+        .sheet(isPresented: $showTerms) {
+            SafariWebView(url: URL(string: "https://wordrem-voice.wordrem-ai.workers.dev/terms")!)
+        }
         .fullScreenCover(isPresented: $showUsernameSetup) {
             UsernameSetupPopup(
                 initialUsername: vm.username,
@@ -304,6 +317,72 @@ struct ProfileView: View {
     }
 
     // MARK: - Account (hesap yok: iCloud senkron notu + ilerlemeyi sıfırla)
+    // MARK: - Ayarlar: ana dil + yasal metinler
+    private func loc(_ v: [String]) -> String {
+        let order = ["tr", "en", "de", "fr", "es", "it", "ru", "zh"]
+        let i = order.firstIndex(of: langManager.currentLanguageCode) ?? 1
+        return v.indices.contains(i) ? v[i] : v[1]
+    }
+
+    private var settingsSection: some View {
+        let target = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(LearningText.settings)
+                .font(DS.Font.display(22, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+            VStack(spacing: 0) {
+                Menu {
+                    ForEach(LanguageManager.supportedCodes.filter { $0 != target }, id: \.self) { code in
+                        Button {
+                            langManager.setLanguage(code)
+                        } label: {
+                            Text("\(LearningLanguages.flags[code] ?? "") \(langManager.languageName(for: code))")
+                        }
+                    }
+                } label: {
+                    settingsRow(icon: "globe",
+                                title: loc(["Ana dil", "Native language", "Muttersprache", "Langue maternelle", "Idioma nativo", "Lingua madre", "Родной язык", "母语"]),
+                                value: langManager.languageName(for: langManager.currentLanguageCode))
+                }
+                Divider().padding(.leading, 48)
+                Button { showPrivacy = true } label: {
+                    settingsRow(icon: "hand.raised",
+                                title: loc(["Gizlilik Politikası", "Privacy Policy", "Datenschutz", "Confidentialité", "Privacidad", "Privacy", "Конфиденциальность", "隐私政策"]))
+                }
+                Divider().padding(.leading, 48)
+                Button { showTerms = true } label: {
+                    settingsRow(icon: "doc.text",
+                                title: loc(["Kullanım Şartları", "Terms of Use", "Nutzungsbedingungen", "Conditions d'utilisation", "Términos de uso", "Termini d'uso", "Условия использования", "使用条款"]))
+                }
+            }
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 20))
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(DS.Colors.line, lineWidth: 1))
+        }
+    }
+
+    private func settingsRow(icon: String, title: String, value: String? = nil) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(DS.Colors.accent)
+                .frame(width: 22)
+            Text(title)
+                .font(DS.Font.ui(16, weight: .medium))
+                .foregroundStyle(DS.Colors.ink)
+            Spacer()
+            if let value {
+                Text(value)
+                    .font(DS.Font.ui(15))
+                    .foregroundStyle(DS.Colors.muted)
+            }
+            Image(systemName: "chevron.right")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(DS.Colors.muted)
+        }
+        .padding(.horizontal, 16).padding(.vertical, 15)
+        .contentShape(Rectangle())
+    }
+
     private var accountSection: some View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
