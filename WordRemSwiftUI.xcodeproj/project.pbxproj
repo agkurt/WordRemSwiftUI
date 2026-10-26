@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B0B0C0DE00000000000F21 /* ReviewCardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE00000000000F20 /* ReviewCardWidget.swift */; };
+		C1DE3C31A4A927E9150A025A /* SmartReminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE3C31A4A927E9150A025A /* SmartReminders.swift */; };
+		B0B0C0DE00000000000F11 /* ReviewCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE00000000000F10 /* ReviewCore.swift */; };
+		B0B0C0DE00000000000F12 /* ReviewCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE00000000000F10 /* ReviewCore.swift */; };
 		C1DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift */; };
 		C1DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */; };
 		C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */; };
@@ -218,6 +222,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B0B0C0DE00000000000F20 /* ReviewCardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCardWidget.swift; sourceTree = "<group>"; };
+		C0DE3C31A4A927E9150A025A /* SmartReminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartReminders.swift; sourceTree = "<group>"; };
+		B0B0C0DE00000000000F10 /* ReviewCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCore.swift; sourceTree = "<group>"; };
 		C0DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowView.swift; sourceTree = "<group>"; };
 		C0DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voice/TutorBrain.swift; sourceTree = "<group>"; };
 		C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/TalkHomeView.swift; sourceTree = "<group>"; };
@@ -434,6 +441,7 @@
 			children = (
 				B0B0C0DE0000000000000001 /* WordRemWidgetBundle.swift */,
 				B0B0C0DE0000000000000002 /* WordOfTheDayWidget.swift */,
+				B0B0C0DE00000000000F20 /* ReviewCardWidget.swift */,
 				B0B0C0DE0000000000000003 /* Info.plist */,
 				B0B0C0DE0000000000000004 /* WordRemWidget.entitlements */,
 			);
@@ -536,6 +544,7 @@
 			isa = PBXGroup;
 			children = (
 				E82CE3272BA6790600B552F9 /* NotificationManager.swift */,
+				C0DE3C31A4A927E9150A025A /* SmartReminders.swift */,
 			);
 			path = NotificationManager;
 			sourceTree = "<group>";
@@ -642,6 +651,7 @@
 				C0DE89944ECAD01F4969F163 /* ContentStore.swift */,
 				C0DEA63E43817BF863D3D219 /* ReviewScheduler.swift */,
 				B0B0C0DE0000000000000005 /* LearnedWordsStore.swift */,
+				B0B0C0DE00000000000F10 /* ReviewCore.swift */,
 				BB11CC22DD33EE4400BB0022 /* PathMistakesDeckService.swift */,
 				DD11EE22FF33AA4400DD0022 /* DailyLimitManager.swift */,
 				EE11FF22AA33BB4400EE0022 /* HintManager.swift */,
@@ -1214,7 +1224,9 @@
 			files = (
 				B0B0C0DE000000000000000B /* WordRemWidgetBundle.swift in Sources */,
 				B0B0C0DE000000000000000C /* WordOfTheDayWidget.swift in Sources */,
+				B0B0C0DE00000000000F21 /* ReviewCardWidget.swift in Sources */,
 				B0B0C0DE000000000000000D /* LearnedWordsStore.swift in Sources */,
+				B0B0C0DE00000000000F11 /* ReviewCore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1320,6 +1332,7 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				C1DE3C31A4A927E9150A025A /* SmartReminders.swift in Sources */,
 				C1DEECB10B2E47C7D7504EAD /* OnboardingFlowView.swift in Sources */,
 				C1DE64F1A05B33305EA366B8 /* Voice/TutorBrain.swift in Sources */,
 				C1DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift in Sources */,
@@ -1340,6 +1353,7 @@
 				C1DEB9507D0476F5EEF60D9B /* TodayView.swift in Sources */,
 				C1DE28E8AD2831C9CC219FEE /* DesignSystem.swift in Sources */,
 				B0B0C0DE000000000000000E /* LearnedWordsStore.swift in Sources */,
+				B0B0C0DE00000000000F12 /* ReviewCore.swift in Sources */,
 				BB11CC22DD33EE4400BB0011 /* PathMistakesDeckService.swift in Sources */,
 				DD11EE22FF33AA4400DD0011 /* DailyLimitManager.swift in Sources */,
 				EE11FF22AA33BB4400EE0011 /* HintManager.swift in Sources */,
@@ -1382,7 +1396,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = WordRemWidget/WordRemWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemWidget/Info.plist;
@@ -1414,7 +1428,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = WordRemWidget/WordRemWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WordRemWidget/Info.plist;
@@ -1565,7 +1579,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				ENABLE_PREVIEWS = YES;
@@ -1603,7 +1617,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WordRemSwiftUI/WordRemSwiftUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_ASSET_PATHS = "\"WordRemSwiftUI/Preview Content\"";
 				DEVELOPMENT_TEAM = 7T569GVN5Q;
 				ENABLE_PREVIEWS = YES;

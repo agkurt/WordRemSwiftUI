@@ -9,22 +9,6 @@
 
 import Foundation
 
-enum ReviewGrade: Int, CaseIterable {
-    case again = 0, hard, good, easy
-}
-
-struct ReviewState: Codable, Equatable {
-    var interval: Double = 0      // gün
-    var ease: Double = 2.5
-    var reps: Int = 0             // art arda başarılı tekrar
-    var lapses: Int = 0
-    var due: Date
-    var lastReviewed: Date?
-
-    /// 21 günden uzun aralık = kalıcı öğrenilmiş sayılır
-    var isMature: Bool { interval >= 21 }
-}
-
 @MainActor
 final class ReviewScheduler: ObservableObject {
 
@@ -35,8 +19,6 @@ final class ReviewScheduler: ObservableObject {
     /// Tekrar yapılan günler ("yyyy-MM-dd") — seri hesabı için
     @Published private(set) var activeDays: Set<String> = []
 
-    private let statesKey = "reviewStates"
-    private let daysKey   = "reviewActiveDays"
     private var defaults: UserDefaults? { UserDefaults(suiteName: LearnedWordsStore.appGroupID) }
     private let calendar = Calendar.current
 
@@ -45,11 +27,9 @@ final class ReviewScheduler: ObservableObject {
     // MARK: - Load / Save
     func reload() {
         words = LearnedWordsStore.load()
-        if let data = defaults?.data(forKey: statesKey),
-           let decoded = try? JSONDecoder().decode([String: ReviewState].self, from: data) {
-            states = decoded
-        }
-        activeDays = Set(defaults?.stringArray(forKey: daysKey) ?? [])
+        // Widget/bildirimden verilen cevaplar da burada okunur
+        states = ReviewCore.loadStates()
+        activeDays = ReviewCore.loadActiveDays()
         // Yeni öğrenilen kelimelere ilk tekrarı yarına planla
         var changed = false
         for word in words where states[word.id] == nil {
@@ -60,14 +40,13 @@ final class ReviewScheduler: ObservableObject {
     }
 
     private func save() {
-        if let data = try? JSONEncoder().encode(states) { defaults?.set(data, forKey: statesKey) }
-        defaults?.set(Array(activeDays), forKey: daysKey)
+        ReviewCore.save(states: states, activeDays: activeDays)
     }
 
     func clear() {
         states = [:]; activeDays = []; words = []
-        defaults?.removeObject(forKey: statesKey)
-        defaults?.removeObject(forKey: daysKey)
+        defaults?.removeObject(forKey: ReviewCore.statesKey)
+        defaults?.removeObject(forKey: ReviewCore.daysKey)
     }
 
     // MARK: - Queries
@@ -92,21 +71,7 @@ final class ReviewScheduler: ObservableObject {
     }
 
     /// Bugün ya da dün tekrar yapıldıysa devam eden gün serisi
-    var streak: Int {
-        var day = calendar.startOfDay(for: Date())
-        if !activeDays.contains(key(day)) {
-            guard let yesterday = calendar.date(byAdding: .day, value: -1, to: day),
-                  activeDays.contains(key(yesterday)) else { return 0 }
-            day = yesterday
-        }
-        var count = 0
-        while activeDays.contains(key(day)) {
-            count += 1
-            guard let prev = calendar.date(byAdding: .day, value: -1, to: day) else { break }
-            day = prev
-        }
-        return count
-    }
+    var streak: Int { ReviewCore.streak(activeDays: activeDays) }
 
     var reviewedToday: Bool { activeDays.contains(key(calendar.startOfDay(for: Date()))) }
 
@@ -117,13 +82,7 @@ final class ReviewScheduler: ObservableObject {
     @discardableResult
     func grade(_ word: LearnedWord, _ grade: ReviewGrade) -> ReviewState {
         let now = Date()
-        var s = states[word.id] ?? ReviewState(due: now)
-        let next = Self.schedule(s, grade)
-        s = next
-        s.lastReviewed = now
-        s.due = grade == .again
-            ? now.addingTimeInterval(10 * 60)
-            : (calendar.date(byAdding: .day, value: max(1, Int(next.interval.rounded())), to: calendar.startOfDay(for: now)) ?? now)
+        let s = ReviewCore.applying(grade, to: states[word.id] ?? ReviewState(due: now), now: now)
         states[word.id] = s
         activeDays.insert(key(calendar.startOfDay(for: now)))
         save()
@@ -132,25 +91,7 @@ final class ReviewScheduler: ObservableObject {
 
     /// Bir sonraki aralığı hesaplar (UI'da buton altında "3 gün" gibi göstermek için de kullanılır)
     static func schedule(_ current: ReviewState, _ grade: ReviewGrade) -> ReviewState {
-        var s = current
-        switch grade {
-        case .again:
-            s.lapses += 1
-            s.reps = 0
-            s.interval = 0
-            s.ease = max(1.3, s.ease - 0.2)
-        case .hard:
-            s.interval = max(1, s.interval * 1.2)
-            s.ease = max(1.3, s.ease - 0.15)
-        case .good:
-            s.interval = s.reps == 0 ? 1 : (s.reps == 1 ? 3 : s.interval * s.ease)
-            s.reps += 1
-        case .easy:
-            s.interval = (s.reps == 0 ? 3 : max(4, s.interval * s.ease * 1.3))
-            s.reps += 1
-            s.ease += 0.15
-        }
-        return s
+        ReviewCore.schedule(current, grade)
     }
 
     // MARK: - Helpers

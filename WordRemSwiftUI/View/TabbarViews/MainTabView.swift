@@ -109,13 +109,22 @@ struct MainTabView: View {
             checkPendingWelcome()
             sessionTracker.appBecameActive()
         }
+        // Bildirim/widget'tan gelince Konuş sekmesine geç (ders/tekrar orada açılır)
+        .onReceive(AppRouter.shared.$route) { route in
+            if route != nil { selectedTab = .today }
+        }
         .onChange(of: authManager.pendingWelcome != nil) { _, hasPending in
             if hasPending { checkPendingWelcome() }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
-            case .active:     sessionTracker.appBecameActive()
-            case .background: sessionTracker.appWentBackground()
+            case .active:
+                sessionTracker.appBecameActive()
+                SmartReminders.noteAppOpened()
+                ReviewScheduler.shared.reload()      // widget/bildirimden verilen cevaplar
+            case .background:
+                sessionTracker.appWentBackground()
+                Task { await SmartReminders.reschedule() }
             default:          break
             }
         }

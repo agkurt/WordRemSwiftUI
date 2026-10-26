@@ -62,7 +62,7 @@ struct WordOfTheDayProvider: TimelineProvider {
 }
 
 // MARK: - Palette
-private enum Palette {
+enum Palette {
     static let accent = Color(red: 0.761, green: 0.318, blue: 0.184) // #C2512F — uygulamanın imza rengi (terracotta)
     static let ink    = Color.primary
     static let muted  = Color.secondary

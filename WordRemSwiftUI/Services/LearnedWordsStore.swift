@@ -53,12 +53,12 @@ enum LearnedWordsStore {
         guard let data = try? JSONEncoder().encode(words) else { return }
         defaults.set(data, forKey: wordsKey)
         defaults.set(nativeLangCode, forKey: nativeLangKey)
-        WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Çıkış / hesap silme sonrası widget'ta eski kullanıcının kelimeleri kalmasın
     static func clear() {
         defaults?.removeObject(forKey: wordsKey)
-        WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

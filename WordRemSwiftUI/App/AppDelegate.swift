@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        Task { @MainActor in SmartReminders.registerCategories() }
         InAppPurchaseManager.configure(apiKey: "appl_AIYIRTwVqPvcdVpfrGdzmqAYbox")
         return true
     }
@@ -26,5 +27,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([.banner, .badge, .sound])
+    }
+
+    // Bildirim düğmeleri (Hatırladım / Hatırlamadım) ve dokunma → ilgili ekran
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        Task { @MainActor in
+            await SmartReminders.handle(response)
+            completionHandler()
+        }
     }
 }

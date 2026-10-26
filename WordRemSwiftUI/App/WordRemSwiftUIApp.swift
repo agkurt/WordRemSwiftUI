@@ -85,5 +85,6 @@ struct WordRemSwiftUIApp: App {
         let center = UNUserNotificationCenter.current()
         // Yalnızca yerel bildirimler (günlük hedef / tekrar hatırlatıcıları); uzak push yok
         _ = try? await center.requestAuthorization(options: [.alert, .badge, .sound])
+        await SmartReminders.reschedule()
     }
 }
