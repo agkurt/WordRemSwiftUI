@@ -2,8 +2,8 @@
 //  LessonCompleteView.swift
 //  WordRemSwiftUI
 //
-//  Sesli ders bitince (Pingo gibi): "İstatistiklerin toparlanıyor" → kutlama → özet
-//  (ifade sayısı, ustalık, süre, öğrenilen ifadeler sesli) → Devam → ana sayfa (sıradaki ders).
+//  Sesli ders bitince tek, sakin bir kutlama sayfası: konfeti, rozet, başlık, sayılarla canlanan
+//  istatistikler, öğrenilen ifadeler (öğretmenin sesiyle) ve Devam → ana sayfa (sıradaki ders).
 //
 
 import SwiftUI
@@ -22,161 +22,152 @@ struct LessonCompleteView: View {
     let duration: TimeInterval
     var onContinue: () -> Void
 
-    private enum Stage { case gathering, celebrate, summary }
-    @State private var stage: Stage = .gathering
-    @State private var burst = false
+    @State private var appear = false
+    @State private var shownPhrases = 0
+    @State private var shownMastery = 0
+    @State private var confetti = 0
 
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
 
+    private var headline: String {
+        lessonTitle.isEmpty ? AL.s(.talkSessionEnded) : AL.f(.lcCompletedBang, lessonTitle)
+    }
+
     var body: some View {
-        ZStack {
-            switch stage {
-            case .gathering: gathering.transition(.opacity)
-            case .celebrate: celebrate.transition(.opacity)
-            case .summary:   summary.transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-        }
-        .animation(.easeInOut(duration: 0.45), value: stage)
-        .task {
-            try? await Task.sleep(nanoseconds: 1_300_000_000)
-            stage = .celebrate
-            Haptics.success()
-            withAnimation(.spring(response: 0.7, dampingFraction: 0.6)) { burst = true }
-            try? await Task.sleep(nanoseconds: 2_400_000_000)
-            if stage == .celebrate { stage = .summary }
-        }
-    }
-
-    // MARK: 1. Toparlanıyor
-    private var gathering: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            VoiceLogoView(phase: .thinking, level: 0).scaleEffect(2.2).frame(height: 100)
-            Spacer()
-            Text(AL.s(.lcGathering))
-                .font(DS.Font.ui(24, weight: .medium))
-                .foregroundStyle(DS.Colors.ink)
-                .padding(.bottom, 90)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .paperBackground()
-    }
-
-    // MARK: 2. Kutlama
-    private var celebrate: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            ZStack {
-                // Logonun renk çubukları dışa doğru açılır
-                ForEach(0..<8, id: \.self) { i in
-                    Capsule()
-                        .fill([DS.Colors.paper, DS.Colors.ink, DS.Colors.slate, DS.Colors.paper.opacity(0.55)][i % 4])
-                        .frame(width: 22, height: 46)
-                        .offset(y: burst ? -58 : 0)
-                        .rotationEffect(.degrees(Double(i) * 45))
-                        .opacity(burst ? 1 : 0)
-                }
-            }
-            .frame(height: 170)
-            Text(AL.f(.lcCongrats, learnerName))
-                .font(DS.Font.ui(18, weight: .medium))
-                .foregroundStyle(DS.Colors.paper.opacity(0.75))
-                .padding(.top, 36)
-            Text(AL.f(.lcCompletedBang, lessonTitle))
-                .font(DS.Font.display(34, weight: .bold))
-                .foregroundStyle(DS.Colors.paper)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 28)
-                .padding(.top, 10)
-            Spacer()
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(DS.Colors.accent.ignoresSafeArea())
-        .overlay(ConfettiBurst(origin: .center, count: 110).ignoresSafeArea())
-        .contentShape(Rectangle())
-        .onTapGesture { stage = .summary }
-    }
-
-    // MARK: 3. Özet
-    private var summary: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .bottom) {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    Text(AL.f(.lcCompleted, lessonTitle))
-                        .font(DS.Font.ui(16))
-                        .foregroundStyle(DS.Colors.muted)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 36)
-                    Text(AL.s(.lcGreatJob))
-                        .font(DS.Font.display(34, weight: .bold))
+                    badge.padding(.top, 36)
+
+                    Text(learnerName.isEmpty ? AL.s(.lcGreatJob) : AL.f(.lcCongrats, learnerName))
+                        .font(DS.Font.ui(17, weight: .medium))
+                        .foregroundStyle(DS.Colors.accent)
+                        .padding(.top, 8)
+                    Text(headline)
+                        .font(DS.Font.display(32, weight: .bold))
                         .foregroundStyle(DS.Colors.ink)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 8)
+                        .padding(.horizontal, 8)
 
                     HStack(spacing: 12) {
-                        statTile("\(phrases.count)", AL.s(.lcPhrases), "checkmark.circle")
-                        statTile("\(mastery)%", AL.s(.lcMastery), "target")
+                        statTile("\(shownPhrases)", AL.s(.lcPhrases), "text.bubble")
+                        statTile("\(shownMastery)%", AL.s(.lcMastery), "target")
                         statTile(durationText, AL.s(.lcTime), "clock")
                     }
                     .padding(.top, 30)
+                    .opacity(appear ? 1 : 0)
+                    .offset(y: appear ? 0 : 14)
+                    .animation(.easeOut(duration: 0.45).delay(0.25), value: appear)
 
                     if !phrases.isEmpty {
                         Text(AL.f(.lcNewPhrases, phrases.count))
-                            .font(DS.Font.ui(16, weight: .semibold))
-                            .foregroundStyle(DS.Colors.accent)
+                            .font(DS.Font.ui(15, weight: .semibold))
+                            .foregroundStyle(DS.Colors.muted)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 34)
+                            .padding(.top, 32)
                             .padding(.bottom, 12)
                         VStack(spacing: 10) {
-                            ForEach(phrases) { phraseRow($0) }
+                            ForEach(Array(phrases.enumerated()), id: \.element.id) { i, p in
+                                phraseRow(p)
+                                    .opacity(appear ? 1 : 0)
+                                    .offset(y: appear ? 0 : 12)
+                                    .animation(.easeOut(duration: 0.4).delay(0.45 + Double(i) * 0.06), value: appear)
+                            }
                         }
                     }
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 120)
-                .frame(maxWidth: 620)
+                .padding(.bottom, 130)
+                .frame(maxWidth: 600)
                 .frame(maxWidth: .infinity)
+            }
+
+            // Sabit alt düğme
+            VStack(spacing: 0) {
+                LinearGradient(colors: [DS.Colors.paper.opacity(0), DS.Colors.paper], startPoint: .top, endPoint: .bottom)
+                    .frame(height: 28)
+                Button(AL.s(.talkContinueNext), action: onContinue)
+                    .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                    .frame(maxWidth: 560)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 16)
+                    .frame(maxWidth: .infinity)
+                    .background(DS.Colors.paper)
             }
         }
         .paperBackground()
-        .overlay(ConfettiBurst(origin: .top, count: 60).ignoresSafeArea())
-        .overlay(alignment: .bottom) {
-            Button(AL.s(.talkContinueNext), action: onContinue)
-                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-                .frame(maxWidth: 560)
-                .padding(.horizontal, 24)
-                .padding(.bottom, 20)
+        .overlay(ConfettiBurst(origin: .top, count: 100, trigger: confetti).ignoresSafeArea())
+        .task {
+            Haptics.success()
+            confetti += 1
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.62)) { appear = true }
+            // Sayılar sıfırdan yükselir
+            let steps = 24
+            for s in 1...steps {
+                try? await Task.sleep(nanoseconds: 28_000_000)
+                shownPhrases = Int((Double(phrases.count) * Double(s) / Double(steps)).rounded())
+                shownMastery = Int((Double(mastery) * Double(s) / Double(steps)).rounded())
+            }
         }
+    }
+
+    // MARK: - Rozet (hâle + tik)
+    private var badge: some View {
+        ZStack {
+            Circle()
+                .fill(RadialGradient(colors: [DS.Colors.accent.opacity(0.22), DS.Colors.accent.opacity(0)],
+                                     center: .center, startRadius: 10, endRadius: 120))
+                .frame(width: 240, height: 240)
+                .scaleEffect(appear ? 1 : 0.6)
+            Circle()
+                .fill(DS.Colors.accent)
+                .frame(width: 104, height: 104)
+                .shadow(color: DS.Colors.accent.opacity(0.35), radius: 18, y: 8)
+                .scaleEffect(appear ? 1 : 0.3)
+            Image(systemName: "checkmark")
+                .font(.system(size: 44, weight: .bold))
+                .foregroundStyle(DS.Colors.paper)
+                .scaleEffect(appear ? 1 : 0.2)
+                .rotationEffect(.degrees(appear ? 0 : -30))
+        }
+        .frame(height: 200)
     }
 
     private func statTile(_ value: String, _ label: String, _ icon: String) -> some View {
         VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(DS.Colors.accent)
             Text(value)
-                .font(DS.Font.ui(24, weight: .semibold))
+                .font(DS.Font.ui(24, weight: .bold))
                 .foregroundStyle(DS.Colors.ink)
+                .contentTransition(.numericText())
                 .minimumScaleFactor(0.7)
-            Label(label, systemImage: icon)
+            Text(label)
                 .font(DS.Font.ui(13))
                 .foregroundStyle(DS.Colors.muted)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
-        .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 20))
+        .padding(.vertical, 18)
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 20))
+        .overlay(RoundedRectangle(cornerRadius: 20).stroke(DS.Colors.line))
     }
 
     private func phraseRow(_ p: Phrase) -> some View {
         Button { TutorVoice.shared.speak(p.text, langCode: targetCode) } label: {
             HStack(spacing: 14) {
-                Image(systemName: "speaker.wave.2")
-                    .font(.system(size: 17, weight: .medium))
+                Image(systemName: "speaker.wave.2.fill")
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(DS.Colors.accent)
+                    .frame(width: 36, height: 36)
+                    .background(DS.Colors.accent.opacity(0.1), in: Circle())
                 VStack(alignment: .leading, spacing: 3) {
                     Text(p.text)
-                        .font(DS.Font.ui(17, weight: .medium))
+                        .font(DS.Font.ui(17, weight: .semibold))
                         .foregroundStyle(DS.Colors.ink)
                     if let tr = p.translation {
                         Text(tr).font(DS.Font.ui(14)).foregroundStyle(DS.Colors.muted)
@@ -185,7 +176,7 @@ struct LessonCompleteView: View {
                 .multilineTextAlignment(.leading)
                 Spacer(minLength: 0)
             }
-            .padding(16)
+            .padding(14)
             .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 18))
             .overlay(RoundedRectangle(cornerRadius: 18).stroke(DS.Colors.line))
         }

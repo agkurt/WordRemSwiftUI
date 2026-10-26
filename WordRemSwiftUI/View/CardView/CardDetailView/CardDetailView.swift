@@ -41,9 +41,21 @@ struct CardDetailView: View {
                     } else {
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 12) {
-                                Eyebrow(text: AL.f(.deckWordCount, viewModel.wordInfo.count), color: DS.Colors.muted)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 4)
+                                // Kelime sayısı + quiz: "+" (kelime ekle) düğmesiyle çakışmasın diye üstte
+                                HStack {
+                                    Eyebrow(text: AL.f(.deckWordCount, viewModel.wordInfo.count), color: DS.Colors.muted)
+                                    Spacer()
+                                    Button { showQuizSheet = true } label: {
+                                        Label(AL.s(.deckQuiz), systemImage: "checklist")
+                                            .font(DS.Font.ui(14, weight: .semibold))
+                                            .foregroundStyle(DS.Colors.paper)
+                                            .padding(.horizontal, 14)
+                                            .frame(height: 36)
+                                            .background(DS.Colors.accent, in: Capsule())
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                .padding(.bottom, 4)
                                 ForEach(viewModel.wordInfo.indices, id: \.self) { index in
                                     CardFlipView(viewModel: viewModel,
                                                  isEditing: $isEditing,
@@ -61,32 +73,6 @@ struct CardDetailView: View {
                     }
                 }
 
-                // Quiz button
-                if !viewModel.wordInfo.isEmpty {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Button {
-                                showQuizSheet = true
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "checklist")
-                                        .font(.system(size: 15, weight: .semibold))
-                                    Text(AL.s(.deckQuiz))
-                                        .font(DS.Font.ui(16, weight: .semibold))
-                                }
-                                .foregroundStyle(DS.Colors.paperRaised)
-                                .padding(.horizontal, 20)
-                                .frame(height: 48)
-                                .background(DS.Colors.ink, in: RoundedRectangle(cornerRadius: DS.Radius.button))
-                            }
-                            .buttonStyle(.plain)
-                            .padding(.trailing, 24)
-                            .padding(.bottom, 24)
-                        }
-                    }
-                }
             }
             .onAppear {
                 tabBarModifier.customAddAction = {

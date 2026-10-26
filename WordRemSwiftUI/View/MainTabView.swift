@@ -13,7 +13,8 @@ enum AppTab: Int, CaseIterable {
     /// Sekme çubuğunda yok; Bugün ekranındaki kupa butonundan sheet olarak açılır
     case leaderboard
 
-    static let barTabs: [AppTab] = [.today, .path, .words, .profile]
+    // Pratik sekmesi bu sürümde gizli (yenilenip geri gelecek)
+    static let barTabs: [AppTab] = [.today, .words, .profile]
 
     var icon: String {
         switch self {
