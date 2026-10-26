@@ -306,8 +306,8 @@ final class RealtimeVoiceSession: ObservableObject {
             let en = Locale(identifier: "en")
             let targetName = en.localizedString(forLanguageCode: Self.currentTarget) ?? "the target language"
             let nativeName = en.localizedString(forLanguageCode: OL.nativeLangCode) ?? "their native language"
-            sendGuide("If the learner is asking to learn or practice a DIFFERENT language: reply in \(nativeName) in one or two short sentences — you'd love to teach that too, they can add it in a minute from the flag at the top of the home screen or practice it now in \"Talk with your assistant\" — then continue this lesson in \(targetName). Don't mix languages and never say you only teach \(targetName). Otherwise:")
-            return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then carry on naturally and invite them to try the current line. Don't treat it as a mistake, and if they seem to want something else, give it to them.")
+            sendGuide("If the learner is asking to learn or practice a DIFFERENT language: reply in \(nativeName) in one or two short sentences — you'd love to teach that too, they can add it in a minute from the flag at the top of the home screen or practice it now in \"Talk with your assistant\" — then continue this \(targetName) lesson. Never say you only teach \(targetName). Otherwise:")
+            return sendGuide("The learner answered in their own words instead of saying the card line (a reply like \"yes, I'm ready\", a question, a joke or a side comment). React naturally to what they actually said (answer a question, laugh at a joke), then invite them to try the current line. Don't treat it as a mistake, and if they seem to want something else, give it to them.")
         }
         // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
         let ok = currentCard.map { Self.matches(said: said, card: $0) || Self.overlap(said: said, card: $0) >= (answerCardsOnly ? 0.25 : 0.6) } ?? !said.isEmpty
@@ -1265,7 +1265,7 @@ final class RealtimeVoiceSession: ObservableObject {
         if phrase == nil {
             // Tırnak içindeki ifadelerden öğrenilen dildeki sonuncusu (ana dildeki açıklamalar değil)
             let target = Self.currentTarget
-            let quotes = fullAIText.matches(of: try! Regex(#"[“"]([^"“”]{2,80})[”"]"#))
+            let quotes = fullAIText.matches(of: try! Regex(#"[“"„«]([^"“”„«»]{2,80})[”"“»]"#))
                 .compactMap { $0.output[1].substring.map(String.init) }
             // Ana dilde olmayan son alıntı (isim geçen kısa cümleler yanlış dil sanılabiliyor)
             let native = OL.nativeLangCode.lowercased()
@@ -1275,7 +1275,10 @@ final class RealtimeVoiceSession: ObservableObject {
                 return r.dominantLanguage?.rawValue
             }
             // Önce öğrenilen dildeki son alıntı ("Hallo, wie geht's?" → değil anlamı "Hi, how are you?")
-            phrase = quotes.last { lang($0)?.hasPrefix(target) == true }
+            // Tek kelimelik alıntılar ("Gast" (misafir)) kelime açıklamasıdır; söylenecek cümle tercih edilir
+            let sentences = quotes.filter { $0.split(separator: " ").count >= 2 }
+            phrase = sentences.last { lang($0)?.hasPrefix(target) == true }
+                ?? quotes.last { lang($0)?.hasPrefix(target) == true }
                 ?? quotes.last { q in lang(q).map { !$0.hasPrefix(native) } ?? true }
         }
         guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else {

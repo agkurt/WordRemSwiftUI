@@ -99,13 +99,31 @@ enum TutorBrain {
     /// 0 başlangıç … 4 ileri
     private static var proficiency: Int { UserDefaults.standard.integer(forKey: "selectedProficiencyLevel") }
 
-    /// Konuşmanın dili: öğrenilen dil öncelikli. Çeviri kartta durduğu için sürekli ana dilde tekrar edilmez.
+    /// Konuşmanın dili seviyeye göre: başlangıçta öğretmen öğrencinin ana dilinde anlatır, yalnızca öğrettiği
+    /// ifadeler öğrenilen dilde (Pingo gibi); seviye arttıkça öğrenilen dil ağırlık kazanır.
     private static var languagePolicy: String {
-        let base = "Speak \(targetName) by default. Do NOT translate everything into \(nativeName) and never say things like \"in \(nativeName) that means…\" — the learner sees the meaning on the card. Use \(nativeName) only when the learner asks, speaks to you in \(nativeName), or is clearly stuck after a try — then one short sentence and back to \(targetName)."
+        let cardNote = "The card always shows the \(targetName) line with its \(nativeName) meaning, so never read translations out loud word by word."
         switch proficiency {
-        case 0, 1: return base + " The learner is a beginner: use very short, simple \(targetName) sentences, speak slowly and clearly."
-        case 2:    return base + " The learner is around A2: simple, natural \(targetName)."
-        default:   return base + " The learner is intermediate or advanced: natural pace and vocabulary."
+        case 0, 1, 2:
+            return """
+            TEACHING LANGUAGE: the learner is a beginner. Teach like a private tutor who speaks their language: \
+            explain, give instructions, ask your questions, praise and give tips in \(nativeName). \
+            Use \(targetName) only for the words and phrases you are teaching: put them in quotes and say them slowly and clearly \
+            (e.g. in \(nativeName): "Let's order a drink. In \(targetName) you say: '…'. Your turn!"). \
+            Never speak long \(targetName) sentences they can't follow yet. As they get lines right, mix in a little more \(targetName) \
+            (greetings, short praise words, phrases they already know). \(cardNote)
+            HOW TO TEACH A BEGINNER (be a real coach):
+            - Give pronunciation tips in \(nativeName) that point at the exact sound: which letter, how long, where the stress is, \
+            and compare it to a familiar \(nativeName) sound ("stretch the 'ee' in 'Tee'", "say 'bitte' crisply, short 'i'").
+            - Mix small exercises: "How would you say '…' in \(targetName)?", a choice between two phrases, swapping one word \
+            (Kaffee → Tee), then using it in a tiny real situation.
+            - Every few steps, recap in one sentence what they can already say.
+            - In roleplays, your in-character lines are short, simple \(targetName); add a few \(nativeName) words of help when they need it.
+            """
+        case 3:
+            return "Speak mostly simple, natural \(targetName). Switch to \(nativeName) for one short sentence when explaining a new word, a grammar point or a pronunciation tip, then back to \(targetName). \(cardNote)"
+        default:
+            return "Speak \(targetName) at a natural pace. Use \(nativeName) only if the learner asks or is clearly stuck, in one short sentence. \(cardNote)"
         }
     }
 
@@ -510,7 +528,7 @@ enum TutorBrain {
             sessionLanguage = code
             RealtimeVoiceSession.targetOverride = code
             let name = Locale(identifier: "en").localizedString(forLanguageCode: code) ?? code
-            return "switched — from now on speak and teach \(name); every card in \(name) with its translation in \(nativeName)"
+            return "switched — from now on teach \(name) (follow the TEACHING LANGUAGE rule: explain in \(nativeName) if they are a beginner); every card in \(name) with its translation in \(nativeName)"
 
         case "remember_fact":
             let fact = (args["fact"] as? String ?? "").trimmingCharacters(in: .whitespaces)
