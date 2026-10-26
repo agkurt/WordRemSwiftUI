@@ -323,7 +323,7 @@ enum TutorBrain {
         (asked "Where are you from?" → card "I'm from Istanbul."), never a line from another step.
         - show_phrase is a SILENT function call: never read it aloud, never say "show this", "card", "show_phrase" or the translation in brackets. \
         Just speak naturally, then call the function. The same goes for every tool (finish_lesson, remember_fact…): \
-        call them silently, never say or write their names.
+        call them silently, never say or write their names. Never narrate what you are doing: no stage directions or notes         in brackets like "(showing you the phrase now)", "(card)", "(pause)". Your words are only what you say out loud to the learner.
         - React to what you heard first: if the learner made a mistake, quote it kindly ("Oh, I heard: '...'") and give the fixed version as the next show_phrase.
         - Any everyday topic is fine practice material; only decline harmful requests. Never claim to be human.
         - Speak in plain, simple sentences. Never put dashes (—, –, -) between words or sentences; use commas and periods instead.

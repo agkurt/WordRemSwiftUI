@@ -1196,6 +1196,12 @@ final class RealtimeVoiceSession: ObservableObject {
         var t = s.replacingOccurrences(of: tools + #"\s*\([^)]*\)?"#, with: "", options: .regularExpression)
         // Yarım gelen çağrı ("show_phrase(\"Hel…"): adından sonrasını kes
         if let r = t.range(of: tools, options: .regularExpression) { t = String(t[..<r.lowerBound]) }
+        // Sahne notları: "(showing you the phrase now)", "[card]", "*pauses*" gibi parantez içi anlatımlar
+        let stage = #"(phrase|card|showing|show|shown|screen|tool|function|pause|waits?|waiting|smiles?|laughs?|kart|ifade|gösteri)"#
+        t = t.replacingOccurrences(of: #"[\(\[\*][^\)\]\*\n]{0,80}"# + stage + #"[^\)\]\*\n]{0,80}[\)\]\*]"#,
+                                   with: "", options: [.regularExpression, .caseInsensitive])
+        // Akış sırasında henüz kapanmamış parantez: kapanana kadar gösterme (sahne notu çıkabilir)
+        t = t.replacingOccurrences(of: #"[\(\[][^\)\]]*$"#, with: "", options: .regularExpression)
         // Herhangi bir snake_case tanımlayıcı da (ör. "finish lesson" değil "finish_lesson") metinden çıkar
         t = t.replacingOccurrences(of: #"\b[a-z]+(_[a-z]+)+\b"#, with: "", options: .regularExpression)
         // Düz konuşma metni: cümle arası tireler ("had— twice", "nice - right") virgül/boşluk olur, "e-mail" gibi kelimeler kalır
