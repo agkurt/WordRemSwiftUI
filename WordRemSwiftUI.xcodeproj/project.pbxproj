@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1DE85FF3FFF51918EE081CF /* TalkHelpSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE85FF3FFF51918EE081CF /* TalkHelpSheets.swift */; };
 		C1DE62FB6C6481D4C8E906E8 /* Components/Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE62FB6C6481D4C8E906E8 /* Components/Effects.swift */; };
 		C1DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift */; };
 		B0B0C0DE00000000000F21 /* ReviewCardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B0C0DE00000000000F20 /* ReviewCardWidget.swift */; };
@@ -224,6 +225,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DE85FF3FFF51918EE081CF /* TalkHelpSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/TalkHelpSheets.swift; sourceTree = "<group>"; };
 		C0DE62FB6C6481D4C8E906E8 /* Components/Effects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/Effects.swift; sourceTree = "<group>"; };
 		C0DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talk/LessonCompleteView.swift; sourceTree = "<group>"; };
 		B0B0C0DE00000000000F20 /* ReviewCardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCardWidget.swift; sourceTree = "<group>"; };
@@ -958,6 +960,7 @@
 				C0DEB9507D0476F5EEF60D9B /* TodayView.swift */,
 				C0DE3E27795CCC6E99D500F2 /* Talk/TalkHomeView.swift */,
 				C0DE40CFE4239A497E70CED7 /* Talk/VoiceTutorView.swift */,
+				C0DE85FF3FFF51918EE081CF /* TalkHelpSheets.swift */,
 				C0DE62FB6C6481D4C8E906E8 /* Components/Effects.swift */,
 				C0DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift */,
 				C0DE11A019AF810A0B827D3F /* LaunchScreenView.swift */,
@@ -1338,6 +1341,7 @@
 				A0AA891000E940B8994A34EE /* QuizResultView.swift in Sources */,
 				C10901A3CDD541438671D2B0 /* ProfileView.swift in Sources */,
 				A2A7E9DF95F482C3B1BA8613 /* MistakesManager.swift in Sources */,
+				C1DE85FF3FFF51918EE081CF /* TalkHelpSheets.swift in Sources */,
 				C1DE62FB6C6481D4C8E906E8 /* Components/Effects.swift in Sources */,
 				C1DE65393F22143AB6E0C991 /* Talk/LessonCompleteView.swift in Sources */,
 				C1DE3C31A4A927E9150A025A /* SmartReminders.swift in Sources */,

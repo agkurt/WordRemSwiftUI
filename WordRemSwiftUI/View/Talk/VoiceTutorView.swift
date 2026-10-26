@@ -31,6 +31,8 @@ struct VoiceTutorView: View {
     @State private var showPaywall = false
     @State private var finishedSuccess: Bool?
     @State private var completing = false
+    @State private var showHelp = false
+    @State private var showTopics = false
     @Environment(\.horizontalSizeClass) private var sizeClass
     /// Bu oturumda desteye kaydedilen kartlar (yer imi dolu görünür)
     @State private var savedPhrases: Set<String> = []
@@ -97,6 +99,12 @@ struct VoiceTutorView: View {
             }
         }
         .sheet(isPresented: $showTranscript) { transcriptSheet }
+        .sheet(isPresented: $showHelp) {
+            StuckHelpSheet { need in session.requestHelp(slower: need == .slower) }
+        }
+        .sheet(isPresented: $showTopics) {
+            TopicPickerSheet { display, topic in session.startTopic(display: display, topic: topic) }
+        }
         .fullScreenCover(isPresented: $showSummary) { lessonSummary }
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
             OnboardingPaywallView(onContinue: { showPaywall = false })
@@ -199,14 +207,17 @@ struct VoiceTutorView: View {
     // MARK: - Top bar
     private var topBar: some View {
         HStack {
-            Button { showTranscript = true } label: {
-                Image(systemName: "text.bubble")
-                    .font(.system(size: 16, weight: .medium))
+            // Pingo gibi: serbest sohbette konu seç, derste "Takıldın mı?" (transkript alttaki çubukta)
+            Button {
+                if activeMode == .freeChat { showTopics = true } else { showHelp = true }
+            } label: {
+                Image(systemName: activeMode == .freeChat ? "square.grid.2x2" : "questionmark")
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(DS.Colors.inkSoft)
                     .frame(width: 44, height: 44)
                     .background(DS.Colors.paperSunken, in: Circle())
             }
-            .accessibilityLabel(AL.s(.talkTranscript))
+            .opacity(isConnecting ? 0 : 1)
             Spacer()
             if !isConnecting {
                 VoiceLogoView(phase: session.phase, level: session.inputLevel)

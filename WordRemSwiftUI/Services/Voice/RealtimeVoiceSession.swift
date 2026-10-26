@@ -369,6 +369,28 @@ final class RealtimeVoiceSession: ObservableObject {
         phase = .listening
     }
 
+    /// "Takıldın mı?": öğretmen son söylediğini yavaşça tekrarlar ya da ana dilde yeniden açıklar
+    func requestHelp(slower: Bool) {
+        if phase == .aiSpeaking || phase == .thinking { interrupt() }
+        guard phase == .listening else { return }
+        let native = Locale(identifier: "en").localizedString(forLanguageCode: OL.nativeLangCode) ?? "the learner's native language"
+        sendGuide(slower
+            ? "The learner tapped 'repeat more slowly'. Say your last line again, slowly and very clearly, with small pauses between words. Then show the same card again with show_phrase."
+            : "The learner tapped 'explain again' — they're stuck. In \(native), explain simply what the current line means and when to use it (1–2 short sentences), say it once more slowly in the target language, and show the same card again with show_phrase.")
+        send(["type": "response.create"])
+        phase = .thinking
+    }
+
+    /// Asistanla sohbette konu seçildi: öğretmen o konuya geçer
+    func startTopic(display: String, topic: String) {
+        if phase == .aiSpeaking || phase == .thinking { interrupt() }
+        guard phase == .listening else { return }
+        turns.append(Turn(role: .user, text: "→ \(display)"))
+        sendGuide("The learner picked a topic: \(topic). Switch to it now: one warm line about the topic, then start a natural, step-by-step conversation around it — ask them something real and card their answer.")
+        send(["type": "response.create"])
+        phase = .thinking
+    }
+
     /// Kullanıcı yazıyla bir şey göndermek isterse (ör. konu seçimi çipleri)
     func sendText(_ text: String) {
         guard phase == .listening else { return }
