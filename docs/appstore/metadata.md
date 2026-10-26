@@ -44,8 +44,8 @@ Spanish, English, German, French, Italian, Russian, Chinese and Turkish. Add a n
 
 WordRem AI Pro unlocks unlimited speaking time and the full plan. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the period. Manage or cancel anytime in your App Store account settings.
 
-Privacy: https://wordrem-voice.wordrem-ai.workers.dev/privacy
-Terms: https://wordrem-voice.wordrem-ai.workers.dev/terms
+Privacy: https://api.wordremai.app/privacy
+Terms: https://api.wordremai.app/terms
 
 ## Türkçe
 
@@ -85,5 +85,5 @@ SENİNLE BİRLİKTE İLERLEYEN PLAN
 
 WordRem AI Pro sınırsız konuşma süresi ve planın tamamını açar. Abonelik, dönem bitiminden en az 24 saat önce iptal edilmezse otomatik yenilenir. App Store hesap ayarlarından istediğin zaman yönetebilir veya iptal edebilirsin.
 
-Gizlilik: https://wordrem-voice.wordrem-ai.workers.dev/privacy
-Kullanım Şartları: https://wordrem-voice.wordrem-ai.workers.dev/terms
+Gizlilik: https://api.wordremai.app/privacy
+Kullanım Şartları: https://api.wordremai.app/terms
