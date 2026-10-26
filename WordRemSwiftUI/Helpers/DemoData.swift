@@ -58,6 +58,10 @@ enum DemoData {
             s.totalAnswers = 412
             s.correctAnswers = 371
             s.achievements = ["first_steps", "first_streak", "100_xp", "5_levels", "50_correct", "500_xp"]
+            // Konuşma planı: ilk bölümün ilk iki hedefi bitmiş, üçüncüsü sırada
+            var done = s.voiceGoalsDone ?? [:]
+            for g in (ScenarioStore.shared.chapters.first?.goals.prefix(2) ?? []) { done[LearningLanguages.goalKey(g.id)] = now }
+            s.voiceGoalsDone = done
             for (i, level) in levels.enumerated() where i < 8 {
                 s.progress[level.id.uuidString] = i < 7
                     ? LevelProgressRecord(status: .completed, bestScore: [100, 95, 90, 100, 85, 95, 80][i],
@@ -93,5 +97,17 @@ enum DemoData {
         let days = (1...12).compactMap { cal.date(byAdding: .day, value: -$0, to: now) }.map(fmt.string)
         defaults?.set(days, forKey: "reviewActiveDays")
         ReviewScheduler.shared.reload()
+    }
+
+    /// Ders sonu ekranı önizlemesi (ekran görüntüsü): mağaza diline uygun başlık ve ifadeler
+    static var lessonCompletePreview: (title: String, phrases: [(String, String)]) {
+        let title = ScenarioStore.shared.chapters.first?.goals.first?.localizedTitle ?? ""
+        let target = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
+        if target == "es" {
+            return (title, [("¡Mucho gusto!", "Nice to meet you!"), ("Me llamo Ahmet.", "My name is Ahmet."),
+                            ("Soy de Estambul.", "I'm from Istanbul.")])
+        }
+        return (title, [("Nice to meet you.", "Tanıştığıma memnun oldum."), ("Hello, my name is Ahmet.", "Merhaba, benim adım Ahmet."),
+                        ("I'm good, thank you.", "İyiyim, teşekkür ederim.")])
     }
 }

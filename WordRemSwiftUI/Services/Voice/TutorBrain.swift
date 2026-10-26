@@ -419,7 +419,7 @@ enum TutorBrain {
     static var tools: [[String: Any]] { [
         tool("show_phrase", "Show a phrase card on the learner's screen when you teach a phrase they should say.", [
             "phrase": ["type": "string", "description": "The phrase in \(targetName) (the language being learned)."],
-            "translation": ["type": "string", "description": "Its meaning in the learner's native language."],
+            "translation": ["type": "string", "description": "Its meaning in \(nativeName) (the learner's native language) — always \(nativeName), never another language."],
         ], required: ["phrase", "translation"]),
         tool("mark_word_used", "Call when the learner correctly used one of today's review words.", [
             "word": ["type": "string"],

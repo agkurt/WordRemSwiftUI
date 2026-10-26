@@ -23,7 +23,7 @@ WordRem AI is a voice-first language tutor. Hold the button, say it out loud, an
 
 REAL CONVERSATIONS, NOT QUIZZES
 • Short voice lessons built around real-life moments: meeting people, cafés, airports, work
-• Every line you need appears as a card with its translation and native audio
+• Every line you need appears as a card with its translation and audio
 • Make each phrase your own: your tutor teaches new words and asks about your life
 • Finish with a roleplay where the tutor plays the other person
 

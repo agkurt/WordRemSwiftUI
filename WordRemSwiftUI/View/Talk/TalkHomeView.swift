@@ -100,10 +100,9 @@ struct TalkHomeView: View {
         #if DEBUG
         // Ekran görüntüsü/test: -DemoLessonComplete YES ile ders sonu akışını doğrudan aç
         .fullScreenCover(isPresented: .constant(UserDefaults.standard.bool(forKey: "DemoLessonComplete"))) {
-            LessonCompleteView(lessonTitle: "Selamlaşma ve kendini tanıtma", learnerName: "Ahmet",
-                               phrases: [.init(text: "Nice to meet you.", translation: "Tanıştığıma memnun oldum."),
-                                         .init(text: "Hello, my name is Ahmet.", translation: "Merhaba, benim adım Ahmet."),
-                                         .init(text: "I'm good, thank you.", translation: "İyiyim, teşekkür ederim.")],
+            let demo = DemoData.lessonCompletePreview
+            LessonCompleteView(lessonTitle: demo.title, learnerName: "Ahmet",
+                               phrases: demo.phrases.map { .init(text: $0.0, translation: $0.1) },
                                mastery: 92, duration: 628) {}
         }
         #endif

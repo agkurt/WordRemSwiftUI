@@ -954,7 +954,7 @@ final class RealtimeVoiceSession: ObservableObject {
                 voiceLog.info("card: \(self.currentCard ?? "", privacy: .public)")
                 // Çeviri boşsa ya da ana dilde değilse (model bazen İspanyolca vb. yazıyor) doğrusu sessizce istenir
                 let tr = ((args["translation"] as? String) ?? "").trimmingCharacters(in: .whitespaces)
-                if !tr.isEmpty, !silentCardActive, !Self.isNativeLanguage(tr) {
+                if !tr.isEmpty, translatingPhrase == nil, !Self.isNativeLanguage(tr) {
                     voiceLog.info("translation not in native language, refetching: \(tr, privacy: .public)")
                     args["translation"] = ""
                 }
@@ -978,8 +978,12 @@ final class RealtimeVoiceSession: ObservableObject {
 
         case "response.done":
             if silentCardActive {
-                silentCardActive = false; translationPending = nil; translatingPhrase = nil
+                silentCardActive = false
+                // Sessiz kartın çevirisi eksik/yanlış dildeyse bir kez daha (yalnızca çeviri) istenir
+                let pending = translatingPhrase == nil ? translationPending : nil
+                translationPending = nil; translatingPhrase = nil
                 if needsCompleteCard { needsCompleteCard = false; requestCard(answerTo: fullAIText, complete: true) }
+                else if let p = pending { requestCard(translating: p) }
                 break
             }
             voiceLog.info("tutor said: \(self.fullAIText, privacy: .public)")
@@ -1071,9 +1075,9 @@ final class RealtimeVoiceSession: ObservableObject {
         let instructions = phrase.map {
             "Do not say anything. Call show_phrase with exactly this phrase: \"\($0)\" and its natural translation into \(native)."
         } ?? question.map {
-            "Do not say anything. You just said: \"\($0)\". Call show_phrase with a short example ANSWER the learner can say back to you (in \(target), first person, e.g. \"I'm 25 years old.\"), never a question, and its translation."
+            "Do not say anything. You just said: \"\($0)\". Call show_phrase with a short, natural example answer to exactly that question that the learner can say back to you (in \(target), first person), never a question, and its translation into \(native)."
                 + (complete ? " Make it a complete, realistic example sentence — fill in real details, no '...' or blanks." : "")
-        } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in \(target) (a complete, natural model answer — never placeholders like [your name]) and its translation."
+        } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in \(target) (a complete, natural model answer — never placeholders like [your name]) and its translation into \(native)."
             + (targetProgress < targets.count ? " The current step is: \(targets[targetProgress]) — use the card it specifies." : "")
         silentCardPending = true
         voiceLog.info("no card this turn → asking silently")
