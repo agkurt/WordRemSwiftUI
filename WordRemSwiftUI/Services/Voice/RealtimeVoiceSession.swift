@@ -299,7 +299,7 @@ final class RealtimeVoiceSession: ObservableObject {
             } else {
                 next = "Switch to a different situation in the roleplay, one they'd enjoy more, and continue in character."
             }
-            return sendGuide("The learner doesn't want this question and wants to move on. Happily agree in a few words (\"Sure, no problem!\"), never push back or say \"let's focus\". \(next)")
+            return sendGuide("The learner doesn't want this question and wants to move on. Happily agree in a few words, never push back or say \"let's focus\". \(next)")
         }
         // Karta hiç benzemeyen ve öğrenilen dilde olmayan sözler: sohbet/şaka → keyifle karşıla, derse dön
         if let card = currentCard, wordCount >= 3, !inTarget, Self.overlap(said: said, card: card) < 0.25 {
@@ -324,7 +324,7 @@ final class RealtimeVoiceSession: ObservableObject {
             attempts += 1
             guard ok || attempts >= 3 else {
                 note = attempts == 1
-                    ? "The learner's attempt wasn't quite right (if it only looks off because of their accent or a transcript slip, treat it as right and move on instead). Quote what you heard kindly (\"Oh, I heard: '\(said)'\"), give ONE concrete tip for the tricky sound or word, and have them say the line again."
+                    ? "The learner's attempt wasn't quite right (if it only looks off because of their accent or a transcript slip, treat it as right and move on instead). Quote what you heard kindly (they said: '\(said)') in the language you are explaining in, not in English unless that is it, give ONE concrete tip for the tricky sound or word, and have them say the line again."
                     : "Second miss on the same line (again: if it's close, count it as right). Help differently now: break the line into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language, then let them try the whole line once more. Card the same line."
                 return sendGuide(note)
             }
@@ -397,16 +397,19 @@ final class RealtimeVoiceSession: ObservableObject {
 
     private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the LEARNER'S reply — never your own line. Example: you say \"Hi, I'm Emma. What's your name?\" → card \"Nice to meet you, Emma! I'm Ahmet.\""
 
+    /// Notlar İngilizce yazılı; model içindeki örnek kalıpları ("welcome back", "Sure, no problem!") aynen okumasın
+    private static let noteLanguage = " (Any quoted wording in this note is only an English example of the idea: say it in your own words, in the language you are speaking to the learner right now.)"
+
     private func sendGuide(_ note: String) {
         voiceLog.info("guide: \(note, privacy: .public)")
         send(["type": "conversation.item.create",
-              "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note]]]])
+              "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note + Self.noteLanguage]]]])
     }
 
     private func guide(roleplay note: String) {
         voiceLog.info("guide: \(note, privacy: .public)")
         send(["type": "conversation.item.create",
-              "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note]]]])
+              "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note + Self.noteLanguage]]]])
     }
 
     /// Söylenen cümle öğrenilen dilde mi (ana dildeki sohbetten ayırmak için)
@@ -676,7 +679,7 @@ final class RealtimeVoiceSession: ObservableObject {
         resumeNote = """
         The connection dropped for a moment and is back. The conversation so far:
         \(history)
-        Do NOT greet again or restart the lesson. Say "welcome back" in a few words, then continue exactly where you left off \
+        Do NOT greet again or restart the lesson. Briefly say you're glad they're back (in your own words, in the language you are speaking to them), then continue exactly where you left off \
         (ask your last question again\(currentCard.map { " — the learner's current line is \"\($0)\"; card it again" } ?? "")).
         """
         phase = .connecting
