@@ -15,7 +15,12 @@ binding = "USAGE"
 id = "218266adf42b40ecbb1c2a88bd34d8de"
 
 [vars]
-REALTIME_MODEL = "gpt-realtime-mini"
+# gpt-realtime / gpt-realtime-mini 20 Ocak 2027'de kapanıyor; yerine 2.1 sürümleri
+REALTIME_MODEL = "gpt-realtime-2.1-mini"
+# Onboarding demosu ve dersler (talimat takibi en önemli yer)
+REALTIME_MODEL_HIGH = "gpt-realtime-2.1"
+# Tam modelin mini'ye göre ses fiyatı oranı (32/10, 64/20)
+HIGH_COST_MULTIPLIER = "3.2"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar

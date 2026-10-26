@@ -194,7 +194,8 @@ struct VoiceTutorView: View {
         Track.screen("lesson")
         await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: tools,
                             targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),
-                            roleplay: !isDemo && !isSetup, aiSpeaksFirst: activeMode != .freeChat)
+                            roleplay: !isDemo && !isSetup, aiSpeaksFirst: activeMode != .freeChat,
+                            quality: usesHighModel ? "high" : "standard")
     }
 
     private func completeLesson() {
@@ -263,6 +264,13 @@ struct VoiceTutorView: View {
         case .demo: return ["mode": "demo"]
         case .wordPractice: return ["mode": "word_practice"]
         default: return ["mode": "\(activeMode)"]
+        }
+    }
+    /// Demo satışı belirler, derslerde talimat takibi önemli: tam model. Serbest sohbet ve kelime pratiği mini.
+    private var usesHighModel: Bool {
+        switch activeMode {
+        case .demo, .goal, .languageSetup, .levelReview: return true
+        default: return false
         }
     }
     private var modeName: String { (analyticsContext["mode"] as? String) ?? "other" }

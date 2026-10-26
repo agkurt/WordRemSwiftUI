@@ -91,9 +91,10 @@ final class VoiceBackend {
     /// Ses hızı hep doğal (yapay yavaşlatma sesi bulanıklaştırıyor); yavaşlık talimatla sağlanır
     private var speechSpeed: Double { 1.0 }
 
-    func createSession(instructions: String, tools: [[String: Any]]) async throws -> Grant {
+    /// quality: "high" → tam model (demo ve dersler), "standard" → mini (serbest sohbet)
+    func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard") async throws -> Grant {
         let payload = try JSONSerialization.data(withJSONObject: [
-            "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed,
+            "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed, "quality": quality,
         ])
         lastBodyBytes = payload.count
         let (data, response) = try await send { base in

@@ -47,6 +47,7 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Analitik için dersin kimliği (mode, lesson_id, topic…); VoiceTutorView doldurur
     var analyticsContext: [String: Any?] = [:]
     private var connectStartedAt: Date?
+    private var quality = "standard"
     private var reconnectCount = 0
     private var lessonTracked = false
     /// Bağlanamayınca ekranda küçük yazıyla gösterilen teknik ayrıntı
@@ -126,7 +127,8 @@ final class RealtimeVoiceSession: ObservableObject {
     /// - Parameter targets: ders hedefleri (sırayla); boşsa serbest sohbet
     /// - Parameter roleplay: hedefler bitince canlandırma yapılsın mı (onboarding demosunda hayır)
     func start(instructions: String, tools: [[String: Any]], targets: [String] = [], startStep: Int = 0, roleplay: Bool = true,
-               aiSpeaksFirst: Bool = true) async {
+               aiSpeaksFirst: Bool = true, quality: String = "standard") async {
+        self.quality = quality
         self.aiSpeaksFirst = aiSpeaksFirst
         self.targets = targets
         lastInstructions = instructions; lastTools = tools; usageBase = 0
@@ -148,7 +150,7 @@ final class RealtimeVoiceSession: ObservableObject {
         turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false; timeUp = false; timeUpAt = nil
         trackLesson("start")
         do {
-            let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools)
+            let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools, quality: quality)
             sessionId = grant.sessionId
             allowedSeconds = grant.allowedSeconds
             Track.setTier(grant.tier)
@@ -183,6 +185,7 @@ final class RealtimeVoiceSession: ObservableObject {
         params["stage"] = stage
         params["via_relay"] = viaRelay
         params["reconnects"] = reconnectCount
+        params["model_quality"] = quality
         params["error_detail"] = errorDetail
         Track.lesson(action, params.merging(extra) { _, new in new })
     }
@@ -726,7 +729,7 @@ final class RealtimeVoiceSession: ObservableObject {
         """
         phase = .connecting
         do {
-            let grant = try await VoiceBackend.shared.createSession(instructions: lastInstructions, tools: lastTools)
+            let grant = try await VoiceBackend.shared.createSession(instructions: lastInstructions, tools: lastTools, quality: quality)
             sessionId = grant.sessionId
             usageBase = elapsedSeconds
             lastUsageReport = elapsedSeconds

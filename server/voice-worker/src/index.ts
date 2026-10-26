@@ -31,6 +31,8 @@ export interface Env {
   PRO_MONTHLY_SECONDS: string;
   MIN_MONTHLY_SECONDS: string;
   COST_PER_MIN_USD: string;
+  REALTIME_MODEL_HIGH: string;
+  HIGH_COST_MULTIPLIER: string;
   AI_BUDGET_SHARE: string;
   APPLE_COMMISSION: string;
 }
@@ -82,6 +84,8 @@ interface SessionRequest {
   tools?: unknown[];
   voice?: string;
   speed?: number;
+  /** "high": demo ve dersler (tam model), diğerleri mini */
+  quality?: string;
 }
 
 interface UsageRequest {
@@ -179,9 +183,13 @@ async function createSession(req: Request, env: Env): Promise<Response> {
     return json({ error: tier === "free" ? "paywall" : "limit_reached", tier, remainingSeconds: seconds }, 402);
   }
 
+  const high = body.quality === "high" && !!env.REALTIME_MODEL_HIGH;
+  const model = high ? env.REALTIME_MODEL_HIGH : env.REALTIME_MODEL;
+  // Tam model ~3 kat pahalı: aylık bütçeden o oranda düşülür (ücretsiz tadım ve günlük süre etkilenmez)
+  const weight = high ? Number(env.HIGH_COST_MULTIPLIER || 3) : 1;
   const session = {
     type: "realtime",
-    model: env.REALTIME_MODEL,
+    model,
     instructions: body.instructions,
     max_output_tokens: 1200,
     audio: {
@@ -211,7 +219,7 @@ async function createSession(req: Request, env: Env): Promise<Response> {
 
   const sessionId = crypto.randomUUID();
   // Oturum kaydı: kullanım raporlarında üst sınır kontrolü için
-  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, plan, seconds, reported: 0 }), {
+  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, plan, seconds, reported: 0, weight }), {
     expirationTtl: 60 * 60 * 3,
   });
 
@@ -219,7 +227,7 @@ async function createSession(req: Request, env: Env): Promise<Response> {
     sessionId,
     clientSecret: secret.value,
     expiresAt: secret.expires_at,
-    model: env.REALTIME_MODEL,
+    model,
     allowedSeconds: seconds,
     tier,
   });
@@ -231,7 +239,7 @@ async function reportUsage(req: Request, env: Env): Promise<Response> {
 
   const raw = await env.USAGE.get(`s:${body.sessionId}`);
   if (!raw) return json({ error: "unknown_session" }, 404);
-  const s = JSON.parse(raw) as { user: string; plan: Plan; seconds: number; reported: number };
+  const s = JSON.parse(raw) as { user: string; plan: Plan; seconds: number; reported: number; weight?: number };
   if (s.user !== body.appUserId) return json({ error: "forbidden" }, 403);
 
   // Toplam rapor, oturuma verilen süreyi (ve 60 dk oturum tavanını) aşamaz; sadece fark yazılır
@@ -242,7 +250,7 @@ async function reportUsage(req: Request, env: Env): Promise<Response> {
       await safePut(env, `free:${s.user}`, String((await getNum(env, `free:${s.user}`)) + delta));
     } else {
       const u = await paidUsage(env, s.user);
-      u.ds += delta; u.ms += delta;
+      u.ds += delta; u.ms += Math.round(delta * (s.weight ?? 1));
       await safePut(env, `p:${s.user}`, JSON.stringify(u), { expirationTtl: 60 * 60 * 24 * 40 });
     }
     s.reported = total;
