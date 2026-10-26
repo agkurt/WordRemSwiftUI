@@ -27,19 +27,31 @@ struct TalkHomeView: View {
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 26) {
-                topBar
-                if !scheduler.dueToday.isEmpty { reviewStrip }
-                pager
-                planButton
+        GeometryReader { geo in
+            ScrollViewReader { proxy in
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // İlk ekran: ders/asistan kartları; aşağı kaydırınca plan yumuşakça gelir
+                        VStack(spacing: 26) {
+                            topBar
+                            if !scheduler.dueToday.isEmpty { reviewStrip }
+                            pager
+                            Spacer(minLength: 0)
+                            planHint { withAnimation(.spring(response: 0.6, dampingFraction: 0.85)) { proxy.scrollTo("plan", anchor: .top) } }
+                        }
+                        .frame(minHeight: geo.size.height - 8, alignment: .top)
+                        planSection
+                            .id("plan")
+                            .padding(.top, 12)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
+                    .padding(.bottom, 40)
+                    .frame(maxWidth: 620)
+                    .frame(maxWidth: .infinity)
+                    .id(refresh)
+                }
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 8)
-            .padding(.bottom, 40)
-            .frame(maxWidth: 620)
-            .frame(maxWidth: .infinity)
-            .id(refresh)
         }
         .paperBackground()
         .onAppear { scheduler.reload(); openRoute(AppRouter.shared.route) }
@@ -230,11 +242,67 @@ struct TalkHomeView: View {
         .overlay(RoundedRectangle(cornerRadius: 28).stroke(DS.Colors.line))
     }
 
-    private var planButton: some View {
-        Button { showPlan = true } label: {
-            Label(AL.s(.talkPlan), systemImage: "map")
-                .font(DS.Font.ui(15, weight: .semibold))
-                .foregroundStyle(DS.Colors.accent)
+    /// İlk ekranın altında: "Planım" ve aşağı ok (dokununca plana kayar)
+    private func planHint(_ go: @escaping () -> Void) -> some View {
+        Button(action: go) {
+            VStack(spacing: 4) {
+                Text(AL.s(.talkPlan))
+                    .font(DS.Font.ui(15, weight: .semibold))
+                Image(systemName: "chevron.compact.down")
+                    .font(.system(size: 22, weight: .medium))
+                    .symbolEffect(.pulse)
+            }
+            .foregroundStyle(DS.Colors.accent)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Plan: bulunduğun bölüm, hedefler dalgalı bir yol üzerinde
+    @ViewBuilder
+    private var planSection: some View {
+        if let next = store.next {
+            let chapter = next.chapter
+            VStack(alignment: .leading, spacing: 18) {
+                HStack(spacing: 14) {
+                    Image(systemName: chapter.icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(DS.Colors.accent)
+                        .frame(width: 52, height: 52)
+                        .background(DS.Colors.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(AL.s(.talkInProgress))
+                            .font(DS.Font.ui(13, weight: .medium))
+                            .foregroundStyle(DS.Colors.muted)
+                        Text(chapter.localizedTitle)
+                            .font(DS.Font.display(24, weight: .bold))
+                            .foregroundStyle(DS.Colors.ink)
+                            .lineLimit(2)
+                    }
+                }
+                PlanPathView(goals: chapter.goals, currentId: next.goal.id, isDone: store.isDone) { goal in
+                    activeMode = .goal(chapterId: chapter.id, goalId: goal.id)
+                }
+                Button { showPlan = true } label: {
+                    HStack {
+                        if let i = store.chapters.firstIndex(where: { $0.id == chapter.id }), i + 1 < store.chapters.count {
+                            Text(AL.f(.talkNextChapter, store.chapters[i + 1].localizedTitle))
+                        } else {
+                            Text(AL.s(.talkSeeFullPlan))
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(DS.Font.ui(14, weight: .medium))
+                    .foregroundStyle(DS.Colors.muted)
+                    .padding(.top, 4)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(22)
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 30))
+            .overlay(RoundedRectangle(cornerRadius: 30).stroke(DS.Colors.line))
         }
     }
 }
@@ -306,5 +374,117 @@ struct TalkPlanSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Dalgalı plan yolu
+/// Solda hafif dalgalanan bir yol: tamamlanan kısım dolu, kalan kısım noktalı; hedef kartları sağda.
+struct PlanPathView: View {
+    let goals: [VoiceGoal]
+    let currentId: String
+    let isDone: (VoiceGoal) -> Bool
+    var onTap: (VoiceGoal) -> Void
+
+    private let rowH: CGFloat = 86
+    private let lane: CGFloat = 30           // yolun orta çizgisi (x)
+    private let sway: CGFloat = 10           // dalga genliği
+
+    private var currentIndex: Int { goals.firstIndex { $0.id == currentId } ?? goals.count }
+    private func x(_ i: Int) -> CGFloat { lane + (i % 2 == 0 ? -sway : sway) }
+    private func y(_ i: Int) -> CGFloat { rowH * CGFloat(i) + rowH / 2 }
+
+    var body: some View {
+        let progress = goals.count > 1 ? CGFloat(min(currentIndex, goals.count - 1)) / CGFloat(goals.count - 1) : 0
+        ZStack(alignment: .topLeading) {
+            WavyLane(points: goals.indices.map { CGPoint(x: x($0), y: y($0)) })
+                .trim(from: progress, to: 1)
+                .stroke(DS.Colors.line, style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [1, 8]))
+            WavyLane(points: goals.indices.map { CGPoint(x: x($0), y: y($0)) })
+                .trim(from: 0, to: progress)
+                .stroke(DS.Colors.accent, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
+            ForEach(Array(goals.enumerated()), id: \.element.id) { i, goal in
+                node(i, goal).position(x: x(i), y: y(i))
+                row(i, goal)
+                    .padding(.leading, lane + sway + 26)
+                    .frame(height: rowH)
+                    .offset(y: rowH * CGFloat(i))
+            }
+        }
+        .frame(height: rowH * CGFloat(goals.count))
+    }
+
+    @ViewBuilder
+    private func node(_ i: Int, _ goal: VoiceGoal) -> some View {
+        if isDone(goal) {
+            Image(systemName: "checkmark")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(DS.Colors.paper)
+                .frame(width: 26, height: 26)
+                .background(DS.Colors.accent, in: Circle())
+        } else if i == currentIndex {
+            Circle()
+                .fill(DS.Colors.accent)
+                .frame(width: 14, height: 14)
+                .padding(6)
+                .background(DS.Colors.accent.opacity(0.18), in: Circle())
+                .overlay(Circle().stroke(DS.Colors.accent.opacity(0.35), lineWidth: 1).scaleEffect(1.35))
+        } else {
+            Circle()
+                .stroke(DS.Colors.line, lineWidth: 2.5)
+                .background(Circle().fill(DS.Colors.paperRaised))
+                .frame(width: 18, height: 18)
+        }
+    }
+
+    private func row(_ i: Int, _ goal: VoiceGoal) -> some View {
+        let current = i == currentIndex
+        let done = isDone(goal)
+        return Button { onTap(goal) } label: {
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(AL.s(.talkGoal))
+                        .font(DS.Font.ui(11, weight: .semibold))
+                        .tracking(0.8)
+                        .foregroundStyle(current ? DS.Colors.accent : DS.Colors.muted)
+                    Text(goal.localizedTitle)
+                        .font(DS.Font.ui(16, weight: current ? .semibold : .medium))
+                        .foregroundStyle(done || current ? DS.Colors.ink : DS.Colors.inkSoft)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: 0)
+                if current {
+                    Text(AL.s(.talkStart))
+                        .font(DS.Font.ui(13, weight: .semibold))
+                        .foregroundStyle(DS.Colors.paper)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(DS.Colors.accent, in: Capsule())
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(current ? DS.Colors.accent.opacity(0.07) : DS.Colors.paperSunken.opacity(0.6),
+                        in: RoundedRectangle(cornerRadius: 18))
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(current ? DS.Colors.accent.opacity(0.35) : .clear))
+        }
+        .buttonStyle(.plain)
+        .opacity(done || current || i <= currentIndex ? 1 : 0.8)
+    }
+}
+
+/// Noktaları yumuşak S eğrileriyle bağlayan dikey yol
+private struct WavyLane: Shape {
+    let points: [CGPoint]
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        guard let first = points.first else { return p }
+        p.move(to: first)
+        for (a, b) in zip(points, points.dropFirst()) {
+            let midY = (a.y + b.y) / 2
+            p.addCurve(to: b, control1: CGPoint(x: a.x, y: midY), control2: CGPoint(x: b.x, y: midY))
+        }
+        return p
     }
 }

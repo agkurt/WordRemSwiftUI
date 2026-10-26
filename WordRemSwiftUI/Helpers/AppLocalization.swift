@@ -132,6 +132,9 @@ struct AL {
         case paywallTerms           = "paywall.terms"
         case paywallRestore         = "paywall.restore"
         case paywallDisclosure      = "paywall.disclosure"
+        case talkInProgress = "talk.in_progress"
+        case talkNextChapter = "talk.next_chapter"
+        case talkSeeFullPlan = "talk.see_full_plan"
         case pwTalkTitle = "pw.talk_title"
         case pwTalkSub = "pw.talk_sub"
         case pwPlanTitle = "pw.plan_title"
@@ -726,6 +729,9 @@ struct AL {
             .paywallTerms:          "Kullanım Şartları (EULA)",
             .paywallRestore:        "Geri Yükle",
             .paywallDisclosure:     "Satın alma onaylandığında Apple Hesabınıza ücretlendirilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliklerinizi App Store Hesap Ayarları'ndan yönetebilirsiniz.",
+            .talkInProgress: "Devam ediyor",
+            .talkNextChapter: "Sonraki bölüm: %@",
+            .talkSeeFullPlan: "Tüm planı gör",
             .pwTalkTitle: "AI öğretmeninle her gün konuş",
             .pwTalkSub: "Utanmadan, yargılanmadan, istediğin an gerçek sohbet",
             .pwPlanTitle: "Sana özel konuşma planı",
@@ -1270,6 +1276,9 @@ struct AL {
             .paywallTerms:          "Terms of Use (EULA)",
             .paywallRestore:        "Restore",
             .paywallDisclosure:     "Payment will be charged to your Apple Account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Manage subscriptions in App Store Account Settings.",
+            .talkInProgress: "In progress",
+            .talkNextChapter: "Next chapter: %@",
+            .talkSeeFullPlan: "See the full plan",
             .pwTalkTitle: "Talk with your AI tutor every day",
             .pwTalkSub: "Real conversations anytime — no pressure, no judgement",
             .pwPlanTitle: "Your personal speaking plan",
@@ -1811,6 +1820,9 @@ struct AL {
             .paywallTerms:          "Nutzungsbedingungen",
             .paywallRestore:        "Wiederherstellen",
             .paywallDisclosure:     "Die Zahlung wird bei Kaufbestätigung Ihrem Apple-Konto belastet. Das Abonnement verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ablauf der aktuellen Laufzeit gekündigt wird. Abonnements können in den App-Store-Kontoeinstellungen verwaltet werden.",
+            .talkInProgress: "In Arbeit",
+            .talkNextChapter: "Nächstes Kapitel: %@",
+            .talkSeeFullPlan: "Ganzen Plan ansehen",
             .pwTalkTitle: "Sprich jeden Tag mit deinem KI-Tutor",
             .pwTalkSub: "Echte Gespräche jederzeit – ohne Druck",
             .pwPlanTitle: "Dein persönlicher Sprechplan",
@@ -2135,6 +2147,9 @@ struct AL {
             .paywallTerms:          "Conditions d'utilisation",
             .paywallRestore:        "Restaurer",
             .paywallDisclosure:     "Le paiement sera débité de votre compte Apple lors de la confirmation de l'achat. L'abonnement se renouvelle automatiquement, sauf s'il est annulé au moins 24 heures avant la fin de la période en cours. Gérez vos abonnements dans les réglages du compte App Store.",
+            .talkInProgress: "En cours",
+            .talkNextChapter: "Chapitre suivant : %@",
+            .talkSeeFullPlan: "Voir tout le plan",
             .pwTalkTitle: "Parle chaque jour avec ton tuteur IA",
             .pwTalkSub: "De vraies conversations, sans pression ni jugement",
             .pwPlanTitle: "Ton plan d'expression personnel",
@@ -2459,6 +2474,9 @@ struct AL {
             .paywallTerms:          "Términos de uso",
             .paywallRestore:        "Restaurar",
             .paywallDisclosure:     "El pago se cargará a tu cuenta de Apple al confirmar la compra. La suscripción se renueva automáticamente a menos que se cancele al menos 24 horas antes del final del período actual. Administra las suscripciones en Configuración de cuenta de App Store.",
+            .talkInProgress: "En curso",
+            .talkNextChapter: "Siguiente capítulo: %@",
+            .talkSeeFullPlan: "Ver el plan completo",
             .pwTalkTitle: "Habla cada día con tu tutor IA",
             .pwTalkSub: "Conversaciones reales cuando quieras, sin presión",
             .pwPlanTitle: "Tu plan de conversación personal",
@@ -2783,6 +2801,9 @@ struct AL {
             .paywallTerms:          "Termini di utilizzo",
             .paywallRestore:        "Ripristina",
             .paywallDisclosure:     "Il pagamento verrà addebitato sul tuo account Apple alla conferma dell'acquisto. L'abbonamento si rinnova automaticamente a meno che non venga annullato almeno 24 ore prima della fine del periodo corrente. Gestisci gli abbonamenti nelle Impostazioni account dell'App Store.",
+            .talkInProgress: "In corso",
+            .talkNextChapter: "Prossimo capitolo: %@",
+            .talkSeeFullPlan: "Vedi tutto il piano",
             .pwTalkTitle: "Parla ogni giorno con il tuo tutor IA",
             .pwTalkSub: "Conversazioni vere quando vuoi, senza pressione",
             .pwPlanTitle: "Il tuo piano di conversazione",
@@ -3107,6 +3128,9 @@ struct AL {
             .paywallTerms:          "Условия использования",
             .paywallRestore:        "Восстановить",
             .paywallDisclosure:     "Оплата будет снята с вашего аккаунта Apple при подтверждении покупки. Подписка автоматически продлевается, если не будет отменена не менее чем за 24 часа до окончания текущего периода. Управляйте подписками в настройках аккаунта App Store.",
+            .talkInProgress: "В процессе",
+            .talkNextChapter: "Следующая глава: %@",
+            .talkSeeFullPlan: "Весь план",
             .pwTalkTitle: "Говори с ИИ-тьютором каждый день",
             .pwTalkSub: "Настоящие разговоры в любое время — без стеснения",
             .pwPlanTitle: "Твой личный план разговорной практики",
@@ -3431,6 +3455,9 @@ struct AL {
             .paywallTerms:          "使用条款",
             .paywallRestore:        "恢复购买",
             .paywallDisclosure:     "购买确认后，将从您的Apple账户扣款。订阅将自动续订，除非在当前期限结束前至少24小时取消。可在App Store账户设置中管理订阅。",
+            .talkInProgress: "进行中",
+            .talkNextChapter: "下一章：%@",
+            .talkSeeFullPlan: "查看完整计划",
             .pwTalkTitle: "每天和 AI 导师对话",
             .pwTalkSub: "随时真实对话，没有压力",
             .pwPlanTitle: "你的专属口语计划",

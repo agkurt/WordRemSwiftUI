@@ -448,7 +448,6 @@ struct VoiceTutorView: View {
                 .foregroundStyle(DS.Colors.accent)
                 .opacity(canTalk ? 0 : 1)
             Text(canTalk ? (holding ? AL.s(.talkReleaseToSend) : AL.s(.talkHoldToTalk))
-                 : session.phase == .thinking ? "…"
                  : session.phase == .connecting || session.phase == .idle ? AL.s(.talkConnecting)
                  : AL.s(.talkTranscript))
                 .font(DS.Font.ui(17, weight: .semibold))
