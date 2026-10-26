@@ -295,7 +295,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Yeni parça: gerçek bir mini sohbet olarak (soru sesli, cevap kartta; doğal bir seçim varsa iki seçenek)
     private static func nextPiece(_ target: String) -> String {
-        "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, ask the learner the natural question out loud (the way a real person would), then card the learner's answer. Personal answers (age, city, job, likes…) get a fill-in template with \"...\" (\"I live in ...\") since they can say anything; only a real either/or choice gets two options separated by \" / \"."
+        "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, ask the learner the natural question out loud (the way a real person would), then card the learner's answer as a complete, natural sentence. Only a real either/or choice gets two options separated by \" / \"."
     }
 
     private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the learner's reply."
@@ -445,7 +445,12 @@ final class RealtimeVoiceSession: ObservableObject {
             let b64 = Data(bytes: ch[0], count: Int(out.frameLength) * 2).base64EncodedString()
             socket.send(.string("{\"type\":\"input_audio_buffer.append\",\"audio\":\"\(b64)\"}")) { _ in }
             state.record(bytes: Int(out.frameLength) * 2, level: level)
-            Task { @MainActor in self?.inputLevel = level }
+            // Ani sıçramalar logoyu zıplatmasın: yükselişte hızlı, düşüşte yavaş yumuşatma
+            Task { @MainActor in
+                guard let self else { return }
+                let k: Float = level > self.inputLevel ? 0.35 : 0.12
+                self.inputLevel += (level - self.inputLevel) * k
+            }
         }
     }
 
@@ -814,7 +819,7 @@ final class RealtimeVoiceSession: ObservableObject {
             "Do not say anything. Call show_phrase with exactly this phrase: \"\($0)\" and its natural translation into \(native)."
         } ?? question.map {
             "Do not say anything. You just said: \"\($0)\". Call show_phrase with a short example ANSWER the learner can say back to you (in the target language, first person, e.g. \"I'm 25 years old.\"), never a question, and its translation."
-        } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a model answer, use ... for their own info) and its translation."
+        } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a complete, natural model answer) and its translation."
         silentCardPending = true
         voiceLog.info("no card this turn → asking silently")
         // Araç cevabın içinde de verilmeli, yoksa model zorunlu çağrıyı yok sayıyor

@@ -33,17 +33,17 @@ struct WelcomeProView: View {
                         Circle()
                             .fill(RadialGradient(colors: [DS.Colors.accent.opacity(0.22), DS.Colors.accent.opacity(0)],
                                                  center: .center, startRadius: 8, endRadius: 110))
-                            .frame(width: 220, height: 220)
+                            .frame(width: 170, height: 170)
                         Image(systemName: "crown.fill")
-                            .font(.system(size: 40, weight: .semibold))
+                            .font(.system(size: 32, weight: .semibold))
                             .foregroundStyle(DS.Colors.paper)
-                            .frame(width: 92, height: 92)
+                            .frame(width: 76, height: 76)
                             .background(DS.Colors.accent, in: Circle())
                             .scaleEffect(appear ? 1 : 0.4)
                             .rotationEffect(.degrees(appear ? 0 : -25))
                     }
-                    .frame(height: 200)
-                    .padding(.top, 24)
+                    .frame(height: 140)
+                    .padding(.top, 8)
 
                     Text("WORDREM PRO")
                         .font(DS.Font.ui(13, weight: .bold))
@@ -51,12 +51,12 @@ struct WelcomeProView: View {
                         .foregroundStyle(DS.Colors.accent)
                         .padding(.top, 4)
                     Text(AL.s(.proWelcomeTitle))
-                        .font(DS.Font.display(34, weight: .bold))
+                        .font(DS.Font.display(30, weight: .bold))
                         .foregroundStyle(DS.Colors.ink)
                         .multilineTextAlignment(.center)
-                        .padding(.top, 10)
+                        .padding(.top, 6)
                     Text(AL.s(.proWelcomeSub))
-                        .font(DS.Font.ui(17))
+                        .font(DS.Font.ui(16))
                         .foregroundStyle(DS.Colors.muted)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
@@ -82,24 +82,31 @@ struct WelcomeProView: View {
                                 }
                                 Spacer(minLength: 0)
                             }
-                            .padding(.vertical, 10)
+                            .padding(.vertical, 7)
                             .opacity(appear ? 1 : 0)
                             .offset(y: appear ? 0 : 10)
                             .animation(.easeOut(duration: 0.4).delay(0.35 + Double(i) * 0.08), value: appear)
                         }
                     }
-                    .padding(.top, 26)
-
-                    Button(AL.s(.proWelcomeCTA), action: onContinue)
-                        .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-                        .padding(.top, 26)
-                        .padding(.bottom, 24)
+                    .padding(.top, 18)
+                    .padding(.bottom, 16)
                 }
                 .padding(.horizontal, 28)
                 .frame(maxWidth: 520)
                 .frame(maxWidth: .infinity)
             }
             .scrollBounceBehavior(.basedOnSize)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                // Düğme her zaman görünür: kaydırmaya gerek yok
+                Button(AL.s(.proWelcomeCTA), action: onContinue)
+                    .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                    .frame(maxWidth: 520)
+                    .padding(.horizontal, 28)
+                    .padding(.top, 10)
+                    .padding(.bottom, 12)
+                    .frame(maxWidth: .infinity)
+                    .background(DS.Colors.paper)
+            }
             ConfettiBurst(origin: .top, count: 90, trigger: burst).ignoresSafeArea()
         }
         .onAppear {

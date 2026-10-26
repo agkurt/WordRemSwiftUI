@@ -640,7 +640,9 @@ struct VoiceLogoView: View {
         case .aiSpeaking:
             return 16 + 20 * wave(2.2, 0.9)
         case .userSpeaking:
-            return 12 + 26 * CGFloat(level) * (0.6 + 0.4 * wave(3.2, 1.0))
+            // Sürekli akan dalga; sesin gücü yalnızca genliği (yumuşakça) büyütür — zıplama yok
+            let amp = 10 + 18 * CGFloat(min(1, level * 1.6))
+            return 13 + amp * wave(2.6, 0.9)
         case .thinking, .connecting:
             // Ana sayfa, bağlanma ve düşünme: aynı sakin, orta seviye örüntü
             return 13 + 14 * wave(1.8, 0.8)
