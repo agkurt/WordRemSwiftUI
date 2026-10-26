@@ -731,6 +731,14 @@ final class RealtimeVoiceSession: ObservableObject {
             let callId = e["call_id"] as? String ?? ""
             let args = (e["arguments"] as? String).flatMap { $0.data(using: .utf8) }
                 .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] } ?? [:]
+            // Ders/demo bitti: vedadan sonra yeni kart açılmaz (yoksa konuşma bitmiş gibiyken yeniden başlar)
+            if name == "show_phrase", lessonComplete {
+                voiceLog.info("card after wrap-up rejected")
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId,
+                               "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
+                break
+            }
             // Onboarding demosunda model bazen kendi sorusunu kart yapıyor: kart her zaman öğrencinin cevabı olmalı
             if name == "show_phrase", answerCardsOnly, let p = args["phrase"] as? String,
                let last = p.trimmingCharacters(in: .whitespacesAndNewlines).last, "?？".contains(last) {
@@ -766,6 +774,11 @@ final class RealtimeVoiceSession: ObservableObject {
         case "response.done":
             if silentCardActive { silentCardActive = false; translationPending = nil; break }
             voiceLog.info("tutor said: \(self.fullAIText, privacy: .public)")
+            // Demoda son adımda öğretmen kendiliğinden vedalaştıysa: bitti say (yeni kart/tur açılmasın)
+            if answerCardsOnly, !lessonComplete, !targets.isEmpty, targetProgress >= targets.count - 1,
+               fullAIText.range(of: #"see you|goodbye|bye for now|take care"#, options: [.regularExpression, .caseInsensitive]) != nil {
+                lessonComplete = true
+            }
             responseFinished = true
             audioComplete = true
             ensurePhraseCard()
@@ -819,7 +832,8 @@ final class RealtimeVoiceSession: ObservableObject {
             "Do not say anything. Call show_phrase with exactly this phrase: \"\($0)\" and its natural translation into \(native)."
         } ?? question.map {
             "Do not say anything. You just said: \"\($0)\". Call show_phrase with a short example ANSWER the learner can say back to you (in the target language, first person, e.g. \"I'm 25 years old.\"), never a question, and its translation."
-        } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a complete, natural model answer) and its translation."
+        } ?? "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a complete, natural model answer — never placeholders like [your name]) and its translation."
+            + (targetProgress < targets.count ? " The current step is: \(targets[targetProgress]) — use the card it specifies." : "")
         silentCardPending = true
         voiceLog.info("no card this turn → asking silently")
         // Araç cevabın içinde de verilmeli, yoksa model zorunlu çağrıyı yok sayıyor

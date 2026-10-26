@@ -399,8 +399,15 @@ enum TutorBrain {
                        onPhrase: (String, String) -> Void, onFinish: (Bool) -> Void) -> String {
         switch name {
         case "show_phrase":
-            let phrase = args["phrase"] as? String ?? ""
-            let translation = args["translation"] as? String ?? ""
+            // Model "[your name]" gibi yer tutucu yazarsa öğrencinin adıyla doldur
+            let name = UserStore.shared.snapshot.username
+            func fill(_ s: String) -> String {
+                guard !name.isEmpty else { return s }
+                return s.replacingOccurrences(of: #"\[[^\]]*(name|isim|ad)[^\]]*\]"#, with: name,
+                                              options: [.regularExpression, .caseInsensitive])
+            }
+            let phrase = fill(args["phrase"] as? String ?? "")
+            let translation = fill(args["translation"] as? String ?? "")
             onPhrase(phrase, translation)
             savePhrase(phrase, translation)
             return "shown"

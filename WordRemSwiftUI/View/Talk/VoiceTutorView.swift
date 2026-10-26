@@ -254,7 +254,8 @@ struct VoiceTutorView: View {
                 failureView(code)
             default:
                 if let done = finishedSuccess, session.phase == .ended {
-                    completionView(done)
+                    // Demoda "Hedef tamamlandı / Sıradaki" gösterilmez: doğrudan paywall gelir
+                    if isDemo { Color.clear } else { completionView(done) }
                 } else if showSuggestions {
                     suggestionsView
                 } else {
