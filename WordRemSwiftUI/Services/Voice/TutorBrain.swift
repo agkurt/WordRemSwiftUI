@@ -117,14 +117,31 @@ enum TutorBrain {
             and compare it to a familiar \(nativeName) sound ("stretch the 'ee' in 'Tee'", "say 'bitte' crisply, short 'i'").
             - Mix small exercises: "How would you say '…' in \(targetName)?", a choice between two phrases, swapping one word \
             (Kaffee → Tee), then using it in a tiny real situation.
+            - Teach the phrases natives actually use in daily life, not stiff textbook lines (but keep them short and clear).
             - Every few steps, recap in one sentence what they can already say.
             - In roleplays, your in-character lines are short, simple \(targetName); add a few \(nativeName) words of help when they need it.
             """
         case 3:
-            return "Speak mostly simple, natural \(targetName). Switch to \(nativeName) for one short sentence when explaining a new word, a grammar point or a pronunciation tip, then back to \(targetName). \(cardNote)"
+            return "Speak mostly simple, natural \(targetName). Switch to \(nativeName) for one short sentence when explaining a new word, a grammar point or a pronunciation tip, then back to \(targetName). \(cardNote) \(nativeFluency)"
         default:
-            return "Speak \(targetName) at a natural pace. Use \(nativeName) only if the learner asks or is clearly stuck, in one short sentence. \(cardNote)"
+            return "Speak \(targetName) at a natural pace. Use \(nativeName) only if the learner asks or is clearly stuck, in one short sentence. \(cardNote) \(nativeFluency)"
         }
+    }
+
+    /// Canlandırmalar gerçek hayat gibi: seviyeye göre küçük bir pürüz
+    private static var roleplayFriction: String {
+        proficiency <= 2
+            ? "Make roleplays feel real but easy: one small realistic twist (e.g. \"we're out of tea, coffee?\"), always friendly and simple."
+            : "Make roleplays feel real: add a little realistic friction once (you're slightly distracted, a detail is wrong, or you misunderstand them once) so they have to clarify, then resolve it."
+    }
+
+    /// Orta-ileri seviye: ders kitabı dili değil, gerçek günlük konuşma
+    private static var nativeFluency: String {
+        """
+        NATURAL SPEECH: talk like a native speaker of \(targetName) does in everyday life, with natural connected speech and \
+        common conversational fillers of \(targetName) (for English e.g. "gonna", "wanna", "you know", "I mean"). \
+        If the learner uses a stiff, textbook phrase, praise it, then show the casual everyday way a native would say it and card that version.
+        """
     }
 
     /// Öğrenci başka bir dil isterse: asla "ben sadece X öğretmeniyim" deme
@@ -254,6 +271,7 @@ enum TutorBrain {
             - The app will tell you (in system notes) when to move on, when to combine and when to start the roleplay — follow those notes.
             - Finish with a real-life roleplay in the lesson's scene where you play the other person (e.g. the check-in agent), \
             then recap with 2–3 real example lines they can now use in real life, and wrap up warmly.
+            - \(roleplayFriction)
             """
         case .demo:
             task = """
@@ -291,7 +309,7 @@ enum TutorBrain {
             OPEN CONVERSATION — the learner opened "talk with your assistant" and speaks first, telling you what they want: \
             a roleplay, new phrases, a quick question, talking about their day, or anything else. Follow their lead and have a rich, \
             natural, flowing conversation like a fun friend who's a great teacher:
-            - Roleplay: ask which scene (suggest two), then play the other person and keep the scene alive.
+            - Roleplay: ask which scene (suggest two), then play the other person and keep the scene alive. \(roleplayFriction)
             - New phrases: teach useful everyday lines one at a time, each with a tiny real-life example, and let them use it.
             - Quick question: answer clearly and briefly with one example, then offer to practice it.
             - Their day / anything else: ask genuine follow-up questions, react to what they say, recast mistakes naturally.
@@ -331,7 +349,7 @@ enum TutorBrain {
         accents ("bath" → "bus", "three" → "tree"). If the words are there or it's clearly what they meant, it's RIGHT: praise it and move on. \
         Accent is fine; being understood is the goal. Never say "not quite" when it was close.
         - When a line really isn't right, help step by step instead of repeating the same request: \
-        1st miss: quote what you heard kindly and give ONE concrete tip for the tricky sound ("put your tongue between your teeth for 'th'"). \
+        1st miss: quote what you heard kindly and give ONE concrete physical tip for the tricky sound: where the tongue, lips or teeth go, or how long the vowel is ("put your tongue between your teeth for 'th'"). \
         2nd miss: help differently: break the line into small chunks and have them say it piece by piece, slowly, or compare the sound \
         to a word in their native language, then let them try the whole line once more. \
         3rd miss: celebrate the effort, say cheerfully "let's try a different one" and move on with an easier or different sentence. \
@@ -358,6 +376,14 @@ enum TutorBrain {
 
         When you learn a lasting fact about the learner (name, city, job, goal, interests), call remember_fact. \
         At the very end, call finish_lesson with a one-sentence summary of what was practiced.
+        CRITICAL RULES (always):
+        1. End every turn by calling show_phrase with a complete, natural line that answers exactly what you just said.
+        2. Tools are silent: never say "show_phrase", "card", tool names or the translation; no stage directions in brackets.
+        3. Never force them back to the lesson; adapt happily when they change the topic or want to skip.
+        4. Never ask for the exact same line a fourth time.
+        5. Follow the app's system notes\({ if case .goal = mode { return "; never wrap up the lesson on your own" }; return "" }()).
+        6. Never use dashes between words or sentences; use commas and periods.
+        \(proficiency <= 2 && mode != .demo ? "7. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
         \(mode == .freeChat ? "Wait for the learner to speak first." : "Start now with a short, friendly greeting and the first step.")
         """
     }

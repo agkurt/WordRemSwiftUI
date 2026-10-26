@@ -1055,6 +1055,9 @@ final class RealtimeVoiceSession: ObservableObject {
             if name == "show_phrase", silentCardActive, let fixed = translatingPhrase {
                 args["phrase"] = fixed
             }
+            if name == "show_phrase", let p = args["phrase"] as? String {
+                args["phrase"] = Self.unsyllabify(p, spoken: fullAIText)
+            }
             if name == "show_phrase" {
                 phraseShownThisResponse = true
                 completeCardRetried = false
@@ -1246,6 +1249,19 @@ final class RealtimeVoiceSession: ObservableObject {
         return t.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// Telaffuz için hecelenmiş kelime ("Ha-llo") kartta normal yazılsın; "E-Mail" gibi gerçek tireli kelimeler
+    /// yalnızca birleşik hali konuşmada da geçiyorsa birleştirilir.
+    nonisolated static func unsyllabify(_ card: String, spoken: String) -> String {
+        let known = Set(spoken.lowercased().components(separatedBy: CharacterSet.letters.inverted).filter { $0.count > 1 })
+        var out = card
+        for m in card.matches(of: try! Regex(#"\p{L}+(?:-\p{L}+)+"#)) {
+            let word = String(card[m.range])
+            let joined = word.replacingOccurrences(of: "-", with: "")
+            if known.contains(joined.lowercased()) { out = out.replacingOccurrences(of: word, with: joined) }
+        }
+        return out
+    }
+
     /// Her tur bir kartla bitmeli (Pingo gibi). Model aracı çağırmadıysa: metne yazdığı komutu ya da
     /// son tırnak içindeki ifadeyi kart yap.
     private func ensurePhraseCard() {
@@ -1287,11 +1303,12 @@ final class RealtimeVoiceSession: ObservableObject {
             if asked.hasSuffix("?") { requestCard(answerTo: asked) } else { requestCard() }
             return
         }
+        let card = Self.unsyllabify(phrase, spoken: fullAIText)
         phraseShownThisResponse = true
-        currentCard = phrase
-        voiceLog.info("card: \(phrase, privacy: .public)")
-        _ = onToolCall?("show_phrase", ["phrase": phrase, "translation": translation])
-        if translation.trimmingCharacters(in: .whitespaces).isEmpty { requestCard(translating: phrase) }
+        currentCard = card
+        voiceLog.info("card: \(card, privacy: .public)")
+        _ = onToolCall?("show_phrase", ["phrase": card, "translation": translation])
+        if translation.trimmingCharacters(in: .whitespaces).isEmpty { requestCard(translating: card) }
     }
 
     // MARK: - Süre & kullanım
