@@ -208,6 +208,10 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Sıralama arka planda; öğretmen bunu "adım" diye anlatmaz.
     private func guide(after said: String) {
         guard !targets.isEmpty, !lessonComplete else { return }
+        // Karta hiç benzemeyen birkaç kelime: deneme değil, sohbet/şaka → keyifle karşıla, derse dön
+        if let card = currentCard, said.split(separator: " ").count >= 2, Self.overlap(said: said, card: card) < 0.25 {
+            return sendGuide("The learner said something off-script (a joke, a flirt or a side comment). Enjoy it: react in the moment with one warm, witty line — laugh if it's funny — then smoothly bring them back (\"Okay, let's focus and keep going!\") and invite them to say the current line again. Don't treat it as a mistake.")
+        }
         let ok = currentCard.map { Self.matches(said: said, card: $0) } ?? !said.isEmpty
         totalAnswers += 1
         if ok { correctAnswers += 1 }
@@ -268,6 +272,15 @@ final class RealtimeVoiceSession: ObservableObject {
         voiceLog.info("guide: \(note, privacy: .public)")
         send(["type": "conversation.item.create",
               "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note]]]])
+    }
+
+    /// Karttaki kelimelerin ne kadarı söylendi (0…1)
+    nonisolated static func overlap(said: String, card: String) -> Double {
+        let a = Set(said.lowercased().components(separatedBy: CharacterSet.letters.inverted).filter { $0.count > 1 })
+        let b = card.lowercased().replacingOccurrences(of: "...", with: " ")
+            .components(separatedBy: CharacterSet.letters.inverted).filter { $0.count > 1 }
+        guard !b.isEmpty else { return 1 }
+        return Double(b.filter { a.contains($0) }.count) / Double(b.count)
     }
 
     /// Söylenen, karttaki cümleyle yeterince örtüşüyor mu ("..." yerleri serbest; Ahmed≈Ahmet gibi küçük farklar sayılmaz)
@@ -621,6 +634,8 @@ final class RealtimeVoiceSession: ObservableObject {
             }
 
         case "response.created":
+            // Yalnızca kart isteyen sessiz cevap: ekrandaki yazıyı/sesi bozma
+            if silentCardPending { silentCardPending = false; silentCardActive = true; break }
             fullAIText = ""; rawAIText = ""; phraseShownThisResponse = false; audioComplete = false
             preroll = []; prerolled = false
             caption = ""; captionFull = ""; responseFinished = false
@@ -657,6 +672,7 @@ final class RealtimeVoiceSession: ObservableObject {
             audioComplete = true
 
         case "response.done":
+            if silentCardActive { silentCardActive = false; break }
             voiceLog.info("tutor said: \(self.fullAIText, privacy: .public)")
             responseFinished = true
             audioComplete = true
@@ -679,6 +695,20 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     private var pendingToolFollowUp = false
+    private var silentCardPending = false
+    private var silentCardActive = false
+
+    /// Öğretmen turu kartsız bitirdiyse: sesi olmayan bir cevapla yalnızca kartı iste (kullanıcı ne diyeceğini hep görsün)
+    private func requestCard() {
+        guard !silentCardPending, !silentCardActive else { return }
+        silentCardPending = true
+        voiceLog.info("no card this turn → asking silently")
+        send(["type": "response.create", "response": [
+            "output_modalities": ["text"],
+            "tool_choice": ["type": "function", "name": "show_phrase"],
+            "instructions": "Do not say anything. Call show_phrase with the exact short line the learner should say next in the target language (a model answer, use ... for their own info) and its translation.",
+        ] as [String: Any]])
+    }
 
     /// Küçük model kart komutunu bazen düz metin olarak yazar: ekranda/transkriptte gösterme
     nonisolated static func stripToolText(_ s: String) -> String {
@@ -709,7 +739,10 @@ final class RealtimeVoiceSession: ObservableObject {
                 return r.dominantLanguage?.rawValue.hasPrefix(target) ?? false
             }
         }
-        guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        guard let phrase, !phrase.trimmingCharacters(in: .whitespaces).isEmpty else {
+            requestCard()
+            return
+        }
         phraseShownThisResponse = true
         currentCard = phrase
         voiceLog.info("card: \(phrase, privacy: .public)")

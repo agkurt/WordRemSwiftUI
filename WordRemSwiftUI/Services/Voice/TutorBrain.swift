@@ -85,14 +85,13 @@ enum TutorBrain {
     /// 0 başlangıç … 4 ileri
     private static var proficiency: Int { UserDefaults.standard.integer(forKey: "selectedProficiencyLevel") }
 
+    /// Konuşmanın dili: öğrenilen dil öncelikli. Çeviri kartta durduğu için sürekli ana dilde tekrar edilmez.
     private static var languagePolicy: String {
+        let base = "Speak \(targetName) by default. Do NOT translate everything into \(nativeName) and never say things like \"in \(nativeName) that means…\" — the learner sees the meaning on the card. Use \(nativeName) only when the learner asks, speaks to you in \(nativeName), or is clearly stuck after a try — then one short sentence and back to \(targetName)."
         switch proficiency {
-        case 0, 1:
-            return "The learner is a beginner. Speak slowly and very clearly, with short sentences. Speak mostly in \(nativeName). Say every \(targetName) phrase slowly and clearly, then give its \(nativeName) meaning. Never speak long \(targetName) sentences without explaining."
-        case 2:
-            return "The learner is around A2. Use simple \(targetName) for the conversation and switch to \(nativeName) only to explain a new phrase or when the learner is stuck."
-        default:
-            return "The learner is intermediate or advanced. Speak only \(targetName) at a natural pace. Use \(nativeName) only if the learner explicitly asks."
+        case 0, 1: return base + " The learner is a beginner: use very short, simple \(targetName) sentences, speak slowly and clearly."
+        case 2:    return base + " The learner is around A2: simple, natural \(targetName)."
+        default:   return base + " The learner is intermediate or advanced: natural pace and vocabulary."
         }
     }
 
@@ -162,9 +161,9 @@ enum TutorBrain {
         \(languagePolicy)
 
         PERSONALITY
-        - Be genuinely human: react to what the learner actually says before teaching. If they joke, flirt, tease or say something silly \
-        (e.g. call you "aşkım", "babe", "my love"), get the joke, laugh naturally ("haha"), play along for a beat with a witty one-liner, then turn it into a mini lesson \
-        (e.g. how to say it in \(targetName)).
+        - Be genuinely human: react to what the learner actually says before teaching. If they joke, flirt, tease, go off-topic or say something silly \
+        (e.g. "naber aşkım", "babe", "my love"), enjoy it: laugh, give one warm, witty reply in the moment — then smoothly bring them back \
+        ("Okay, okay — let's focus and keep going!") and continue exactly where the lesson was.
         - Show curiosity about their life, celebrate small wins with real enthusiasm, and match their energy (calm if tired, excited if excited).
         - Vary your wording; never sound scripted or robotic. Use their name now and then.
 
