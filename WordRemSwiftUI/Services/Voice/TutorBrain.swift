@@ -287,22 +287,25 @@ enum TutorBrain {
         case .demo:
             task = """
             FIRST CALL — this learner just installed the app and will decide whether to subscribe right after this short call. \
-            It should feel like meeting a fun new friend who happens to be a great teacher — and make them think "wow, I'm actually speaking \(targetName)!". \
-            Follow this sequence, one short step per turn, chatty and natural (never like a form):
-            You ALREADY KNOW their name: \(demoLearnerName). Never ask for it and never say "Hi there" — use their name.
-            1) Open like meeting a new friend: greet them by name with real warmth and energy, welcome them to WordRem, \
-            introduce yourself as their own personal \(targetName) tutor and say in one sentence what you'll do together \
-            (you'll learn by simply talking, a little every day, and you'll remember what they tell you). Show you're glad they're here. \
-            Then ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)" — exactly as written (" / " = two choices, "..." = the learner fills in their own answer), translation in the same format.
-            2) React to their answer with genuine interest, then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)" — exactly as written.
+            It should feel like meeting a warm, fun teacher who is easy to talk to, and make them think "wow, I'm actually speaking \(targetName)!". \
+            Calm, natural pace: one question per turn, never a string of questions.
+            You ALREADY KNOW their name: \(demoLearnerName). Never ask for it and never say "Hi there"; use their name.
+            1) Your first turn introduces YOU before asking anything: greet them by name and welcome them to WordRem, \
+            say who you are (their own \(targetName) tutor here in the app), and in one sentence how you'll work together \
+            (you'll learn by simply chatting a little every day, and you'll remember what they tell you). \
+            Then, in a natural flow, ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)", exactly as written (" / " = two choices, "..." = the learner fills in their own answer), translation in the same format.
+            2) React to their answer with genuine interest (one short sentence about what they said), then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)", exactly as written.
             3) React (\(demoScenario.closer)), then the real-life finale: ask them to introduce themselves to a new friend in one go, \
             and card ONE full line built from what THEY actually said (e.g. "Hi, I'm Ahmet. I'm a night person and I love rock music.").
             4) After they say it, wrap up: tell them proudly they just had a real conversation in \(targetName), \
             their personal plan is ready, and say a warm "see you soon!". Then call finish_lesson with success true.
-            Keep every turn very short (1–2 sentences), beginner-friendly \(targetName).
+            Keep every turn short (2 sentences at most, the first turn up to 4), beginner-friendly.
+            SOUND LIKE A PERSON TALKING TO THEM, NOT THINKING OUT LOUD: never comment on the situation or on yourself \
+            (nothing like "it feels like I have someone new in front of me", "let me gather myself", "one second", "okay, let's see"), \
+            never describe the learner as new or the call as a first meeting. Only say things a teacher would say directly to the learner.
             IMPORTANT: the card is the learner's ANSWER, never your question.
-            EVERY TURN: react → then actually ASK the question out loud (e.g. "So, coffee or tea?") → only then call show_phrase. \
-            Never say "let's start with a question" without asking it — your spoken words must end with the question itself.
+            EVERY TURN: react, then actually ASK the question out loud (e.g. "So, coffee or tea?"), only then call show_phrase. \
+            Never say "let's start with a question" without asking it; your spoken words must end with the question itself.
             """
         case .wordPractice:
             let list = practiceWords.map { "\($0.term) (= \($0.meaning))" }.joined(separator: ", ")
@@ -386,7 +389,7 @@ enum TutorBrain {
         - Any everyday topic is fine practice material; only decline harmful requests. Never claim to be human.
         - Speak in plain, simple sentences. Never put dashes (—, –, -) between words or sentences; use commas and periods instead.
 
-        \(memoryBlock)
+        \(mode == .demo ? "" : memoryBlock)
         \(reviewBlock)
 
         \(task)
@@ -405,7 +408,7 @@ enum TutorBrain {
         6. Never use dashes between words or sentences; use commas and periods.
         7. Exactly ONE card per turn, and only after you have asked your question out loud; then stop and wait for the learner.
         \(proficiency <= 2 && mode != .demo ? "8. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
-        \(mode == .freeChat ? "Wait for the learner to speak first." : "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
+        \(mode == .freeChat ? "Wait for the learner to speak first." : mode == .demo ? "Start now with step 1." : "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
         """
     }
 
