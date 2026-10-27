@@ -36,6 +36,10 @@ export interface Env {
   PRO_SESSION_SECONDS?: string;
   FREE_NEW_USERS_PER_IP_DAY?: string;
   HIGH_COST_MULTIPLIER: string;
+  /** Üç parçalı ses (yazıya çevir → yazı modeli → seslendir) için yazı modeli */
+  CASCADE_MODEL?: string;
+  /** Yazı modelinin düşünme düzeyi (hız için düşük); boşsa gönderilmez */
+  CASCADE_REASONING?: string;
   AI_BUDGET_SHARE: string;
   APPLE_COMMISSION: string;
 }
@@ -93,11 +97,14 @@ interface SessionRequest {
   deviceId?: string;
   /** true: istemci OpenAI anahtarı almaz, yalnızca sayaçlı aktarıcıdan bağlanır (süreyi sunucu sayar) */
   metered?: boolean;
+  /** "cascade": gerçek zamanlı ses modeli yerine yazıya çevir → yazı modeli → seslendir (deneme) */
+  engine?: string;
 }
 
 type SessionRecord = {
   user: string; plan: Plan; seconds: number; reported: number; weight?: number;
   metered?: boolean; secret?: string; model?: string; device?: string;
+  engine?: "cascade"; instructions?: string;
 };
 
 /** Cihaz kimliği yalnızca UUID biçiminde kabul edilir (anahtar adına keyfi metin girmesin) */
@@ -226,6 +233,7 @@ async function createSession(req: Request, env: Env): Promise<Response> {
   const model = high ? env.REALTIME_MODEL_HIGH : env.REALTIME_MODEL;
   // Tam model ~3 kat pahalı: aylık bütçeden o oranda düşülür (ücretsiz tadım ve günlük süre etkilenmez)
   const weight = high ? Number(env.HIGH_COST_MULTIPLIER || 3) : 1;
+  if (body.engine === "cascade") return createCascadeSession(env, body, plan, device, seconds);
   const session = {
     type: "realtime",
     model,
@@ -285,8 +293,10 @@ async function reportUsage(req: Request, env: Env): Promise<Response> {
   if (!raw) return json({ error: "unknown_session" }, 404);
   const s = JSON.parse(raw) as SessionRecord;
   if (s.user !== body.appUserId) return json({ error: "forbidden" }, 403);
+  // Üç parçalı oturum: süre sunucunun kendi sayacından (ses girişi + seslendirme) yazılır
+  if (s.engine === "cascade") await addUsage(env, body.sessionId, s, Math.ceil(Number((await cacheGet(`cu:${body.sessionId}`)) ?? 0)));
   // Sayaçlı oturumda süreyi sunucu sayar; istemcinin raporu yok sayılır
-  if (!s.metered) await addUsage(env, body.sessionId, s, Math.ceil(body.seconds));
+  else if (!s.metered) await addUsage(env, body.sessionId, s, Math.ceil(body.seconds));
   return json({ ok: true, remainingSeconds: await allowance(env, s.user, s.plan, s.device) });
 }
 
@@ -428,6 +438,102 @@ async function meteredRelay(req: Request, env: Env, ctx: ExecutionContext, sessi
   return new Response(null, { status: 101, webSocket: client });
 }
 
+// MARK: Üç parçalı ses (deneme): yazıya çevir → yazı modeli → seslendir
+// Uygulama her adımı ayrı istekle yapar; OpenAI anahtarı sunucuda kalır. Süre = gelen ses + seslendirilen metin
+// (oturum içinde Cache API'de tutulur, uygulama kullanım raporu gönderince KV'ye yazılır).
+
+async function createCascadeSession(env: Env, body: SessionRequest, plan: Plan, device: string | undefined, seconds: number): Promise<Response> {
+  const sessionId = crypto.randomUUID();
+  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, device, plan, seconds, reported: 0, weight: 1, metered: true,
+    engine: "cascade", instructions: body.instructions, model: env.CASCADE_MODEL } satisfies SessionRecord), { expirationTtl: 60 * 60 * 3 });
+  return json({ sessionId, clientSecret: "", expiresAt: 0, model: "cascade", allowedSeconds: seconds, tier: plan.tier });
+}
+
+/** PCM 16 bit 24 kHz mono → WAV (yazıya çevirme servisi dosya ister) */
+function wav(pcm: ArrayBuffer): Uint8Array {
+  const out = new Uint8Array(44 + pcm.byteLength);
+  const v = new DataView(out.buffer);
+  const str = (o: number, t: string) => { for (let i = 0; i < t.length; i++) out[o + i] = t.charCodeAt(i); };
+  str(0, "RIFF"); v.setUint32(4, 36 + pcm.byteLength, true); str(8, "WAVE"); str(12, "fmt ");
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 24000, true);
+  v.setUint32(28, 48000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, "data");
+  v.setUint32(40, pcm.byteLength, true);
+  out.set(new Uint8Array(pcm), 44);
+  return out;
+}
+
+async function cascade(req: Request, env: Env, step: string): Promise<Response> {
+  const params = new URL(req.url).searchParams;
+  const sessionId = params.get("session") ?? "";
+  const raw = await env.USAGE.get(`s:${sessionId}`);
+  if (!raw) return json({ error: "unknown_session" }, 404);
+  const s = JSON.parse(raw) as SessionRecord;
+  if (s.engine !== "cascade" || s.user !== params.get("appUserId")) return json({ error: "forbidden" }, 403);
+  const usedKey = `cu:${sessionId}`;
+  const used = Number((await cacheGet(usedKey)) ?? 0);
+  const charge = async (secs: number) => {
+    if (used + secs > s.seconds + 5) return false;
+    await cachePut(usedKey, String(used + secs), 60 * 60 * 3);
+    return true;
+  };
+
+  if (step === "stt") {
+    const pcm = await req.arrayBuffer();
+    if (pcm.byteLength < 4800 || pcm.byteLength > 48000 * 60) return json({ error: "bad_audio" }, 400);
+    if (!(await charge(pcm.byteLength / 48000))) return json({ error: "time_up" }, 402);
+    const form = new FormData();
+    form.append("file", new Blob([wav(pcm)], { type: "audio/wav" }), "speech.wav");
+    form.append("model", "gpt-4o-mini-transcribe");
+    const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST", headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}` }, body: form,
+    });
+    if (!res.ok) return json({ error: "upstream", status: res.status, detail: await res.text() }, 502);
+    const out: any = await res.json();
+    return json({ transcript: out.text ?? "" });
+  }
+
+  if (step === "chat") {
+    const body = (await req.json().catch(() => null)) as { messages?: unknown[]; tools?: unknown[]; tool_choice?: unknown; instructions?: string } | null;
+    if (!Array.isArray(body?.messages) || body.messages.length > 300) return json({ error: "bad_request" }, 400);
+    const callsKey = `cc:${sessionId}`;
+    const calls = Number((await cacheGet(callsKey)) ?? 0);
+    if (calls >= 500) return json({ error: "time_up" }, 402);
+    await cachePut(callsKey, String(calls + 1), 60 * 60 * 3);
+    const system = typeof body.instructions === "string" && body.instructions ? body.instructions.slice(0, 4000) : s.instructions ?? "";
+    const payload: Record<string, unknown> = {
+      model: s.model || env.CASCADE_MODEL,
+      messages: [{ role: "system", content: system }, ...body.messages],
+      stream: true,
+      max_completion_tokens: 1500,
+    };
+    if (env.CASCADE_REASONING) payload.reasoning_effort = env.CASCADE_REASONING;
+    if (Array.isArray(body.tools) && body.tools.length) {
+      payload.tools = body.tools.slice(0, 8);
+      payload.tool_choice = body.tool_choice ?? "auto";
+      payload.parallel_tool_calls = true;
+    }
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) return json({ error: "upstream", status: res.status, detail: await res.text() }, 502);
+    return new Response(res.body, { headers: { "content-type": "text/event-stream" } });
+  }
+
+  if (step === "tts") {
+    const body = (await req.json().catch(() => null)) as { text?: string } | null;
+    const text = (body?.text ?? "").trim();
+    if (!text || text.length > 800) return json({ error: "bad_request" }, 400);
+    // Konuşma hızı: ~14 karakter/sn
+    if (!(await charge(text.length / 14))) return json({ error: "time_up" }, 402);
+    const res = await speech(env, text, "pcm");
+    if (!res.ok) return json({ error: "upstream", status: res.status, detail: await res.text() }, 502);
+    return new Response(res.body, { headers: { "content-type": "audio/pcm" } });
+  }
+  return json({ error: "not_found" }, 404);
+}
+
 export default {
   async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const { pathname } = new URL(req.url);
@@ -442,6 +548,7 @@ export default {
       if (req.method === "GET" && pathname === "/v1/voice/status") return await status(req, env);
       if (req.method === "POST" && pathname === "/v1/voice/tts") return await tts(req, env);
       if (req.method === "GET" && pathname === "/v1/voice/realtime") return await realtimeRelay(req, env, ctx);
+      if (req.method === "POST" && pathname.startsWith("/v1/voice/cascade/")) return await cascade(req, env, pathname.slice(18));
       return json({ error: "not_found" }, 404);
     } catch (e) {
       return json({ error: "internal", detail: String(e) }, 500);

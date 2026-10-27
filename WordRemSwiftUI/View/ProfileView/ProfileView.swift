@@ -16,6 +16,7 @@ struct ProfileView: View {
     @ObservedObject private var iap = InAppPurchaseManager.shared
     @ObservedObject private var gameCenter = GameCenterService.shared
     @State private var showPaywall = false
+    @State private var cascadeOn = CascadeEngine.isOn
     @State private var showPrivacy = false
     @State private var showTerms = false
     @State private var showManageSubscription = false
@@ -416,6 +417,14 @@ struct ProfileView: View {
                 Button { FreshUser.isOn ? FreshUser.stop() : FreshUser.start() } label: {
                     settingsRow(icon: "person.badge.plus",
                                 title: FreshUser.isOn ? "Test: gerçek hesaba dön" : "Test: yeni kullanıcı olarak başla")
+                }
+                Divider().padding(.leading, 48)
+                Button {
+                    cascadeOn.toggle()
+                    UserDefaults.standard.set(!cascadeOn, forKey: "voiceCascadeOff")
+                } label: {
+                    settingsRow(icon: "waveform",
+                                title: cascadeOn ? "Test: ses motoru üç parçalı (dokun: realtime)" : "Test: ses motoru realtime (dokun: üç parçalı)")
                 }
                 #endif
             }

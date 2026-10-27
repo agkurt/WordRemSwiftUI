@@ -21,6 +21,9 @@ REALTIME_MODEL = "gpt-realtime-2.1-mini"
 REALTIME_MODEL_HIGH = "gpt-realtime-2.1-mini"
 # Tam modelin mini'ye göre ses fiyatı oranı (32/10, 64/20)
 HIGH_COST_MULTIPLIER = "1"
+# Üç parçalı ses denemesi (yazıya çevir → yazı modeli → seslendir): yazı modeli ve düşünme düzeyi
+CASCADE_MODEL = "gpt-6-luna"
+CASCADE_REASONING = "none"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar

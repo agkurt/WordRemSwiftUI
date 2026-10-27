@@ -96,7 +96,7 @@ final class VoiceBackend {
     func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard") async throws -> Grant {
         let payload = try JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed, "quality": quality, "metered": true,
-            "deviceId": DeviceIdentity.id,
+            "deviceId": DeviceIdentity.id, "engine": CascadeEngine.isOn ? "cascade" : "realtime",
         ])
         lastBodyBytes = payload.count
         let (data, response) = try await send { base in
@@ -141,6 +141,24 @@ final class VoiceBackend {
         req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
         return req
     }
+
+    /// Üç parçalı ses adımları: "stt" (ham PCM), "chat" (akış), "tts" (akış PCM)
+    func cascadeRequest(_ step: String, sessionId: String, body: Data, json: Bool = true) -> URLRequest? {
+        guard let baseURL, var comps = URLComponents(url: baseURL.appendingPathComponent("v1/voice/cascade/\(step)"), resolvingAgainstBaseURL: false)
+        else { return nil }
+        comps.queryItems = [URLQueryItem(name: "session", value: sessionId), URLQueryItem(name: "appUserId", value: appUserId)]
+        guard let url = comps.url else { return nil }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 30
+        req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
+        req.setValue(json ? "application/json" : "application/octet-stream", forHTTPHeaderField: "Content-Type")
+        req.httpBody = body
+        return req
+    }
+
+    func cascadeData(for req: URLRequest) async throws -> (Data, URLResponse) { try await http.data(for: req) }
+    func cascadeBytes(for req: URLRequest) async throws -> (URLSession.AsyncBytes, URLResponse) { try await http.bytes(for: req) }
 
     /// OpenAI'a sunucu üzerinden bağlanan WebSocket isteği (doğrudan bağlantı kurulamayan ağlar için)
     func relayRequest(model: String, secret: String) -> URLRequest? {
@@ -230,5 +248,286 @@ enum DeviceIdentity {
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         ]
         SecItemAdd(query as CFDictionary, nil)
+    }
+}
+
+// MARK: - Üç parçalı ses (deneme)
+
+/// Mikrofon iş parçacığından gelen ses (kilitli tampon)
+final class CascadeAudio: @unchecked Sendable {
+    private let lock = NSLock()
+    private var data = Data()
+    func append(_ d: Data) { lock.lock(); data.append(d); lock.unlock() }
+    func reset() { lock.lock(); data.removeAll(keepingCapacity: true); lock.unlock() }
+    func take() -> Data { lock.lock(); defer { data = Data(); lock.unlock() }; return data }
+}
+
+/// Gerçek zamanlı ses modeli yerine: konuşmayı yazıya çevir → yazı modeli → cümle cümle seslendir.
+/// RealtimeVoiceSession'ın gönderdiği olayları alır, aynı olayları geri üretir; ders akışı hiç değişmez.
+@MainActor
+final class CascadeEngine {
+    /// Debug sürümünde varsayılan açık (Profil'den kapatılabilir); TestFlight/App Store'da kapalı
+    nonisolated static var isOn: Bool {
+        #if DEBUG
+        !UserDefaults.standard.bool(forKey: "voiceCascadeOff")
+        #else
+        false
+        #endif
+    }
+
+    let audio = CascadeAudio()
+    private let sessionId: String
+    private let sessionTools: [[String: Any]]
+    private let deliver: ([String: Any]) -> Void
+    private var messages: [[String: Any]] = []
+    private var sttTask: Task<Void, Never>?
+    private var responseTask: Task<Void, Never>?
+    private var releasedAt: Date?
+    private var closed = false
+
+    init(sessionId: String, tools: [[String: Any]], deliver: @escaping ([String: Any]) -> Void) {
+        self.sessionId = sessionId
+        self.sessionTools = tools
+        self.deliver = deliver
+    }
+
+    func start() { deliver(["type": "session.created"]) }
+
+    func close() {
+        closed = true
+        sttTask?.cancel(); responseTask?.cancel()
+    }
+
+    func handle(_ e: [String: Any]) {
+        guard !closed else { return }
+        switch e["type"] as? String ?? "" {
+        case "input_audio_buffer.clear": audio.reset()
+        case "input_audio_buffer.commit": commit()
+        case "conversation.item.create": add(e["item"] as? [String: Any] ?? [:])
+        case "response.create": respond(e["response"] as? [String: Any] ?? [:])
+        case "response.cancel": responseTask?.cancel(); responseTask = nil
+        default: break
+        }
+    }
+
+    // MARK: Konuşmayı yazıya çevir
+    private func commit() {
+        let pcm = audio.take()
+        releasedAt = Date()
+        let started = Date()
+        sttTask = Task { [weak self] in
+            guard let self else { return }
+            var transcript = ""
+            if pcm.count >= 4800, let req = VoiceBackend.shared.cascadeRequest("stt", sessionId: self.sessionId, body: pcm, json: false) {
+                do {
+                    let (data, resp) = try await VoiceBackend.shared.cascadeData(for: req)
+                    let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
+                    if status == 200 {
+                        transcript = ((try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["transcript"] as? String) ?? ""
+                    } else {
+                        voiceLog.error("cascade stt \(status, privacy: .public): \(String(data: data.prefix(300), encoding: .utf8) ?? "", privacy: .public)")
+                    }
+                } catch { voiceLog.error("cascade stt failed: \(error.localizedDescription, privacy: .public)") }
+            }
+            guard !Task.isCancelled, !self.closed else { return }
+            voiceLog.info("cascade timing stt=\(Int(Date().timeIntervalSince(started) * 1000), privacy: .public)ms (\(pcm.count / 48, privacy: .public)ms audio)")
+            let t = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !t.isEmpty { self.messages.append(["role": "user", "content": t]) }
+            self.deliver(["type": "conversation.item.input_audio_transcription.completed", "transcript": t])
+        }
+    }
+
+    private func add(_ item: [String: Any]) {
+        switch item["type"] as? String {
+        case "message":
+            let role = item["role"] as? String ?? "user"
+            let text = (item["content"] as? [[String: Any]] ?? []).compactMap { $0["text"] as? String }.joined(separator: "\n")
+            guard !text.isEmpty else { return }
+            messages.append(["role": role == "assistant" ? "assistant" : role == "system" ? "system" : "user", "content": text])
+        case "function_call_output":
+            messages.append(["role": "tool", "tool_call_id": item["call_id"] as? String ?? "", "content": item["output"] as? String ?? "ok"])
+        default: break
+        }
+    }
+
+    /// Yazı modeli her araç çağrısının cevabını hemen arkasında ister: eksikse "ok" eklenir, sahipsiz cevap atılır
+    private func sanitized() -> [[String: Any]] {
+        var out: [[String: Any]] = []
+        var used = Set<Int>()
+        for (i, m) in messages.enumerated() where !used.contains(i) {
+            if m["role"] as? String == "tool" { continue }
+            out.append(m)
+            guard let calls = m["tool_calls"] as? [[String: Any]] else { continue }
+            for call in calls {
+                let id = call["id"] as? String ?? ""
+                if let j = messages.indices.first(where: { $0 > i && !used.contains($0) && messages[$0]["role"] as? String == "tool" && messages[$0]["tool_call_id"] as? String == id }) {
+                    used.insert(j); out.append(messages[j])
+                } else {
+                    out.append(["role": "tool", "tool_call_id": id, "content": "ok"])
+                }
+            }
+        }
+        return out
+    }
+
+    // MARK: Cevap: yazı modeli akışı + cümle cümle seslendirme
+    private func respond(_ opts: [String: Any]) {
+        responseTask?.cancel()
+        responseTask = Task { [weak self] in await self?.run(opts) }
+    }
+
+    private func run(_ opts: [String: Any]) async {
+        await sttTask?.value
+        guard !Task.isCancelled, !closed else { return }
+        let started = Date()
+        let textOnly = (opts["output_modalities"] as? [String]) == ["text"]
+        let realtimeTools = opts["tools"] as? [[String: Any]] ?? sessionTools
+        let tools: [[String: Any]] = realtimeTools.map { t in
+            ["type": "function", "function": ["name": t["name"] ?? "", "description": t["description"] ?? "", "parameters": t["parameters"] ?? [:]]]
+        }
+        var body: [String: Any] = ["messages": sanitized(), "tools": tools, "tool_choice": opts["tool_choice"] ?? "auto"]
+        if let instr = opts["instructions"] as? String { body["instructions"] = instr }
+        guard let payload = try? JSONSerialization.data(withJSONObject: body),
+              let req = VoiceBackend.shared.cascadeRequest("chat", sessionId: sessionId, body: payload) else { return }
+
+        deliver(["type": "response.created"])
+        var text = ""
+        var pending = ""
+        var calls: [Int: (id: String, name: String, args: String)] = [:]
+        var firstText: Date?
+        var spokeAny = false
+        let speech = SpeechQueue(sessionId: sessionId, deliver: deliver, enabled: !textOnly)
+        do {
+            let (bytes, resp) = try await VoiceBackend.shared.cascadeBytes(for: req)
+            let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
+            if status != 200 {
+                var err = Data()
+                for try await b in bytes { err.append(b); if err.count > 600 { break } }
+                voiceLog.error("cascade chat \(status, privacy: .public): \(String(data: err, encoding: .utf8) ?? "", privacy: .public)")
+            } else {
+                for try await line in bytes.lines {
+                    if Task.isCancelled { speech.cancel(); return }
+                    guard line.hasPrefix("data: "), line != "data: [DONE]",
+                          let obj = try? JSONSerialization.jsonObject(with: Data(line.dropFirst(6).utf8)) as? [String: Any],
+                          let delta = ((obj["choices"] as? [[String: Any]])?.first)?["delta"] as? [String: Any] else { continue }
+                    if let d = delta["content"] as? String, !d.isEmpty {
+                        let clean = d.replacingOccurrences(of: "*", with: "").replacingOccurrences(of: "#", with: "")
+                        if firstText == nil {
+                            firstText = Date()
+                            voiceLog.info("cascade timing llm_first=\(Int(Date().timeIntervalSince(started) * 1000), privacy: .public)ms")
+                        }
+                        text += clean; pending += clean
+                        deliver(["type": "response.output_audio_transcript.delta", "delta": clean])
+                        // Bitmiş cümleyi hemen seslendirmeye gönder (ilk ses için tüm cevabı bekleme);
+                        // ilk parça virgülde de kesilir ki ses daha erken başlasın
+                        while let r = pending.range(of: spokeAny ? #"[.!?…](["”»')]*)\s"# : #"[.!?…,;:](["”»')]*)\s"#, options: .regularExpression),
+                              pending.distance(from: pending.startIndex, to: r.upperBound) >= (spokeAny ? 8 : 12) {
+                            speech.add(String(pending[..<r.upperBound]))
+                            pending = String(pending[r.upperBound...])
+                            spokeAny = true
+                        }
+                    }
+                    for tc in delta["tool_calls"] as? [[String: Any]] ?? [] {
+                        let i = tc["index"] as? Int ?? 0
+                        var c = calls[i] ?? ("", "", "")
+                        if let id = tc["id"] as? String { c.id = id }
+                        if let f = tc["function"] as? [String: Any] {
+                            if let n = f["name"] as? String { c.name += n }
+                            if let a = f["arguments"] as? String { c.args += a }
+                        }
+                        calls[i] = c
+                    }
+                }
+            }
+        } catch {
+            if Task.isCancelled { speech.cancel(); return }
+            voiceLog.error("cascade chat failed: \(error.localizedDescription, privacy: .public)")
+        }
+        guard !Task.isCancelled, !closed else { speech.cancel(); return }
+        if !pending.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { speech.add(pending) }
+        speech.finish()
+
+        let ordered = calls.keys.sorted().compactMap { calls[$0] }
+        var assistant: [String: Any] = ["role": "assistant", "content": text.isEmpty ? NSNull() : text]
+        if !ordered.isEmpty {
+            assistant["tool_calls"] = ordered.map { ["id": $0.id, "type": "function", "function": ["name": $0.name, "arguments": $0.args]] }
+        }
+        if !text.isEmpty || !ordered.isEmpty { messages.append(assistant) }
+        for c in ordered {
+            deliver(["type": "response.function_call_arguments.done", "name": c.name, "call_id": c.id, "arguments": c.args])
+        }
+        await speech.done()
+        guard !Task.isCancelled, !closed else { return }
+        if let first = speech.firstAudioAt {
+            let total = releasedAt.map { Int(first.timeIntervalSince($0) * 1000) } ?? -1
+            voiceLog.info("cascade timing first_audio=\(Int(first.timeIntervalSince(started) * 1000), privacy: .public)ms after request, release→voice=\(total, privacy: .public)ms")
+        }
+        releasedAt = nil
+        if !textOnly { deliver(["type": "response.output_audio.done"]) }
+        deliver(["type": "response.done", "response": ["status": "completed"]])
+    }
+}
+
+/// Cümleleri sırayla seslendirir; ses geldikçe parça parça (0,1 sn) oynatıcıya verilir
+@MainActor
+final class SpeechQueue {
+    private let sessionId: String
+    private let deliver: ([String: Any]) -> Void
+    private let enabled: Bool
+    private var continuation: AsyncStream<String>.Continuation?
+    private var worker: Task<Void, Never>?
+    private(set) var firstAudioAt: Date?
+
+    init(sessionId: String, deliver: @escaping ([String: Any]) -> Void, enabled: Bool) {
+        self.sessionId = sessionId
+        self.deliver = deliver
+        self.enabled = enabled
+        let (stream, cont) = AsyncStream<String>.makeStream()
+        continuation = cont
+        worker = Task { [weak self] in
+            for await sentence in stream {
+                guard let self, !Task.isCancelled else { return }
+                await self.speak(sentence)
+            }
+        }
+    }
+
+    func add(_ sentence: String) {
+        let s = sentence.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard enabled, !s.isEmpty else { return }
+        continuation?.yield(s)
+    }
+    func finish() { continuation?.finish() }
+    func cancel() { continuation?.finish(); worker?.cancel() }
+    func done() async { await worker?.value }
+
+    private func speak(_ sentence: String) async {
+        guard let body = try? JSONSerialization.data(withJSONObject: ["text": sentence]),
+              let req = VoiceBackend.shared.cascadeRequest("tts", sessionId: sessionId, body: body) else { return }
+        do {
+            let (bytes, resp) = try await VoiceBackend.shared.cascadeBytes(for: req)
+            guard (resp as? HTTPURLResponse)?.statusCode == 200 else {
+                voiceLog.error("cascade tts \((resp as? HTTPURLResponse)?.statusCode ?? 0, privacy: .public)")
+                return
+            }
+            var chunk = Data()
+            chunk.reserveCapacity(9600)
+            for try await b in bytes {
+                if Task.isCancelled { return }
+                chunk.append(b)
+                if chunk.count >= 4800 {
+                    if firstAudioAt == nil { firstAudioAt = Date() }
+                    deliver(["type": "response.output_audio.delta", "delta": chunk.base64EncodedString()])
+                    chunk.removeAll(keepingCapacity: true)
+                }
+            }
+            if chunk.count >= 2 {
+                if chunk.count % 2 == 1 { chunk.removeLast() }
+                if firstAudioAt == nil { firstAudioAt = Date() }
+                deliver(["type": "response.output_audio.delta", "delta": chunk.base64EncodedString()])
+            }
+        } catch {
+            if !Task.isCancelled { voiceLog.error("cascade tts failed: \(error.localizedDescription, privacy: .public)") }
+        }
     }
 }

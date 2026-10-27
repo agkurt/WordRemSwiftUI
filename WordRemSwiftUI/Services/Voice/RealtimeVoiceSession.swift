@@ -92,6 +92,9 @@ final class RealtimeVoiceSession: ObservableObject {
 
     // MARK: - Private
     private var socket: URLSessionWebSocketTask?
+    /// Üç parçalı ses denemesi (yazıya çevir → yazı modeli → seslendir); soket yerine kullanılır
+    private var cascade: CascadeEngine?
+    private var isConnected: Bool { socket != nil || cascade != nil }
     private var sessionId: String?
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
@@ -201,6 +204,8 @@ final class RealtimeVoiceSession: ObservableObject {
         socket?.cancel(with: .normalClosure, reason: nil)
         socket = nil
         tapState.set(socket: nil)
+        cascade?.close(); cascade = nil
+        tapState.set(cascade: nil)
         clock?.invalidate(); captionTimer?.invalidate()
         audioObservers.forEach(NotificationCenter.default.removeObserver)
         audioObservers = []
@@ -224,7 +229,7 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     func beginHold() {
-        guard pushToTalk, socket != nil else { return }
+        guard pushToTalk, isConnected else { return }
         if !micTapInstalled {
             installMicTap(retries: 0)
             if !engine.isRunning { try? engine.start() }
@@ -679,7 +684,7 @@ final class RealtimeVoiceSession: ObservableObject {
             voiceLog.info("mic format not ready, retrying")
             guard retries > 0 else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-                guard let self, self.socket != nil, !self.micTapInstalled else { return }
+                guard let self, self.isConnected, !self.micTapInstalled else { return }
                 self.installMicTap(retries: retries - 1)
                 if !self.engine.isRunning { try? self.engine.start() }
             }
@@ -691,7 +696,9 @@ final class RealtimeVoiceSession: ObservableObject {
         // Dönüştürme + gönderme ses iş parçacığında; ana iş parçacığına yalnızca konuşurken seviye gider
         micTapInstalled = true
         input.installTap(onBus: 0, bufferSize: 2400, format: inFormat) { [weak self] buffer, _ in
-            guard let socket = state.streamingSocket else { return }
+            let socket = state.streamingSocket
+            let cascadeAudio = state.streamingCascade
+            guard socket != nil || cascadeAudio != nil else { return }
             let level = Self.rms(buffer)
             let ratio = wire.sampleRate / buffer.format.sampleRate
             let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 32
@@ -703,8 +710,9 @@ final class RealtimeVoiceSession: ObservableObject {
                 fed = true; status.pointee = .haveData; return buffer
             }
             guard err == nil, out.frameLength > 0, let ch = out.int16ChannelData else { return }
-            let b64 = Data(bytes: ch[0], count: Int(out.frameLength) * 2).base64EncodedString()
-            socket.send(.string("{\"type\":\"input_audio_buffer.append\",\"audio\":\"\(b64)\"}")) { _ in }
+            let pcm = Data(bytes: ch[0], count: Int(out.frameLength) * 2)
+            if let cascadeAudio { cascadeAudio.append(pcm) }
+            else { socket?.send(.string("{\"type\":\"input_audio_buffer.append\",\"audio\":\"\(pcm.base64EncodedString())\"}")) { _ in } }
             state.record(bytes: Int(out.frameLength) * 2, level: level)
             // Ani sıçramalar logoyu zıplatmasın: yükselişte hızlı, düşüşte yavaş yumuşatma
             Task { @MainActor in
@@ -786,7 +794,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Bağlantı koptuysa yeni oturumla bağlan ve konuşmayı kaldığı yerden sürdür (öğrenci baştan başlamasın)
     private func reconnect() async {
-        guard !reconnecting, phase != .ended else { return }
+        guard !reconnecting, phase != .ended, cascade == nil else { return }
         reconnecting = true
         defer { reconnecting = false }
         voiceLog.info("reconnecting after dropped connection")
@@ -991,6 +999,15 @@ final class RealtimeVoiceSession: ObservableObject {
     private var lastGrant: (model: String, secret: String)?
 
     private func connect(model: String, secret: String) {
+        if model == "cascade", let sessionId {
+            voiceLog.info("cascade engine (stt → text model → tts)")
+            viaRelay = true
+            let engine = CascadeEngine(sessionId: sessionId, tools: lastTools) { [weak self] e in self?.deliver(e) }
+            cascade = engine
+            tapState.set(cascade: engine.audio)
+            engine.start()
+            return
+        }
         // Sunucu anahtar vermediyse (sayaçlı oturum) tek yol: sunucu üzerinden, oturum kimliğiyle
         if secret.isEmpty {
             lastGrant = nil
@@ -1042,7 +1059,18 @@ final class RealtimeVoiceSession: ObservableObject {
         }
     }
 
+    /// Üç parçalı motorun ürettiği olay: soketten gelmiş gibi işlenir
+    private func deliver(_ event: [String: Any]) {
+        let type = event["type"] as? String ?? ""
+        if type == "response.output_audio.delta" {
+            if let buf = (event["delta"] as? String).flatMap({ Self.decodePCM($0, format: outFormat) }) { playAudio(buf) }
+        } else {
+            handle(event)
+        }
+    }
+
     private func send(_ event: [String: Any]) {
+        if let cascade { cascade.handle(event); return }
         guard let socket, let data = try? JSONSerialization.data(withJSONObject: event),
               let text = String(data: data, encoding: .utf8) else { return }
         socket.send(.string(text)) { _ in }
@@ -1580,6 +1608,10 @@ final class TapState: @unchecked Sendable {
         return (sentBytes, peak)
     }
     func set(socket: URLSessionWebSocketTask?) { lock.lock(); self.socket = socket; lock.unlock() }
+    private var cascade: CascadeAudio?
+    func set(cascade: CascadeAudio?) { lock.lock(); self.cascade = cascade; lock.unlock() }
+    /// Mikrofon akışı açıksa sesin gideceği üç parçalı tampon
+    var streamingCascade: CascadeAudio? { lock.lock(); defer { lock.unlock() }; return stream ? cascade : nil }
     /// Mikrofon akışı açıksa gönderilecek soket
     var streamingSocket: URLSessionWebSocketTask? { lock.lock(); defer { lock.unlock() }; return stream ? socket : nil }
 }
