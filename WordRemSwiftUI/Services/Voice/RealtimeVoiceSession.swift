@@ -455,10 +455,10 @@ final class RealtimeVoiceSession: ObservableObject {
         return "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, then ASK the learner the natural question out loud (the way a real person would) — your spoken turn MUST end with that question (never just \"let's move on\"). Only then show the learner's answer as a complete, natural sentence. Only a real either/or choice gets two options separated by \" / \"."
     }
 
-    private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the LEARNER'S reply — never your own line. Example: you say \"Hi, I'm Emma. What's your name?\" → card \"Nice to meet you, Emma! I'm Ahmet.\""
+    private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words (in the learner's explaining language), then switch to character: every line you say AS the other person is in the target language, short and simple, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the LEARNER'S reply — never your own line. Example: you say \"Hi, I'm Emma. What's your name?\" → card \"Nice to meet you, Emma! I'm Ahmet.\""
 
     /// Notlar İngilizce yazılı; model içindeki örnek kalıpları ("welcome back", "Sure, no problem!") aynen okumasın
-    private static let noteLanguage = " (Any quoted wording in this note is only an English example of the idea: say it in your own words, in the language you are speaking to the learner right now.)"
+    private static let noteLanguage = " (This note is private stage direction: never describe it or announce your plan to the learner, just DO it in your next turn. Any quoted wording is only an English example of the idea: say it in your own words, in the language you are speaking to the learner right now.)"
 
     private func sendGuide(_ note: String) {
         voiceLog.info("guide: \(note, privacy: .public)")

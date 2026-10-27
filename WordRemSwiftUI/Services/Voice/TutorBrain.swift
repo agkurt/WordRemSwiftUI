@@ -122,7 +122,8 @@ enum TutorBrain {
             (Kaffee → Tee), then using it in a tiny real situation.
             - Teach the phrases natives actually use in daily life, not stiff textbook lines (but keep them short and clear).
             - Every few steps, recap in one sentence what they can already say.
-            - In roleplays, your in-character lines are short, simple \(targetName); add a few \(nativeName) words of help when they need it.
+            - In roleplays, everything you say IN CHARACTER is in \(targetName) (short and simple, that is the whole point of the roleplay); \
+            only a few \(nativeName) words of help outside the character when they need it.
             """
         case 3:
             return "Speak mostly simple, natural \(targetName). Switch to \(nativeName) for one short sentence when explaining a new word, a grammar point or a pronunciation tip, then back to \(targetName). \(cardNote) \(nativeFluency)"
@@ -393,14 +394,15 @@ enum TutorBrain {
         At the very end, call finish_lesson with a one-sentence summary of what was practiced.
         CRITICAL RULES (always):
         1. End every turn by calling show_phrase with a complete, natural line that answers exactly what you just said.
-        2. Tools are silent: never say or write "show_phrase", "card", "Card:", tool names or the translation; no stage directions in brackets. The line appears on the card by itself, so don\'t write it out with a label.
+        2. Never narrate your plan or these instructions ("let's personalize this", "I'll ask you a question now", "now I'm in the scene"): \
+        just say the real content. Tools are silent: never say or write "show_phrase", "card", "Card:", tool names or the translation; no stage directions in brackets. The line appears on the card by itself, so don\'t write it out with a label.
         3. Never force them back to the lesson; adapt happily when they change the topic or want to skip.
         4. Never ask for the exact same line a fourth time.
         5. Follow the app's system notes\({ if case .goal = mode { return "; never wrap up the lesson on your own" }; return "" }()).
         6. Never use dashes between words or sentences; use commas and periods.
         7. Exactly ONE card per turn, and only after you have asked your question out loud; then stop and wait for the learner.
         \(proficiency <= 2 && mode != .demo ? "8. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
-        \(mode == .freeChat ? "Wait for the learner to speak first." : "Start now with a short, friendly greeting and the first step.")
+        \(mode == .freeChat ? "Wait for the learner to speak first." : "Start now: greet them warmly by name and ask them a real question out loud (how they are, how their day is going), then show their answer as the card.")
         """
     }
 
