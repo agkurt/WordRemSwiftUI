@@ -762,14 +762,11 @@ final class GeminiEngine {
                 let args = (JSONSerialization.isValidJSONObject(argObj) ? try? JSONSerialization.data(withJSONObject: argObj) : nil)
                     .flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
                 let event: [String: Any] = ["type": "response.function_call_arguments.done", "name": name, "call_id": id, "arguments": args]
-                if spoken.isEmpty && name == "show_phrase" {
-                    // Kartı önce açıp hiç konuşmadı: kart bekler, Gemini'ye hemen "gösterildi" denir
-                    heldCalls.append(event)
-                    answeredCalls.insert(id)
-                    send(["toolResponse": ["functionResponses": [["id": id, "name": name, "response": ["result": "shown"], "scheduling": "SILENT"] as [String: Any]]]])
-                } else {
-                    deliver(event)
-                }
+                // Gemini aracı konuşmanın ortasında çağırıp konuşmaya devam eder: tüm çağrılar tur bitince iletilir
+                // (yoksa kart, öğretmen sözünü bitirmeden ekrana düşüyor). Gemini beklemesin diye cevap hemen gider.
+                heldCalls.append(event)
+                answeredCalls.insert(id)
+                send(["toolResponse": ["functionResponses": [["id": id, "name": name, "response": ["result": "ok"], "scheduling": "SILENT"] as [String: Any]]]])
             }
             return
         }
