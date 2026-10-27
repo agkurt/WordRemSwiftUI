@@ -11,7 +11,8 @@ import { privacyPage, termsPage } from "./legal";
  * Sınırlar (saniye, wrangler.toml [vars]):
  *   - Ücretsiz kullanıcı: bir kerelik FREE_TASTE_SECONDS
  *   - Deneme süresindeki Pro: günde TRIAL_DAILY_SECONDS
- *   - Pro: oturum başına SESSION_MAX_SECONDS, günde PRO_DAILY_SECONDS; aylık sınır ödenen fiyattan hesaplanır:
+ *   - Pro: günlük/aylık sınır yok, oturum başına PRO_SESSION_SECONDS (kullanım yine kaydedilir)
+ *   - (Eski) aylık bütçe hesabı yalnızca denemedeki kullanıcı için:
  *       aylık net gelir (Apple payı ve KDV düşülür, yıllık 12'ye bölünür) × AI_BUDGET_SHARE / COST_PER_MIN_USD
  *     MIN_MONTHLY_SECONDS … PRO_MONTHLY_SECONDS aralığında tutulur. Fiyat okunamazsa en düşük sınır uygulanır.
  */
@@ -32,6 +33,7 @@ export interface Env {
   MIN_MONTHLY_SECONDS: string;
   COST_PER_MIN_USD: string;
   REALTIME_MODEL_HIGH: string;
+  PRO_SESSION_SECONDS?: string;
   HIGH_COST_MULTIPLIER: string;
   AI_BUDGET_SHARE: string;
   APPLE_COMMISSION: string;
@@ -166,9 +168,10 @@ async function allowance(env: Env, user: string, plan: Plan): Promise<number> {
     const used = await getNum(env, `free:${user}`);
     return Math.max(0, Number(env.FREE_TASTE_SECONDS) - used);
   }
-  const daily = plan.tier === "trial" ? Number(env.TRIAL_DAILY_SECONDS) : Number(env.PRO_DAILY_SECONDS);
+  // Ödeyen Pro'ya günlük/aylık sınır yok (kullanım yine sayılır); tek oturum OpenAI'ın oturum sınırına yakın
+  if (plan.tier === "pro") return Number(env.PRO_SESSION_SECONDS || 3600);
   const u = await paidUsage(env, user);
-  return Math.max(0, Math.min(session, daily - u.ds, plan.monthlySeconds - u.ms));
+  return Math.max(0, Math.min(session, Number(env.TRIAL_DAILY_SECONDS) - u.ds, plan.monthlySeconds - u.ms));
 }
 
 async function createSession(req: Request, env: Env): Promise<Response> {

@@ -27,7 +27,9 @@ RC_ENTITLEMENT = "premium"
 FREE_TASTE_SECONDS = "300"
 SESSION_MAX_SECONDS = "600"
 TRIAL_DAILY_SECONDS = "600"
-PRO_DAILY_SECONDS = "1800"
+# Pro: günlük/aylık sınır yok; tek oturum en fazla 60 dk (OpenAI oturum sınırına yakın)
+PRO_SESSION_SECONDS = "3600"
+PRO_DAILY_SECONDS = "1800"   # kullanılmıyor (Pro sınırsız)
 # Aylık sınır ödenen fiyattan hesaplanır, bu aralıkta tutulur
 MIN_MONTHLY_SECONDS = "1800"
 PRO_MONTHLY_SECONDS = "18000"
