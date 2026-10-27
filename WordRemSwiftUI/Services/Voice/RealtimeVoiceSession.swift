@@ -681,7 +681,11 @@ final class RealtimeVoiceSession: ObservableObject {
         input.removeTap(onBus: 0)
         micTapInstalled = false
         let inFormat = input.outputFormat(forBus: 0)
-        guard inFormat.sampleRate > 0 else {
+        // Ses yolu değişirken (ders bitişi, kulaklık) biçim bir an geçersiz ya da donanımla uyumsuz olur:
+        // installTap o anda hata fırlatıp uygulamayı kapatır → kurma, kısa süre sonra yeniden dene
+        let hwFormat = input.inputFormat(forBus: 0)
+        guard inFormat.sampleRate > 0, inFormat.channelCount > 0, hwFormat.sampleRate > 0,
+              abs(inFormat.sampleRate - hwFormat.sampleRate) < 1 else {
             // Önceki oturum yeni kapandıysa ses donanımı hazır olmayabilir: kısa süre sonra tekrar dene
             voiceLog.info("mic format not ready, retrying")
             guard retries > 0 else { return }
@@ -745,7 +749,7 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     private func restartAudioIfNeeded(reinstallTap: Bool = false) {
-        guard phase != .ended, phase != .idle else { return }
+        guard phase != .ended, phase != .idle, !lessonComplete, !timeUp else { return }
         // Önce ses oturumu: etkin değilken mikrofon biçimi 0 Hz gelir ve dokunuş kurulamaz
         try? AVAudioSession.sharedInstance().setActive(true)
         if reinstallTap { installMicTap() }
