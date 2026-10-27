@@ -94,7 +94,9 @@ final class RealtimeVoiceSession: ObservableObject {
     private var socket: URLSessionWebSocketTask?
     /// Üç parçalı ses denemesi (yazıya çevir → yazı modeli → seslendir); soket yerine kullanılır
     private var cascade: CascadeEngine?
-    private var isConnected: Bool { socket != nil || cascade != nil }
+    /// Gemini Live denemesi
+    private var gemini: GeminiEngine?
+    private var isConnected: Bool { socket != nil || cascade != nil || gemini != nil }
     private var sessionId: String?
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
@@ -205,6 +207,7 @@ final class RealtimeVoiceSession: ObservableObject {
         socket = nil
         tapState.set(socket: nil)
         cascade?.close(); cascade = nil
+        gemini?.close(); gemini = nil
         tapState.set(cascade: nil)
         clock?.invalidate(); captionTimer?.invalidate()
         audioObservers.forEach(NotificationCenter.default.removeObserver)
@@ -794,7 +797,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Bağlantı koptuysa yeni oturumla bağlan ve konuşmayı kaldığı yerden sürdür (öğrenci baştan başlamasın)
     private func reconnect() async {
-        guard !reconnecting, phase != .ended, cascade == nil else { return }
+        guard !reconnecting, phase != .ended, cascade == nil, gemini == nil else { return }
         reconnecting = true
         defer { reconnecting = false }
         voiceLog.info("reconnecting after dropped connection")
@@ -1008,6 +1011,15 @@ final class RealtimeVoiceSession: ObservableObject {
             engine.start()
             return
         }
+        if model == "gemini", let sessionId {
+            voiceLog.info("gemini live engine")
+            viaRelay = true
+            let engine = GeminiEngine(sessionId: sessionId, tools: lastTools) { [weak self] e in self?.deliver(e) }
+            gemini = engine
+            tapState.set(cascade: engine.audio)
+            engine.start()
+            return
+        }
         // Sunucu anahtar vermediyse (sayaçlı oturum) tek yol: sunucu üzerinden, oturum kimliğiyle
         if secret.isEmpty {
             lastGrant = nil
@@ -1071,6 +1083,7 @@ final class RealtimeVoiceSession: ObservableObject {
 
     private func send(_ event: [String: Any]) {
         if let cascade { cascade.handle(event); return }
+        if let gemini { gemini.handle(event); return }
         guard let socket, let data = try? JSONSerialization.data(withJSONObject: event),
               let text = String(data: data, encoding: .utf8) else { return }
         socket.send(.string(text)) { _ in }

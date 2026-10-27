@@ -24,6 +24,9 @@ HIGH_COST_MULTIPLIER = "1"
 # Üç parçalı ses denemesi (yazıya çevir → yazı modeli → seslendir): yazı modeli ve düşünme düzeyi
 CASCADE_MODEL = "gpt-6-luna"
 CASCADE_REASONING = "none"
+# Gemini Live denemesi (anahtar: wrangler secret put GEMINI_API_KEY)
+GEMINI_MODEL = "gemini-3.8-live"
+GEMINI_VOICE = "Sulafat"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar

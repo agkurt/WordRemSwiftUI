@@ -96,7 +96,7 @@ final class VoiceBackend {
     func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard") async throws -> Grant {
         let payload = try JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed, "quality": quality, "metered": true,
-            "deviceId": DeviceIdentity.id, "engine": CascadeEngine.isOn ? "cascade" : "realtime",
+            "deviceId": DeviceIdentity.id, "engine": VoiceEngineChoice.current,
         ])
         lastBodyBytes = payload.count
         let (data, response) = try await send { base in
@@ -159,6 +159,18 @@ final class VoiceBackend {
 
     func cascadeData(for req: URLRequest) async throws -> (Data, URLResponse) { try await http.data(for: req) }
     func cascadeBytes(for req: URLRequest) async throws -> (URLSession.AsyncBytes, URLResponse) { try await http.bytes(for: req) }
+
+    /// Gemini Live aktarıcısı (anahtar sunucuda)
+    func geminiRequest(sessionId: String) -> URLRequest? {
+        guard let baseURL, var comps = URLComponents(url: baseURL.appendingPathComponent("v1/voice/gemini"), resolvingAgainstBaseURL: false)
+        else { return nil }
+        comps.scheme = comps.scheme == "http" ? "ws" : "wss"
+        comps.queryItems = [URLQueryItem(name: "session", value: sessionId), URLQueryItem(name: "appUserId", value: appUserId)]
+        guard let url = comps.url else { return nil }
+        var req = URLRequest(url: url)
+        req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
+        return req
+    }
 
     /// OpenAI'a sunucu üzerinden bağlanan WebSocket isteği (doğrudan bağlantı kurulamayan ağlar için)
     func relayRequest(model: String, secret: String) -> URLRequest? {
@@ -266,15 +278,6 @@ final class CascadeAudio: @unchecked Sendable {
 /// RealtimeVoiceSession'ın gönderdiği olayları alır, aynı olayları geri üretir; ders akışı hiç değişmez.
 @MainActor
 final class CascadeEngine {
-    /// Deneme: yalnızca Debug sürümünde, Profil'den açılırsa (gecikme ~1 sn fazla çıktı); TestFlight/App Store'da kapalı
-    nonisolated static var isOn: Bool {
-        #if DEBUG
-        UserDefaults.standard.bool(forKey: "voiceCascadeOn")
-        #else
-        false
-        #endif
-    }
-
     let audio = CascadeAudio()
     private let sessionId: String
     private let sessionTools: [[String: Any]]
@@ -317,24 +320,27 @@ final class CascadeEngine {
         let started = Date()
         sttTask = Task { [weak self] in
             guard let self else { return }
-            var transcript = ""
-            if pcm.count >= 4800, let req = VoiceBackend.shared.cascadeRequest("stt", sessionId: self.sessionId, body: pcm, json: false) {
-                do {
-                    let (data, resp) = try await VoiceBackend.shared.cascadeData(for: req)
-                    let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
-                    if status == 200 {
-                        transcript = ((try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["transcript"] as? String) ?? ""
-                    } else {
-                        voiceLog.error("cascade stt \(status, privacy: .public): \(String(data: data.prefix(300), encoding: .utf8) ?? "", privacy: .public)")
-                    }
-                } catch { voiceLog.error("cascade stt failed: \(error.localizedDescription, privacy: .public)") }
-            }
+            let transcript = await Self.transcribe(pcm, sessionId: self.sessionId)
             guard !Task.isCancelled, !self.closed else { return }
             voiceLog.info("cascade timing stt=\(Int(Date().timeIntervalSince(started) * 1000), privacy: .public)ms (\(pcm.count / 48, privacy: .public)ms audio)")
             let t = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
             if !t.isEmpty { self.messages.append(["role": "user", "content": t]) }
             self.deliver(["type": "conversation.item.input_audio_transcription.completed", "transcript": t])
         }
+    }
+
+    /// Sunucu üzerinden yazıya çevirme (PCM 16 bit 24 kHz)
+    static func transcribe(_ pcm: Data, sessionId: String) async -> String {
+        guard pcm.count >= 4800, let req = VoiceBackend.shared.cascadeRequest("stt", sessionId: sessionId, body: pcm, json: false) else { return "" }
+        do {
+            let (data, resp) = try await VoiceBackend.shared.cascadeData(for: req)
+            let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
+            if status == 200 {
+                return ((try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["transcript"] as? String) ?? ""
+            }
+            voiceLog.error("cascade stt \(status, privacy: .public): \(String(data: data.prefix(300), encoding: .utf8) ?? "", privacy: .public)")
+        } catch { voiceLog.error("cascade stt failed: \(error.localizedDescription, privacy: .public)") }
+        return ""
     }
 
     private func add(_ item: [String: Any]) {
@@ -528,6 +534,279 @@ final class SpeechQueue {
             }
         } catch {
             if !Task.isCancelled { voiceLog.error("cascade tts failed: \(error.localizedDescription, privacy: .public)") }
+        }
+    }
+}
+
+/// Debug sürümünde Profil'den seçilen ses motoru: "realtime" (varsayılan) · "gemini" · "cascade"
+enum VoiceEngineChoice {
+    static let all = ["realtime", "gemini", "cascade"]
+    nonisolated static var current: String {
+        #if DEBUG
+        UserDefaults.standard.string(forKey: "voiceEngine") ?? "realtime"
+        #else
+        "realtime"
+        #endif
+    }
+    static func next() {
+        let i = all.firstIndex(of: current) ?? 0
+        UserDefaults.standard.set(all[(i + 1) % all.count], forKey: "voiceEngine")
+    }
+}
+
+/// Gemini Live denemesi: öğrencinin sesi önce yazıya çevrilir (uygulamanın ders notlarıyla aynı mesajda gitsin diye:
+/// Gemini'de her yeni mesaj o anki cevabı keser), cevap Gemini'nin kendi sesiyle akar.
+@MainActor
+final class GeminiEngine {
+    let audio = CascadeAudio()
+    private let sessionId: String
+    private let realtimeTools: [[String: Any]]
+    private let deliver: ([String: Any]) -> Void
+    private var socket: URLSessionWebSocketTask?
+    private var pending: [String] = []
+    private var history: [[String: Any]] = []
+    private var sttTask: Task<Void, Never>?
+    private var inResponse = false
+    private var dropping = false
+    private var callNames: [String: String] = [:]
+    private var spoken = ""
+    private var requestedAt: Date?
+    private var releasedAt: Date?
+    private var firstAudioLogged = false
+    private var usage = (prompt: 0, response: 0, promptAudio: 0, responseAudio: 0)
+    private var closed = false
+
+    init(sessionId: String, tools: [[String: Any]], deliver: @escaping ([String: Any]) -> Void) {
+        self.sessionId = sessionId
+        self.realtimeTools = tools
+        self.deliver = deliver
+    }
+
+    func start() {
+        guard let req = VoiceBackend.shared.geminiRequest(sessionId: sessionId) else { return }
+        let task = URLSession.shared.webSocketTask(with: req)
+        socket = task
+        task.resume()
+        receive()
+        let decls = realtimeTools.map { t -> [String: Any] in
+            var d: [String: Any] = ["name": t["name"] ?? "", "description": t["description"] ?? ""]
+            if let p = t["parameters"] { d["parameters"] = Self.geminiSchema(p) }
+            return d
+        }
+        send(["setup": [
+            "model": "",
+            "generationConfig": ["responseModalities": ["AUDIO"]],
+            "tools": [["functionDeclarations": decls]],
+            "realtimeInputConfig": ["automaticActivityDetection": ["disabled": true]],
+            "outputAudioTranscription": [String: Any](),
+        ] as [String: Any]])
+    }
+
+    func close() {
+        closed = true
+        sttTask?.cancel()
+        socket?.cancel(with: .normalClosure, reason: nil)
+        socket = nil
+        voiceLog.info("gemini usage total prompt=\(self.usage.prompt, privacy: .public) (audio \(self.usage.promptAudio, privacy: .public)) response=\(self.usage.response, privacy: .public) (audio \(self.usage.responseAudio, privacy: .public))")
+    }
+
+    /// JSON şema tiplerini Gemini'nin biçimine çevirir ("string" → "STRING"), desteklenmeyen alanları atar
+    private static func geminiSchema(_ v: Any) -> Any {
+        if let d = v as? [String: Any] {
+            var out: [String: Any] = [:]
+            for (k, val) in d where k != "additionalProperties" && k != "$schema" {
+                out[k] = k == "type" ? ((val as? String)?.uppercased() ?? val) : geminiSchema(val)
+            }
+            return out
+        }
+        if let a = v as? [Any] { return a.map(geminiSchema) }
+        return v
+    }
+
+    private func send(_ obj: [String: Any]) {
+        guard let socket, let data = try? JSONSerialization.data(withJSONObject: obj),
+              let text = String(data: data, encoding: .utf8) else { return }
+        socket.send(.string(text)) { error in
+            if let error { voiceLog.error("gemini send failed: \(error.localizedDescription, privacy: .public)") }
+        }
+    }
+
+    private func receive() {
+        let task = socket
+        task?.receive { [weak self] result in
+            Task { @MainActor in
+                guard let self, task === self.socket else { return }
+                switch result {
+                case .failure(let error):
+                    let reason = task?.closeReason.flatMap { String(data: $0, encoding: .utf8) } ?? ""
+                    voiceLog.error("gemini socket closed: \(error.localizedDescription, privacy: .public) code=\(task?.closeCode.rawValue ?? 0, privacy: .public) \(reason, privacy: .public)")
+                    self.deliver(["type": "error", "error": ["message": "gemini socket closed \(reason)"]])
+                case .success(let message):
+                    var data: Data?
+                    switch message {
+                    case .string(let s): data = Data(s.utf8)
+                    case .data(let d): data = d
+                    @unknown default: break
+                    }
+                    if let data, let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { self.handleServer(obj) }
+                    self.receive()
+                }
+            }
+        }
+    }
+
+    private func handleServer(_ m: [String: Any]) {
+        if let u = m["usageMetadata"] as? [String: Any] {
+            func audio(_ key: String) -> Int {
+                (u[key] as? [[String: Any]] ?? []).filter { ($0["modality"] as? String) == "AUDIO" }.reduce(0) { $0 + (($1["tokenCount"] as? Int) ?? 0) }
+            }
+            let p = u["promptTokenCount"] as? Int ?? 0, r = u["responseTokenCount"] as? Int ?? 0
+            usage.prompt += p; usage.response += r
+            usage.promptAudio += audio("promptTokensDetails"); usage.responseAudio += audio("responseTokensDetails")
+            voiceLog.info("gemini usage turn prompt=\(p, privacy: .public) response=\(r, privacy: .public) cached=\(u["cachedContentTokenCount"] as? Int ?? 0, privacy: .public)")
+        }
+        if m["setupComplete"] != nil {
+            voiceLog.info("gemini setup complete")
+            deliver(["type": "session.created"])
+            return
+        }
+        if let tc = m["toolCall"] as? [String: Any] {
+            beginResponseIfNeeded()
+            for c in tc["functionCalls"] as? [[String: Any]] ?? [] {
+                let id = c["id"] as? String ?? UUID().uuidString
+                let name = c["name"] as? String ?? ""
+                callNames[id] = name
+                let args = (try? JSONSerialization.data(withJSONObject: c["args"] ?? [String: Any]())).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+                deliver(["type": "response.function_call_arguments.done", "name": name, "call_id": id, "arguments": args])
+            }
+            return
+        }
+        guard let sc = m["serverContent"] as? [String: Any] else {
+            if m["goAway"] != nil { voiceLog.info("gemini goAway") }
+            return
+        }
+        if let parts = (sc["modelTurn"] as? [String: Any])?["parts"] as? [[String: Any]] {
+            for p in parts {
+                guard let b64 = (p["inlineData"] as? [String: Any])?["data"] as? String, !dropping else { continue }
+                beginResponseIfNeeded()
+                if !firstAudioLogged, let r = requestedAt {
+                    firstAudioLogged = true
+                    let total = releasedAt.map { " release→voice=\(Int(Date().timeIntervalSince($0) * 1000))ms" } ?? ""
+                    voiceLog.info("gemini timing first_audio=\(Int(Date().timeIntervalSince(r) * 1000), privacy: .public)ms after request\(total, privacy: .public)")
+                }
+                deliver(["type": "response.output_audio.delta", "delta": b64])
+            }
+        }
+        if let t = (sc["outputTranscription"] as? [String: Any])?["text"] as? String, !t.isEmpty, !dropping {
+            beginResponseIfNeeded()
+            spoken += t
+            deliver(["type": "response.output_audio_transcript.delta", "delta": t])
+        }
+        if sc["turnComplete"] as? Bool == true {
+            if !spoken.isEmpty { history.append(["role": "assistant", "content": spoken]) }
+            spoken = ""
+            dropping = false
+            releasedAt = nil
+            guard inResponse else { return }
+            inResponse = false
+            deliver(["type": "response.output_audio.done"])
+            deliver(["type": "response.done", "response": ["status": "completed"]])
+        }
+    }
+
+    private func beginResponseIfNeeded() {
+        guard !inResponse else { return }
+        inResponse = true
+        deliver(["type": "response.created"])
+    }
+
+    func handle(_ e: [String: Any]) {
+        guard !closed else { return }
+        switch e["type"] as? String ?? "" {
+        case "input_audio_buffer.clear": audio.reset()
+        case "input_audio_buffer.commit":
+            let pcm = audio.take()
+            releasedAt = Date()
+            let started = Date()
+            sttTask = Task { [weak self] in
+                guard let self else { return }
+                let t = await CascadeEngine.transcribe(pcm, sessionId: self.sessionId).trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !Task.isCancelled, !self.closed else { return }
+                voiceLog.info("gemini timing stt=\(Int(Date().timeIntervalSince(started) * 1000), privacy: .public)ms")
+                if !t.isEmpty { self.pending.append(t); self.history.append(["role": "user", "content": t]) }
+                self.deliver(["type": "conversation.item.input_audio_transcription.completed", "transcript": t])
+            }
+        case "conversation.item.create":
+            let item = e["item"] as? [String: Any] ?? [:]
+            if item["type"] as? String == "function_call_output" {
+                let id = item["call_id"] as? String ?? ""
+                guard !id.hasPrefix("local-") else { return }   // sessiz kart yazı modelinden geldi, Gemini bilmiyor
+                send(["toolResponse": ["functionResponses": [[
+                    "id": id, "name": callNames[id] ?? "", "response": ["result": item["output"] as? String ?? "ok"], "scheduling": "SILENT",
+                ] as [String: Any]]]])
+            } else {
+                let text = (item["content"] as? [[String: Any]] ?? []).compactMap { $0["text"] as? String }.joined(separator: "\n")
+                guard !text.isEmpty else { return }
+                if item["role"] as? String == "system" {
+                    pending.append("[Private note from the app, never read aloud or mention it: \(text)]")
+                } else {
+                    pending.append(text)
+                    history.append(["role": "user", "content": text])
+                }
+            }
+        case "response.create":
+            let opts = e["response"] as? [String: Any] ?? [:]
+            if (opts["output_modalities"] as? [String]) == ["text"] { silentCard(opts); return }
+            Task { [weak self] in
+                await self?.sttTask?.value
+                guard let self, !self.closed else { return }
+                let parts = self.pending.isEmpty ? ["(Go on.)"] : self.pending
+                self.pending = []
+                self.dropping = false
+                self.requestedAt = Date(); self.firstAudioLogged = false
+                self.send(["clientContent": ["turns": [["role": "user", "parts": parts.map { ["text": $0] }]], "turnComplete": true] as [String: Any]])
+            }
+        case "response.cancel":
+            if inResponse { dropping = true }
+        default: break
+        }
+    }
+
+    /// Yalnızca kart isteyen sessiz cevap: Gemini hep sesle cevap verdiği için kısa bir yazı modeli çağrısıyla yapılır
+    private func silentCard(_ opts: [String: Any]) {
+        let tools: [[String: Any]] = (opts["tools"] as? [[String: Any]] ?? realtimeTools).map { t in
+            ["type": "function", "function": ["name": t["name"] ?? "", "description": t["description"] ?? "", "parameters": t["parameters"] ?? [:]]]
+        }
+        var body: [String: Any] = ["messages": history.suffix(12), "tools": tools, "tool_choice": "required"]
+        if let instr = opts["instructions"] as? String { body["instructions"] = instr }
+        Task { [weak self] in
+            guard let self, let payload = try? JSONSerialization.data(withJSONObject: body),
+                  let req = VoiceBackend.shared.cascadeRequest("chat", sessionId: self.sessionId, body: payload) else { return }
+            self.deliver(["type": "response.created"])
+            var calls: [Int: (id: String, name: String, args: String)] = [:]
+            do {
+                let (bytes, _) = try await VoiceBackend.shared.cascadeBytes(for: req)
+                for try await line in bytes.lines {
+                    guard line.hasPrefix("data: "), line != "data: [DONE]",
+                          let obj = try? JSONSerialization.jsonObject(with: Data(line.dropFirst(6).utf8)) as? [String: Any],
+                          let delta = ((obj["choices"] as? [[String: Any]])?.first)?["delta"] as? [String: Any] else { continue }
+                    for tc in delta["tool_calls"] as? [[String: Any]] ?? [] {
+                        let i = tc["index"] as? Int ?? 0
+                        var c = calls[i] ?? ("", "", "")
+                        if let id = tc["id"] as? String { c.id = id }
+                        if let f = tc["function"] as? [String: Any] {
+                            if let n = f["name"] as? String { c.name += n }
+                            if let a = f["arguments"] as? String { c.args += a }
+                        }
+                        calls[i] = c
+                    }
+                }
+            } catch { voiceLog.error("gemini silent card failed: \(error.localizedDescription, privacy: .public)") }
+            guard !self.closed else { return }
+            for c in calls.keys.sorted().compactMap({ calls[$0] }) {
+                self.deliver(["type": "response.function_call_arguments.done", "name": c.name, "call_id": "local-" + c.id, "arguments": c.args])
+            }
+            self.deliver(["type": "response.done", "response": ["status": "completed"]])
         }
     }
 }

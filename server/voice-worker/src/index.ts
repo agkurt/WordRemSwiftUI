@@ -40,6 +40,10 @@ export interface Env {
   CASCADE_MODEL?: string;
   /** Yazı modelinin düşünme düzeyi (hız için düşük); boşsa gönderilmez */
   CASCADE_REASONING?: string;
+  /** Gemini Live denemesi */
+  GEMINI_API_KEY?: string;
+  GEMINI_MODEL?: string;
+  GEMINI_VOICE?: string;
   AI_BUDGET_SHARE: string;
   APPLE_COMMISSION: string;
 }
@@ -104,7 +108,7 @@ interface SessionRequest {
 type SessionRecord = {
   user: string; plan: Plan; seconds: number; reported: number; weight?: number;
   metered?: boolean; secret?: string; model?: string; device?: string;
-  engine?: "cascade"; instructions?: string;
+  engine?: "cascade" | "gemini"; instructions?: string;
 };
 
 /** Cihaz kimliği yalnızca UUID biçiminde kabul edilir (anahtar adına keyfi metin girmesin) */
@@ -233,7 +237,7 @@ async function createSession(req: Request, env: Env): Promise<Response> {
   const model = high ? env.REALTIME_MODEL_HIGH : env.REALTIME_MODEL;
   // Tam model ~3 kat pahalı: aylık bütçeden o oranda düşülür (ücretsiz tadım ve günlük süre etkilenmez)
   const weight = high ? Number(env.HIGH_COST_MULTIPLIER || 3) : 1;
-  if (body.engine === "cascade") return createCascadeSession(env, body, plan, device, seconds);
+  if (body.engine === "cascade" || body.engine === "gemini") return createCascadeSession(env, body, plan, device, seconds);
   const session = {
     type: "realtime",
     model,
@@ -445,8 +449,8 @@ async function meteredRelay(req: Request, env: Env, ctx: ExecutionContext, sessi
 async function createCascadeSession(env: Env, body: SessionRequest, plan: Plan, device: string | undefined, seconds: number): Promise<Response> {
   const sessionId = crypto.randomUUID();
   await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, device, plan, seconds, reported: 0, weight: 1, metered: true,
-    engine: "cascade", instructions: body.instructions, model: env.CASCADE_MODEL } satisfies SessionRecord), { expirationTtl: 60 * 60 * 3 });
-  return json({ sessionId, clientSecret: "", expiresAt: 0, model: "cascade", allowedSeconds: seconds, tier: plan.tier });
+    engine: body.engine === "gemini" ? "gemini" : "cascade", instructions: body.instructions, model: env.CASCADE_MODEL } satisfies SessionRecord), { expirationTtl: 60 * 60 * 3 });
+  return json({ sessionId, clientSecret: "", expiresAt: 0, model: body.engine === "gemini" ? "gemini" : "cascade", allowedSeconds: seconds, tier: plan.tier });
 }
 
 /** PCM 16 bit 24 kHz mono → WAV (yazıya çevirme servisi dosya ister) */
@@ -468,10 +472,11 @@ async function cascade(req: Request, env: Env, step: string): Promise<Response> 
   const raw = await env.USAGE.get(`s:${sessionId}`);
   if (!raw) return json({ error: "unknown_session" }, 404);
   const s = JSON.parse(raw) as SessionRecord;
-  if (s.engine !== "cascade" || s.user !== params.get("appUserId")) return json({ error: "forbidden" }, 403);
+  if (!s.engine || s.user !== params.get("appUserId")) return json({ error: "forbidden" }, 403);
   const usedKey = `cu:${sessionId}`;
   const used = Number((await cacheGet(usedKey)) ?? 0);
   const charge = async (secs: number) => {
+    if (s.engine === "gemini") return true;   // Gemini'de süreyi soket aktarıcısı sayar
     if (used + secs > s.seconds + 5) return false;
     await cachePut(usedKey, String(used + secs), 60 * 60 * 3);
     return true;
@@ -534,6 +539,79 @@ async function cascade(req: Request, env: Env, step: string): Promise<Response> 
   return json({ error: "not_found" }, 404);
 }
 
+// MARK: Gemini Live (deneme): uygulama Gemini'nin kendi protokolünü konuşur; anahtar ve model sunucuda kalır,
+// süre OpenAI aktarıcısındaki gibi trafik olan saniyelerden sayılır.
+async function geminiRelay(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") return json({ error: "bad_request" }, 426);
+  const params = new URL(req.url).searchParams;
+  const sessionId = params.get("session") ?? "";
+  const raw = await env.USAGE.get(`s:${sessionId}`);
+  if (!raw) return json({ error: "unknown_session" }, 404);
+  const s = JSON.parse(raw) as SessionRecord;
+  if (s.engine !== "gemini" || s.user !== params.get("appUserId") || !env.GEMINI_API_KEY) return json({ error: "forbidden" }, 403);
+  const upstream = await fetch("https://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent", {
+    headers: { Upgrade: "websocket", "x-goog-api-key": env.GEMINI_API_KEY },
+  });
+  const remote = upstream.webSocket;
+  if (!remote) return json({ error: "upstream", status: upstream.status, detail: await upstream.text().catch(() => "") }, 502);
+  remote.accept();
+  const [client, server] = Object.values(new WebSocketPair());
+  server.accept();
+
+  const allowed = s.seconds;
+  const startedAt = Date.now();
+  const activeSeconds = new Set<number>();
+  let finished = false;
+  let setupSent = false;
+  const close = (ws: WebSocket, code = 1000, reason = "") => {
+    try { ws.close(code === 1005 || code === 1006 ? 1000 : code, reason); } catch {}
+  };
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(wallTimer);
+    ctx.waitUntil(addUsage(env, sessionId, s, s.reported + activeSeconds.size));
+  };
+  const tick = () => {
+    activeSeconds.add(Math.floor((Date.now() - startedAt) / 1000));
+    if (activeSeconds.size > allowed) { close(server, 4001, "time_up"); close(remote); finish(); }
+  };
+  const wallTimer = setTimeout(() => { close(server, 4001, "time_up"); close(remote); finish(); }, Math.max(allowed * 3, 900) * 1000);
+
+  server.addEventListener("message", (e) => {
+    tick();
+    let data = e.data;
+    // İlk mesaj (kurulum): model, ses ve talimat sunucudan gelir (istemci keyfi model/talimat seçemez)
+    if (!setupSent && typeof data === "string") {
+      setupSent = true;
+      try {
+        const msg = JSON.parse(data);
+        if (msg.setup) {
+          msg.setup.model = `models/${env.GEMINI_MODEL || "gemini-3.8-live"}`;
+          msg.setup.systemInstruction = { parts: [{ text: s.instructions ?? "" }] };
+          msg.setup.generationConfig = { ...(msg.setup.generationConfig ?? {}), responseModalities: ["AUDIO"],
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: env.GEMINI_VOICE || "Sulafat" } } } };
+          data = JSON.stringify(msg);
+        }
+      } catch {}
+    }
+    try { remote.send(data); } catch { close(server, 1011); }
+  });
+  // Gemini JSON'u ikili çerçeveyle yollar: uygulamaya metin olarak iletilir
+  const decoder = new TextDecoder();
+  remote.addEventListener("message", async (e) => {
+    tick();
+    const d: unknown = e.data;
+    const text = typeof d === "string" ? d : d instanceof ArrayBuffer ? decoder.decode(d) : await (d as Blob).text();
+    try { server.send(text); } catch { close(remote); }
+  });
+  server.addEventListener("close", (e) => { close(remote, e.code, e.reason); finish(); });
+  remote.addEventListener("close", (e) => { close(server, e.code, e.reason.slice(0, 120)); finish(); });
+  server.addEventListener("error", () => { close(remote); finish(); });
+  remote.addEventListener("error", () => { close(server, 1011); finish(); });
+  return new Response(null, { status: 101, webSocket: client });
+}
+
 export default {
   async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const { pathname } = new URL(req.url);
@@ -548,6 +626,7 @@ export default {
       if (req.method === "GET" && pathname === "/v1/voice/status") return await status(req, env);
       if (req.method === "POST" && pathname === "/v1/voice/tts") return await tts(req, env);
       if (req.method === "GET" && pathname === "/v1/voice/realtime") return await realtimeRelay(req, env, ctx);
+      if (req.method === "GET" && pathname === "/v1/voice/gemini") return await geminiRelay(req, env, ctx);
       if (req.method === "POST" && pathname.startsWith("/v1/voice/cascade/")) return await cascade(req, env, pathname.slice(18));
       return json({ error: "not_found" }, 404);
     } catch (e) {
