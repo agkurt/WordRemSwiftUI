@@ -38,8 +38,6 @@ struct VoiceTutorView: View {
     @State private var finishedSuccess: Bool?
     @State private var completing = false
     @State private var showHelp = false
-    @State private var askConsent = false
-    static let consentKey = "ai.voiceConsent"
     @State private var showTopics = false
     @Environment(\.horizontalSizeClass) private var sizeClass
     /// Bu oturumda desteye kaydedilen kartlar (yer imi dolu görünür)
@@ -84,21 +82,7 @@ struct VoiceTutorView: View {
                     return
                 }
             }
-            // Ses üçüncü taraf yapay zekâya (OpenAI) gider: ilk seferde açıkça izin istenir (App Store 5.1.2)
-            if UserDefaults.standard.bool(forKey: Self.consentKey) { await begin() } else { askConsent = true }
-        }
-        .alert(AL.s(.aiConsentTitle), isPresented: $askConsent) {
-            Button(AL.s(.aiConsentAllow)) {
-                UserDefaults.standard.set(true, forKey: Self.consentKey)
-                Track.tutor("ai_consent", mode: modeName, item: "allow")
-                Task { await begin() }
-            }
-            Button(AL.s(.aiConsentDeny), role: .cancel) {
-                Track.tutor("ai_consent", mode: modeName, item: "deny")
-                if isDemo { onFinished(false) } else { dismiss() }
-            }
-        } message: {
-            Text(AL.s(.aiConsentMessage))
+            await begin()
         }
         .onDisappear { saveAndStop() }
         .animation(.spring(response: 0.55, dampingFraction: 0.85), value: isConnecting)

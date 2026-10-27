@@ -30,9 +30,9 @@ export function privacyPage(): Response {
 <li>If iCloud is enabled, this progress is synced between your own Apple devices through Apple's iCloud. We cannot access it.</li>
 <li>Reminders are local notifications scheduled on your device.</li></ul>
 <h2>Voice tutor</h2>
-<ul><li>When you hold the talk button, your voice audio and the conversation text are sent through our server to OpenAI to generate the tutor's reply in real time.</li>
-<li>We do not store your recordings or conversation transcripts on our servers. OpenAI processes API data under its own policies and does not use it to train models by default.</li>
-<li>To enforce talk-time limits, our server keeps an anonymous app user ID and the number of seconds used. This contains no name, email or audio.</li></ul>
+<ul><li>When you hold the talk button, your voice audio is sent through our server to our AI providers to understand what you said and to generate the tutor's spoken reply in real time: OpenAI turns your speech into text, and Google (Gemini) generates the tutor's reply. The conversation text and the name you give the tutor are part of that request.</li>
+<li>We do not store your recordings or conversation transcripts on our servers. Our providers process this data under their API terms and do not use it to train their models.</li>
+<li>To enforce talk-time limits, our server keeps an anonymous app user ID, an anonymous device ID and the number of seconds used. This contains no name, email or audio.</li></ul>
 <h2>Purchases</h2>
 <p>Subscriptions are processed by Apple. We use RevenueCat to check whether your subscription is active, using an anonymous app user ID. We never see your payment details.</p>
 <h2>App analytics</h2>
@@ -51,9 +51,9 @@ export function privacyPage(): Response {
 <li>iCloud açıksa bu ilerleme Apple'ın iCloud'u üzerinden yalnızca kendi Apple cihazların arasında senkronlanır; biz erişemeyiz.</li>
 <li>Hatırlatmalar cihazında kurulan yerel bildirimlerdir.</li></ul>
 <h2>Sesli öğretmen</h2>
-<ul><li>Konuşma düğmesine basılı tuttuğunda sesin ve konuşma metni, öğretmenin cevabını anlık üretmek için sunucumuz üzerinden OpenAI'ye gönderilir.</li>
-<li>Ses kayıtlarını ve konuşma metinlerini sunucularımızda saklamayız. OpenAI API verilerini kendi politikalarına göre işler ve varsayılan olarak model eğitiminde kullanmaz.</li>
-<li>Konuşma süresi sınırları için sunucumuz yalnızca anonim bir uygulama kimliği ve kullanılan saniye sayısını tutar; ad, e-posta veya ses içermez.</li></ul>
+<ul><li>Konuşma düğmesine basılı tuttuğunda sesin, ne söylediğini anlamak ve öğretmenin sesli cevabını anlık üretmek için sunucumuz üzerinden yapay zekâ sağlayıcılarımıza gönderilir: konuşmanı OpenAI yazıya çevirir, öğretmenin cevabını Google (Gemini) üretir. Konuşma metni ve öğretmene verdiğin ad da bu isteğe dahildir.</li>
+<li>Ses kayıtlarını ve konuşma metinlerini sunucularımızda saklamayız. Sağlayıcılarımız bu verileri API koşullarına göre işler ve modellerini eğitmek için kullanmaz.</li>
+<li>Konuşma süresi sınırları için sunucumuz yalnızca anonim bir uygulama kimliği, anonim bir cihaz kimliği ve kullanılan saniye sayısını tutar; ad, e-posta veya ses içermez.</li></ul>
 <h2>Satın almalar</h2>
 <p>Abonelikler Apple tarafından işlenir. Aboneliğinin aktif olup olmadığını anonim bir kimlikle RevenueCat üzerinden kontrol ederiz. Ödeme bilgilerini asla görmeyiz.</p>
 <h2>Uygulama analitiği</h2>
