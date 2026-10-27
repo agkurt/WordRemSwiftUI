@@ -90,7 +90,7 @@ export function termsPage(): Response {
 <p>Sesli öğretmen yapay zekâ ile üretilir ve zaman zaman hata yapabilir. Konuşma süresi adil kullanım sınırlarına tabi olabilir.</p>`);
 }
 
-const SUPPORT_EMAIL = "ahmetgokturkkkurt3@gmail.com";
+const SUPPORT_EMAIL = "ahmetgokturkkurt3@gmail.com";
 
 export function supportPage(): Response {
   return page("Support", `
