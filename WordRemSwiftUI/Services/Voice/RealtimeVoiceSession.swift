@@ -445,6 +445,8 @@ final class RealtimeVoiceSession: ObservableObject {
     private var learnedCards: [[String]] = []
     /// Ders açılışındaki ısınma sorusu henüz cevaplanmadı
     private var warmupPending = false
+    /// Dersin ilk turu (öğrenci henüz konuşmadı): kart gösterilmez
+    private var isOpeningTurn: Bool { warmupPending && !turns.contains { $0.role == .user && !$0.text.isEmpty } }
     private func praiseNote(afterMiss: Bool) -> String {
         correctsSincePraise += 1
         if afterMiss || correctsSincePraise >= 4 {
@@ -1152,6 +1154,14 @@ final class RealtimeVoiceSession: ObservableObject {
                                "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
                 break
             }
+            // Ders açılışı kartsız: öğretmen önce dersin amacını söyleyip sohbet sorusu sorar, öğrenci serbest cevaplar
+            if name == "show_phrase", !silentCardActive, isOpeningTurn {
+                voiceLog.info("card in opening turn rejected")
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId,
+                               "output": "rejected: no card in your opening turn. Just wait for the learner to answer your question freely."]])
+                break
+            }
             // Öğretme sırasında zaten doğru söylenmiş ifade yeniden kart olmasın (birleştirme ve canlandırma hariç)
             if name == "show_phrase", !silentCardActive, !targets.isEmpty, targetProgress < targets.count, !pendingCombine,
                let p = args["phrase"] as? String,
@@ -1430,7 +1440,7 @@ final class RealtimeVoiceSession: ObservableObject {
     /// son tırnak içindeki ifadeyi kart yap.
     private func ensurePhraseCard() {
         let userTurns = turns.filter { $0.role == .user && !$0.text.isEmpty }.count
-        guard !noCards || cardAfterUserTurns == userTurns, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
+        guard !isOpeningTurn, !noCards || cardAfterUserTurns == userTurns, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
         if needsAnswerCard {
             needsAnswerCard = false
             return requestCard(answerTo: fullAIText)

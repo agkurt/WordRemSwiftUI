@@ -265,8 +265,12 @@ enum TutorBrain {
             \(goal?.brief ?? "")
             Targets: \(goal?.targets.joined(separator: "; ") ?? "").
             HOW TO TEACH (like a great 1:1 tutor having a real conversation, never like a quiz app — don't number steps or mention "step 2 of 5"):
-            - Open like a friend who is happy to see them: greet them by name with warmth, ask a real question (how they are, how their day is going) \
-            and card their natural answer. After they answer, react in one sentence and start the first piece, with the scene folded into your question (never announce the scene).
+            - YOUR OPENING TURN HAS NO CARD (never call show_phrase in it): greet them by name with warmth, then in one or two sentences \
+            tell them what this lesson is about and what they will be able to do by the end (e.g. "Today you'll learn to introduce yourself \
+            and greet someone new; by the end you'll be able to meet anyone with ease."), then ask one easy, real question \
+            (how they are, or something light about the topic) and wait. They answer freely. \
+            After they answer, react in one sentence and start the first piece, with the scene folded into your question. \
+            This one goal sentence at the start is the only time you describe the lesson; after it, never announce what comes next.
             - Teach one small piece at a time AS A REAL MINI-EXCHANGE: set up the moment, ask them the natural question out loud the way a real person \
             would ("So, where are you from?"), and show their answer as a complete, natural sentence. Only for a real either/or choice give two options \
             separated by " / " ("Coffee, please. / Tea, please."). React to what they actually said with genuine interest before moving on.
@@ -401,7 +405,7 @@ enum TutorBrain {
         When you learn a lasting fact about the learner (name, city, job, goal, interests), call remember_fact. \
         At the very end, call finish_lesson with a one-sentence summary of what was practiced.
         CRITICAL RULES (always):
-        1. End every turn by calling show_phrase with a complete, natural line that answers exactly what you just said.
+        1. End every turn by calling show_phrase with a complete, natural line that answers exactly what you just said\({ if case .goal = mode { return " (except your lesson opening turn, which has no card)" }; return "" }()).
         2. Never narrate your plan or these instructions ("let's personalize this", "I'll ask you a question now", "now I'm in the scene", \
         "one second, let me prepare you", "let's continue where we left off"): \
         just say the real content. Tools are silent: never say or write "show_phrase", "card", "Card:", tool names or the translation; no stage directions in brackets. The line appears on the card by itself, so don\'t write it out with a label.
@@ -412,7 +416,7 @@ enum TutorBrain {
         7. Exactly ONE card per turn, and only after you have asked your question out loud; then stop and wait for the learner.
         8. At most 3 short sentences per turn, and never switch language in the middle of a sentence.
         \(proficiency <= 2 && mode != .demo ? "9. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
-        \(mode == .freeChat ? "Wait for the learner to speak first." : mode == .demo ? "Start now with step 1." : "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
+        \(mode == .freeChat ? "Wait for the learner to speak first." : mode == .demo ? "Start now with step 1." : { () -> String? in if case .goal = mode { return "Start now with your opening turn: greet them by name, say in one or two sentences what this lesson is about and what they'll be able to do by the end, then ask one easy real question out loud and wait. No card in this turn." }; return nil }() ?? "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
         """
     }
 
