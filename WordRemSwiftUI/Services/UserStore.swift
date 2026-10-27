@@ -68,7 +68,7 @@ final class UserStore {
         fileURL = dir.appendingPathComponent("user_state.json")
 
         let local = (try? Data(contentsOf: fileURL)).flatMap { try? JSONDecoder.iso.decode(UserState.self, from: $0) }
-        let remote = cloud.data(forKey: cloudKey).flatMap { try? JSONDecoder.iso.decode(UserState.self, from: $0) }
+        let remote = FreshUser.isOn ? nil : cloud.data(forKey: cloudKey).flatMap { try? JSONDecoder.iso.decode(UserState.self, from: $0) }
         switch (local, remote) {
         case let (l?, r?): state = UserStore.merge(l, r)
         case let (l?, nil): state = l
@@ -100,7 +100,7 @@ final class UserStore {
     /// Tüm ilerlemeyi siler (Profil → "İlerlemeyi sıfırla"). iCloud kopyası da silinir.
     func reset() {
         queue.sync { state = UserState() }
-        cloud.removeObject(forKey: cloudKey)
+        if !FreshUser.isOn { cloud.removeObject(forKey: cloudKey) }
         persist(pushToCloud: true)
     }
 
@@ -109,14 +109,14 @@ final class UserStore {
         let current = snapshot
         guard let data = try? JSONEncoder.iso.encode(current) else { return }
         try? data.write(to: fileURL, options: .atomic)
-        if pushToCloud { cloud.set(data, forKey: cloudKey) }
+        if pushToCloud && !FreshUser.isOn { cloud.set(data, forKey: cloudKey) }
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: UserStore.didChangeNotification, object: nil)
         }
     }
 
     private func pullFromCloud() {
-        guard let data = cloud.data(forKey: cloudKey),
+        guard !FreshUser.isOn, let data = cloud.data(forKey: cloudKey),
               let remote = try? JSONDecoder.iso.decode(UserState.self, from: data) else { return }
         queue.sync { state = UserStore.merge(state, remote) }
         persist(pushToCloud: false)
@@ -181,4 +181,40 @@ struct VoiceProgress: Codable, Equatable {
     var updatedAt: Date
     /// Tamamlanan ders hedefi sayısı
     var step: Int? = nil
+}
+
+/// Sadece Debug: Profil → "Yeni kullanıcı olarak başla" ile uygulama sıfırdan, ücretsiz kullanıcı gibi açılır.
+/// RevenueCat ve sunucu yeni kimlik görür (satın alım ve ücretsiz deneme sayacı yok); iCloud okunmaz ve
+/// yazılmaz, gerçek ilerleme olduğu gibi kalır. Kapatınca yerel test verisi silinir, iCloud'daki hâl geri gelir.
+enum FreshUser {
+    private static let key = "debugFreshUserId"
+
+    static var id: String? {
+        #if DEBUG
+        UserDefaults.standard.string(forKey: key)
+        #else
+        nil
+        #endif
+    }
+    static var isOn: Bool { id != nil }
+
+    /// Tüm yerel veriyi siler, yeni kimlik verir ve uygulamayı kapatır; yeniden açınca onboarding başlar
+    static func start() {
+        if let bundle = Bundle.main.bundleIdentifier { UserDefaults.standard.removePersistentDomain(forName: bundle) }
+        UserDefaults.standard.set(UUID().uuidString, forKey: key)
+        relaunch()
+    }
+
+    /// Gerçek hesaba döner: test verisi silinir, açılışta iCloud ve satın alım geri gelir
+    static func stop() {
+        UserDefaults.standard.removeObject(forKey: key)
+        relaunch()
+    }
+
+    private static func relaunch() {
+        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        for name in ["user_state.json", "decks.json"] { try? FileManager.default.removeItem(at: dir.appendingPathComponent(name)) }
+        UserDefaults.standard.synchronize()
+        exit(0)
+    }
 }

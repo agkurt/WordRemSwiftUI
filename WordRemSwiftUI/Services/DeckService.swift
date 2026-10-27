@@ -47,7 +47,7 @@ final class DeckService {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         fileURL = dir.appendingPathComponent("decks.json")
         let local = (try? Data(contentsOf: fileURL)).flatMap { try? JSONDecoder.iso.decode(Library.self, from: $0) }
-        let remote = cloud.data(forKey: cloudKey).flatMap { try? JSONDecoder.iso.decode(Library.self, from: $0) }
+        let remote = FreshUser.isOn ? nil : cloud.data(forKey: cloudKey).flatMap { try? JSONDecoder.iso.decode(Library.self, from: $0) }
         // Daha yeni olan kazanır (desteler tek kullanıcının elinde, çakışma nadir)
         library = [local, remote].compactMap { $0 }.max { $0.updatedAt < $1.updatedAt } ?? Library()
 
@@ -187,11 +187,11 @@ final class DeckService {
         }
         guard let data else { return }
         try? data.write(to: fileURL, options: .atomic)
-        cloud.set(data, forKey: cloudKey)
+        if !FreshUser.isOn { cloud.set(data, forKey: cloudKey) }
     }
 
     private func pullFromCloud() {
-        guard let data = cloud.data(forKey: cloudKey),
+        guard !FreshUser.isOn, let data = cloud.data(forKey: cloudKey),
               let remote = try? JSONDecoder.iso.decode(Library.self, from: data) else { return }
         queue.sync { if remote.updatedAt > library.updatedAt { library = remote } }
         try? data.write(to: fileURL, options: .atomic)

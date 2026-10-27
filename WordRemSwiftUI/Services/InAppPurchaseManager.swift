@@ -88,7 +88,12 @@ final class InAppPurchaseManager: ObservableObject {
         #if DEBUG
         Purchases.logLevel = .debug
         #endif
-        Purchases.configure(withAPIKey: apiKey)
+        // Debug test kullanıcısı: RevenueCat'te yeni müşteri, Apple hesabındaki satın alım ona geçmez
+        if let fresh = FreshUser.id {
+            Purchases.configure(withAPIKey: apiKey, appUserID: "debug-fresh-\(fresh)")
+        } else {
+            Purchases.configure(withAPIKey: apiKey)
+        }
     }
 
     // MARK: - Sync Premium Status (uygulama açılışında çağır)

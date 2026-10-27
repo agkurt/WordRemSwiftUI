@@ -411,6 +411,13 @@ struct ProfileView: View {
                     settingsRow(icon: "doc.text",
                                 title: loc(["Kullanım Şartları", "Terms of Use", "Nutzungsbedingungen", "Conditions d'utilisation", "Términos de uso", "Termini d'uso", "Условия использования", "使用条款"]))
                 }
+                #if DEBUG
+                Divider().padding(.leading, 48)
+                Button { FreshUser.isOn ? FreshUser.stop() : FreshUser.start() } label: {
+                    settingsRow(icon: "person.badge.plus",
+                                title: FreshUser.isOn ? "Test: gerçek hesaba dön" : "Test: yeni kullanıcı olarak başla")
+                }
+                #endif
             }
             .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 20))
             .overlay(RoundedRectangle(cornerRadius: 20).stroke(DS.Colors.line, lineWidth: 1))

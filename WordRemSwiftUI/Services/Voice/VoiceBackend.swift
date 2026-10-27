@@ -198,6 +198,7 @@ enum DeviceIdentity {
     private static let account = "device-id"
 
     static let id: String = {
+        if let fresh = FreshUser.id { return fresh }   // Debug test kullanıcısı: yeni ücretsiz deneme süresi
         if let existing = read() { return existing }
         let new = UUID().uuidString
         save(new)
