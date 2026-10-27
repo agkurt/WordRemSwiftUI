@@ -538,12 +538,12 @@ final class SpeechQueue {
     }
 }
 
-/// Debug sürümünde Profil'den seçilen ses motoru: "realtime" (varsayılan) · "gemini" · "cascade"
+/// Debug sürümünde Profil'den seçilen ses motoru: "gemini" (varsayılan) · "cascade" · "realtime"
 enum VoiceEngineChoice {
-    static let all = ["realtime", "gemini", "cascade"]
+    static let all = ["gemini", "cascade", "realtime"]
     nonisolated static var current: String {
         #if DEBUG
-        UserDefaults.standard.string(forKey: "voiceEngine") ?? "realtime"
+        UserDefaults.standard.string(forKey: "voiceEngine") ?? "gemini"
         #else
         "realtime"
         #endif
