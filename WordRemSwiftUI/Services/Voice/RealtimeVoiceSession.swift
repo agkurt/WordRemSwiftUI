@@ -307,7 +307,7 @@ final class RealtimeVoiceSession: ObservableObject {
             currentCard = nil
             if ok {
                 chatMisses = (nil, 0)
-                return sendGuide("The learner said the card line correctly (the transcript may look a bit off because of their accent, that's fine). Count it as right: praise it briefly and carry on, don't ask them to repeat it.")
+                return sendGuide("The learner said the card line correctly (the transcript may look a bit off because of their accent, that's fine). Count it as right and carry on, don't ask them to repeat it. \(praiseNote(afterMiss: false))")
             }
             // Aynı cümlede üst üste kaçırma: 1 ipucu → parça parça yardım → başka cümle
             chatMisses = chatMisses.card == card ? (card, chatMisses.count + 1) : (card, 1)
@@ -372,9 +372,10 @@ final class RealtimeVoiceSession: ObservableObject {
                     : "Second miss on the same line (again: if it's close, count it as right). Help differently now: break the line into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language, then let them try the whole line once more. Show the same line."
                 return sendGuide(note)
             }
+            let attemptsBeforeRight = attempts
             attempts = 0
             currentCard = nil
-            let praise = ok ? "The learner got it right — react with a short, varied, genuine praise (never the same words twice)."
+            let praise = ok ? praiseNote(afterMiss: attemptsBeforeRight > 1)
                             : "Three tries are enough for this line: celebrate the effort warmly, say cheerfully that you'll try a different one, and move on."
             if pendingPersonalize {
                 // Kendi versiyonunu da söyledi → şimdi parça gerçekten bitti
@@ -407,6 +408,18 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     /// Parça bitti: sıradaki parça, ara ara birleştirme, en sonda rol oyunu ya da kapanış
+    /// Övgü ölçülü olsun: her doğru cevapta değil, zor bir cümleden/düzeltmeden sonra ya da birkaç turda bir.
+    /// Diğer turlarda öğretmen içeriğe tepki verir ("Pizza mı? Ben de bayılırım!") ve sohbete devam eder.
+    private var correctsSincePraise = 0
+    private func praiseNote(afterMiss: Bool) -> String {
+        correctsSincePraise += 1
+        if afterMiss || correctsSincePraise >= 3 {
+            correctsSincePraise = 0
+            return "The learner got it right\(afterMiss ? " after a struggle" : ""). Give ONE short, specific, genuine word of praise (what exactly was good), never generic like \"very natural, you sound confident\"."
+        }
+        return "The learner got it right. Do NOT praise or compliment this time: react to WHAT they said, like a friend in a real conversation, and keep going."
+    }
+
     private func advance(_ praise: String) -> String {
         targetProgress += 1
         if withRoleplay && targetProgress >= 2 && targetProgress % 2 == 0 {
