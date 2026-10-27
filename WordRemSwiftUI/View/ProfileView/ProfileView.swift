@@ -10,6 +10,7 @@ struct ProfileView: View {
 
     @EnvironmentObject var langManager: LanguageManager
     @EnvironmentObject var authManager: AuthManager
+    @Environment(\.openURL) private var openURL
     @StateObject private var vm = ProfileScreenViewModel()
     @ObservedObject private var achievementService = AchievementService.shared
     @ObservedObject private var iap = InAppPurchaseManager.shared
@@ -394,6 +395,11 @@ struct ProfileView: View {
                         settingsRow(icon: "creditcard",
                                     title: loc(["Aboneliği yönet", "Manage subscription", "Abo verwalten", "Gérer l'abonnement", "Gestionar suscripción", "Gestisci abbonamento", "Управление подпиской", "管理订阅"]))
                     }
+                }
+                Divider().padding(.leading, 48)
+                Button { openURL(ReviewPrompt.writeReviewURL) } label: {
+                    settingsRow(icon: "star",
+                                title: loc(["WordRem AI'ı puanla", "Rate WordRem AI", "WordRem AI bewerten", "Noter WordRem AI", "Valorar WordRem AI", "Valuta WordRem AI", "Оценить WordRem AI", "为 WordRem AI 评分"]))
                 }
                 Divider().padding(.leading, 48)
                 Button { showPrivacy = true } label: {

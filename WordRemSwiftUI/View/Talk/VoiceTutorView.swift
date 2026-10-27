@@ -231,7 +231,8 @@ struct VoiceTutorView: View {
         }
         return LessonCompleteView(lessonTitle: title, learnerName: UserStore.shared.snapshot.username,
                                   phrases: phrases, mastery: mastery,
-                                  duration: Date().timeIntervalSince(session.startedAt)) {
+                                  duration: Date().timeIntervalSince(session.startedAt),
+                                  asksForReview: true) {
             showSummary = false
             dismiss()      // ana sayfa sıradaki dersi gösterir
         }

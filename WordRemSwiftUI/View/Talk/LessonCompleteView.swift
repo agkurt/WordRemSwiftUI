@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct LessonCompleteView: View {
     struct Phrase: Identifiable {
@@ -20,8 +21,11 @@ struct LessonCompleteView: View {
     let phrases: [Phrase]
     let mastery: Int          // yüzde
     let duration: TimeInterval
+    /// Gerçek derslerde true; ekran görüntüsü demosunda puan penceresi açılmasın
+    var asksForReview = false
     var onContinue: () -> Void
 
+    @Environment(\.requestReview) private var requestReview
     @State private var appear = false
     @State private var shownPhrases = 0
     @State private var shownMastery = 0
@@ -118,6 +122,12 @@ struct LessonCompleteView: View {
                 shownPhrases = Int((Double(phrases.count) * Double(s) / Double(steps)).rounded())
                 shownMastery = Int((Double(mastery) * Double(s) / Double(steps)).rounded())
             }
+            // Kutlama oturduktan sonra, kullanıcı en mutluyken puan iste
+            if asksForReview && ReviewPrompt.shouldAsk(mastery: mastery) {
+                try? await Task.sleep(nanoseconds: 1_200_000_000)
+                ReviewPrompt.markAsked()
+                requestReview()
+            }
         }
     }
 
@@ -195,4 +205,22 @@ struct LessonCompleteView: View {
         let s = Int(duration)
         return String(format: "%d:%02d", s / 60, s % 60)
     }
+}
+
+/// App Store puan isteği: iyi geçen her dersten sonra, en az 3 gün arayla. Apple pencereyi yılda
+/// en fazla 3 kez gösteriyor, ilk ayda puan hızı sıralamayı belirlediği için o hakları erken kullanıyoruz.
+enum ReviewPrompt {
+    private static let lastAskedKey = "reviewPromptLastAsked"
+    private static let minGap: TimeInterval = 3 * 24 * 3600
+
+    static func shouldAsk(mastery: Int) -> Bool {
+        guard mastery >= 60 else { return false }
+        guard let last = UserDefaults.standard.object(forKey: lastAskedKey) as? Date else { return true }
+        return Date().timeIntervalSince(last) >= minGap
+    }
+
+    static func markAsked() { UserDefaults.standard.set(Date(), forKey: lastAskedKey) }
+
+    /// Profil'deki "Puan ver" satırı: doğrudan yorum yazma sayfası
+    static let writeReviewURL = URL(string: "https://apps.apple.com/app/id6478985459?action=write-review")!
 }
