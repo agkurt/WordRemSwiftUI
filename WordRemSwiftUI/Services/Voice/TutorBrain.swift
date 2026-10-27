@@ -220,12 +220,12 @@ enum TutorBrain {
 
     /// Onboarding'de verilen ad (yoksa nazik bir genel hitap)
     private static var demoLearnerName: String {
-        let name = UserStore.shared.snapshot.username
+        let name = learnerName
         return name.isEmpty ? "friend" : name
     }
 
     private static var demoNameCard: String {
-        let name = UserStore.shared.snapshot.username
+        let name = learnerName
         return name.isEmpty ? "My name is …" : "My name is \(name)."
     }
 
@@ -233,7 +233,7 @@ enum TutorBrain {
     private static var memoryBlock: String {
         let s = UserStore.shared.snapshot
         var lines: [String] = []
-        if !s.username.isEmpty { lines.append("Learner's name: \(s.username). Use it naturally, not every turn.") }
+        if !learnerName.isEmpty { lines.append("Learner's name: \(learnerName). Use it naturally, not every turn.") }
         if let facts = s.tutorFacts, !facts.isEmpty { lines.append("Things you remember about the learner: " + facts.suffix(12).joined(separator: "; ") + ".") }
         if let sums = s.tutorSummaries, !sums.isEmpty { lines.append("Recent sessions (oldest first): " + sums.suffix(3).joined(separator: " | ")) }
         return lines.isEmpty ? "This is your first conversation with the learner. Warmly ask their name early on." : lines.joined(separator: "\n")
@@ -256,7 +256,32 @@ enum TutorBrain {
     }
 
     // MARK: Talimatlar
+    #if DEBUG
+    /// Stüdyo kaydı (sosyal medya): senaryonun Lupa'ya özel yönergesi, talimatların sonuna eklenir
+    static var studioNote: String?
+    /// Stüdyo kaydında Lupa öğrencinin adını söylemez (video herkese açık)
+    static var studioNameless = false
+    #endif
+
+    /// Öğrencinin adı (Lupa'nın hitap ettiği)
+    private static var learnerName: String {
+        #if DEBUG
+        if studioNameless { return "" }
+        #endif
+        return UserStore.shared.snapshot.username
+    }
+
     static func instructions(for mode: TutorMode) -> String {
+        #if DEBUG
+        if let note = studioNote {
+            studioNote = nil
+            return baseInstructions(for: mode) + "\n\nTHIS SESSION (overrides the language rules above): \(note)"
+        }
+        #endif
+        return baseInstructions(for: mode)
+    }
+
+    private static func baseInstructions(for mode: TutorMode) -> String {
         if case .languageSetup(let code) = mode { return setupInstructions(code: code) }
         var task: String
         switch mode {
@@ -413,7 +438,7 @@ enum TutorBrain {
     /// Yeni dil kurulumu: öğrenci yeni dili bilmiyor olabilir, konuşma ana dilde geçer, kart yok
     private static func setupInstructions(code: String) -> String {
         let newName = Locale(identifier: "en").localizedString(forLanguageCode: code) ?? code
-        let name = UserStore.shared.snapshot.username
+        let name = learnerName
         return """
         You are \(tutorName), WordRem's voice tutor (always this name, never another): a warm, playful, emotionally smart language teacher on a live voice call, like a fun friend. \
         The learner\(name.isEmpty ? "" : " (\(name))") already studies \(targetName) with you and just chose to ADD \(newName). \
@@ -546,7 +571,7 @@ enum TutorBrain {
         switch name {
         case "show_phrase":
             // Model "[your name]" gibi yer tutucu yazarsa öğrencinin adıyla doldur
-            let name = UserStore.shared.snapshot.username
+            let name = learnerName
             func fill(_ s: String) -> String {
                 guard !name.isEmpty else { return s }
                 return s.replacingOccurrences(of: #"\[[^\]]*(name|isim|ad)[^\]]*\]"#, with: name,

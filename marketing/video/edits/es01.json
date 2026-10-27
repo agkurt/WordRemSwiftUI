@@ -1,0 +1,150 @@
+{
+  "id": "es01",
+  "video": "clips/es01.mp4",
+  "width": 886,
+  "height": 1920,
+  "hook": "Could you order a coffee in Spanish? ☕",
+  "title": "☕ Ordering coffee in Madrid",
+  "lang": "en",
+  "target": "es",
+  "cta": "Coming soon on the App Store",
+  "keeps": [
+    {
+      "from": 8.1,
+      "to": 12.26
+    },
+    {
+      "from": 14.28,
+      "to": 16.26
+    },
+    {
+      "from": 16.96,
+      "to": 23.74
+    },
+    {
+      "from": 25.16,
+      "to": 27.22
+    },
+    {
+      "from": 37.2,
+      "to": 43.02
+    },
+    {
+      "from": 44.4,
+      "to": 47.44
+    }
+  ],
+  "lines": [
+    {
+      "who": "lupa",
+      "start": 8.1,
+      "end": 12.04,
+      "text": "*¡Hola! ¿Qué te pongo?* which means \"Hello, what can I get you?\"",
+      "words": [],
+      "orig": "Let's practice ordering coffee in Spanish and I'll be your barista. \"¡Hola! ¿Qué te pongo?\" which means \"Hello, what can I get you?\"",
+      "partial": true,
+      "tr": ""
+    },
+    {
+      "who": "you",
+      "start": 14.4,
+      "end": 16.04,
+      "text": "Un café, por favor.",
+      "words": [
+        {
+          "w": "Un",
+          "t": 14.465
+        },
+        {
+          "w": "café,",
+          "t": 14.591
+        },
+        {
+          "w": "por favor.",
+          "t": 15.287
+        }
+      ],
+      "orig": "Un café, por favor.",
+      "tr": "A coffee, please."
+    },
+    {
+      "who": "lupa",
+      "start": 17.08,
+      "end": 23.52,
+      "text": "Perfect, one coffee coming up. *Para tomar o para llevar?* which means \"To have here or to go?\"",
+      "words": [],
+      "orig": "Perfect, one coffee coming up. \"Para tomar o para llevar?\" which means \"To have here or to go?\"",
+      "tr": ""
+    },
+    {
+      "who": "you",
+      "start": 25.28,
+      "end": 27,
+      "text": "Para llevar, por favor.",
+      "words": [
+        {
+          "w": "Para",
+          "t": 25.288
+        },
+        {
+          "w": "llevar,",
+          "t": 25.601
+        },
+        {
+          "w": "por favor.",
+          "t": 26.264
+        }
+      ],
+      "orig": "Para llevar, por favor.",
+      "tr": "To go, please."
+    },
+    {
+      "who": "lupa",
+      "start": 37.24,
+      "end": 42.8,
+      "text": "Thank you. *Muchas gracias, ¡hasta luego!* means \"Thank you very much, see you later!\"",
+      "words": [],
+      "orig": "Thank you. \"Muchas gracias, ¡hasta luego!\" means \"Thank you very much, see you later!\"",
+      "tr": ""
+    },
+    {
+      "who": "you",
+      "start": 44.52,
+      "end": 46.54,
+      "text": "Muchas gracias, adiós.",
+      "words": [
+        {
+          "w": "Muchas",
+          "t": 44.557
+        },
+        {
+          "w": "gracias,",
+          "t": 45.01
+        },
+        {
+          "w": "adiós.",
+          "t": 45.985
+        }
+      ],
+      "orig": "Muchas gracias, adiós.",
+      "tr": "Thank you very much, goodbye."
+    }
+  ],
+  "cards": [
+    {
+      "t": 12.382,
+      "text": "Un café, por favor.",
+      "tr": "A coffee, please."
+    },
+    {
+      "t": 23.891,
+      "text": "Para llevar, por favor.",
+      "tr": "To go, please."
+    },
+    {
+      "t": 43.145,
+      "text": "Muchas gracias, adiós.",
+      "tr": "Thank you very much, goodbye."
+    }
+  ]
+}

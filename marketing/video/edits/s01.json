@@ -1,0 +1,279 @@
+{
+  "id": "s01",
+  "video": "clips/s01.mp4",
+  "width": 886,
+  "height": 1920,
+  "hook": "Londra'da kahve sipariş edebilir misin? ☕",
+  "title": "☕ Londra'da kahve siparişi",
+  "cta": "Çok yakında App Store'da",
+  "keeps": [
+    {
+      "from": 3.171,
+      "to": 8.059
+    },
+    {
+      "from": 8.93,
+      "to": 16.799
+    },
+    {
+      "from": 17.661,
+      "to": 19.774
+    },
+    {
+      "from": 20.111,
+      "to": 24.311
+    },
+    {
+      "from": 25.169,
+      "to": 28.257
+    },
+    {
+      "from": 28.578,
+      "to": 33.701
+    },
+    {
+      "from": 34.565,
+      "to": 42.48
+    },
+    {
+      "from": 43.338,
+      "to": 52.058
+    }
+  ],
+  "lines": [
+    {
+      "who": "lupa",
+      "start": 3.321,
+      "end": 7.709,
+      "text": "Hello! Welcome to the Coffee Corner. What can I get for you today?",
+      "words": [],
+      "tr": "Merhaba! Coffee Corner'a hoş geldin. Sana ne vereyim?"
+    },
+    {
+      "who": "you",
+      "start": 9.08,
+      "end": 12.618,
+      "text": "Hi! Can I get a large coffee, please?",
+      "words": [
+        {
+          "w": "Hi!",
+          "t": 9.806
+        },
+        {
+          "w": "Can",
+          "t": 10.403
+        },
+        {
+          "w": "I",
+          "t": 10.631
+        },
+        {
+          "w": "get",
+          "t": 10.724
+        },
+        {
+          "w": "a",
+          "t": 10.922
+        },
+        {
+          "w": "large",
+          "t": 10.991
+        },
+        {
+          "w": "coffee,",
+          "t": 11.384
+        },
+        {
+          "w": "please?",
+          "t": 12.14
+        }
+      ],
+      "tr": "Merhaba! Büyük bir kahve alabilir miyim lütfen?"
+    },
+    {
+      "who": "lupa",
+      "start": 13.294,
+      "end": 16.449,
+      "text": "Sure! What kind of milk would you like in your coffee?",
+      "words": [],
+      "tr": "Tabii! Kahvende nasıl süt olsun?"
+    },
+    {
+      "who": "you",
+      "start": 17.811,
+      "end": 19.424,
+      "text": "Whole milk, please.",
+      "words": [
+        {
+          "w": "Whole",
+          "t": 17.869
+        },
+        {
+          "w": "milk,",
+          "t": 18.194
+        },
+        {
+          "w": "please.",
+          "t": 18.857
+        }
+      ],
+      "tr": "Tam yağlı süt lütfen."
+    },
+    {
+      "who": "lupa",
+      "start": 20.261,
+      "end": 23.961,
+      "text": "And would you like any pastries or snacks with that today?",
+      "words": [],
+      "tr": "Yanına hamur işi ya da atıştırmalık ister misin?"
+    },
+    {
+      "who": "you",
+      "start": 25.319,
+      "end": 27.907,
+      "text": "Yes, a blueberry muffin, please.",
+      "words": [
+        {
+          "w": "Yes,",
+          "t": 25.375
+        },
+        {
+          "w": "a",
+          "t": 26.06
+        },
+        {
+          "w": "blueberry",
+          "t": 26.105
+        },
+        {
+          "w": "muffin,",
+          "t": 26.651
+        },
+        {
+          "w": "please.",
+          "t": 27.358
+        }
+      ],
+      "tr": "Evet, bir yaban mersinli muffin lütfen."
+    },
+    {
+      "who": "lupa",
+      "start": 28.728,
+      "end": 33.351,
+      "text": "That muffin is delicious. Your total comes to five pounds fifty.",
+      "words": [],
+      "tr": "O muffin çok lezzetli. Toplam beş pound elli."
+    },
+    {
+      "who": "you",
+      "start": 34.715,
+      "end": 36.95,
+      "text": "Here you go. Keep the change!",
+      "words": [
+        {
+          "w": "Here",
+          "t": 34.753
+        },
+        {
+          "w": "you",
+          "t": 35.047
+        },
+        {
+          "w": "go.",
+          "t": 35.245
+        },
+        {
+          "w": "Keep",
+          "t": 35.869
+        },
+        {
+          "w": "the",
+          "t": 36.25
+        },
+        {
+          "w": "change!",
+          "t": 36.322
+        }
+      ],
+      "tr": "Buyurun. Üstü kalsın!"
+    },
+    {
+      "who": "lupa",
+      "start": 37.55,
+      "end": 42.13,
+      "text": "Thank you so much! Here is your coffee and muffin. Have a wonderful day!",
+      "words": [],
+      "tr": "Çok teşekkürler! Kahven ve muffinin burada. Harika bir gün geçir!"
+    },
+    {
+      "who": "you",
+      "start": 43.488,
+      "end": 45.716,
+      "text": "Thank you, you too! Goodbye!",
+      "words": [
+        {
+          "w": "Thank",
+          "t": 43.546
+        },
+        {
+          "w": "you,",
+          "t": 43.87
+        },
+        {
+          "w": "you",
+          "t": 44.287
+        },
+        {
+          "w": "too!",
+          "t": 44.463
+        },
+        {
+          "w": "Goodbye!",
+          "t": 45.055
+        }
+      ],
+      "tr": "Teşekkürler, size de! Hoşça kalın!"
+    },
+    {
+      "who": "lupa",
+      "start": 46.256,
+      "end": 50.458,
+      "text": "You did a fantastic job with that roleplay today, Ahmet.",
+      "words": [],
+      "tr": "Bugünkü canlandırmada harika iş çıkardın Ahmet."
+    }
+  ],
+  "cards": [
+    {
+      "t": 7.717,
+      "text": "Hi! Can I get a large coffee, please?",
+      "tr": "Merhaba! Büyük bir kahve alabilir miyim lütfen?"
+    },
+    {
+      "t": 16.456,
+      "text": "Whole milk, please.",
+      "tr": "Tam yağlı süt lütfen."
+    },
+    {
+      "t": 23.966,
+      "text": "Yes, a blueberry muffin, please.",
+      "tr": "Evet, bir yaban mersinli muffin lütfen."
+    },
+    {
+      "t": 33.355,
+      "text": "Here you go. Keep the change!",
+      "tr": "Buyurun. Üstü kalsın!"
+    },
+    {
+      "t": 42.139,
+      "text": "Thank you, you too! Goodbye!",
+      "tr": "Teşekkürler, size de! Hoşça kalın!"
+    },
+    {
+      "t": 52.477,
+      "text": "Goodbye! Have a wonderful day.",
+      "tr": "Hoşça kalın! Harika bir gün geçirin."
+    }
+  ],
+  "lang": "tr"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "s03",
+  "title": "İş görüşmesi",
+  "mode": "freechat",
+  "opener": "Let's role-play a job interview: I'm the interviewer. So, tell me a little about yourself.",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}

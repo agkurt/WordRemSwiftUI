@@ -1,0 +1,15 @@
+{
+  "id": "s08",
+  "title": "Doktorda",
+  "mode": "freechat",
+  "opener": "Let's role-play: I'm a doctor at a clinic in London. Hello! What seems to be the problem today?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}

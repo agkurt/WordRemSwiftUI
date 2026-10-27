@@ -1,0 +1,15 @@
+{
+  "id": "s10",
+  "title": "Lupa seviyemi tahmin etti",
+  "mode": "freechat",
+  "opener": "Talk to me for a minute and I'll guess your English level! What's your favorite movie?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "My favorite movie is Interstellar.",
+    "Because the story is amazing and the music is beautiful.",
+    "I watched it three times!",
+    "So, what is my English level?"
+  ],
+  "note": "This is a short recording. Speak only English, keep each answer to one or two short sentences, warm and natural. No praise, no pronunciation comments. Answer the learner's questions directly."
+}

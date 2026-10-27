@@ -1,0 +1,15 @@
+{
+  "id": "s13",
+  "title": "Türk aksanıyla (s04, tr-TR ses)",
+  "mode": "freechat",
+  "opener": "Tell me about your weekend! What did you do?",
+  "voice": "tr-TR",
+  "rate": 0.48,
+  "lines": [
+    "I am go to cinema with my friends yesterday.",
+    "Yes, I am agree, the film was very good.",
+    "I was very boring at home, so we went out.",
+    "Thank you! Can you explain me one more time?"
+  ],
+  "note": "This is a short recording about common mistakes. The learner will make typical grammar mistakes on purpose. Each time, react to what they said in one short English sentence, then correct the mistake kindly: say the correct sentence clearly in English and add one very short explanation in Turkish. Show the corrected sentence as the card. No praise, keep it light and friendly."
+}

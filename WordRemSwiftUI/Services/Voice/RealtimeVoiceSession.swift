@@ -648,6 +648,20 @@ final class RealtimeVoiceSession: ObservableObject {
         guide(after: text)
         send(["type": "response.create"])
     }
+
+    /// Stüdyo (sosyal medya kaydı): cihaz sesi öğrenci yerine konuşurken ekran basılı tutuluyormuş gibi görünür
+    func studioSpeaking(_ on: Bool) {
+        if on {
+            guard phase == .listening, !timeUp else { return }
+            isHoldingToTalk = true
+            inputLevel = 0.45
+            phase = .userSpeaking
+        } else if phase == .userSpeaking {
+            isHoldingToTalk = false
+            inputLevel = 0
+            phase = .listening
+        }
+    }
     #endif
 
     func sendText(_ text: String) {

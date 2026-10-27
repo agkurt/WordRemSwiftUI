@@ -1,0 +1,15 @@
+{
+  "id": "s05",
+  "title": "Türklerin hataları: kendini anlat",
+  "mode": "freechat",
+  "opener": "Tell me a little about yourself!",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "I have 25 years old, and I am living in Istanbul since five years.",
+    "I am working in a bank.",
+    "My English is not enough good.",
+    "Thank you, you are very helpful!"
+  ],
+  "note": "This is a short recording about common mistakes. The learner will make typical grammar mistakes on purpose. Each time, react to what they said in one short English sentence, then correct the mistake kindly: say the correct sentence clearly in English and add one very short explanation in Turkish. Show the corrected sentence as the card. No praise, keep it light and friendly."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "s11",
+  "title": "Otelde giriş",
+  "mode": "freechat",
+  "opener": "Let's role-play: I'm a hotel receptionist in Barcelona. Good evening! Do you have a reservation?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}

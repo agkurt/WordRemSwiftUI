@@ -1,0 +1,15 @@
+{
+  "id": "s02",
+  "title": "Pasaport kontrolü",
+  "mode": "freechat",
+  "opener": "Let's role-play: I'm a passport officer at London Heathrow airport. Good morning! What's the purpose of your visit?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}

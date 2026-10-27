@@ -1,0 +1,15 @@
+{
+  "id": "s12",
+  "title": "Yol sormak",
+  "mode": "freechat",
+  "opener": "Let's role-play: I'm a local in London. You look a bit lost! Can I help you?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}

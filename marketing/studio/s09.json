@@ -1,0 +1,15 @@
+{
+  "id": "s09",
+  "title": "Partide tanışma",
+  "mode": "freechat",
+  "opener": "Let's role-play: we just met at a party in London. Hi! I don't think we've met. I'm Lupa!",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}

@@ -7,6 +7,8 @@
 //
 
 import SwiftUI
+import AVFoundation
+import ReplayKit
 
 struct VoiceTutorView: View {
     let mode: TutorMode
@@ -157,7 +159,11 @@ struct VoiceTutorView: View {
             saveAndStop()
             if isDemo { onFinished(false) } else { dismiss() }
         }
-        .onChange(of: session.phase) { _ in flushDebugQueue() }
+        .onChange(of: session.phase) { _ in
+            flushDebugQueue()
+            StudioDirector.shared.observe(session)
+        }
+        .onChange(of: session.turns.count) { _ in StudioDirector.shared.turnAdded(session) }
         #endif
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
             OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "lesson_limit")
@@ -833,9 +839,288 @@ enum DebugDriver {
                 case "open": NotificationCenter.default.post(name: open, object: arg)
                 case "say": NotificationCenter.default.post(name: say, object: arg)
                 case "close": NotificationCenter.default.post(name: close, object: nil)
+                case "studio":
+                    Task { @MainActor in
+                        if let s = StudioDirector.scripts().first(where: { $0.id == arg }) { StudioDirector.shared.arm(s) }
+                    }
                 default: break
                 }
             }
+        }
+    }
+}
+
+/// Sosyal medya videoları için senaryo: Documents/studio/<id>.json (repoda marketing/studio/)
+struct StudioScript: Codable, Identifiable {
+    let id: String
+    let title: String
+    /// "freechat" (varsayılan) · "goal <chapter>/<goal>" · "demo"
+    var mode: String?
+    /// Serbest sohbette Lupa'nın soracağı ilk soru; canlandırma sahnesini kurar
+    var opener: String?
+    /// Lupa'ya bu kayda özel yönerge (ör. sahne boyunca yalnızca İngilizce); boşsa varsayılan canlandırma yönergesi
+    var note: String?
+    /// Kayıt süresince uygulamanın dili (öğrencinin ana dili, ör. "en") ve öğrenilen dil (ör. "es"); kayıt bitince eskisine döner
+    var native: String?
+    var target: String?
+    /// Öğrencinin sesi: dil kodu ("en-US", "es-ES") ya da cihazdaki ses kimliği
+    var voice: String?
+    /// Konuşma hızı (0.4–0.55 doğal)
+    var rate: Float?
+    /// Öğrencinin sırayla söyleyecekleri; "@card" ekrandaki kartı okur
+    let lines: [String]
+}
+
+/// Stüdyo: senaryoyu oynatır ve kaydeder. Öğrenci replikleri cihazın sesiyle okunur, sonra test sürücüsüyle
+/// Lupa'ya verilir; Lupa'nın cevapları, kartları ve düzeltmeleri gerçektir. Ekran sesiyle birlikte uygulamanın içinden
+/// kaydedilir (Documents/studio-out/<id>.mp4); kurgu için zaman çizelgesi yanına yazılır (<id>.json).
+@MainActor
+final class StudioDirector: NSObject, AVSpeechSynthesizerDelegate {
+    static let shared = StudioDirector()
+    private var script: StudioScript?
+    private var next = 0
+    private var busy = false
+    private var pending: String?
+    private let synth = AVSpeechSynthesizer()
+    private var onSpoken: (() -> Void)?
+
+    // Kayıt ve zaman çizelgesi
+    private var recordingStart: Date?
+    private var events: [[String: Any]] = []
+    private var lastPhase: RealtimeVoiceSession.Phase = .idle
+    private var lineIndex = -1
+    private var lineText = ""
+    private weak var session: RealtimeVoiceSession?
+    /// Kaydın adı (senaryo bitince script boşalır, kayıt bu adla yazılır)
+    private var scriptId: String?
+    /// Kayıttan önceki ana dil / öğrenilen dil (kayıt bitince geri yüklenir)
+    private var savedLanguages: (native: String, target: String?, targetName: String?)?
+
+    override private init() {
+        super.init()
+        synth.delegate = self
+    }
+
+    /// Videoda sahne bölünmesin: Lupa karakterden çıkmaz, çeviri ve övgü yok, her tur öğrencinin sıradaki cümlesi kartta
+    static let rolePlayNote = """
+    This is a short role-play recording. Stay in character for the whole scene and speak ONLY the language the learner is studying, \
+    even though they are a beginner: no translations, no explanations, no comments on pronunciation, no praise. Keep every line short \
+    and natural, like the real person you are playing. After each line, show the learner's natural next line as the card. \
+    After three exchanges, close the scene naturally (say goodbye in character) and show the learner's goodbye line as the card.
+    """
+
+    private static var documents: URL? { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first }
+
+    static func scripts() -> [StudioScript] {
+        guard let dir = documents?.appendingPathComponent("studio"),
+              let files = try? FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) else { return [] }
+        return files.filter { $0.pathExtension == "json" }
+            .compactMap { (try? Data(contentsOf: $0)).flatMap { try? JSONDecoder().decode(StudioScript.self, from: $0) } }
+            .sorted { $0.id < $1.id }
+    }
+
+    /// Kaydı başlatır (iOS bir kez "Ekranı kaydet" izni sorar), izin gelince dersi açar
+    func arm(_ s: StudioScript) {
+        script = s
+        scriptId = s.id
+        next = 0
+        busy = false
+        pending = nil
+        events = []
+        lineIndex = -1
+        recordingStart = nil
+        lastPhase = .idle
+        // Kayıtta kimse ekrana dokunmaz: otomatik kilit dersi (ve bağlantıyı) yarıda keser
+        UIApplication.shared.isIdleTimerDisabled = true
+        useLanguages(native: s.native, target: s.target)
+        let recorder = RPScreenRecorder.shared()
+        recorder.isMicrophoneEnabled = false
+        recorder.startRecording { [weak self] error in
+            Task { @MainActor in
+                guard let self else { return }
+                if let error { voiceLog.error("studio recording failed: \(error.localizedDescription, privacy: .public)") }
+                else { self.recordingStart = Date(); voiceLog.info("studio recording started") }
+                self.open(s)
+            }
+        }
+        // Kayıt güvenlik sınırı: 4 dakika
+        DispatchQueue.main.asyncAfter(deadline: .now() + 240) { [weak self] in
+            if self?.recordingStart != nil { self?.finish() }
+        }
+    }
+
+    /// Videonun dili: uygulama arayüzü ve kart çevirileri ana dilde, Lupa öğrenilen dilde konuşur
+    private func useLanguages(native: String?, target: String?) {
+        guard native != nil || target != nil else { return }
+        let d = UserDefaults.standard
+        savedLanguages = (LanguageManager.shared.currentLanguageCode, d.string(forKey: "selectedTargetLanguageCode"),
+                          d.string(forKey: "selectedTargetLanguageName"))
+        if let native { LanguageManager.shared.setLanguage(native) }
+        if let target {
+            d.set(target, forKey: "selectedTargetLanguageCode")
+            d.set(LanguageManager.shared.languageName(for: target), forKey: "selectedTargetLanguageName")
+        }
+    }
+
+    private func restoreLanguages() {
+        guard let saved = savedLanguages else { return }
+        savedLanguages = nil
+        let d = UserDefaults.standard
+        LanguageManager.shared.setLanguage(saved.native)
+        d.set(saved.target, forKey: "selectedTargetLanguageCode")
+        d.set(saved.targetName, forKey: "selectedTargetLanguageName")
+    }
+
+    private func open(_ s: StudioScript) {
+        if let opener = s.opener { TutorBrain.chatOpener = opener }
+        TutorBrain.studioNote = s.note ?? Self.rolePlayNote
+        TutorBrain.studioNameless = true
+        AppRouter.shared.route = .talk
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            NotificationCenter.default.post(name: DebugDriver.open, object: s.mode ?? "freechat")
+        }
+    }
+
+    private func mark(_ event: [String: Any]) {
+        guard let start = recordingStart else { return }
+        var e = event
+        e["t"] = (Date().timeIntervalSince(start) * 1000).rounded() / 1000
+        events.append(e)
+    }
+
+    /// Ders ekranı her faz ve yeni satırda çağırır: zaman çizelgesi + sıradaki replik
+    func observe(_ session: RealtimeVoiceSession) {
+        guard script != nil || recordingStart != nil else { return }
+        self.session = session
+        if session.phase != lastPhase {
+            mark(["ev": "phase", "v": "\(session.phase)"])
+            lastPhase = session.phase
+        }
+        step(session)
+    }
+
+    func turnAdded(_ session: RealtimeVoiceSession) {
+        guard recordingStart != nil, let last = session.turns.last else { return }
+        mark(["ev": "turn", "i": session.turns.count - 1, "role": "\(last.role)"])
+    }
+
+    /// Lupa susup sırayı verince sıradaki repliği (kısa, doğal bir duraklamayla) okur
+    private func step(_ session: RealtimeVoiceSession) {
+        guard let s = script, !busy, session.phase == .listening, Self.learnersTurn(session) else { return }
+        // Okunduğu sırada Lupa araya girdiyse replik kaybolmaz: sıra gelince yalnızca gönderilir
+        if let line = pending {
+            pending = nil
+            session.debugLearnerSays(line)
+            return
+        }
+        guard next < s.lines.count else {
+            script = nil
+            // Lupa'nın son cümlesi ve kartı ekranda biraz kalsın
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in self?.finish() }
+            return
+        }
+        busy = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self, weak session] in
+            guard let self, let session else { return }
+            var line = s.lines[self.next]
+            if line == "@card" {
+                // Seçenekli kartta ilk seçenek; boşluklu kart senaryoda açıkça yazılmalı
+                line = Self.currentCard(session).map {
+                    String($0.components(separatedBy: " / ")[0]).replacingOccurrences(of: "...", with: "")
+                } ?? ""
+            }
+            guard session.phase == .listening, Self.learnersTurn(session), !line.isEmpty else { self.busy = false; return }
+            self.next += 1
+            voiceLog.info("studio says: \(line, privacy: .public)")
+            session.studioSpeaking(true)
+            self.say(line, voice: s.voice, rate: s.rate) {
+                session.studioSpeaking(false)
+                self.busy = false
+                if session.phase == .listening { session.debugLearnerSays(line) } else { self.pending = line }
+                // Öğrenci veda ettiyse sahne biter: Lupa'nın vedasından sonra yeni kart okunmaz
+                if line.range(of: Self.farewell, options: [.regularExpression, .caseInsensitive]) != nil {
+                    self.next = s.lines.count
+                }
+            }
+        }
+    }
+
+    /// Kaydı durdurur; video ve zaman çizelgesi Documents/studio-out içine yazılır
+    private func finish() {
+        guard let id = scriptId, recordingStart != nil, let dir = Self.documents?.appendingPathComponent("studio-out") else {
+            UIApplication.shared.isIdleTimerDisabled = false
+            restoreLanguages()
+            return
+        }
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let video = dir.appendingPathComponent("\(id).mp4")
+        try? FileManager.default.removeItem(at: video)
+        let turns: [[String: Any]] = session?.turns.map { ["role": "\($0.role)", "text": $0.text, "detail": $0.detail ?? ""] } ?? []
+        let timeline: [String: Any] = ["id": id, "events": events, "turns": turns]
+        if JSONSerialization.isValidJSONObject(timeline), let data = try? JSONSerialization.data(withJSONObject: timeline, options: [.prettyPrinted]) {
+            try? data.write(to: dir.appendingPathComponent("\(id).json"))
+        }
+        recordingStart = nil
+        script = nil
+        TutorBrain.studioNameless = false
+        RPScreenRecorder.shared().stopRecording(withOutput: video) { error in
+            Task { @MainActor in
+                UIApplication.shared.isIdleTimerDisabled = false
+                self.restoreLanguages()
+                if let error { voiceLog.error("studio save failed: \(error.localizedDescription, privacy: .public)") }
+                else { voiceLog.info("studio saved \(id, privacy: .public)") }
+            }
+        }
+    }
+
+    /// Öğrencinin veda cümlesi (senaryonun dillerinde)
+    private static let farewell = #"\b(bye|goodbye|have a (nice|great|good) (day|one|evening)|see you|thank you for your time|"#
+        + #"adi[oó]s|hasta (luego|pronto|mañana)|buen d[ií]a|chao|au revoir|bonne (journée|soirée)|à bientôt|tschüss|"#
+        + #"auf wiedersehen|sch[öo]nen tag|arrivederci|buona giornata|ciao|до свидания|пока|再见|güle güle|hoşça kal)"#
+
+    /// Lupa en az bir kez konuşmuş ve son söz öğrencide değil
+    private static func learnersTurn(_ session: RealtimeVoiceSession) -> Bool {
+        session.turns.contains { $0.role == .ai } && session.turns.last?.role != .user
+    }
+
+    /// Öğrencinin son repliğinden sonra gösterilen kart
+    private static func currentCard(_ session: RealtimeVoiceSession) -> String? {
+        let afterUser = session.turns.lastIndex { $0.role == .user }.map { session.turns.index(after: $0) } ?? session.turns.startIndex
+        return session.turns[afterUser...].last { $0.role == .card }?.text
+    }
+
+    private func say(_ text: String, voice: String?, rate: Float?, done: @escaping () -> Void) {
+        let u = AVSpeechUtterance(string: text)
+        let v = voice ?? "en-US"
+        u.voice = AVSpeechSynthesisVoice(identifier: v) ?? Self.bestVoice(language: v)
+        u.rate = rate ?? 0.48
+        voiceLog.info("studio voice: \(u.voice?.name ?? "-", privacy: .public) q\(u.voice?.quality.rawValue ?? 0, privacy: .public)")
+        lineIndex += 1
+        lineText = text
+        mark(["ev": "learner_start", "line": lineIndex, "text": text])
+        onSpoken = done
+        synth.speak(u)
+    }
+
+    /// Dil için cihazdaki en kaliteli ses (Ayarlar → Erişilebilirlik → Oku ve Konuş → Sesler'den "Premium" ses indirilebilir)
+    private static func bestVoice(language: String) -> AVSpeechSynthesisVoice? {
+        AVSpeechSynthesisVoice.speechVoices()
+            .filter { $0.language == language }
+            .max { $0.quality.rawValue < $1.quality.rawValue }
+            ?? AVSpeechSynthesisVoice(language: language)
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, willSpeakRangeOfSpeechString characterRange: NSRange, utterance: AVSpeechUtterance) {
+        let word = (utterance.speechString as NSString).substring(with: characterRange)
+        Task { @MainActor in self.mark(["ev": "word", "line": self.lineIndex, "w": word]) }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            self.mark(["ev": "learner_end", "line": self.lineIndex])
+            let done = self.onSpoken
+            self.onSpoken = nil
+            done?()
         }
     }
 }

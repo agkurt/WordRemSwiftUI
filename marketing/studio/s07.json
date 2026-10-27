@@ -1,0 +1,15 @@
+{
+  "id": "s07",
+  "title": "Restoranda şikâyet",
+  "mode": "freechat",
+  "opener": "Let's role-play: I'm a waiter at a restaurant in New York. Hi! How is everything with your meal?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}

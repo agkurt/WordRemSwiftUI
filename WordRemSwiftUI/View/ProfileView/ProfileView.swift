@@ -19,6 +19,9 @@ struct ProfileView: View {
     @State private var voiceEngine = VoiceEngineChoice.current
     @State private var showPrivacy = false
     @State private var showTerms = false
+    #if DEBUG
+    @State private var showStudio = false
+    #endif
     @State private var showManageSubscription = false
     @State private var showUsernameSetup = false
     @State private var showAllAchievements = false
@@ -57,6 +60,31 @@ struct ProfileView: View {
         .sheet(isPresented: $showTerms) {
             SafariWebView(url: URL(string: "https://api.wordremai.app/terms")!)
         }
+        #if DEBUG
+        .sheet(isPresented: $showStudio) {
+            NavigationStack {
+                let scripts = StudioDirector.scripts()
+                List(scripts) { s in
+                    Button {
+                        showStudio = false
+                        // Kayıt izni penceresi sayfa kapandıktan sonra açılsın
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { StudioDirector.shared.arm(s) }
+                    } label: {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(s.id) · \(s.title)").font(.body.weight(.semibold))
+                            Text("\(s.lines.count) replik · \(s.mode ?? "freechat")").font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .overlay { if scripts.isEmpty { Text("Documents/studio içinde senaryo yok").foregroundStyle(.secondary) } }
+                .navigationTitle("Stüdyo")
+                .safeAreaInset(edge: .bottom) {
+                    Text("Seçince iOS kayıt izni sorar: \"Ekranı Kaydet\"e dokun. Ders kendiliğinden açılır, oynar ve kaydedilir.")
+                        .font(.footnote).foregroundStyle(.secondary).padding()
+                }
+            }
+        }
+        #endif
         // Apple'ın kendi abonelik ekranı: plan değiştirme / iptal
         .manageSubscriptionsSheet(isPresented: $showManageSubscription)
         .fullScreenCover(isPresented: $showUsernameSetup) {
@@ -440,6 +468,10 @@ struct ProfileView: View {
                     voiceEngine = VoiceEngineChoice.current
                 } label: {
                     settingsRow(icon: "waveform", title: "Test: ses motoru \(voiceEngine) (dokun: değiştir)")
+                }
+                Divider().padding(.leading, 48)
+                Button { showStudio = true } label: {
+                    settingsRow(icon: "video", title: "Stüdyo: sosyal medya kaydı")
                 }
                 #endif
             }

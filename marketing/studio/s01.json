@@ -1,0 +1,15 @@
+{
+  "id": "s01",
+  "title": "Londra'da kahve siparişi",
+  "mode": "freechat",
+  "opener": "Let's role-play: I'm a barista in a London café and you're my customer. Hi there! What can I get you today?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ]
+}
