@@ -137,3 +137,71 @@ enum ReviewCore {
         calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: date)) ?? date
     }
 }
+
+// MARK: - Lupa (öğretmen) ortak verisi: uygulama + widget
+/// "Lupa seni bekliyor" widget'ı, seri widget'ı ve bildirimler aynı günlük soruyu ve dil bilgisini kullanır.
+enum LupaShared {
+    static let name = "Lupa"
+    static let widgetKind = "LupaWidget"
+    static let streakWidgetKind = "StreakWidget"
+    private static let targetKey = "lupaTargetLang"
+    private static let nativeKey = "nativeLangCode"
+    private static var defaults: UserDefaults? { UserDefaults(suiteName: LearnedWordsStore.appGroupID) }
+
+    static var targetLang: String { (defaults?.string(forKey: targetKey) ?? "en").lowercased() }
+    static var nativeLang: String { (defaults?.string(forKey: nativeKey) ?? "en").lowercased() }
+
+    /// Uygulama açılınca / dil değişince widget'ların dili güncellenir
+    static func save(target: String, native: String) {
+        let t = target.lowercased(), n = native.lowercased()
+        guard t != defaults?.string(forKey: targetKey) || n != defaults?.string(forKey: nativeKey) else { return }
+        defaults?.set(t, forKey: targetKey)
+        defaults?.set(n, forKey: nativeKey)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    /// Günün sorusu: her gün bir sonraki (herkes için aynı sıra, dil fark etmez)
+    static func questionIndex(for date: Date = Date()) -> Int {
+        (Calendar.current.ordinality(of: .day, in: .era, for: date) ?? 0) % questions.count
+    }
+
+    static func question(_ index: Int, lang: String) -> String {
+        let q = questions[((index % questions.count) + questions.count) % questions.count]
+        return q[lang.lowercased()] ?? q["en"]!
+    }
+
+    /// Widget'a dokununca: Lupa bu soruyla sohbeti açar
+    static func url(question index: Int) -> URL { URL(string: "wordrem://lupa?q=\(index)")! }
+    static let streakURL = URL(string: "wordrem://talk")!
+
+    static let questions: [[String: String]] = [
+        ["en": "How was your day?", "tr": "Günün nasıl geçti?", "de": "Wie war dein Tag?", "fr": "Comment s'est passée ta journée ?",
+         "es": "¿Qué tal tu día?", "it": "Com'è andata la tua giornata?", "ru": "Как прошёл твой день?", "zh": "你今天过得怎么样？"],
+        ["en": "What did you eat today?", "tr": "Bugün ne yedin?", "de": "Was hast du heute gegessen?", "fr": "Qu'est-ce que tu as mangé aujourd'hui ?",
+         "es": "¿Qué comiste hoy?", "it": "Cosa hai mangiato oggi?", "ru": "Что ты сегодня ел?", "zh": "你今天吃了什么？"],
+        ["en": "What are you doing this weekend?", "tr": "Bu hafta sonu ne yapıyorsun?", "de": "Was machst du am Wochenende?", "fr": "Qu'est-ce que tu fais ce week-end ?",
+         "es": "¿Qué haces este fin de semana?", "it": "Cosa fai questo fine settimana?", "ru": "Что ты делаешь на выходных?", "zh": "这个周末你做什么？"],
+        ["en": "What's your favorite place in your city?", "tr": "Şehrinde en sevdiğin yer neresi?", "de": "Was ist dein Lieblingsort in deiner Stadt?", "fr": "Quel est ton endroit préféré dans ta ville ?",
+         "es": "¿Cuál es tu lugar favorito de tu ciudad?", "it": "Qual è il tuo posto preferito nella tua città?", "ru": "Какое твоё любимое место в городе?", "zh": "你在城市里最喜欢的地方是哪里？"],
+        ["en": "What music are you listening to these days?", "tr": "Bu aralar hangi müzikleri dinliyorsun?", "de": "Welche Musik hörst du gerade?", "fr": "Quelle musique écoutes-tu en ce moment ?",
+         "es": "¿Qué música escuchas estos días?", "it": "Che musica ascolti in questi giorni?", "ru": "Какую музыку ты сейчас слушаешь?", "zh": "你最近在听什么音乐？"],
+        ["en": "Where would you love to travel?", "tr": "En çok nereye seyahat etmek istersin?", "de": "Wohin würdest du gern reisen?", "fr": "Où aimerais-tu voyager ?",
+         "es": "¿A dónde te encantaría viajar?", "it": "Dove ti piacerebbe viaggiare?", "ru": "Куда бы ты хотел поехать?", "zh": "你最想去哪里旅行？"],
+        ["en": "What made you smile today?", "tr": "Bugün seni ne gülümsetti?", "de": "Was hat dich heute zum Lächeln gebracht?", "fr": "Qu'est-ce qui t'a fait sourire aujourd'hui ?",
+         "es": "¿Qué te hizo sonreír hoy?", "it": "Cosa ti ha fatto sorridere oggi?", "ru": "Что тебя сегодня порадовало?", "zh": "今天什么让你笑了？"],
+        ["en": "What do you usually do in the morning?", "tr": "Sabahları genelde ne yaparsın?", "de": "Was machst du morgens normalerweise?", "fr": "Que fais-tu d'habitude le matin ?",
+         "es": "¿Qué sueles hacer por la mañana?", "it": "Cosa fai di solito la mattina?", "ru": "Что ты обычно делаешь утром?", "zh": "你早上通常做什么？"],
+        ["en": "What's your favorite food?", "tr": "En sevdiğin yemek ne?", "de": "Was ist dein Lieblingsessen?", "fr": "Quel est ton plat préféré ?",
+         "es": "¿Cuál es tu comida favorita?", "it": "Qual è il tuo piatto preferito?", "ru": "Какое твоё любимое блюдо?", "zh": "你最喜欢的食物是什么？"],
+        ["en": "Who do you love spending time with?", "tr": "En çok kiminle vakit geçirmeyi seversin?", "de": "Mit wem verbringst du am liebsten Zeit?", "fr": "Avec qui aimes-tu passer du temps ?",
+         "es": "¿Con quién te encanta pasar tiempo?", "it": "Con chi ami passare il tempo?", "ru": "С кем ты любишь проводить время?", "zh": "你最喜欢和谁一起度过时间？"],
+        ["en": "What did you do yesterday evening?", "tr": "Dün akşam ne yaptın?", "de": "Was hast du gestern Abend gemacht?", "fr": "Qu'as-tu fait hier soir ?",
+         "es": "¿Qué hiciste ayer por la tarde?", "it": "Cosa hai fatto ieri sera?", "ru": "Что ты делал вчера вечером?", "zh": "你昨天晚上做了什么？"],
+        ["en": "What's a hobby you really enjoy?", "tr": "Gerçekten keyif aldığın bir hobin ne?", "de": "Welches Hobby macht dir richtig Spaß?", "fr": "Quel loisir aimes-tu vraiment ?",
+         "es": "¿Qué pasatiempo disfrutas de verdad?", "it": "Qual è un hobby che ti piace davvero?", "ru": "Какое хобби тебе по-настоящему нравится?", "zh": "你真正喜欢的爱好是什么？"],
+        ["en": "What's the weather like where you are?", "tr": "Orada hava nasıl?", "de": "Wie ist das Wetter bei dir?", "fr": "Quel temps fait-il chez toi ?",
+         "es": "¿Qué tiempo hace donde estás?", "it": "Che tempo fa da te?", "ru": "Какая у тебя сейчас погода?", "zh": "你那里天气怎么样？"],
+        ["en": "What would you like to learn next?", "tr": "Sırada ne öğrenmek istersin?", "de": "Was möchtest du als Nächstes lernen?", "fr": "Qu'aimerais-tu apprendre ensuite ?",
+         "es": "¿Qué te gustaría aprender ahora?", "it": "Cosa ti piacerebbe imparare adesso?", "ru": "Чему бы ты хотел научиться дальше?", "zh": "你接下来想学什么？"],
+    ]
+}

@@ -90,6 +90,7 @@ enum LearningLanguages {
                 dailyGoalMinutes: minutes > 0 ? minutes : 10)
         }
         ReviewScheduler.shared.reload()
+        LupaShared.save(target: code, native: OL.nativeLangCode)
     }
 }
 

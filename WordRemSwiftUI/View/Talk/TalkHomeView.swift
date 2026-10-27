@@ -139,6 +139,9 @@ struct TalkHomeView: View {
         switch route {
         case .tutor(let c, let g): activeMode = .goal(chapterId: c, goalId: g)
         case .review:              if !scheduler.dueToday.isEmpty { showReview = true }
+        case .lupa(let q):
+            TutorBrain.chatOpener = LupaShared.question(q, lang: LearningLanguages.current)
+            activeMode = .freeChat
         case .talk:                break
         }
         AppRouter.shared.route = nil

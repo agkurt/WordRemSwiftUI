@@ -52,7 +52,10 @@ struct WordRemSwiftUIApp: App {
                 guard completed else { return }
                 Task { await requestNotificationPermission() }
             }
+            // Widget'tan gelen bağlantı (Lupa'nın sorusu / seri)
+            .onOpenURL { AppRouter.shared.handle($0) }
             .onAppear {
+                LupaShared.save(target: LearningLanguages.current, native: OL.nativeLangCode)
                 if DemoData.isOn {   // Debug: ekran görüntüleri — izin/Game Center pencereleri açılmaz
                     DemoData.seedIfNeeded()
                     return

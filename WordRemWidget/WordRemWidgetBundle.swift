@@ -9,6 +9,8 @@ import SwiftUI
 @main
 struct WordRemWidgetBundle: WidgetBundle {
     var body: some Widget {
+        LupaWidget()
+        StreakWidget()
         ReviewCardWidget()
         WordOfTheDayWidget()
     }

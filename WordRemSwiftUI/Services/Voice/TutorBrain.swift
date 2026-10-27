@@ -84,19 +84,10 @@ enum TutorMode: Equatable {
 enum TutorBrain {
 
     // MARK: Kişi & dil
-    /// Öğretmenin sabit adı (öğrencinin ana diline göre): her derste aynı kişi
-    static var tutorName: String {
-        switch OL.nativeLangCode.lowercased() {
-        case "tr": return "Aleyna"
-        case "de": return "Lena"
-        case "fr": return "Chloé"
-        case "es": return "Lucía"
-        case "it": return "Giulia"
-        case "ru": return "Anya"
-        case "zh": return "Xiaoyu"
-        default: return "Emma"
-        }
-    }
+    /// Öğretmenin adı: her dilde ve her derste aynı kişi
+    static let tutorName = LupaShared.name
+    /// Widget/bildirimden: serbest sohbet Lupa'nın bu sorusuyla açılır (bir kez kullanılır)
+    static var chatOpener: String?
 
     private static var nativeName: String {
         Locale(identifier: "en").localizedString(forLanguageCode: OL.nativeLangCode) ?? "English"
@@ -415,7 +406,7 @@ enum TutorBrain {
         7. Only ever speak \(nativeName) or \(targetName), never switching language mid-sentence. Words arriving in another language or alphabet \
         are a speech recognition error: kindly say you didn't catch it and ask them to try again.
         \(proficiency <= 2 && mode != .demo ? "8. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
-        \(mode == .freeChat ? "Wait for the learner to speak first." : mode == .demo ? "Start now with step 1." : { () -> String? in if case .goal = mode { return "Start now with your opening turn: greet them by name, say in one or two sentences what this lesson is about and what they'll be able to do by the end, then SAY OUT LOUD in \(targetName) \"How are you today?\" (in \(targetName), with its meaning for a beginner), and only after asking it show their \(targetName) answer as the card." }; return nil }() ?? "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
+        \(mode == .freeChat ? (chatOpener.map { "Start now: greet them by name in one short sentence, then ask out loud in \(targetName): \"\($0)\" (for a beginner, add its meaning). Then show a natural \(targetName) answer about their own life as the card." } ?? "Wait for the learner to speak first.") : mode == .demo ? "Start now with step 1." : { () -> String? in if case .goal = mode { return "Start now with your opening turn: greet them by name, say in one or two sentences what this lesson is about and what they'll be able to do by the end, then SAY OUT LOUD in \(targetName) \"How are you today?\" (in \(targetName), with its meaning for a beginner), and only after asking it show their \(targetName) answer as the card." }; return nil }() ?? "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
         """
     }
 

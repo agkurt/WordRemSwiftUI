@@ -221,9 +221,12 @@ struct VoiceTutorView: View {
             : TutorBrain.tools.filter { ($0["name"] as? String) != "switch_language" }
         session.analyticsContext = analyticsContext
         Track.screen("lesson")
-        await session.start(instructions: TutorBrain.instructions(for: activeMode), tools: tools,
+        let opensWithQuestion = activeMode == .freeChat && TutorBrain.chatOpener != nil
+        let instructions = TutorBrain.instructions(for: activeMode)
+        TutorBrain.chatOpener = nil
+        await session.start(instructions: instructions, tools: tools,
                             targets: TutorBrain.targets(for: activeMode), startStep: TutorBrain.savedStep(for: activeMode),
-                            roleplay: !isDemo && !isSetup, aiSpeaksFirst: activeMode != .freeChat,
+                            roleplay: !isDemo && !isSetup, aiSpeaksFirst: activeMode != .freeChat || opensWithQuestion,
                             quality: usesHighModel ? "high" : "standard")
     }
 

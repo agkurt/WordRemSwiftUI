@@ -127,16 +127,19 @@ enum SmartReminders {
         c.sound = .default
         let streak = ReviewCore.streak(activeDays: days)
 
+        // Bildirimler Lupa'nın ağzından: başlık her zaman onun adı, metin kişisel
+        c.title = LupaShared.name
+        c.threadIdentifier = "lupa"
+
         if dayOffset == 0, streak >= 2 {
-            c.title = AL.f(.remStreakTitle, streak)
-            c.body = AL.s(.remStreakBody)
+            c.body = LupaText.streakRescue(streak)
+            c.interruptionLevel = .timeSensitive
             c.userInfo = ["kind": "streak"]
             return c
         }
 
         if dayOffset == 1, let resume = pendingLesson {
-            c.title = AL.s(.remTutorTitle)
-            c.body = AL.s(.remTutorBody).replacingOccurrences(of: "{goal}", with: resume.title)
+            c.body = LupaText.resume(resume.title)
             c.userInfo = ["kind": "tutor", "chapterId": resume.chapterId, "goalId": resume.goalId]
             return c
         }
@@ -144,6 +147,7 @@ enum SmartReminders {
         let due = ReviewCore.due(by: fire, words: words, states: states)
         if !due.isEmpty {
             let word = due[dayOffset % due.count]   // her gün farklı bir kelime
+            c.threadIdentifier = ""
             c.title = AL.s(.remReviewTitle)
                 .replacingOccurrences(of: "{word}", with: word.meaning)
                 .replacingOccurrences(of: "{lang}", with: targetLanguageName)
@@ -153,11 +157,15 @@ enum SmartReminders {
             return c
         }
 
-        // Kelime yoksa: seri varsa koru, yoksa iki günde bir nazik davet
-        guard streak >= 2 || dayOffset % 2 == 1 else { return nil }
-        c.title = streak >= 2 ? AL.f(.remStreakTitle, streak) : AL.s(.remDailyTitle)
-        c.body = streak >= 2 ? AL.s(.remStreakBody) : AL.s(.remDailyBody)
-        c.userInfo = ["kind": "streak"]
+        // Sıradaki ders ile Lupa'nın günün sorusu dönüşümlü
+        if dayOffset % 2 == 0, let next = ScenarioStore.shared.next {
+            c.body = LupaText.nextLesson(next.goal.localizedTitle)
+            c.userInfo = ["kind": "tutor", "chapterId": next.chapter.id, "goalId": next.goal.id]
+            return c
+        }
+        let q = LupaShared.questionIndex(for: fire)
+        c.body = LupaText.question(LupaShared.question(q, lang: LearningLanguages.current))
+        c.userInfo = ["kind": "lupa", "question": q]
         return c
     }
 
@@ -203,6 +211,8 @@ enum SmartReminders {
                 }
             case "review":
                 AppRouter.shared.route = .review
+            case "lupa":
+                AppRouter.shared.route = .lupa(question: info["question"] as? Int ?? LupaShared.questionIndex())
             default:
                 AppRouter.shared.route = .talk
             }
@@ -232,6 +242,72 @@ final class AppRouter: ObservableObject {
     enum Route: Equatable {
         case talk, review
         case tutor(chapterId: String, goalId: String)
+        /// Lupa widget'ı / bildirimi: serbest sohbet o günün sorusuyla açılır
+        case lupa(question: Int)
     }
     @Published var route: Route?
+
+    /// wordrem://lupa?q=3 · wordrem://talk
+    func handle(_ url: URL) {
+        guard url.scheme == "wordrem" else { return }
+        switch url.host {
+        case "lupa":
+            let q = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "q" }?.value.flatMap(Int.init)
+            route = .lupa(question: q ?? LupaShared.questionIndex())
+        case "review": route = .review
+        default: route = .talk
+        }
+    }
+}
+
+/// Lupa'nın bildirim metinleri (kullanıcının uygulama dilinde)
+@MainActor
+enum LupaText {
+    private static func pick(_ v: [String: String]) -> String {
+        v[LanguageManager.shared.currentLanguageCode] ?? v["en"]!
+    }
+
+    static func streakRescue(_ n: Int) -> String {
+        pick(["tr": "🔥 \(n) günlük serin bu gece bitiyor! Benimle 2 dakika konuş, kurtaralım.",
+              "en": "🔥 Your \(n)-day streak ends tonight! Talk with me for 2 minutes and let's save it.",
+              "de": "🔥 Deine \(n)-Tage-Serie endet heute Nacht! Sprich 2 Minuten mit mir und wir retten sie.",
+              "fr": "🔥 Ta série de \(n) jours se termine ce soir ! Parle 2 minutes avec moi pour la sauver.",
+              "es": "🔥 ¡Tu racha de \(n) días termina esta noche! Habla conmigo 2 minutos y la salvamos.",
+              "it": "🔥 La tua serie di \(n) giorni finisce stanotte! Parla con me 2 minuti e la salviamo.",
+              "ru": "🔥 Твоя серия из \(n) дн. закончится сегодня ночью! Поговори со мной 2 минуты, и мы её сохраним.",
+              "zh": "🔥 你连续 \(n) 天的记录今晚就要断了！和我聊 2 分钟，一起保住它。"])
+    }
+
+    static func resume(_ lesson: String) -> String {
+        pick(["tr": "“\(lesson)” dersinde kaldık. Hadi birlikte bitirelim, seni bekliyorum!",
+              "en": "We stopped in the middle of “\(lesson)”. Let's finish it together, I'm waiting!",
+              "de": "Wir sind mitten in „\(lesson)“ stehen geblieben. Lass es uns zusammen beenden!",
+              "fr": "On s'est arrêtés au milieu de « \(lesson) ». Finissons-le ensemble, je t'attends !",
+              "es": "Nos quedamos a mitad de “\(lesson)”. ¡Terminémoslo juntos, te espero!",
+              "it": "Ci siamo fermati a metà di “\(lesson)”. Finiamolo insieme, ti aspetto!",
+              "ru": "Мы остановились посередине урока «\(lesson)». Давай закончим вместе, я жду!",
+              "zh": "我们在“\(lesson)”中途停下了。一起把它完成吧，我在等你！"])
+    }
+
+    static func nextLesson(_ lesson: String) -> String {
+        pick(["tr": "Bugün “\(lesson)” konuşalım mı? Senin için hazırladım.",
+              "en": "Shall we do “\(lesson)” today? I've got it ready for you.",
+              "de": "Wollen wir heute „\(lesson)“ machen? Ich habe alles vorbereitet.",
+              "fr": "On fait « \(lesson) » aujourd'hui ? Je l'ai préparé pour toi.",
+              "es": "¿Hacemos “\(lesson)” hoy? Ya lo tengo listo para ti.",
+              "it": "Facciamo “\(lesson)” oggi? L'ho preparato per te.",
+              "ru": "Займёмся сегодня уроком «\(lesson)»? Я всё подготовила.",
+              "zh": "今天来练“\(lesson)”好吗？我已经为你准备好了。"])
+    }
+
+    static func question(_ q: String) -> String {
+        pick(["tr": "Sana bir sorum var: “\(q)” Sesli cevapla!",
+              "en": "I have a question for you: “\(q)” Answer me out loud!",
+              "de": "Ich habe eine Frage an dich: „\(q)“ Antworte mir laut!",
+              "fr": "J'ai une question pour toi : « \(q) » Réponds-moi à voix haute !",
+              "es": "Tengo una pregunta para ti: “\(q)” ¡Respóndeme en voz alta!",
+              "it": "Ho una domanda per te: “\(q)” Rispondimi a voce!",
+              "ru": "У меня к тебе вопрос: «\(q)» Ответь вслух!",
+              "zh": "我有个问题问你：“\(q)” 开口回答我吧！"])
+    }
 }
