@@ -421,7 +421,7 @@ struct ProfileView: View {
                 Divider().padding(.leading, 48)
                 Button {
                     cascadeOn.toggle()
-                    UserDefaults.standard.set(!cascadeOn, forKey: "voiceCascadeOff")
+                    UserDefaults.standard.set(cascadeOn, forKey: "voiceCascadeOn")
                 } label: {
                     settingsRow(icon: "waveform",
                                 title: cascadeOn ? "Test: ses motoru üç parçalı (dokun: realtime)" : "Test: ses motoru realtime (dokun: üç parçalı)")

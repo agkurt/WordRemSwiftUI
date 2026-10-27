@@ -266,10 +266,10 @@ final class CascadeAudio: @unchecked Sendable {
 /// RealtimeVoiceSession'ın gönderdiği olayları alır, aynı olayları geri üretir; ders akışı hiç değişmez.
 @MainActor
 final class CascadeEngine {
-    /// Debug sürümünde varsayılan açık (Profil'den kapatılabilir); TestFlight/App Store'da kapalı
+    /// Deneme: yalnızca Debug sürümünde, Profil'den açılırsa (gecikme ~1 sn fazla çıktı); TestFlight/App Store'da kapalı
     nonisolated static var isOn: Bool {
         #if DEBUG
-        !UserDefaults.standard.bool(forKey: "voiceCascadeOff")
+        UserDefaults.standard.bool(forKey: "voiceCascadeOn")
         #else
         false
         #endif
