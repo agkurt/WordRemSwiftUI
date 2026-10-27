@@ -145,7 +145,7 @@ final class RealtimeVoiceSession: ObservableObject {
         pendingCombine = false; correctAnswers = 0; totalAnswers = 0; startedAt = Date()
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
-        connectStartedAt = Date(); reconnectCount = 0; lessonTracked = false
+        connectStartedAt = Date(); reconnectCount = 0; lessonTracked = false; learnedCards = []; correctsSincePraise = 0
         errorDetail = nil; lastSocketError = nil
         turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false; timeUp = false; timeUpAt = nil
         trackLesson("start")
@@ -372,6 +372,7 @@ final class RealtimeVoiceSession: ObservableObject {
                     : "Second miss on the same line (again: if it's close, count it as right). Help differently now: break the line into small chunks and have them say it piece by piece slowly, or compare the tricky sound to a word in their native language, then let them try the whole line once more. Show the same line."
                 return sendGuide(note)
             }
+            if ok, let card = currentCard { learnedCards.append(PhraseKey.words(card)) }
             let attemptsBeforeRight = attempts
             attempts = 0
             currentCard = nil
@@ -400,7 +401,7 @@ final class RealtimeVoiceSession: ObservableObject {
                     ? "Stay in character: react naturally to what they said, then say the next line as the other person out loud, and show the LEARNER'S reply to it (never your own line)."
                     : "Stay in character but help them: give the reply they could use as the card and let them try."
             } else {
-                note = "End the roleplay warmly. Then, like a real teacher, recap with 2–3 real-life example lines they can now use (quote them), celebrate in one sentence and say you'll continue next time. Say all of this OUT LOUD first, then call finish_lesson with success true. No new card."
+                note = "End the roleplay warmly. Then, like a real teacher, recap with 2–3 real-life example lines they can now use (quote them), celebrate in one sentence, and tell them clearly that this lesson is COMPLETE and next time a new lesson starts (never say you will continue from here). Say all of this OUT LOUD first, then call finish_lesson with success true. No new card."
                 lessonComplete = true
             }
         }
@@ -411,6 +412,8 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Övgü ölçülü olsun: her doğru cevapta değil, zor bir cümleden/düzeltmeden sonra ya da birkaç turda bir.
     /// Diğer turlarda öğretmen içeriğe tepki verir ("Pizza mı? Ben de bayılırım!") ve sohbete devam eder.
     private var correctsSincePraise = 0
+    /// Bu derste doğru söylenmiş kartlar: aynı ifade (ya da isim eklenmiş hali) tekrar kart olmasın
+    private var learnedCards: [[String]] = []
     private func praiseNote(afterMiss: Bool) -> String {
         correctsSincePraise += 1
         if afterMiss || correctsSincePraise >= 3 {
@@ -1083,6 +1086,16 @@ final class RealtimeVoiceSession: ObservableObject {
                 send(["type": "conversation.item.create",
                       "item": ["type": "function_call_output", "call_id": callId,
                                "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
+                break
+            }
+            // Öğretme sırasında zaten doğru söylenmiş ifade yeniden kart olmasın (birleştirme ve canlandırma hariç)
+            if name == "show_phrase", !silentCardActive, !targets.isEmpty, targetProgress < targets.count, !pendingCombine,
+               let p = args["phrase"] as? String,
+               learnedCards.contains(where: { PhraseKey.isNearDuplicate($0, PhraseKey.words(p)) }) {
+                voiceLog.info("already learned card rejected: \(p, privacy: .public)")
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId,
+                               "output": "rejected: the learner already said this line correctly. Teach something NEW: card a different, new line (or a genuinely longer sentence)."]])
                 break
             }
             // Tur başına tek kart: öğrenci ilkini söylemeden ikinci kart gelmesin (sohbet "söyle-söyle"ye dönmesin)

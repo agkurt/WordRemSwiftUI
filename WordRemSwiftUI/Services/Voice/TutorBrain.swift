@@ -266,6 +266,9 @@ enum TutorBrain {
             - Teach one small piece at a time AS A REAL MINI-EXCHANGE: set up the moment, ask them the natural question out loud the way a real person \
             would ("So, where are you from?"), and show their answer as a complete, natural sentence. Only for a real either/or choice give two options \
             separated by " / " ("Coffee, please. / Tea, please."). React to what they actually said with genuine interest before moving on.
+            - EVERY CARD TEACHES SOMETHING NEW. Never card a line they already said correctly in this lesson, and never re-card it with \
+            only a name or a word like "too" added. If a moment calls for a line they already know, just let them say it without a card, \
+            or build a genuinely longer, new sentence from it.
             - Keep building: every couple of pieces, have them combine what they know into one slightly longer line \
             ("Now let's put it together: 'Hello, my name is Ahmet. Nice to meet you.'").
             - Fix mistakes by quoting kindly what you heard and naming the tiny fix (say it in the language you are explaining in, never a fixed English phrase).
@@ -649,9 +652,46 @@ enum TutorBrain {
         let key = phrase.lowercased().components(separatedBy: CharacterSet.alphanumerics.union(.whitespaces).inverted).joined()
             .trimmingCharacters(in: .whitespaces)
         let id = "chat:" + key
+        // Aynı ifadenin isim ya da "too" eklenmiş hali ayrı kelime olarak birikmesin
+        let newWords = PhraseKey.words(phrase)
+        let lang = phraseLanguage(phrase, expected: targetCode).uppercased()
+        if LearnedWordsStore.load().contains(where: { $0.id != id && $0.languageCode == lang
+            && PhraseKey.isNearDuplicate(PhraseKey.words($0.term), newWords) }) { return }
         LearnedWordsStore.add([LearnedWord(id: id, term: phrase, meaning: translation, phonetic: nil,
                                            languageCode: phraseLanguage(phrase, expected: targetCode).uppercased(), learnedAt: Date())],
                               nativeLangCode: OL.nativeLangCode)
         ReviewScheduler.shared.reload()
+    }
+}
+
+/// Neredeyse aynı ifadeleri tanır: "Nice to meet you." / "Nice to meet you, Emma." / "Nice to meet you too."
+/// Noktalama, öğrencinin adı ve hitap edilen isim (virgülden sonraki büyük harfli kelime) yok sayılır.
+enum PhraseKey {
+    static func words(_ text: String, learnerName: String = UserStore.shared.snapshot.username) -> [String] {
+        var t = text.replacingOccurrences(of: "’", with: "'")
+        // Hitap: ", Emma" / ", Ahmet!" gibi virgülden sonra gelen tek büyük harfli isim
+        t = t.replacingOccurrences(of: #",\s*\p{Lu}\p{Ll}+(?=[\s.!?,]|$)"#, with: " ", options: .regularExpression)
+        let name = learnerName.lowercased()
+        let all = t.lowercased()
+            .components(separatedBy: CharacterSet.letters.union(CharacterSet(charactersIn: "'")).inverted)
+            .filter { !$0.isEmpty }
+        // "I'm Ahmet" gibi kısa cümlede ad cümlenin kendisi: atılırsa tek kelime kalır ve yanlış birleşir
+        let withoutName = all.filter { $0 != name }
+        return withoutName.count >= 2 ? withoutName : all
+    }
+
+    static func sentences(_ text: String) -> [String] {
+        text.components(separatedBy: CharacterSet(charactersIn: ".!?。！？"))
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+    }
+
+    /// Aynı ya da biri diğerinin içinde ve en fazla `slack` kelime farkı var
+    static func isNearDuplicate(_ a: [String], _ b: [String], slack: Int = 2) -> Bool {
+        guard !a.isEmpty, !b.isEmpty else { return false }
+        if a == b { return true }
+        let (short, long) = a.count <= b.count ? (a, b) : (b, a)
+        guard long.count - short.count <= slack else { return false }
+        return long.joined(separator: " ").contains(short.joined(separator: " "))
     }
 }

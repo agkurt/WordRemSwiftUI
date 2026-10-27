@@ -219,11 +219,35 @@ struct VoiceTutorView: View {
         if isDemo { onFinished(true) } else { showSummary = true }
     }
 
+    /// Özette her ifade bir kez: kartlar cümlelere bölünür, neredeyse aynı olanlardan uzun olan kalır
+    /// ("Nice to meet you." + "Nice to meet you, Emma." + "Nice to meet you too." → tek satır)
+    static func distinctPhrases(_ cards: [(String, String)]) -> [(String, String)] {
+        var out: [(text: String, tr: String, words: [String])] = []
+        for (text, tr) in cards {
+            let parts = PhraseKey.sentences(text)
+            let trParts = PhraseKey.sentences(tr)
+            for (i, part) in parts.enumerated() {
+                let words = PhraseKey.words(part)
+                guard !words.isEmpty else { continue }
+                let meaning = parts.count == 1 ? tr : (trParts.count == parts.count ? trParts[i] : "")
+                if let j = out.firstIndex(where: { PhraseKey.isNearDuplicate($0.words, words) }) {
+                    if words.count > out[j].words.count { out[j] = (part, meaning, words) }
+                } else {
+                    out.append((part, meaning, words))
+                }
+            }
+        }
+        return out.map { (Self.withPeriod($0.text), $0.tr) }
+    }
+    private static func withPeriod(_ s: String) -> String {
+        guard let last = s.last, !".!?。！？".contains(last) else { return s }
+        return s + "."
+    }
+
     /// Ders özeti: kartlarda öğretilen ifadeler, ustalık, süre
     private var lessonSummary: LessonCompleteView {
-        var seen = Set<String>()
-        let phrases = session.turns.filter { $0.role == .card && seen.insert($0.text.lowercased()).inserted }
-            .map { LessonCompleteView.Phrase(text: $0.text, translation: $0.detail) }
+        let phrases = Self.distinctPhrases(session.turns.filter { $0.role == .card }.map { ($0.text, $0.detail ?? "") })
+            .map { LessonCompleteView.Phrase(text: $0.0, translation: $0.1) }
         let mastery = session.totalAnswers > 0 ? Int((Double(session.correctAnswers) / Double(session.totalAnswers) * 100).rounded()) : 100
         var title = ""
         if case .goal(let c, let g) = activeMode {
