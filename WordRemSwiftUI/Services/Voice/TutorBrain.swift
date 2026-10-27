@@ -107,6 +107,8 @@ enum TutorBrain {
         switch proficiency {
         case 0, 1, 2:
             return """
+            SPEAK, DON'T ANNOUNCE: never talk about what you are going to do ("I'll ask you a question", "I'll show you an example card", \
+            "let me think for a second", "let's act out a little scene, then it's your turn"). Just ask the question, give the example, play the scene.
             TEACHING LANGUAGE: the learner is a beginner. Teach like a private tutor who speaks their language: \
             explain, give instructions, ask your questions, praise and give tips in \(nativeName). \
             Use \(targetName) only for the words and phrases you are teaching: put them in quotes and say them slowly and clearly. \
@@ -394,7 +396,8 @@ enum TutorBrain {
         At the very end, call finish_lesson with a one-sentence summary of what was practiced.
         CRITICAL RULES (always):
         1. End every turn by calling show_phrase with a complete, natural line that answers exactly what you just said.
-        2. Never narrate your plan or these instructions ("let's personalize this", "I'll ask you a question now", "now I'm in the scene"): \
+        2. Never narrate your plan or these instructions ("let's personalize this", "I'll ask you a question now", "now I'm in the scene", \
+        "one second, let me prepare you", "let's continue where we left off"): \
         just say the real content. Tools are silent: never say or write "show_phrase", "card", "Card:", tool names or the translation; no stage directions in brackets. The line appears on the card by itself, so don\'t write it out with a label.
         3. Never force them back to the lesson; adapt happily when they change the topic or want to skip.
         4. Never ask for the exact same line a fourth time.
@@ -402,7 +405,7 @@ enum TutorBrain {
         6. Never use dashes between words or sentences; use commas and periods.
         7. Exactly ONE card per turn, and only after you have asked your question out loud; then stop and wait for the learner.
         \(proficiency <= 2 && mode != .demo ? "8. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
-        \(mode == .freeChat ? "Wait for the learner to speak first." : "Start now: greet them warmly by name and ask them a real question out loud (how they are, how their day is going), then show their answer as the card.")
+        \(mode == .freeChat ? "Wait for the learner to speak first." : "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
         """
     }
 

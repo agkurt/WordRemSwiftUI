@@ -146,6 +146,7 @@ final class RealtimeVoiceSession: ObservableObject {
         guard phase == .idle || phase == .ended || { if case .failed = phase { return true }; return false }() else { return }
         phase = .connecting
         connectStartedAt = Date(); reconnectCount = 0; lessonTracked = false; learnedCards = []; correctsSincePraise = 0
+        warmupPending = !targets.isEmpty && aiSpeaksFirst && roleplay; personalizeIndex = 0   // demo kendi ilk sorusunu sorar
         errorDetail = nil; lastSocketError = nil
         turns = []; caption = ""; elapsedSeconds = 0; lastUsageReport = 0; wallSeconds = 0; warnedTimeUp = false; timeUp = false; timeUpAt = nil
         trackLesson("start")
@@ -296,6 +297,12 @@ final class RealtimeVoiceSession: ObservableObject {
             return sendGuide("The learner wants a different question or topic. Happily switch right away, never push back or say \"let's focus\": offer two fresh, fun topics (or ask a completely different question) and follow their choice.")
         }
         // Serbest sohbette ders akışı yok ama karttaki cümleyi söyleyince yine ✓ yansın
+        // Serbest sohbette kendi dilinde soru/yorum ("geçmiş zaman nasıl kurulur?"): hata değil, önce ona cevap ver
+        if targets.isEmpty, let card = currentCard, !Self.isTargetLanguage(said), Self.overlap(said: said, card: card) < 0.25,
+           !said.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            currentCard = nil
+            return sendGuide("The learner said something in their own words (a question, a request or a comment), not the card line. Respond to THAT first: if it is a question about the language, answer it clearly and CORRECTLY in 2–3 short sentences with one example; if it is a request, do it; if it is a comment, react naturally. Then continue with one real question and its card.")
+        }
         if targets.isEmpty, let card = currentCard, !said.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let ok = Self.matches(said: said, card: card) || Self.overlap(said: said, card: card) >= 0.6
                 || (Self.isTargetLanguage(said) && said.split(separator: " ").count >= 3)
@@ -320,6 +327,13 @@ final class RealtimeVoiceSession: ObservableObject {
             }
         }
         guard !targets.isEmpty, !lessonComplete else { return }
+        // Açılıştaki "nasılsın" cevabı dersin parçası değil: sıcak bir tepki, sahne ve ilk parça
+        if warmupPending {
+            warmupPending = false
+            currentCard = nil
+            let next = targetProgress < targets.count ? Self.nextPiece(targets[targetProgress]) : Self.roleplayStart
+            return sendGuide("They answered your warm-up question. React to what they said like a friend (one short sentence), set today's scene in one sentence, then: \(next)")
+        }
         // Hiçbir şey duyulmadı (çok kısa bastı / mikrofon sesi almadı): hata sayma, nazikçe tekrar iste
         if said.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return sendGuide("You couldn't hear the learner this time (no words came through). Don't quote anything or count it as a mistake — say in a few playful words you didn't catch that, and ask them to say the line again.")
@@ -346,7 +360,7 @@ final class RealtimeVoiceSession: ObservableObject {
             return sendGuide("The learner doesn't want this question and wants to move on. Happily agree in a few words, never push back or say \"let's focus\". \(next)")
         }
         // Karta hiç benzemeyen ve öğrenilen dilde olmayan sözler: sohbet/şaka → keyifle karşıla, derse dön
-        if let card = currentCard, wordCount >= 3, !inTarget, Self.overlap(said: said, card: card) < 0.25 {
+        if let card = currentCard, wordCount >= 3 || (!inTarget && Self.isNativeLanguage(said)), !inTarget, Self.overlap(said: said, card: card) < 0.25 {
             let en = Locale(identifier: "en")
             let targetName = en.localizedString(forLanguageCode: Self.currentTarget) ?? "the target language"
             let nativeName = en.localizedString(forLanguageCode: OL.nativeLangCode) ?? "their native language"
@@ -390,7 +404,8 @@ final class RealtimeVoiceSession: ObservableObject {
             } else if withRoleplay {
                 // Ders: model cümleyi söyledi → hemen geçme, kendi hayatına uyarlat ve 1–2 yeni kelime öğret
                 pendingPersonalize = true
-                note = "\(praise) Don't move on yet — make it theirs: teach 1–2 useful new words that fit this moment (say each one with a tiny example, e.g. \"you can also say 'painting' or 'hiking'\"), then ask them a natural follow-up question so they say their OWN version (their real life, using one of the new words if it fits). Your spoken turn must end with that question; then show a complete sample answer that uses one of the new words."
+                note = "\(praise) Don't move on yet — make it theirs. \(Self.personalizeStyles[personalizeIndex % Self.personalizeStyles.count]) Your spoken turn must end with your question; then show a complete sample answer. Never reuse the wording or structure of your previous turn."
+                personalizeIndex += 1
             } else {
                 note = advance(praise)
             }
@@ -398,10 +413,11 @@ final class RealtimeVoiceSession: ObservableObject {
             roleplayTurns += 1
             if roleplayTurns < 6 {
                 note = ok || said.count > 3
-                    ? "Stay in character: react naturally to what they said, then say the next line as the other person out loud, and show the LEARNER'S reply to it (never your own line)."
+                    ? "Stay in character: react to what they said, then SPEAK the other person's next line out loud, word for word in \(Self.targetLanguageName) " +
+                      "(e.g. \"Where are you from?\"). Never describe it instead (never \"now the person asks you...\"). Then show the LEARNER'S reply to that exact line."
                     : "Stay in character but help them: give the reply they could use as the card and let them try."
             } else {
-                note = "End the roleplay warmly. Then, like a real teacher, recap with 2–3 real-life example lines they can now use (quote them), celebrate in one sentence, and tell them clearly that this lesson is COMPLETE and next time a new lesson starts (never say you will continue from here). Say all of this OUT LOUD first, then call finish_lesson with success true. No new card."
+                note = "End the roleplay warmly. Then step OUT of character and switch back to the learner's explaining language (their own language if they are a beginner) for the wrap-up. Like a real teacher, recap with 2–3 real-life example lines they can now use (quote them), celebrate in one sentence, and tell them clearly that this lesson is COMPLETE and next time a new lesson starts (never say you will continue from here). Say all of this OUT LOUD first, then call finish_lesson with success true. No new card."
                 lessonComplete = true
             }
         }
@@ -412,13 +428,23 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Övgü ölçülü olsun: her doğru cevapta değil, zor bir cümleden/düzeltmeden sonra ya da birkaç turda bir.
     /// Diğer turlarda öğretmen içeriğe tepki verir ("Pizza mı? Ben de bayılırım!") ve sohbete devam eder.
     private var correctsSincePraise = 0
+    private var personalizeIndex = 0
+    /// Kişiselleştirme turu her seferinde aynı kalıpla gelmesin ("iki kelime işine yarar… hangisi sana yakın?")
+    private static let personalizeStyles = [
+        "Teach ONE useful new word or phrase that fits what they just said (with a tiny example), then ask about their real life so they use it.",
+        "Ask a curious follow-up about THEIR real life (why, when, with whom, how often) so they say their own version; no new vocabulary lecture this time.",
+        "Ask a natural either/or question about their life that fits what they said (two real options), so they pick one and say it.",
+        "React to what they said with a short personal comment of your own, then ask them a natural follow-up question so they extend their answer with one more detail.",
+    ]
     /// Bu derste doğru söylenmiş kartlar: aynı ifade (ya da isim eklenmiş hali) tekrar kart olmasın
     private var learnedCards: [[String]] = []
+    /// Ders açılışındaki ısınma sorusu henüz cevaplanmadı
+    private var warmupPending = false
     private func praiseNote(afterMiss: Bool) -> String {
         correctsSincePraise += 1
-        if afterMiss || correctsSincePraise >= 3 {
+        if afterMiss || correctsSincePraise >= 4 {
             correctsSincePraise = 0
-            return "The learner got it right\(afterMiss ? " after a struggle" : ""). Give ONE short, specific, genuine word of praise (what exactly was good), never generic like \"very natural, you sound confident\"."
+            return "The learner got it right\(afterMiss ? " after a struggle" : ""). Give ONE short, specific, genuine word of praise (what exactly was good), never generic like \"very natural, you sound confident\" and never the same compliment word as before."
         }
         return "The learner got it right. Do NOT praise or compliment this time: react to WHAT they said, like a friend in a real conversation, and keep going."
     }
@@ -450,12 +476,16 @@ final class RealtimeVoiceSession: ObservableObject {
     private static func nextPiece(_ target: String) -> String {
         // Öğrencinin soru sorduğu parçalar ("ask what someone does"): kart öğrencinin SORUSU olur
         if target.lowercased().hasPrefix("ask") {
-            return "Next piece: \(target). Here the LEARNER asks the question: play the other person in the scene, say one short line about yourself, then invite them to ask you (\"Now you ask me!\"). Show the learner's QUESTION (e.g. \"What do you do?\"), not an answer."
+            return "Next piece: \(target). Here the LEARNER asks the question: play the other person in the scene, say one short line about yourself, then invite them, in your own words, to ask you. Show the learner's QUESTION (e.g. \"What do you do?\"), not an answer."
         }
         return "Next piece: \(target). Bring it in as a real mini-exchange in the scene: set up the moment in a few words, then ASK the learner the natural question out loud (the way a real person would) — your spoken turn MUST end with that question (never just \"let's move on\"). Only then show the learner's answer as a complete, natural sentence. Only a real either/or choice gets two options separated by \" / \"."
     }
 
-    private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in a few words (in the learner's explaining language), then switch to character: every line you say AS the other person is in the target language, short and simple, then SAY OUT LOUD the other person's first line in character, and only then call show_phrase with the LEARNER'S reply — never your own line. Example: you say \"Hi, I'm Emma. What's your name?\" → card \"Nice to meet you, Emma! I'm Ahmet.\""
+    private static var targetLanguageName: String {
+        Locale(identifier: "en").localizedString(forLanguageCode: currentTarget) ?? "the target language"
+    }
+
+    private static let roleplayStart = "Time for a real-life roleplay that fits the lesson scene (e.g. you are the check-in agent or a new friend at a party). Set the scene in one short sentence (in the learner's explaining language), then switch to character and SPEAK the other person's first line out loud, word for word in the target language, short and simple (never describe it instead, never \"now the person greets you\"), and only then call show_phrase with the LEARNER'S reply — never your own line. Example: you say \"Hi, I'm Emma. What's your name?\" → card \"Nice to meet you, Emma! I'm Ahmet.\""
 
     /// Notlar İngilizce yazılı; model içindeki örnek kalıpları ("welcome back", "Sure, no problem!") aynen okumasın
     private static let noteLanguage = " (This note is private stage direction: never describe it or announce your plan to the learner, just DO it in your next turn. Any quoted wording is only an English example of the idea: say it in your own words, in the language you are speaking to the learner right now.)"
