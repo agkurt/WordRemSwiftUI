@@ -429,7 +429,8 @@ async function meteredRelay(req: Request, env: Env, ctx: ExecutionContext, sessi
   };
   const tick = () => {
     activeSeconds.add(Math.floor((Date.now() - startedAt) / 1000));
-    if (used() > allowed) { close(server, 4001, "time_up"); close(remote); finish(); }
+    // +30 sn: uygulama süre bitmeden öğretmene kısa bir veda söyletir, o yarıda kesilmesin
+    if (used() > allowed + 30) { close(server, 4001, "time_up"); close(remote); finish(); }
   };
   const wallTimer = setTimeout(() => { close(server, 4001, "time_up"); close(remote); finish(); }, wallLimit);
 
@@ -574,7 +575,7 @@ async function geminiRelay(req: Request, env: Env, ctx: ExecutionContext): Promi
   };
   const tick = () => {
     activeSeconds.add(Math.floor((Date.now() - startedAt) / 1000));
-    if (activeSeconds.size > allowed) { close(server, 4001, "time_up"); close(remote); finish(); }
+    if (activeSeconds.size > allowed + 30) { close(server, 4001, "time_up"); close(remote); finish(); }
   };
   const wallTimer = setTimeout(() => { close(server, 4001, "time_up"); close(remote); finish(); }, Math.max(allowed * 3, 900) * 1000);
 

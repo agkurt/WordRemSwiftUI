@@ -159,6 +159,7 @@ final class RealtimeVoiceSession: ObservableObject {
             let grant = try await VoiceBackend.shared.createSession(instructions: instructions, tools: tools, quality: quality)
             sessionId = grant.sessionId
             allowedSeconds = grant.allowedSeconds
+            voiceLog.info("session granted: tier \(grant.tier, privacy: .public), \(grant.allowedSeconds, privacy: .public)s, model \(grant.model, privacy: .public)")
             Track.setTier(grant.tier)
             // İzin penceresi ses motorunu yarıda kesmesin: önce izni al
             _ = await AVAudioApplication.requestRecordPermission()
@@ -232,7 +233,7 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     func beginHold() {
-        guard pushToTalk, isConnected else { return }
+        guard pushToTalk, isConnected, !timeUp else { return }
         if !micTapInstalled {
             installMicTap(retries: 0)
             if !engine.isRunning { try? engine.start() }
@@ -633,7 +634,7 @@ final class RealtimeVoiceSession: ObservableObject {
     #if DEBUG
     /// Test sürücüsü: öğrencinin söylediğini sesle değil metinle verir; gerçek akış (cevap kontrolü, notlar, kartlar) aynen çalışır
     func debugLearnerSays(_ text: String) {
-        guard phase == .listening else { return }
+        guard phase == .listening, !timeUp else { return }
         voiceLog.info("heard: \(text, privacy: .public)")
         send(["type": "conversation.item.create",
               "item": ["type": "message", "role": "user", "content": [["type": "input_text", "text": text]]]])
@@ -1556,7 +1557,7 @@ final class RealtimeVoiceSession: ObservableObject {
         phase = .thinking
         sendGuide(isPro
             ? "The learner's speaking time for this period is used up. Say a warm goodbye in 1–2 short sentences, in the learner's native language: that's all the talk time for now (a little sad, end with 😞), praise one thing they did well, and say you'll be here again soon. Do NOT call any tool."
-            : "The learner's free speaking time for today is over. Say a warm goodbye in 1–2 short sentences, in the learner's native language: today's free practice is done for now (a little sad, end the sentence with 😞), praise one thing they did well, and say Pro unlocks unlimited practice. Do NOT call any tool.")
+            : "The learner's free trial is over. Say it OUT LOUD in 2 short sentences, in the learner's native language: our trial practice ends here for now, praise one specific thing they did well, and if they want to keep practicing with you they can get WordRem Pro (say the name \"WordRem Pro\"). Warm, a little sad, no pressure, speak to them informally (in Turkish \"sen\", never \"siz\"). Do NOT call any tool.")
         send(["type": "response.create", "response": ["tool_choice": "none"]])
     }
 

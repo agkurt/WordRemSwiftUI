@@ -315,7 +315,8 @@ struct VoiceTutorView: View {
     /// Demo satışı belirler, derslerde talimat takibi önemli: tam model. Serbest sohbet ve kelime pratiği mini.
     private var usesHighModel: Bool {
         switch activeMode {
-        case .demo, .goal, .languageSetup, .levelReview: return true
+        // Yalnızca onboarding demosu (satın alma kararının verildiği ilk konuşma); dersler maliyet için standart modelde
+        case .demo: return true
         default: return false
         }
     }

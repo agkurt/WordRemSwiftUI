@@ -30,7 +30,7 @@ GEMINI_VOICE = "Sulafat"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar
-FREE_TASTE_SECONDS = "180"
+FREE_TASTE_SECONDS = "120"
 # Aynı IP'den günde en fazla bu kadar yeni ücretsiz kullanıcı (sahte kullanıcı üreten scriptlere karşı)
 FREE_NEW_USERS_PER_IP_DAY = "20"
 SESSION_MAX_SECONDS = "600"
