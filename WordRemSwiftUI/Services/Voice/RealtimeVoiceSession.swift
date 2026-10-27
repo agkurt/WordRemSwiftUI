@@ -1303,7 +1303,7 @@ final class RealtimeVoiceSession: ObservableObject {
             voiceLog.info("tutor said: \(self.fullAIText, privacy: .public)")
             // Demoda son adımda öğretmen kendiliğinden vedalaştıysa: bitti say (yeni kart/tur açılmasın)
             if answerCardsOnly, !lessonComplete, !targets.isEmpty, targetProgress >= targets.count - 1,
-               fullAIText.range(of: #"see you|goodbye|bye for now|take care"#, options: [.regularExpression, .caseInsensitive]) != nil {
+               fullAIText.range(of: #"see you|goodbye|bye for now|take care|görüşürüz|görüşmek üzere|hoşça kal|bis bald|tschüss|à bientôt|hasta pronto|nos vemos|a presto|ci vediamo|до встречи|再见"#, options: [.regularExpression, .caseInsensitive]) != nil {
                 lessonComplete = true
             }
             // Model veda edip finish_lesson'ı unutursa ekran takılı kalmasın
