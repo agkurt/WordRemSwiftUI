@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Security
 import AVFoundation
 import RevenueCat
 
@@ -95,6 +96,7 @@ final class VoiceBackend {
     func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard") async throws -> Grant {
         let payload = try JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed, "quality": quality, "metered": true,
+            "deviceId": DeviceIdentity.id,
         ])
         lastBodyBytes = payload.count
         let (data, response) = try await send { base in
@@ -169,7 +171,7 @@ final class VoiceBackend {
         guard let baseURL,
               var comps = URLComponents(url: baseURL.appendingPathComponent("v1/voice/status"), resolvingAgainstBaseURL: false)
         else { return nil }
-        comps.queryItems = [URLQueryItem(name: "appUserId", value: appUserId)]
+        comps.queryItems = [URLQueryItem(name: "appUserId", value: appUserId), URLQueryItem(name: "deviceId", value: DeviceIdentity.id)]
         guard let url = comps.url else { return nil }
         var req = URLRequest(url: url)
         req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
@@ -186,5 +188,46 @@ enum TutorVoice {
     static func speak(_ text: String, langCode: String) {
         let line = text.replacingOccurrences(of: " / ", with: ". ").replacingOccurrences(of: "...", with: "…")
         TTSManager.shared.speak(line, langCode: langCode)
+    }
+}
+
+/// Uygulama silinip yeniden kurulsa da aynı kalan cihaz kimliği (Keychain'de, yalnızca bu cihazda).
+/// Sunucu ücretsiz deneme süresini buna bağlar: silip kurmak yeni ücretsiz süre açmaz.
+enum DeviceIdentity {
+    private static let service = "com.twinflare.WordRemSwiftUI.device"
+    private static let account = "device-id"
+
+    static let id: String = {
+        if let existing = read() { return existing }
+        let new = UUID().uuidString
+        save(new)
+        voiceLog.info("new device id \(new.prefix(8), privacy: .public)")
+        return new
+    }()
+
+    private static func read() -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+        ]
+        var item: CFTypeRef?
+        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
+              let data = item as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private static func save(_ value: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecValueData as String: Data(value.utf8),
+            // iCloud'a gitmez, başka cihaza taşınmaz
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+        ]
+        SecItemAdd(query as CFDictionary, nil)
     }
 }

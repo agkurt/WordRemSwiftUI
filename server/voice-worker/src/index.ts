@@ -89,14 +89,21 @@ interface SessionRequest {
   speed?: number;
   /** "high": demo ve dersler (tam model), diğerleri mini */
   quality?: string;
+  /** Keychain'deki kalıcı cihaz kimliği (silip yeniden kurunca değişmez) */
+  deviceId?: string;
   /** true: istemci OpenAI anahtarı almaz, yalnızca sayaçlı aktarıcıdan bağlanır (süreyi sunucu sayar) */
   metered?: boolean;
 }
 
 type SessionRecord = {
   user: string; plan: Plan; seconds: number; reported: number; weight?: number;
-  metered?: boolean; secret?: string; model?: string;
+  metered?: boolean; secret?: string; model?: string; device?: string;
 };
+
+/** Cihaz kimliği yalnızca UUID biçiminde kabul edilir (anahtar adına keyfi metin girmesin) */
+function cleanDevice(id: unknown): string | undefined {
+  return typeof id === "string" && /^[0-9A-Fa-f-]{36}$/.test(id) ? id.toUpperCase() : undefined;
+}
 
 interface UsageRequest {
   appUserId: string;
@@ -170,10 +177,16 @@ async function fetchPlan(env: Env, appUserId: string): Promise<Plan> {
 }
 
 /** Bu kullanıcı şu an kaç saniye konuşabilir? */
-async function allowance(env: Env, user: string, plan: Plan): Promise<number> {
+/** Ücretsiz deneme hem kullanıcıya hem cihaza bağlı: silip yeniden kurmak (yeni kullanıcı) yeni süre açmaz */
+async function freeUsed(env: Env, user: string, device?: string): Promise<number> {
+  const byUser = await getNum(env, `free:${user}`);
+  return device ? Math.max(byUser, await getNum(env, `freed:${device}`)) : byUser;
+}
+
+async function allowance(env: Env, user: string, plan: Plan, device?: string): Promise<number> {
   const session = Number(env.SESSION_MAX_SECONDS);
   if (plan.tier === "free") {
-    const used = await getNum(env, `free:${user}`);
+    const used = await freeUsed(env, user, device);
     return Math.max(0, Number(env.FREE_TASTE_SECONDS) - used);
   }
   // Ödeyen Pro'ya günlük/aylık sınır yok (kullanım yine sayılır); tek oturum OpenAI'ın oturum sınırına yakın
@@ -189,7 +202,8 @@ async function createSession(req: Request, env: Env): Promise<Response> {
 
   const plan = await planFor(env, body.appUserId);
   const { tier } = plan;
-  const seconds = await allowance(env, body.appUserId, plan);
+  const device = cleanDevice(body.deviceId);
+  const seconds = await allowance(env, body.appUserId, plan, device);
   // Aynı internet adresinden günde sınırlı sayıda YENİ ücretsiz kullanıcı (script ile sahte kullanıcı üretmeye karşı).
   // Mobil operatörler bir IP'yi çok kişiye paylaştırdığı için yalnızca yeni ücretsiz kullanıcılar sayılır.
   if (tier === "free" && seconds >= Number(env.FREE_TASTE_SECONDS)) {
@@ -198,8 +212,9 @@ async function createSession(req: Request, env: Env): Promise<Response> {
     const newUsers = await getNum(env, ipKey);
     if (newUsers >= Number(env.FREE_NEW_USERS_PER_IP_DAY || 20)) return json({ error: "too_many_new_users" }, 429);
     // Bu kullanıcının ilk oturumu: sayaç bir kez artar (aynı kullanıcı tekrar gelince sayılmaz)
-    if (!(await env.USAGE.get(`seen:${body.appUserId}`))) {
-      await safePut(env, `seen:${body.appUserId}`, "1", { expirationTtl: 60 * 60 * 48 });
+    const seenKey = `seen:${device ?? body.appUserId}`;
+    if (!(await env.USAGE.get(seenKey))) {
+      await safePut(env, seenKey, "1", { expirationTtl: 60 * 60 * 48 });
       await safePut(env, ipKey, String(newUsers + 1), { expirationTtl: 60 * 60 * 48 });
     }
   }
@@ -243,7 +258,7 @@ async function createSession(req: Request, env: Env): Promise<Response> {
 
   const sessionId = crypto.randomUUID();
   // Oturum kaydı: kullanım raporlarında üst sınır kontrolü için
-  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, plan, seconds, reported: 0, weight, metered: !!body.metered,
+  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, device, plan, seconds, reported: 0, weight, metered: !!body.metered,
     secret: body.metered ? secret.value : undefined, model } satisfies SessionRecord), {
     expirationTtl: 60 * 60 * 3,
   });
@@ -269,7 +284,7 @@ async function reportUsage(req: Request, env: Env): Promise<Response> {
   if (s.user !== body.appUserId) return json({ error: "forbidden" }, 403);
   // Sayaçlı oturumda süreyi sunucu sayar; istemcinin raporu yok sayılır
   if (!s.metered) await addUsage(env, body.sessionId, s, Math.ceil(body.seconds));
-  return json({ ok: true, remainingSeconds: await allowance(env, s.user, s.plan) });
+  return json({ ok: true, remainingSeconds: await allowance(env, s.user, s.plan, s.device) });
 }
 
 /** Oturumun toplam kullanımını yaz (sadece fark eklenir; oturuma verilen süreyi ve 60 dk'yı aşamaz) */
@@ -279,6 +294,7 @@ async function addUsage(env: Env, sessionId: string, s: SessionRecord, seconds: 
   if (delta <= 0) return;
   if (s.plan.tier === "free") {
     await safePut(env, `free:${s.user}`, String((await getNum(env, `free:${s.user}`)) + delta));
+    if (s.device) await safePut(env, `freed:${s.device}`, String((await getNum(env, `freed:${s.device}`)) + delta));
   } else {
     const u = await paidUsage(env, s.user);
     u.ds += delta; u.ms += Math.round(delta * (s.weight ?? 1));
@@ -322,10 +338,12 @@ async function tts(req: Request, env: Env): Promise<Response> {
 }
 
 async function status(req: Request, env: Env): Promise<Response> {
-  const user = new URL(req.url).searchParams.get("appUserId");
+  const params = new URL(req.url).searchParams;
+  const user = params.get("appUserId");
   if (!user) return json({ error: "bad_request" }, 400);
   const plan = await planFor(env, user);
-  return json({ tier: plan.tier, monthlySeconds: plan.monthlySeconds, remainingSeconds: await allowance(env, user, plan) });
+  const device = cleanDevice(params.get("deviceId"));
+  return json({ tier: plan.tier, monthlySeconds: plan.monthlySeconds, remainingSeconds: await allowance(env, user, plan, device) });
 }
 
 // Bazı mobil operatörlerde api.openai.com'a doğrudan WebSocket kurulamıyor: ses bu sunucu üzerinden aktarılır.
