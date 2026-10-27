@@ -89,3 +89,21 @@ export function termsPage(): Response {
 <h2>Yapay zekâ öğretmen</h2>
 <p>Sesli öğretmen yapay zekâ ile üretilir ve zaman zaman hata yapabilir. Konuşma süresi adil kullanım sınırlarına tabi olabilir.</p>`);
 }
+
+const SUPPORT_EMAIL = "ahmetgokturkkkurt3@gmail.com";
+
+export function supportPage(): Response {
+  return page("Support", `
+<h1>Support</h1><p class="muted">WordRem AI</p>
+<p>Questions, feedback or a problem with the app? Email us at <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> and we'll get back to you as soon as we can.</p>
+<h2>Subscriptions</h2>
+<ul><li>To manage or cancel WordRem Pro, open Settings on your iPhone, tap your name, then Subscriptions.</li>
+<li>For refunds, use Apple's <a href="https://reportaproblem.apple.com">Report a Problem</a> page.</li></ul>
+<p>See also our <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms of Use</a>.</p>
+<hr>
+<h1>Destek</h1>
+<p>Sorun, soru ya da önerin mi var? <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> adresine yaz, en kısa sürede dönelim.</p>
+<h2>Abonelikler</h2>
+<ul><li>WordRem Pro'yu yönetmek veya iptal etmek için iPhone'da Ayarlar'ı aç, adına dokun, ardından Abonelikler'e gir.</li>
+<li>İade için Apple'ın <a href="https://reportaproblem.apple.com">Sorun Bildir</a> sayfasını kullanabilirsin.</li></ul>`);
+}

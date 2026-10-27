@@ -1,4 +1,4 @@
-import { privacyPage, termsPage } from "./legal";
+import { privacyPage, supportPage, termsPage } from "./legal";
 /**
  * WordRem sesli öğretmen arka ucu (Cloudflare Worker).
  *
@@ -434,6 +434,7 @@ export default {
     // Yasal sayfalar herkese açık (App Store incelemesi ve uygulama içi bağlantılar)
     if (req.method === "GET" && pathname === "/privacy") return privacyPage();
     if (req.method === "GET" && pathname === "/terms") return termsPage();
+    if (req.method === "GET" && pathname === "/support") return supportPage();
     if (req.headers.get("x-app-key") !== env.APP_SHARED_KEY) return json({ error: "unauthorized" }, 401);
     try {
       if (req.method === "POST" && pathname === "/v1/voice/session") return await createSession(req, env);
