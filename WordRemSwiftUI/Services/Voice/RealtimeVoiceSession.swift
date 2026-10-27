@@ -299,6 +299,11 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Öğrencinin söylediğine göre öğretmene bir sonraki adımı söyler (Pingo tarzı: yeni parça → birleştir → yeni parça…).
     /// Sıralama arka planda; öğretmen bunu "adım" diye anlatmaz.
     private func guide(after said: String) {
+        // Yazıya çevirme aksanlı sözü başka bir dil sandıysa (ör. İngilizce → Bulgarca): hata sayma, o dile geçme, tekrar iste
+        if CascadeEngine.isStrayLanguage(said) {
+            voiceLog.info("stray-language transcript, asking again: \(said, privacy: .public)")
+            return sendGuide("Speech recognition garbled the learner's words into another language (\"\(said)\"). It is NOT what they said and not a mistake: don't quote it and don't use that language. In the language you are explaining in, say in a few friendly words you didn't catch it, and ask them to try the line again.")
+        }
         // Serbest sohbet (hedef yok): konu/soru değiştirmek isterse hemen değiştir
         if targets.isEmpty, !noCards, Self.wantsToSkip(said) {
             voiceLog.info("learner asked to change topic")

@@ -418,6 +418,8 @@ enum TutorBrain {
         6. Never use dashes between words or sentences; use commas and periods.
         7. Exactly ONE card per turn, and only after you have asked your question out loud; then stop and wait for the learner.
         8. At most 3 short sentences per turn, and never switch language in the middle of a sentence.
+        Only ever speak \(nativeName) or \(targetName). If the learner's words arrive in any other language or alphabet, that is a speech recognition error: \
+        never answer in that language; kindly say you didn't catch it and ask them to try the line again.
         \(proficiency <= 2 && mode != .demo ? "9. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
         \(mode == .freeChat ? "Wait for the learner to speak first." : mode == .demo ? "Start now with step 1." : { () -> String? in if case .goal = mode { return "Start now with your opening turn: greet them by name, say in one or two sentences what this lesson is about and what they'll be able to do by the end, then SAY OUT LOUD in \(targetName) \"How are you today?\" (in \(targetName), with its meaning for a beginner), and only after asking it show their \(targetName) answer as the card." }; return nil }() ?? "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
         """

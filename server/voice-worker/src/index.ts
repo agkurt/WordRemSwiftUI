@@ -490,6 +490,9 @@ async function cascade(req: Request, env: Env, step: string): Promise<Response> 
     const form = new FormData();
     form.append("file", new Blob([wav(pcm)], { type: "audio/wav" }), "speech.wav");
     form.append("model", "gpt-4o-mini-transcribe");
+    // Dil zorlaması: aksanlı İngilizce bazen başka dil (ör. Bulgarca) sanılır; uygulama o zaman öğrenilen dille tekrar ister
+    const lang = params.get("lang");
+    if (lang && /^[a-z]{2}$/.test(lang)) form.append("language", lang);
     const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
       method: "POST", headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}` }, body: form,
     });

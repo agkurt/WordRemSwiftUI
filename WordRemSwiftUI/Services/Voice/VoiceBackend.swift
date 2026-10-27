@@ -9,6 +9,7 @@
 import Foundation
 import Security
 import AVFoundation
+import NaturalLanguage
 import RevenueCat
 
 final class VoiceBackend {
@@ -143,10 +144,10 @@ final class VoiceBackend {
     }
 
     /// Üç parçalı ses adımları: "stt" (ham PCM), "chat" (akış), "tts" (akış PCM)
-    func cascadeRequest(_ step: String, sessionId: String, body: Data, json: Bool = true) -> URLRequest? {
+    func cascadeRequest(_ step: String, sessionId: String, body: Data, json: Bool = true, extra: [URLQueryItem] = []) -> URLRequest? {
         guard let baseURL, var comps = URLComponents(url: baseURL.appendingPathComponent("v1/voice/cascade/\(step)"), resolvingAgainstBaseURL: false)
         else { return nil }
-        comps.queryItems = [URLQueryItem(name: "session", value: sessionId), URLQueryItem(name: "appUserId", value: appUserId)]
+        comps.queryItems = [URLQueryItem(name: "session", value: sessionId), URLQueryItem(name: "appUserId", value: appUserId)] + extra
         guard let url = comps.url else { return nil }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
@@ -320,7 +321,7 @@ final class CascadeEngine {
         let started = Date()
         sttTask = Task { [weak self] in
             guard let self else { return }
-            let transcript = await Self.transcribe(pcm, sessionId: self.sessionId)
+            let transcript = await Self.transcribeLearner(pcm, sessionId: self.sessionId)
             guard !Task.isCancelled, !self.closed else { return }
             voiceLog.info("cascade timing stt=\(Int(Date().timeIntervalSince(started) * 1000), privacy: .public)ms (\(pcm.count / 48, privacy: .public)ms audio)")
             let t = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -330,8 +331,33 @@ final class CascadeEngine {
     }
 
     /// Sunucu üzerinden yazıya çevirme (PCM 16 bit 24 kHz)
-    static func transcribe(_ pcm: Data, sessionId: String) async -> String {
-        guard pcm.count >= 4800, let req = VoiceBackend.shared.cascadeRequest("stt", sessionId: sessionId, body: pcm, json: false) else { return "" }
+    /// Öğrencinin sözü: ne ana dilde ne öğrendiği dilde çıkarsa (aksan yüzünden ör. Bulgarca sanıldıysa)
+    /// ses bir kez de öğrendiği dil zorlanarak yazıya çevrilir
+    static func transcribeLearner(_ pcm: Data, sessionId: String) async -> String {
+        let first = await transcribe(pcm, sessionId: sessionId)
+        guard isStrayLanguage(first) else { return first }
+        let target = RealtimeVoiceSession.currentTarget
+        let second = await transcribe(pcm, sessionId: sessionId, language: target)
+        voiceLog.info("stt stray language → forced \(target, privacy: .public): '\(first, privacy: .public)' → '\(second, privacy: .public)'")
+        return second.isEmpty ? first : second
+    }
+
+    /// Söz, öğrencinin dilleri (ana dili + eklediği öğrenme dilleri) dışında bir dilde mi?
+    nonisolated static func isStrayLanguage(_ text: String) -> Bool {
+        guard text.filter(\.isLetter).count >= 3 else { return false }
+        let allowed = Set([OL.nativeLangCode.lowercased(), RealtimeVoiceSession.currentTarget]
+            + (UserDefaults.standard.stringArray(forKey: "learning.languages") ?? []).map { $0.lowercased() })
+        let r = NLLanguageRecognizer()
+        r.processString(text)
+        guard let top = r.dominantLanguage?.rawValue else { return false }
+        if allowed.contains(where: { top.hasPrefix($0) }) { return false }
+        let hyp = r.languageHypotheses(withMaximum: 5)
+        return allowed.allSatisfy { (hyp[NLLanguage($0)] ?? 0) < 0.2 }
+    }
+
+    static func transcribe(_ pcm: Data, sessionId: String, language: String? = nil) async -> String {
+        guard pcm.count >= 4800, let req = VoiceBackend.shared.cascadeRequest("stt", sessionId: sessionId, body: pcm, json: false,
+                                                                                extra: language.map { [URLQueryItem(name: "lang", value: $0)] } ?? []) else { return "" }
         do {
             let (data, resp) = try await VoiceBackend.shared.cascadeData(for: req)
             let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
@@ -757,7 +783,7 @@ final class GeminiEngine {
             let started = Date()
             sttTask = Task { [weak self] in
                 guard let self else { return }
-                let t = await CascadeEngine.transcribe(pcm, sessionId: self.sessionId).trimmingCharacters(in: .whitespacesAndNewlines)
+                let t = await CascadeEngine.transcribeLearner(pcm, sessionId: self.sessionId).trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !Task.isCancelled, !self.closed else { return }
                 voiceLog.info("gemini timing stt=\(Int(Date().timeIntervalSince(started) * 1000), privacy: .public)ms")
                 if !t.isEmpty { self.pending.append(t); self.history.append(["role": "user", "content": t]) }
