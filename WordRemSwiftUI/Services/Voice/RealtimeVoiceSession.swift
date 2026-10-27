@@ -1072,6 +1072,15 @@ final class RealtimeVoiceSession: ObservableObject {
                                "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
                 break
             }
+            // Tur başına tek kart: öğrenci ilkini söylemeden ikinci kart gelmesin (sohbet "söyle-söyle"ye dönmesin)
+            if name == "show_phrase", !silentCardActive, phraseShownThisResponse, let cur = currentCard,
+               let p = args["phrase"] as? String, p.caseInsensitiveCompare(cur) != .orderedSame {
+                voiceLog.info("second card in one turn rejected: \(p, privacy: .public)")
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId,
+                               "output": "rejected: only one card per turn. The learner's line is already shown; stop now and wait for them."]])
+                break
+            }
             // Dersin ne zaman biteceğine uygulama karar verir: model erken finish_lesson çağırırsa ders kesilmesin
             if name == "finish_lesson", !allowModelFinish, !lessonComplete, !timeUp {
                 voiceLog.info("early finish rejected")
