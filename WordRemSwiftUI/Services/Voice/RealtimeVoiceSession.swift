@@ -572,6 +572,20 @@ final class RealtimeVoiceSession: ObservableObject {
     }
 
     /// Kullanıcı yazıyla bir şey göndermek isterse (ör. konu seçimi çipleri)
+    #if DEBUG
+    /// Test sürücüsü: öğrencinin söylediğini sesle değil metinle verir; gerçek akış (cevap kontrolü, notlar, kartlar) aynen çalışır
+    func debugLearnerSays(_ text: String) {
+        guard phase == .listening else { return }
+        voiceLog.info("heard: \(text, privacy: .public)")
+        send(["type": "conversation.item.create",
+              "item": ["type": "message", "role": "user", "content": [["type": "input_text", "text": text]]]])
+        turns.append(Turn(role: .user, text: text))
+        phase = .thinking
+        guide(after: text)
+        send(["type": "response.create"])
+    }
+    #endif
+
     func sendText(_ text: String) {
         guard phase == .listening else { return }
         send(["type": "conversation.item.create",

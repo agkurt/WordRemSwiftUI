@@ -73,6 +73,19 @@ struct TalkHomeView: View {
         .paperBackground()
         .onAppear { scheduler.reload(); openRoute(AppRouter.shared.route) }
         .onReceive(AppRouter.shared.$route) { openRoute($0) }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: DebugDriver.open)) { n in
+            let arg = (n.object as? String ?? "").split(separator: " ").map(String.init)
+            switch arg.first {
+            case "freechat": activeMode = .freeChat
+            case "demo": activeMode = .demo
+            case "goal" where arg.count > 1:
+                let ids = arg[1].split(separator: "/").map(String.init)
+                if ids.count == 2 { activeMode = .goal(chapterId: ids[0], goalId: ids[1]) }
+            default: break
+            }
+        }
+        #endif
         .fullScreenCover(item: Binding(get: { activeMode.map(ModeBox.init) }, set: { activeMode = $0?.mode })) { box in
             VoiceTutorView(mode: box.mode) { ok in
                 // Yeni dil kurulumu tamamlandı → öğrenilen dil değişir, plan o dilde baştan

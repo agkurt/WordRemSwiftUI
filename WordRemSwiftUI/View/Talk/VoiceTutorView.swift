@@ -16,6 +16,9 @@ struct VoiceTutorView: View {
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var session = RealtimeVoiceSession()
+    #if DEBUG
+    @State private var debugQueue: [String] = []
+    #endif
     @State private var phrase: (text: String, translation: String)?
     /// Öğretmenin gösterdiği kart, sesi bitince ekrana gelir (Pingo gibi)
     @State private var pendingPhrase: (text: String, translation: String)?
@@ -131,6 +134,17 @@ struct VoiceTutorView: View {
             }
         }
         .fullScreenCover(isPresented: $showSummary) { lessonSummary }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: DebugDriver.say)) { n in
+            debugQueue.append(n.object as? String ?? "")
+            flushDebugQueue()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: DebugDriver.close)) { _ in
+            saveAndStop()
+            if isDemo { onFinished(false) } else { dismiss() }
+        }
+        .onChange(of: session.phase) { _ in flushDebugQueue() }
+        #endif
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
             OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "lesson_limit")
         }
@@ -278,6 +292,13 @@ struct VoiceTutorView: View {
         session.appendCard(p.text, translation: p.translation)
         withAnimation(.easeOut(duration: 0.3)) { phrase = p }
     }
+
+    #if DEBUG
+    private func flushDebugQueue() {
+        guard session.phase == .listening, !debugQueue.isEmpty else { return }
+        session.debugLearnerSays(debugQueue.removeFirst())
+    }
+    #endif
 
     /// Analitikte dersin kimliği: mod + hangi ders
     private var analyticsContext: [String: Any?] {
@@ -767,3 +788,36 @@ struct VoiceLogoView: View {
         }
     }
 }
+
+#if DEBUG
+/// Gece testleri için komut dosyası: Documents/debug_cmd.txt
+///   open goal <chapter>/<goal> | open freechat | open demo
+///   say <öğrencinin söylediği>
+///   close
+enum DebugDriver {
+    static let open = Notification.Name("debug.open")
+    static let say = Notification.Name("debug.say")
+    static let close = Notification.Name("debug.close")
+    private static var timer: Timer?
+
+    static func start() {
+        guard timer == nil, let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let file = dir.appendingPathComponent("debug_cmd.txt")
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            guard let text = try? String(contentsOf: file, encoding: .utf8) else { return }
+            try? FileManager.default.removeItem(at: file)
+            for line in text.split(separator: "\n").map(String.init) {
+                let parts = line.split(separator: " ", maxSplits: 1).map(String.init)
+                guard let cmd = parts.first else { continue }
+                let arg = parts.count > 1 ? parts[1] : ""
+                switch cmd {
+                case "open": NotificationCenter.default.post(name: open, object: arg)
+                case "say": NotificationCenter.default.post(name: say, object: arg)
+                case "close": NotificationCenter.default.post(name: close, object: nil)
+                default: break
+                }
+            }
+        }
+    }
+}
+#endif

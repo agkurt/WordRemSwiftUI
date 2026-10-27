@@ -58,6 +58,9 @@ struct WordRemSwiftUIApp: App {
                     return
                 }
                 TutorBrain.fixSavedPhraseLanguages()
+                #if DEBUG
+                DebugDriver.start()
+                #endif
                 Task {
                     // 1) Bildirim izni — açılışta değil, onboarding tamamlandıktan sonra
                     if hasCompletedOnboarding { await requestNotificationPermission() }
