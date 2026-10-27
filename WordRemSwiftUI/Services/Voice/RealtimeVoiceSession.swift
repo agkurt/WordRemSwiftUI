@@ -332,7 +332,7 @@ final class RealtimeVoiceSession: ObservableObject {
             warmupPending = false
             currentCard = nil
             let next = targetProgress < targets.count ? Self.nextPiece(targets[targetProgress]) : Self.roleplayStart
-            return sendGuide("They answered your warm-up question. React to what they said like a friend (one short sentence), set today's scene in one sentence, then: \(next)")
+            return sendGuide("They answered your warm-up question. React to what they said in ONE short sentence, then go straight into the first piece, with the setting folded into your question (e.g. \"At a party someone new says hi to you. How would you greet them?\"). Three sentences at most, and don't announce that you are moving on or setting a scene. \(next)")
         }
         // Hiçbir şey duyulmadı (çok kısa bastı / mikrofon sesi almadı): hata sayma, nazikçe tekrar iste
         if said.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
