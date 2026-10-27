@@ -29,6 +29,7 @@ struct ProfileView: View {
             VStack(alignment: .leading, spacing: 28) {
                 profileHeader
                 heroCard
+                if !iap.isPremium { proUpsellCard }
                 statsOverviewRow
                 streakCard
                 learningProgressCard
@@ -131,16 +132,31 @@ struct ProfileView: View {
                 Spacer(minLength: 0)
             }
 
-            if !iap.isPremium {
-                // Upgrade Pro butonu
-                Button {
-                    showPaywall = true
-                } label: {
-                    Label(langManager.s(.profileUpgradePro), systemImage: "crown")
-                }
-                .buttonStyle(OutlineButtonStyle(tint: DS.Colors.slate))
-            }
         }
+    }
+
+    // MARK: - Pro kartı (Pro olmayanlar): faydalar + tek dokunuşla ödeme ekranı
+    private var proUpsellCard: some View {
+        Button {
+            Track.screen("profile_pro_card")
+            showPaywall = true
+        } label: {
+            ProUpsellCard(
+                title: "WordRem Pro",
+                subtitle: loc(["Öğretmeninle sınırsız konuş", "Talk with your tutor without limits", "Sprich ohne Limit mit deinem Tutor",
+                               "Parle sans limite avec ton tuteur", "Habla sin límites con tu tutor", "Parla senza limiti con il tuo tutor",
+                               "Говори с репетитором без ограничений", "和你的老师无限畅聊"]),
+                perks: [
+                    loc(["Sınırsız sesli ders", "Unlimited voice lessons", "Unbegrenzte Sprachlektionen", "Leçons vocales illimitées",
+                         "Lecciones de voz ilimitadas", "Lezioni vocali illimitate", "Безлимитные голосовые уроки", "无限语音课"]),
+                    loc(["Tüm konular ve canlandırmalar", "Every topic and roleplay", "Alle Themen und Rollenspiele", "Tous les thèmes et jeux de rôle",
+                         "Todos los temas y juegos de rol", "Tutti i temi e i giochi di ruolo", "Все темы и ролевые игры", "所有主题和角色扮演"]),
+                    loc(["Sana özel günlük plan", "Your own daily plan", "Dein persönlicher Tagesplan", "Ton plan quotidien personnalisé",
+                         "Tu plan diario personal", "Il tuo piano giornaliero", "Личный план на каждый день", "专属每日计划"]),
+                ],
+                cta: langManager.s(.profileUpgradePro))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Stats Overview Row
@@ -942,4 +958,75 @@ private struct UsernameSetupPopup: View {
 #Preview {
     ProfileView()
         .environmentObject(AuthManager())
+}
+
+/// Profildeki Pro kartı: imza renginde, ara ara üstünden geçen parlama ve hafifçe atan düğme
+private struct ProUpsellCard: View {
+    let title: String
+    let subtitle: String
+    let perks: [String]
+    let cta: String
+    @State private var shine = false
+    @State private var pulse = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 10) {
+                Image(systemName: "crown.fill")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(DS.Colors.accent)
+                    .frame(width: 32, height: 32)
+                    .background(DS.Colors.paperRaised, in: Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(DS.Font.display(22, weight: .bold))
+                        .foregroundStyle(DS.Colors.paperRaised)
+                    Text(subtitle)
+                        .font(DS.Font.ui(13, weight: .medium))
+                        .foregroundStyle(DS.Colors.paperRaised.opacity(0.85))
+                }
+            }
+            VStack(alignment: .leading, spacing: 7) {
+                ForEach(perks, id: \.self) { perk in
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(DS.Colors.accent)
+                            .frame(width: 18, height: 18)
+                            .background(DS.Colors.paperRaised, in: Circle())
+                        Text(perk)
+                            .font(DS.Font.ui(14, weight: .medium))
+                            .foregroundStyle(DS.Colors.paperRaised)
+                    }
+                }
+            }
+            HStack {
+                Text(cta)
+                    .font(DS.Font.ui(16, weight: .semibold))
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 14, weight: .bold))
+            }
+            .foregroundStyle(DS.Colors.accentDeep)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 13)
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
+            .scaleEffect(pulse ? 1.03 : 1)
+        }
+        .padding(18)
+        .background(DS.Colors.accent, in: RoundedRectangle(cornerRadius: 22))
+        .overlay {
+            GeometryReader { geo in
+                LinearGradient(colors: [.clear, .white.opacity(0.28), .clear], startPoint: .leading, endPoint: .trailing)
+                    .frame(width: geo.size.width * 0.35)
+                    .rotationEffect(.degrees(20))
+                    .offset(x: shine ? geo.size.width * 1.3 : -geo.size.width * 0.6)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 22))
+            .allowsHitTesting(false)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true }
+            withAnimation(.easeInOut(duration: 1.8).delay(0.6).repeatForever(autoreverses: false)) { shine = true }
+        }
+    }
 }
