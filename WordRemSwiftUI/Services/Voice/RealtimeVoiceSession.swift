@@ -367,6 +367,11 @@ final class RealtimeVoiceSession: ObservableObject {
             sendGuide("If the learner is asking to learn or practice a DIFFERENT language: reply in \(nativeName) in one or two short sentences — you'd love to teach that too, they can add it in a minute from the flag at the top of the home screen or practice it now in \"Talk with your assistant\" — then continue this \(targetName) lesson. Never say you only teach \(targetName). Otherwise:")
             return sendGuide("The learner answered in their own words instead of saying the card line (a reply like \"yes, I'm ready\", a question, a joke or a side comment). React naturally to what they actually said (answer a question, laugh at a joke), then invite them to try the current line. Don't treat it as a mistake, and if they seem to want something else, give it to them.")
         }
+        // Demo kalıbını boşluğu doldurmadan okudu ("In my free time, I like..."): doğru sayma, örnek verip tamamlat
+        if answerCardsOnly, let card = currentCard, Self.leftBlankUnfilled(said: said, card: card) {
+            voiceLog.info("template blank left unfilled")
+            return sendGuide("The learner read the pattern \"\(card)\" but did not fill in the blank with their own answer. Don't count it and don't praise it. In one short sentence tell them to finish it with their own answer, give 2 or 3 very short \(Self.targetLanguageName) options that fit (quoted, e.g. \"reading\", \"watching movies\", \"playing football\"), and show the same card again.")
+        }
         // Demoda kart yalnızca örnek cevap: kendi bilgisini söyleyen ("I'm a morning person") doğru sayılır
         let ok = currentCard.map { Self.matches(said: said, card: $0) || Self.overlap(said: said, card: $0) >= (answerCardsOnly ? 0.25 : 0.6) } ?? !said.isEmpty
             || (inTarget && wordCount >= 3)
@@ -458,7 +463,7 @@ final class RealtimeVoiceSession: ObservableObject {
         }
         if targetProgress < targets.count, answerCardsOnly {
             // Sohbet demosu: önce soruyu SESLİ sor, kart (olası cevaplar) ondan sonra
-            return "\(praise) Then, out loud, \(targets[targetProgress]). Your spoken turn MUST end with the question itself; only after asking it, call show_phrase."
+            return "\(praise) Then, out loud, \(targets[targetProgress]). Ask it directly, never announce it (no \"next up\", \"first let me offer you a choice\"). Your spoken turn MUST end with the question itself; only after asking it, call show_phrase."
         }
         if targetProgress < targets.count { return "\(praise) \(Self.nextPiece(targets[targetProgress]))" }
         return finishOrRoleplay(praise)
@@ -500,6 +505,21 @@ final class RealtimeVoiceSession: ObservableObject {
         voiceLog.info("guide: \(note, privacy: .public)")
         send(["type": "conversation.item.create",
               "item": ["type": "message", "role": "system", "content": [["type": "input_text", "text": note + Self.noteLanguage]]]])
+    }
+
+    /// "..." boşluklu kalıp: öğrenci boşluktan önceki kısmı söyleyip kendi cevabını eklemedi mi
+    static func leftBlankUnfilled(said: String, card: String) -> Bool {
+        func words(_ t: String) -> [String] {
+            t.lowercased().components(separatedBy: CharacterSet.letters.inverted.subtracting(CharacterSet(charactersIn: "'"))).filter { !$0.isEmpty }
+        }
+        let saidWords = words(said)
+        guard !saidWords.isEmpty else { return false }
+        return card.components(separatedBy: " / ").contains { option in
+            guard let blank = option.range(of: "...") ?? option.range(of: "…") else { return false }
+            let prefix = words(String(option[..<blank.lowerBound]))
+            guard prefix.count >= 2, saidWords.count <= prefix.count else { return false }
+            return Set(saidWords).intersection(prefix).count >= prefix.count - 1
+        }
     }
 
     /// Söylenen cümle öğrenilen dilde mi (ana dildeki sohbetten ayırmak için)
