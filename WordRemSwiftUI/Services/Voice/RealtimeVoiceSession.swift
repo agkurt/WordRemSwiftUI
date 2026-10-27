@@ -664,11 +664,10 @@ final class RealtimeVoiceSession: ObservableObject {
         let s = AVAudioSession.sharedInstance()
         // .voiceChat + ses işleme (VPIO) gerçek iPhone'da AVAudioPlayerNode çıkışını susturabiliyor;
         // bas-konuş kullandığımız için yankı engellemeye gerek yok → sade playAndRecord + hoparlör.
-        // Kulaklık takılıysa ses kulaklığa gider (.defaultToSpeaker yalnızca kulaklık yokken hoparlörü seçer).
-        // Bluetooth kulaklık yüksek kaliteli (A2DP) çalar, mikrofon telefonunki olur: HFP'ye geçmek sesi
-        // telefon kalitesine düşürüyor ve mikrofon biçimini değiştirip kaydı bozabiliyor.
+        // Kulaklık takılıysa ses ve mikrofon kulaklığa geçer (.defaultToSpeaker yalnızca kulaklık yokken hoparlörü seçer).
+        // Bluetooth kulaklığın mikrofonu (HFP) başka örnekleme hızıyla gelir: dokunuş donanım biçimiyle kurulur.
         try s.setCategory(.playAndRecord, mode: .default,
-                          options: [.defaultToSpeaker, .allowBluetoothA2DP])
+                          options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP])
         try s.setActive(true)
 
         if player.engine == nil { engine.attach(player) }
@@ -687,12 +686,13 @@ final class RealtimeVoiceSession: ObservableObject {
         let input = engine.inputNode
         input.removeTap(onBus: 0)
         micTapInstalled = false
-        let inFormat = input.outputFormat(forBus: 0)
-        // Ses yolu değişirken (ders bitişi, kulaklık) biçim bir an geçersiz ya da donanımla uyumsuz olur:
-        // installTap o anda hata fırlatıp uygulamayı kapatır → kurma, kısa süre sonra yeniden dene
-        let hwFormat = input.inputFormat(forBus: 0)
-        guard inFormat.sampleRate > 0, inFormat.channelCount > 0, hwFormat.sampleRate > 0,
-              abs(inFormat.sampleRate - hwFormat.sampleRate) < 1 else {
+        // Mikrofonun gerçek (donanım) biçimi: Bluetooth kulaklıkta 16/24 kHz, telefonda 48 kHz.
+        // Ses yolu değişirken biçim bir an geçersiz ya da düğümle uyumsuz olur: installTap o anda hata fırlatıp
+        // uygulamayı kapatır → kurma, kısa süre sonra yeniden dene
+        let inFormat = input.inputFormat(forBus: 0)
+        let nodeFormat = input.outputFormat(forBus: 0)
+        guard inFormat.sampleRate > 0, inFormat.channelCount > 0, nodeFormat.sampleRate > 0,
+              abs(inFormat.sampleRate - nodeFormat.sampleRate) < 1 else {
             // Önceki oturum yeni kapandıysa ses donanımı hazır olmayabilir: kısa süre sonra tekrar dene
             voiceLog.info("mic format not ready, retrying")
             guard retries > 0 else { return }
