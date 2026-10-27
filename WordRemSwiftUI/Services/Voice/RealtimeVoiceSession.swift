@@ -909,6 +909,16 @@ final class RealtimeVoiceSession: ObservableObject {
     private var lastGrant: (model: String, secret: String)?
 
     private func connect(model: String, secret: String) {
+        // Sunucu anahtar vermediyse (sayaçlı oturum) tek yol: sunucu üzerinden, oturum kimliğiyle
+        if secret.isEmpty {
+            lastGrant = nil
+            guard let sessionId, let req = VoiceBackend.shared.meteredRequest(sessionId: sessionId) else {
+                phase = .failed("not_configured"); return
+            }
+            viaRelay = true
+            open(req)
+            return
+        }
         lastGrant = (model, secret)
         let relayReq = VoiceBackend.shared.relayRequest(model: model, secret: secret)
         viaRelay = Self.preferRelay && relayReq != nil

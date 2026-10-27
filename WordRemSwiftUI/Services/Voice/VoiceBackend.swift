@@ -94,7 +94,7 @@ final class VoiceBackend {
     /// quality: "high" → tam model (demo ve dersler), "standard" → mini (serbest sohbet)
     func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard") async throws -> Grant {
         let payload = try JSONSerialization.data(withJSONObject: [
-            "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed, "quality": quality,
+            "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed, "quality": quality, "metered": true,
         ])
         lastBodyBytes = payload.count
         let (data, response) = try await send { base in
@@ -126,6 +126,18 @@ final class VoiceBackend {
         }
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw Failure(code: "network", remainingSeconds: nil) }
         return data
+    }
+
+    /// Sayaçlı bağlantı: OpenAI anahtarı sunucuda kalır, süreyi sunucu sayar ve dolunca keser
+    func meteredRequest(sessionId: String) -> URLRequest? {
+        guard let baseURL, var comps = URLComponents(url: baseURL.appendingPathComponent("v1/voice/realtime"), resolvingAgainstBaseURL: false)
+        else { return nil }
+        comps.scheme = comps.scheme == "http" ? "ws" : "wss"
+        comps.queryItems = [URLQueryItem(name: "session", value: sessionId), URLQueryItem(name: "appUserId", value: appUserId)]
+        guard let url = comps.url else { return nil }
+        var req = URLRequest(url: url)
+        req.setValue(appKey, forHTTPHeaderField: "X-App-Key")
+        return req
     }
 
     /// OpenAI'a sunucu üzerinden bağlanan WebSocket isteği (doğrudan bağlantı kurulamayan ağlar için)

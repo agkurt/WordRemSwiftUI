@@ -24,7 +24,9 @@ HIGH_COST_MULTIPLIER = "3.2"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar
-FREE_TASTE_SECONDS = "300"
+FREE_TASTE_SECONDS = "180"
+# Aynı IP'den günde en fazla bu kadar yeni ücretsiz kullanıcı (sahte kullanıcı üreten scriptlere karşı)
+FREE_NEW_USERS_PER_IP_DAY = "20"
 SESSION_MAX_SECONDS = "600"
 TRIAL_DAILY_SECONDS = "600"
 # Pro: günlük/aylık sınır yok; tek oturum en fazla 60 dk (OpenAI oturum sınırına yakın)

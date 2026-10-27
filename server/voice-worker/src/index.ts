@@ -34,6 +34,7 @@ export interface Env {
   COST_PER_MIN_USD: string;
   REALTIME_MODEL_HIGH: string;
   PRO_SESSION_SECONDS?: string;
+  FREE_NEW_USERS_PER_IP_DAY?: string;
   HIGH_COST_MULTIPLIER: string;
   AI_BUDGET_SHARE: string;
   APPLE_COMMISSION: string;
@@ -88,7 +89,14 @@ interface SessionRequest {
   speed?: number;
   /** "high": demo ve dersler (tam model), diğerleri mini */
   quality?: string;
+  /** true: istemci OpenAI anahtarı almaz, yalnızca sayaçlı aktarıcıdan bağlanır (süreyi sunucu sayar) */
+  metered?: boolean;
 }
+
+type SessionRecord = {
+  user: string; plan: Plan; seconds: number; reported: number; weight?: number;
+  metered?: boolean; secret?: string; model?: string;
+};
 
 interface UsageRequest {
   appUserId: string;
@@ -182,6 +190,19 @@ async function createSession(req: Request, env: Env): Promise<Response> {
   const plan = await planFor(env, body.appUserId);
   const { tier } = plan;
   const seconds = await allowance(env, body.appUserId, plan);
+  // Aynı internet adresinden günde sınırlı sayıda YENİ ücretsiz kullanıcı (script ile sahte kullanıcı üretmeye karşı).
+  // Mobil operatörler bir IP'yi çok kişiye paylaştırdığı için yalnızca yeni ücretsiz kullanıcılar sayılır.
+  if (tier === "free" && seconds >= Number(env.FREE_TASTE_SECONDS)) {
+    const ip = req.headers.get("cf-connecting-ip") ?? "unknown";
+    const ipKey = `nip:${ip}:${dayKey()}`;
+    const newUsers = await getNum(env, ipKey);
+    if (newUsers >= Number(env.FREE_NEW_USERS_PER_IP_DAY || 20)) return json({ error: "too_many_new_users" }, 429);
+    // Bu kullanıcının ilk oturumu: sayaç bir kez artar (aynı kullanıcı tekrar gelince sayılmaz)
+    if (!(await env.USAGE.get(`seen:${body.appUserId}`))) {
+      await safePut(env, `seen:${body.appUserId}`, "1", { expirationTtl: 60 * 60 * 48 });
+      await safePut(env, ipKey, String(newUsers + 1), { expirationTtl: 60 * 60 * 48 });
+    }
+  }
   if (seconds < 15) {
     return json({ error: tier === "free" ? "paywall" : "limit_reached", tier, remainingSeconds: seconds }, 402);
   }
@@ -222,13 +243,15 @@ async function createSession(req: Request, env: Env): Promise<Response> {
 
   const sessionId = crypto.randomUUID();
   // Oturum kaydı: kullanım raporlarında üst sınır kontrolü için
-  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, plan, seconds, reported: 0, weight }), {
+  await safePut(env, `s:${sessionId}`, JSON.stringify({ user: body.appUserId, plan, seconds, reported: 0, weight, metered: !!body.metered,
+    secret: body.metered ? secret.value : undefined, model } satisfies SessionRecord), {
     expirationTtl: 60 * 60 * 3,
   });
 
   return json({
     sessionId,
-    clientSecret: secret.value,
+    // Sayaçlı istemci anahtarı hiç görmez: ancak aktarıcıdan, bu oturum kimliğiyle bağlanabilir
+    clientSecret: body.metered ? "" : secret.value,
     expiresAt: secret.expires_at,
     model,
     allowedSeconds: seconds,
@@ -242,24 +265,27 @@ async function reportUsage(req: Request, env: Env): Promise<Response> {
 
   const raw = await env.USAGE.get(`s:${body.sessionId}`);
   if (!raw) return json({ error: "unknown_session" }, 404);
-  const s = JSON.parse(raw) as { user: string; plan: Plan; seconds: number; reported: number; weight?: number };
+  const s = JSON.parse(raw) as SessionRecord;
   if (s.user !== body.appUserId) return json({ error: "forbidden" }, 403);
-
-  // Toplam rapor, oturuma verilen süreyi (ve 60 dk oturum tavanını) aşamaz; sadece fark yazılır
-  const total = Math.min(Math.ceil(body.seconds), Math.max(s.seconds, 3600));
-  const delta = Math.max(0, total - s.reported);
-  if (delta > 0) {
-    if (s.plan.tier === "free") {
-      await safePut(env, `free:${s.user}`, String((await getNum(env, `free:${s.user}`)) + delta));
-    } else {
-      const u = await paidUsage(env, s.user);
-      u.ds += delta; u.ms += Math.round(delta * (s.weight ?? 1));
-      await safePut(env, `p:${s.user}`, JSON.stringify(u), { expirationTtl: 60 * 60 * 24 * 40 });
-    }
-    s.reported = total;
-    await safePut(env, `s:${body.sessionId}`, JSON.stringify(s), { expirationTtl: 60 * 60 * 3 });
-  }
+  // Sayaçlı oturumda süreyi sunucu sayar; istemcinin raporu yok sayılır
+  if (!s.metered) await addUsage(env, body.sessionId, s, Math.ceil(body.seconds));
   return json({ ok: true, remainingSeconds: await allowance(env, s.user, s.plan) });
+}
+
+/** Oturumun toplam kullanımını yaz (sadece fark eklenir; oturuma verilen süreyi ve 60 dk'yı aşamaz) */
+async function addUsage(env: Env, sessionId: string, s: SessionRecord, seconds: number): Promise<void> {
+  const total = Math.min(seconds, Math.max(s.seconds, 3600));
+  const delta = Math.max(0, total - s.reported);
+  if (delta <= 0) return;
+  if (s.plan.tier === "free") {
+    await safePut(env, `free:${s.user}`, String((await getNum(env, `free:${s.user}`)) + delta));
+  } else {
+    const u = await paidUsage(env, s.user);
+    u.ds += delta; u.ms += Math.round(delta * (s.weight ?? 1));
+    await safePut(env, `p:${s.user}`, JSON.stringify(u), { expirationTtl: 60 * 60 * 24 * 40 });
+  }
+  s.reported = total;
+  await safePut(env, `s:${sessionId}`, JSON.stringify(s), { expirationTtl: 60 * 60 * 3 });
 }
 
 /**
@@ -304,11 +330,14 @@ async function status(req: Request, env: Env): Promise<Response> {
 
 // Bazı mobil operatörlerde api.openai.com'a doğrudan WebSocket kurulamıyor: ses bu sunucu üzerinden aktarılır.
 // Uygulama kısa ömürlü oturum anahtarını (client secret) gönderir; kalıcı OpenAI anahtarı hiç kullanılmaz.
-async function realtimeRelay(req: Request, env: Env): Promise<Response> {
+async function realtimeRelay(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") return json({ error: "bad_request" }, 426);
+  const params = new URL(req.url).searchParams;
+  const sessionId = params.get("session");
+  if (sessionId) return meteredRelay(req, env, ctx, sessionId, params.get("appUserId") ?? "");
   const auth = req.headers.get("authorization");
   if (!auth) return json({ error: "unauthorized" }, 401);
-  const model = new URL(req.url).searchParams.get("model") || env.REALTIME_MODEL;
+  const model = params.get("model") || env.REALTIME_MODEL;
   const upstream = await fetch(`https://api.openai.com/v1/realtime?model=${encodeURIComponent(model)}`, {
     headers: { Upgrade: "websocket", Authorization: auth },
   });
@@ -330,8 +359,56 @@ async function realtimeRelay(req: Request, env: Env): Promise<Response> {
   return new Response(null, { status: 101, webSocket: client });
 }
 
+/**
+ * Sayaçlı aktarıcı: OpenAI anahtarı sunucuda kalır; süre sunucuda sayılır ve dolunca bağlantı kesilir.
+ * Sayılan süre: içinde ses/mesaj akan saniyeler (sessiz bekleme sayılmaz). Kullanım kapanışta yazılır.
+ */
+async function meteredRelay(req: Request, env: Env, ctx: ExecutionContext, sessionId: string, appUserId: string): Promise<Response> {
+  const raw = await env.USAGE.get(`s:${sessionId}`);
+  if (!raw) return json({ error: "unknown_session" }, 404);
+  const s = JSON.parse(raw) as SessionRecord;
+  if (!s.metered || !s.secret || s.user !== appUserId) return json({ error: "forbidden" }, 403);
+  const upstream = await fetch(`https://api.openai.com/v1/realtime?model=${encodeURIComponent(s.model || env.REALTIME_MODEL)}`, {
+    headers: { Upgrade: "websocket", Authorization: `Bearer ${s.secret}` },
+  });
+  const remote = upstream.webSocket;
+  if (!remote) return json({ error: "upstream", status: upstream.status }, 502);
+  remote.accept();
+  const [client, server] = Object.values(new WebSocketPair());
+  server.accept();
+
+  const allowed = s.seconds;                       // bu oturuma verilen konuşma süresi
+  const wallLimit = Math.max(allowed * 3, 900) * 1000;  // sessiz bekleme dahil üst sınır
+  const startedAt = Date.now();
+  const activeSeconds = new Set<number>();
+  let finished = false;
+  const used = () => activeSeconds.size;
+  const close = (ws: WebSocket, code = 1000, reason = "") => {
+    try { ws.close(code === 1005 || code === 1006 ? 1000 : code, reason); } catch {}
+  };
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(wallTimer);
+    ctx.waitUntil(addUsage(env, sessionId, s, s.reported + used()));
+  };
+  const tick = () => {
+    activeSeconds.add(Math.floor((Date.now() - startedAt) / 1000));
+    if (used() > allowed) { close(server, 4001, "time_up"); close(remote); finish(); }
+  };
+  const wallTimer = setTimeout(() => { close(server, 4001, "time_up"); close(remote); finish(); }, wallLimit);
+
+  server.addEventListener("message", (e) => { tick(); try { remote.send(e.data); } catch { close(server, 1011); } });
+  remote.addEventListener("message", (e) => { tick(); try { server.send(e.data); } catch { close(remote); } });
+  server.addEventListener("close", (e) => { close(remote, e.code, e.reason); finish(); });
+  remote.addEventListener("close", (e) => { close(server, e.code, e.reason); finish(); });
+  server.addEventListener("error", () => { close(remote); finish(); });
+  remote.addEventListener("error", () => { close(server, 1011); finish(); });
+  return new Response(null, { status: 101, webSocket: client });
+}
+
 export default {
-  async fetch(req: Request, env: Env): Promise<Response> {
+  async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const { pathname } = new URL(req.url);
     // Yasal sayfalar herkese açık (App Store incelemesi ve uygulama içi bağlantılar)
     if (req.method === "GET" && pathname === "/privacy") return privacyPage();
@@ -342,7 +419,7 @@ export default {
       if (req.method === "POST" && pathname === "/v1/voice/usage") return await reportUsage(req, env);
       if (req.method === "GET" && pathname === "/v1/voice/status") return await status(req, env);
       if (req.method === "POST" && pathname === "/v1/voice/tts") return await tts(req, env);
-      if (req.method === "GET" && pathname === "/v1/voice/realtime") return await realtimeRelay(req, env);
+      if (req.method === "GET" && pathname === "/v1/voice/realtime") return await realtimeRelay(req, env, ctx);
       return json({ error: "not_found" }, 404);
     } catch (e) {
       return json({ error: "internal", detail: String(e) }, 500);
