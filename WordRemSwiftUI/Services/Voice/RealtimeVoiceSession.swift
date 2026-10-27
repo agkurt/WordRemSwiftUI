@@ -1195,14 +1195,8 @@ final class RealtimeVoiceSession: ObservableObject {
                                "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
                 break
             }
-            // Ders açılışı kartsız: öğretmen önce dersin amacını söyleyip sohbet sorusu sorar, öğrenci serbest cevaplar
-            if name == "show_phrase", !silentCardActive, isOpeningTurn {
-                voiceLog.info("card in opening turn rejected")
-                send(["type": "conversation.item.create",
-                      "item": ["type": "function_call_output", "call_id": callId,
-                               "output": "rejected: no card in your opening turn. Just wait for the learner to answer your question freely."]])
-                break
-            }
+            // Ders açılışı normalde kartsız; model yine de ders sorusu sorup kart açtıysa gösterilir (öğrenci boşlukta kalmasın)
+            if name == "show_phrase", isOpeningTurn { warmupPending = false }
             // Öğretme sırasında zaten doğru söylenmiş ifade yeniden kart olmasın (birleştirme ve canlandırma hariç)
             if name == "show_phrase", !silentCardActive, !targets.isEmpty, targetProgress < targets.count, !pendingCombine,
                let p = args["phrase"] as? String,

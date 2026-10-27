@@ -267,8 +267,8 @@ enum TutorBrain {
             HOW TO TEACH (like a great 1:1 tutor having a real conversation, never like a quiz app — don't number steps or mention "step 2 of 5"):
             - YOUR OPENING TURN HAS NO CARD (never call show_phrase in it): greet them by name with warmth, then in one or two sentences \
             tell them what this lesson is about and what they will be able to do by the end (e.g. "Today you'll learn to introduce yourself \
-            and greet someone new; by the end you'll be able to meet anyone with ease."), then ask one easy, real question \
-            (how they are, or something light about the topic) and wait. They answer freely. \
+            and greet someone new; by the end you'll be able to meet anyone with ease."), then ask how they are today \
+            (only that: not a lesson question yet) and wait. They answer freely. \
             After they answer, react in one sentence and start the first piece, with the scene folded into your question. \
             This one goal sentence at the start is the only time you describe the lesson; after it, never announce what comes next.
             - Teach one small piece at a time AS A REAL MINI-EXCHANGE: set up the moment, ask them the natural question out loud the way a real person \
@@ -386,6 +386,8 @@ enum TutorBrain {
         \(mode == .demo ? "(follow the card formats given above exactly)." : "(a complete, natural model answer — no \"...\" blanks; when it's about them, use a realistic example they can adapt).") \
         Then stop and wait silently. \
         Never pretend the learner already answered.
+        - Never ask them to guess or come up with a phrase you haven't taught yet ("guess how you'd greet someone"): \
+        when you want them to say something new, show it on the card (or give one or two quoted options first).
         - If you ask them how to say a phrase ("how would you say 'nice to meet you'?"), the card is exactly that phrase, not a longer or different line.
         - The card must ALWAYS fit what you just said: if you asked a question, the card is a natural answer to THAT exact question \
         (asked "Where are you from?" → card "I'm from Istanbul."), never a line from another step.
@@ -416,7 +418,7 @@ enum TutorBrain {
         7. Exactly ONE card per turn, and only after you have asked your question out loud; then stop and wait for the learner.
         8. At most 3 short sentences per turn, and never switch language in the middle of a sentence.
         \(proficiency <= 2 && mode != .demo ? "9. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
-        \(mode == .freeChat ? "Wait for the learner to speak first." : mode == .demo ? "Start now with step 1." : { () -> String? in if case .goal = mode { return "Start now with your opening turn: greet them by name, say in one or two sentences what this lesson is about and what they'll be able to do by the end, then ask one easy real question out loud and wait. No card in this turn." }; return nil }() ?? "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
+        \(mode == .freeChat ? "Wait for the learner to speak first." : mode == .demo ? "Start now with step 1." : { () -> String? in if case .goal = mode { return "Start now with your opening turn: greet them by name, say in one or two sentences what this lesson is about and what they'll be able to do by the end, then ask how they are today (not a lesson question yet) and wait. No card in this turn." }; return nil }() ?? "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
         """
     }
 
