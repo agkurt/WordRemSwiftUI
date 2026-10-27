@@ -43,6 +43,7 @@ struct MainTabView: View {
     @StateObject private var homeVM = HomeScreenViewModel()
     @StateObject private var pathVM = PathMapViewModel()
     @State private var selectedTab: AppTab = DemoData.startTab ?? .today
+    @State private var showRoutePaywall = false
     @State private var wordsSegment: WordsView.Segment = .learned
     @State private var showCreateDeck = false
     @State private var showLeaderboard = false
@@ -104,7 +105,14 @@ struct MainTabView: View {
         }
         // Bildirim/widget'tan gelince Konuş sekmesine geç (ders/tekrar orada açılır)
         .onReceive(AppRouter.shared.$route) { route in
-            if route != nil { selectedTab = .today }
+            if route == .paywall {
+                AppRouter.shared.route = nil
+                if !InAppPurchaseManager.shared.isPremium { showRoutePaywall = true }
+            } else if route != nil { selectedTab = .today }
+        }
+        // Bildirimden Pro daveti
+        .fullScreenCover(isPresented: $showRoutePaywall) {
+            OnboardingPaywallView(onContinue: { showRoutePaywall = false }, entryPoint: "notification")
         }
     }
 

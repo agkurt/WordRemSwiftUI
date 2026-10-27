@@ -135,14 +135,14 @@ struct TalkHomeView: View {
 
     /// Bildirimden gelen yönlendirme: yarım ders ya da tekrar oturumu
     private func openRoute(_ route: AppRouter.Route?) {
-        guard let route else { return }
+        guard let route, route != .paywall else { return }   // ödeme ekranını ana sekme açar
         switch route {
         case .tutor(let c, let g): activeMode = .goal(chapterId: c, goalId: g)
         case .review:              if !scheduler.dueToday.isEmpty { showReview = true }
         case .lupa(let q):
             TutorBrain.chatOpener = LupaShared.question(q, lang: LearningLanguages.current)
             activeMode = .freeChat
-        case .talk:                break
+        case .talk, .paywall:      break
         }
         AppRouter.shared.route = nil
     }

@@ -120,16 +120,38 @@ enum SmartReminders {
         defaults.set(scheduled, forKey: scheduledKey)
     }
 
-    /// Günün tek bildirimi; öncelik: seri tehlikede (bugün) → yarım ders (yarın) → tekrar sorusu → nazik davet
+    /// Günün tek bildirimi. Kullanıcıya göre üç akış:
+    /// • Pro: seri tehlikede → yarım ders → pazar haftalık özet → tekrar sorusu → sıradaki ders / günün sorusu
+    /// • Ücretsiz süresi bitmiş: gün aşırı Pro daveti (Lupa'nın ağzından), arada kelime tekrarı
+    /// • Ücretsiz süresi duran: denemeye davet, sonra Pro'daki akış
     private static func content(for dayOffset: Int, fire: Date, words: [LearnedWord],
                                 states: [String: ReviewState], days: Set<String>) -> UNMutableNotificationContent? {
         let c = UNMutableNotificationContent()
         c.sound = .default
         let streak = ReviewCore.streak(activeDays: days)
+        let isPro = InAppPurchaseManager.shared.isPremium
 
         // Bildirimler Lupa'nın ağzından: başlık her zaman onun adı, metin kişisel
         c.title = LupaShared.name
         c.threadIdentifier = "lupa"
+
+        if !isPro, FreeTrial.exhausted {
+            // Sesli dersler kapalı: kelime tekrarı serbest, gün aşırı nazik Pro daveti (her seferinde farklı metin)
+            let due = ReviewCore.due(by: fire, words: words, states: states)
+            if dayOffset % 2 == 1, !due.isEmpty { return reviewContent(c, word: due[dayOffset % due.count], dueCount: due.count) }
+            guard dayOffset % 2 == 0 else { return nil }
+            let n = (Calendar.current.ordinality(of: .day, in: .era, for: fire) ?? 0) / 2
+            c.body = LupaText.upsell(n)
+            c.userInfo = ["kind": "upsell"]
+            return c
+        }
+
+        if !isPro, dayOffset <= 1 {
+            // Ücretsiz deneme dakikaları duruyor: ilk günlerde onu hatırlat
+            c.body = LupaText.freeMinutesLeft
+            c.userInfo = ["kind": "lupa", "question": LupaShared.questionIndex(for: fire)]
+            return c
+        }
 
         if dayOffset == 0, streak >= 2 {
             c.body = LupaText.streakRescue(streak)
@@ -144,18 +166,19 @@ enum SmartReminders {
             return c
         }
 
-        let due = ReviewCore.due(by: fire, words: words, states: states)
-        if !due.isEmpty {
-            let word = due[dayOffset % due.count]   // her gün farklı bir kelime
-            c.threadIdentifier = ""
-            c.title = AL.s(.remReviewTitle)
-                .replacingOccurrences(of: "{word}", with: word.meaning)
-                .replacingOccurrences(of: "{lang}", with: targetLanguageName)
-            c.body = AL.s(.remReviewBody) + (due.count > 1 ? " " + AL.f(.remReviewMore, due.count - 1) : "")
-            c.categoryIdentifier = reviewCategory
-            c.userInfo = ["kind": "review", "wordId": word.id]
-            return c
+        // Pro'ya özel: pazar günü haftanın özeti (bu hafta biten dersler + seri)
+        if isPro, Calendar.current.component(.weekday, from: fire) == 1 {
+            let weekAgo = fire.addingTimeInterval(-7 * 86_400)
+            let lessons = (UserStore.shared.snapshot.voiceGoalsDone ?? [:]).values.filter { $0 > weekAgo }.count
+            if lessons > 0 {
+                c.body = LupaText.weeklyRecap(lessons: lessons, streak: streak)
+                c.userInfo = ["kind": "talk"]
+                return c
+            }
         }
+
+        let due = ReviewCore.due(by: fire, words: words, states: states)
+        if !due.isEmpty { return reviewContent(c, word: due[dayOffset % due.count], dueCount: due.count) }
 
         // Sıradaki ders ile Lupa'nın günün sorusu dönüşümlü
         if dayOffset % 2 == 0, let next = ScenarioStore.shared.next {
@@ -166,6 +189,18 @@ enum SmartReminders {
         let q = LupaShared.questionIndex(for: fire)
         c.body = LupaText.question(LupaShared.question(q, lang: LearningLanguages.current))
         c.userInfo = ["kind": "lupa", "question": q]
+        return c
+    }
+
+    /// Kelime sorusu (bildirimden "Hatırladım / Hatırlamadım")
+    private static func reviewContent(_ c: UNMutableNotificationContent, word: LearnedWord, dueCount: Int) -> UNMutableNotificationContent {
+        c.threadIdentifier = ""
+        c.title = AL.s(.remReviewTitle)
+            .replacingOccurrences(of: "{word}", with: word.meaning)
+            .replacingOccurrences(of: "{lang}", with: targetLanguageName)
+        c.body = AL.s(.remReviewBody) + (dueCount > 1 ? " " + AL.f(.remReviewMore, dueCount - 1) : "")
+        c.categoryIdentifier = reviewCategory
+        c.userInfo = ["kind": "review", "wordId": word.id]
         return c
     }
 
@@ -211,6 +246,8 @@ enum SmartReminders {
                 }
             case "review":
                 AppRouter.shared.route = .review
+            case "upsell":
+                AppRouter.shared.route = .paywall
             case "lupa":
                 AppRouter.shared.route = .lupa(question: info["question"] as? Int ?? LupaShared.questionIndex())
             default:
@@ -244,6 +281,8 @@ final class AppRouter: ObservableObject {
         case tutor(chapterId: String, goalId: String)
         /// Lupa widget'ı / bildirimi: serbest sohbet o günün sorusuyla açılır
         case lupa(question: Int)
+        /// Ücretsiz süresi bitmiş kullanıcıya Pro daveti
+        case paywall
     }
     @Published var route: Route?
 
@@ -309,5 +348,63 @@ enum LupaText {
               "it": "Ho una domanda per te: “\(q)” Rispondimi a voce!",
               "ru": "У меня к тебе вопрос: «\(q)» Ответь вслух!",
               "zh": "我有个问题问你：“\(q)” 开口回答我吧！"])
+    }
+}
+
+extension LupaText {
+    /// Ücretsiz süresi bitmiş kullanıcı: gün aşırı, her seferinde farklı bir Pro daveti
+    static func upsell(_ n: Int) -> String {
+        let variants: [[String: String]] = [
+            ["tr": "Deneme dersimiz bitti ama ben hâlâ buradayım! WordRem Pro ile her gün sınırsız konuşalım.",
+             "en": "Our trial lesson is over, but I'm still here! Let's talk every day without limits with WordRem Pro.",
+             "de": "Unsere Probestunde ist vorbei, aber ich bin noch da! Mit WordRem Pro sprechen wir jeden Tag ohne Limit.",
+             "fr": "Notre leçon d'essai est finie, mais je suis toujours là ! Parlons chaque jour sans limite avec WordRem Pro.",
+             "es": "Nuestra clase de prueba terminó, ¡pero sigo aquí! Hablemos cada día sin límites con WordRem Pro.",
+             "it": "La nostra lezione di prova è finita, ma io sono ancora qui! Parliamo ogni giorno senza limiti con WordRem Pro.",
+             "ru": "Пробный урок закончился, но я всё ещё здесь! С WordRem Pro будем говорить каждый день без ограничений.",
+             "zh": "试听课结束了，但我还在这里！用 WordRem Pro，我们每天都能无限畅聊。"],
+            ["tr": "İlk derste harika başladın. Devam etmek istersen WordRem Pro ile seni bekliyorum.",
+             "en": "You made a great start in your first lesson. If you want to keep going, I'm waiting for you in WordRem Pro.",
+             "de": "Du hattest einen tollen Start. Wenn du weitermachen willst, warte ich in WordRem Pro auf dich.",
+             "fr": "Tu as super bien commencé. Si tu veux continuer, je t'attends dans WordRem Pro.",
+             "es": "Empezaste genial en tu primera clase. Si quieres seguir, te espero en WordRem Pro.",
+             "it": "Hai iniziato alla grande. Se vuoi continuare, ti aspetto in WordRem Pro.",
+             "ru": "Ты отлично начал на первом уроке. Если хочешь продолжить, я жду тебя в WordRem Pro.",
+             "zh": "你第一节课开了个好头。想继续的话，我在 WordRem Pro 等你。"],
+            ["tr": "Bir dili konuşarak öğrenmenin sırrı her gün biraz pratik. WordRem Pro ile istediğin kadar konuşabilirsin.",
+             "en": "The secret to speaking a language is a little practice every day. With WordRem Pro you can talk as much as you like.",
+             "de": "Das Geheimnis beim Sprechenlernen: jeden Tag ein bisschen Übung. Mit WordRem Pro sprichst du so viel du willst.",
+             "fr": "Le secret pour parler une langue : un peu de pratique chaque jour. Avec WordRem Pro, parle autant que tu veux.",
+             "es": "El secreto para hablar un idioma es practicar un poco cada día. Con WordRem Pro puedes hablar todo lo que quieras.",
+             "it": "Il segreto per parlare una lingua è un po' di pratica ogni giorno. Con WordRem Pro parli quanto vuoi.",
+             "ru": "Секрет разговорной речи — немного практики каждый день. С WordRem Pro говори сколько хочешь.",
+             "zh": "学会说一门语言的秘诀是每天练一点。有了 WordRem Pro，你想说多少就说多少。"],
+        ]
+        return pick(variants[((n % variants.count) + variants.count) % variants.count])
+    }
+
+    /// Ücretsiz deneme dakikaları henüz kullanılmadı
+    static var freeMinutesLeft: String {
+        pick(["tr": "Ücretsiz deneme dakikaların hâlâ duruyor. Gel, ilk sohbetimizi yapalım!",
+              "en": "Your free trial minutes are still waiting. Come have our first chat!",
+              "de": "Deine kostenlosen Probeminuten warten noch. Komm, lass uns zum ersten Mal sprechen!",
+              "fr": "Tes minutes d'essai gratuites t'attendent encore. Viens, faisons notre première discussion !",
+              "es": "Tus minutos de prueba gratis siguen esperando. ¡Ven, tengamos nuestra primera charla!",
+              "it": "I tuoi minuti di prova gratuiti ti aspettano ancora. Vieni, facciamo la nostra prima chiacchierata!",
+              "ru": "Твои бесплатные пробные минуты ещё ждут. Давай поговорим в первый раз!",
+              "zh": "你的免费试用时间还在等你。来，我们第一次聊聊吧！"])
+    }
+
+    /// Pro: pazar günü haftanın özeti
+    static func weeklyRecap(lessons: Int, streak: Int) -> String {
+        let s = streak >= 2
+        return pick(["tr": "Bu hafta \(lessons) ders bitirdin\(s ? ", \(streak) günlük serin de sürüyor 🔥" : "")! Seninle gurur duyuyorum. Yeni haftaya bir sohbetle başlayalım mı?",
+                     "en": "You finished \(lessons) lessons this week\(s ? " and your \(streak)-day streak is going strong 🔥" : "")! I'm proud of you. Shall we start the new week with a chat?",
+                     "de": "Du hast diese Woche \(lessons) Lektionen geschafft\(s ? " und deine \(streak)-Tage-Serie läuft 🔥" : "")! Ich bin stolz auf dich. Starten wir die neue Woche mit einem Gespräch?",
+                     "fr": "Tu as terminé \(lessons) leçons cette semaine\(s ? " et ta série de \(streak) jours continue 🔥" : "")! Je suis fière de toi. On commence la semaine par une discussion ?",
+                     "es": "¡Terminaste \(lessons) lecciones esta semana\(s ? " y tu racha de \(streak) días sigue 🔥" : "")! Estoy orgullosa de ti. ¿Empezamos la semana con una charla?",
+                     "it": "Hai finito \(lessons) lezioni questa settimana\(s ? " e la tua serie di \(streak) giorni continua 🔥" : "")! Sono fiera di te. Iniziamo la settimana con una chiacchierata?",
+                     "ru": "На этой неделе ты прошёл уроков: \(lessons)\(s ? ", а серия из \(streak) дн. продолжается 🔥" : "")! Я горжусь тобой. Начнём новую неделю с разговора?",
+                     "zh": "这周你完成了 \(lessons) 节课\(s ? "，连续 \(streak) 天的记录还在继续 🔥" : "")！我为你骄傲。新的一周从聊天开始吧？"])
     }
 }
