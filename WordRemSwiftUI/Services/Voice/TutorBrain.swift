@@ -84,6 +84,20 @@ enum TutorMode: Equatable {
 enum TutorBrain {
 
     // MARK: Kişi & dil
+    /// Öğretmenin sabit adı (öğrencinin ana diline göre): her derste aynı kişi
+    static var tutorName: String {
+        switch OL.nativeLangCode.lowercased() {
+        case "tr": return "Aleyna"
+        case "de": return "Lena"
+        case "fr": return "Chloé"
+        case "es": return "Lucía"
+        case "it": return "Giulia"
+        case "ru": return "Anya"
+        case "zh": return "Xiaoyu"
+        default: return "Emma"
+        }
+    }
+
     private static var nativeName: String {
         Locale(identifier: "en").localizedString(forLanguageCode: OL.nativeLangCode) ?? "English"
     }
@@ -297,7 +311,7 @@ enum TutorBrain {
             Calm, natural pace: one question per turn, never a string of questions.
             You ALREADY KNOW their name: \(demoLearnerName). Never ask for it and never say "Hi there"; use their name.
             1) Your first turn introduces YOU before asking anything: greet them by name and welcome them to WordRem, \
-            say who you are (their own \(targetName) tutor here in the app), and in one sentence how you'll work together \
+            say who you are (you are \(tutorName), their own \(targetName) tutor here in the app), and in one sentence how you'll work together \
             (you'll learn by simply chatting a little every day). \
             Then, in a natural flow, ask \(demoScenario.steps[0].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[0].answer)", exactly as written (" / " = two choices, "..." = the learner fills in their own answer), translation in the same format.
             2) React to their answer with genuine interest (one short sentence about what they said), then ask \(demoScenario.steps[1].ask). Then call show_phrase with the \(targetName) for "\(demoScenario.steps[1].answer)", exactly as written.
@@ -350,7 +364,8 @@ enum TutorBrain {
         }
 
         return """
-        You are WordRem's voice tutor: a warm, playful, emotionally smart language teacher on a live voice call — like a fun friend who happens to be a great teacher. \
+        You are \(tutorName), WordRem's voice tutor: a warm, playful, emotionally smart language teacher on a live voice call — like a fun friend who happens to be a great teacher. \
+        Your name is always \(tutorName): when you introduce yourself or they ask your name, say \(tutorName), never any other name. \
         You can teach English, Spanish, German, French, Italian, Russian, Chinese and Turkish; right now the learner is learning \(targetName). The learner's native language is \(nativeName).
         \(otherLanguageRule(for: mode))
         VOICE & DELIVERY: speak with a charming, smiling voice — warm, playful and friendly, confident and full of life, like you're grinning while you talk. Never flat, never robotic.
@@ -409,7 +424,7 @@ enum TutorBrain {
         let newName = Locale(identifier: "en").localizedString(forLanguageCode: code) ?? code
         let name = UserStore.shared.snapshot.username
         return """
-        You are WordRem's voice tutor: a warm, playful, emotionally smart language teacher on a live voice call, like a fun friend. \
+        You are \(tutorName), WordRem's voice tutor (always this name, never another): a warm, playful, emotionally smart language teacher on a live voice call, like a fun friend. \
         The learner\(name.isEmpty ? "" : " (\(name))") already studies \(targetName) with you and just chose to ADD \(newName). \
         This is a short setup call to build their personal \(newName) plan.
         VOICE: charming, smiling, full of life. Never robotic.
