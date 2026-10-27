@@ -453,8 +453,6 @@ final class RealtimeVoiceSession: ObservableObject {
     private var learnedCards: [[String]] = []
     /// Ders açılışındaki ısınma sorusu henüz cevaplanmadı
     private var warmupPending = false
-    /// Dersin ilk turu (öğrenci henüz konuşmadı): kart gösterilmez
-    private var isOpeningTurn: Bool { warmupPending && !turns.contains { $0.role == .user && !$0.text.isEmpty } }
     private func praiseNote(afterMiss: Bool) -> String {
         correctsSincePraise += 1
         if afterMiss || correctsSincePraise >= 4 {
@@ -1195,8 +1193,6 @@ final class RealtimeVoiceSession: ObservableObject {
                                "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
                 break
             }
-            // Ders açılışı normalde kartsız; model yine de ders sorusu sorup kart açtıysa gösterilir (öğrenci boşlukta kalmasın)
-            if name == "show_phrase", isOpeningTurn { warmupPending = false }
             // Öğretme sırasında zaten doğru söylenmiş ifade yeniden kart olmasın (birleştirme ve canlandırma hariç)
             if name == "show_phrase", !silentCardActive, !targets.isEmpty, targetProgress < targets.count, !pendingCombine,
                let p = args["phrase"] as? String,
@@ -1475,7 +1471,7 @@ final class RealtimeVoiceSession: ObservableObject {
     /// son tırnak içindeki ifadeyi kart yap.
     private func ensurePhraseCard() {
         let userTurns = turns.filter { $0.role == .user && !$0.text.isEmpty }.count
-        guard !isOpeningTurn, !noCards || cardAfterUserTurns == userTurns, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
+        guard !noCards || cardAfterUserTurns == userTurns, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
         if needsAnswerCard {
             needsAnswerCard = false
             return requestCard(answerTo: fullAIText)

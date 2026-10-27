@@ -569,6 +569,11 @@ final class GeminiEngine {
     private var inResponse = false
     private var dropping = false
     private var callNames: [String: String] = [:]
+    /// Konuşmadan önce gelen araç çağrıları: öğretmen bir şey söyleyene kadar bekletilir (sessiz kart olmasın)
+    private var heldCalls: [[String: Any]] = []
+    private var answeredCalls = Set<String>()
+    private var nudged = false
+    private var started = false
     private var spoken = ""
     private var requestedAt: Date?
     private var releasedAt: Date?
@@ -677,7 +682,15 @@ final class GeminiEngine {
                 let name = c["name"] as? String ?? ""
                 callNames[id] = name
                 let args = (try? JSONSerialization.data(withJSONObject: c["args"] ?? [String: Any]())).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
-                deliver(["type": "response.function_call_arguments.done", "name": name, "call_id": id, "arguments": args])
+                let event: [String: Any] = ["type": "response.function_call_arguments.done", "name": name, "call_id": id, "arguments": args]
+                if spoken.isEmpty && name == "show_phrase" {
+                    // Kartı önce açıp hiç konuşmadı: kart bekler, Gemini'ye hemen "gösterildi" denir
+                    heldCalls.append(event)
+                    answeredCalls.insert(id)
+                    send(["toolResponse": ["functionResponses": [["id": id, "name": name, "response": ["result": "shown"], "scheduling": "SILENT"] as [String: Any]]]])
+                } else {
+                    deliver(event)
+                }
             }
             return
         }
@@ -703,6 +716,18 @@ final class GeminiEngine {
             deliver(["type": "response.output_audio_transcript.delta", "delta": t])
         }
         if sc["turnComplete"] as? Bool == true {
+            if spoken.isEmpty, !heldCalls.isEmpty, !nudged {
+                // Yalnızca kart açıp sustu: söylemesi gerekeni sesli söylesin (kart zaten hazır)
+                nudged = true
+                voiceLog.info("gemini: card without speech → asking to speak")
+                send(["clientContent": ["turns": [["role": "user", "parts": [["text":
+                    "[Private note from the app: the card is ready, but you said nothing out loud. Now say your turn out loud (what you planned, ending with your question). Do not call show_phrase again.]"]]]],
+                    "turnComplete": true] as [String: Any]])
+                return
+            }
+            nudged = false
+            for e in heldCalls { deliver(e) }
+            heldCalls = []
             if !spoken.isEmpty { history.append(["role": "assistant", "content": spoken]) }
             spoken = ""
             dropping = false
@@ -740,7 +765,7 @@ final class GeminiEngine {
             let item = e["item"] as? [String: Any] ?? [:]
             if item["type"] as? String == "function_call_output" {
                 let id = item["call_id"] as? String ?? ""
-                guard !id.hasPrefix("local-") else { return }   // sessiz kart yazı modelinden geldi, Gemini bilmiyor
+                guard !id.hasPrefix("local-"), !answeredCalls.contains(id) else { return }   // sessiz kart ya da önceden cevaplandı
                 send(["toolResponse": ["functionResponses": [[
                     "id": id, "name": callNames[id] ?? "", "response": ["result": item["output"] as? String ?? "ok"], "scheduling": "SILENT",
                 ] as [String: Any]]]])
@@ -760,7 +785,10 @@ final class GeminiEngine {
             Task { [weak self] in
                 await self?.sttTask?.value
                 guard let self, !self.closed else { return }
-                let parts = self.pending.isEmpty ? ["(Go on.)"] : self.pending
+                let parts = self.pending.isEmpty
+                    ? [self.started ? "(Go on.)" : "(The call starts now. Do your opening turn: speak first, end with your question said out loud, and only then show the card.)"]
+                    : self.pending
+                self.started = true
                 self.pending = []
                 self.dropping = false
                 self.requestedAt = Date(); self.firstAudioLogged = false
