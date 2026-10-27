@@ -94,10 +94,10 @@ final class VoiceBackend {
     private var speechSpeed: Double { 1.0 }
 
     /// quality: "high" → tam model (demo ve dersler), "standard" → mini (serbest sohbet)
-    func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard") async throws -> Grant {
+    func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard", engine: String = VoiceEngineChoice.current) async throws -> Grant {
         let payload = try JSONSerialization.data(withJSONObject: [
             "appUserId": appUserId, "instructions": instructions, "tools": tools, "speed": speechSpeed, "quality": quality, "metered": true,
-            "deviceId": DeviceIdentity.id, "engine": VoiceEngineChoice.current,
+            "deviceId": DeviceIdentity.id, "engine": engine,
         ])
         lastBodyBytes = payload.count
         let (data, response) = try await send { base in
@@ -564,14 +564,15 @@ final class SpeechQueue {
     }
 }
 
-/// Debug sürümünde Profil'den seçilen ses motoru: "gemini" (varsayılan) · "cascade" · "realtime"
+/// Ses motoru: herkes için Gemini; Debug sürümünde Profil'den "cascade" / "realtime" denenebilir
 enum VoiceEngineChoice {
     static let all = ["gemini", "cascade", "realtime"]
+    /// Sunucu Gemini'yi kapatırsa (GEMINI_ENABLED) oturum yine realtime gelir; Gemini açılmazsa da realtime'a geçilir
     nonisolated static var current: String {
         #if DEBUG
         UserDefaults.standard.string(forKey: "voiceEngine") ?? "gemini"
         #else
-        "realtime"
+        "gemini"
         #endif
     }
     static func next() {
@@ -606,6 +607,11 @@ final class GeminiEngine {
     private var firstAudioLogged = false
     private var usage = (prompt: 0, response: 0, promptAudio: 0, responseAudio: 0)
     private var closed = false
+    /// Bağlantı yenileme: Google bağlantıyı ~10 dk'da bir kapatır; konuşma bu anahtarla kaldığı yerden sürer
+    private var resumeHandle: String?
+    private var ready = false
+    private var reconnectAfterTurn = false
+    private var reconnects = 0
 
     init(sessionId: String, tools: [[String: Any]], deliver: @escaping ([String: Any]) -> Void) {
         self.sessionId = sessionId
@@ -614,9 +620,23 @@ final class GeminiEngine {
     }
 
     func start() {
+        open()
+        // Gemini birkaç saniyede açılmazsa oturum realtime ile sürer (kullanıcı beklemesin)
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 8_000_000_000)
+            guard let self, !self.ready, !self.closed else { return }
+            voiceLog.error("gemini setup timed out → realtime fallback")
+            self.close()
+            self.deliver(["type": "engine.unavailable"])
+        }
+    }
+
+    private func open() {
         guard let req = VoiceBackend.shared.geminiRequest(sessionId: sessionId) else { return }
+        let old = socket
         let task = URLSession.shared.webSocketTask(with: req)
         socket = task
+        old?.cancel(with: .normalClosure, reason: nil)
         task.resume()
         receive()
         let decls = realtimeTools.map { t -> [String: Any] in
@@ -630,7 +650,22 @@ final class GeminiEngine {
             "tools": [["functionDeclarations": decls]],
             "realtimeInputConfig": ["automaticActivityDetection": ["disabled": true]],
             "outputAudioTranscription": [String: Any](),
+            "sessionResumption": resumeHandle.map { ["handle": $0] } ?? [String: Any](),
         ] as [String: Any]])
+    }
+
+    /// Bağlantı koptu ya da Google kapatacağını bildirdi: kaldığı yerden yeni bağlantı (en fazla 3 kez üst üste)
+    private func reconnect() {
+        guard !closed else { return }
+        guard resumeHandle != nil, reconnects < 3 else {
+            voiceLog.error("gemini connection lost, cannot resume")
+            deliver(["type": "engine.failed"])
+            return
+        }
+        reconnects += 1
+        voiceLog.info("gemini reconnecting (resume)")
+        inResponse = false; dropping = false; spoken = ""
+        open()
     }
 
     func close() {
@@ -670,8 +705,12 @@ final class GeminiEngine {
                 switch result {
                 case .failure(let error):
                     let reason = task?.closeReason.flatMap { String(data: $0, encoding: .utf8) } ?? ""
-                    voiceLog.error("gemini socket closed: \(error.localizedDescription, privacy: .public) code=\(task?.closeCode.rawValue ?? 0, privacy: .public) \(reason, privacy: .public)")
-                    self.deliver(["type": "error", "error": ["message": "gemini socket closed \(reason)"]])
+                    let code = task?.closeCode.rawValue ?? 0
+                    voiceLog.error("gemini socket closed: \(error.localizedDescription, privacy: .public) code=\(code, privacy: .public) \(reason, privacy: .public)")
+                    guard !self.closed else { return }
+                    if code == 4001 { self.deliver(["type": "engine.time_up"]) }   // sunucu süre sınırı
+                    else if self.ready { self.reconnect() }
+                    // kurulum hiç tamamlanmadıysa başlangıçtaki zaman aşımı realtime'a geçirir
                 case .success(let message):
                     var data: Data?
                     switch message {
@@ -696,8 +735,20 @@ final class GeminiEngine {
             usage.promptAudio += audio("promptTokensDetails"); usage.responseAudio += audio("responseTokensDetails")
             voiceLog.info("gemini usage turn prompt=\(p, privacy: .public) response=\(r, privacy: .public) cached=\(u["cachedContentTokenCount"] as? Int ?? 0, privacy: .public)")
         }
+        if let upd = m["sessionResumptionUpdate"] as? [String: Any] {
+            if upd["resumable"] as? Bool == true, let h = upd["newHandle"] as? String, !h.isEmpty { resumeHandle = h }
+            return
+        }
+        if m["goAway"] != nil {
+            // Google bağlantıyı birazdan kapatacak: söz kesilmesin, tur bitince yenile
+            voiceLog.info("gemini goAway")
+            if inResponse { reconnectAfterTurn = true } else { reconnect() }
+            return
+        }
         if m["setupComplete"] != nil {
             voiceLog.info("gemini setup complete")
+            if ready { reconnects = 0; return }   // yenilenen bağlantı: oturum zaten açık
+            ready = true
             deliver(["type": "session.created"])
             return
         }
@@ -722,10 +773,7 @@ final class GeminiEngine {
             }
             return
         }
-        guard let sc = m["serverContent"] as? [String: Any] else {
-            if m["goAway"] != nil { voiceLog.info("gemini goAway") }
-            return
-        }
+        guard let sc = m["serverContent"] as? [String: Any] else { return }
         if let parts = (sc["modelTurn"] as? [String: Any])?["parts"] as? [[String: Any]] {
             for p in parts {
                 guard let b64 = (p["inlineData"] as? [String: Any])?["data"] as? String, !dropping else { continue }
@@ -760,6 +808,7 @@ final class GeminiEngine {
             spoken = ""
             dropping = false
             releasedAt = nil
+            if reconnectAfterTurn { reconnectAfterTurn = false; reconnect() }
             guard inResponse else { return }
             inResponse = false
             deliver(["type": "response.output_audio.done"])

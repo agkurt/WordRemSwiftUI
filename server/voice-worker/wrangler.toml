@@ -27,6 +27,11 @@ CASCADE_REASONING = "none"
 # Gemini Live denemesi (anahtar: wrangler secret put GEMINI_API_KEY)
 GEMINI_MODEL = "gemini-3.8-live"
 GEMINI_VOICE = "Sulafat"
+# "false" yaparsan herkes realtime-mini'ye döner (uygulama güncellemesi gerekmez)
+GEMINI_ENABLED = "true"
+# Gemini geçmiş sınırı (token): maliyet ve 15 dk oturum sınırı için
+GEMINI_TRIGGER_TOKENS = "7000"
+GEMINI_TARGET_TOKENS = "4500"
 VOICE = "marin"
 RC_ENTITLEMENT = "premium"
 # Saniye cinsinden sınırlar

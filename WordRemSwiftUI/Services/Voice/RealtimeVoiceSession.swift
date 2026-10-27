@@ -1081,9 +1081,43 @@ final class RealtimeVoiceSession: ObservableObject {
         }
     }
 
+    /// Gemini açılamadı: aynı talimatla realtime oturumu açılır
+    private func fallbackToRealtime() async {
+        gemini?.close(); gemini = nil
+        tapState.set(cascade: nil)
+        guard phase == .connecting else { return }
+        Track.tutor("engine_fallback", mode: (analyticsContext["mode"] as? String) ?? "other", item: "gemini_to_realtime")
+        do {
+            let grant = try await VoiceBackend.shared.createSession(instructions: lastInstructions, tools: lastTools, quality: quality, engine: "realtime")
+            sessionId = grant.sessionId
+            allowedSeconds = grant.allowedSeconds
+            connect(model: grant.model, secret: grant.clientSecret)
+        } catch let e as VoiceBackend.Failure {
+            errorDetail = "http \(e.code)"
+            phase = .failed(e.code)
+        } catch {
+            errorDetail = await VoiceBackend.shared.diagnose(error)
+            phase = .failed("network")
+        }
+    }
+
     /// Üç parçalı motorun ürettiği olay: soketten gelmiş gibi işlenir
     private func deliver(_ event: [String: Any]) {
         let type = event["type"] as? String ?? ""
+        switch type {
+        case "engine.unavailable":   // Gemini açılmadı: aynı ders realtime ile başlar
+            Task { await fallbackToRealtime() }
+            return
+        case "engine.failed":        // bağlantı koptu ve sürdürülemedi: tekrar dene ekranı
+            errorDetail = "gemini connection lost"
+            stopPlayback()
+            phase = .failed("connection")
+            return
+        case "engine.time_up":
+            endForLimit()
+            return
+        default: break
+        }
         if type == "response.output_audio.delta" {
             if let buf = (event["delta"] as? String).flatMap({ Self.decodePCM($0, format: outFormat) }) { playAudio(buf) }
         } else {

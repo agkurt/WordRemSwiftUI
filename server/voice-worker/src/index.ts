@@ -44,6 +44,10 @@ export interface Env {
   GEMINI_API_KEY?: string;
   GEMINI_MODEL?: string;
   GEMINI_VOICE?: string;
+  GEMINI_ENABLED?: string;
+  /** Gemini geçmiş sınırı: bu kadar tokene ulaşınca en eski turlar atılır (talimat kalır) */
+  GEMINI_TRIGGER_TOKENS?: string;
+  GEMINI_TARGET_TOKENS?: string;
   AI_BUDGET_SHARE: string;
   APPLE_COMMISSION: string;
 }
@@ -239,7 +243,9 @@ async function createSession(req: Request, env: Env): Promise<Response> {
   const model = high ? env.REALTIME_MODEL_HIGH : env.REALTIME_MODEL;
   // Tam model ~3 kat pahalı: aylık bütçeden o oranda düşülür (ücretsiz tadım ve günlük süre etkilenmez)
   const weight = high ? Number(env.HIGH_COST_MULTIPLIER || 3) : 1;
-  if (body.engine === "cascade" || body.engine === "gemini") return createCascadeSession(env, body, plan, device, seconds);
+  // Gemini sunucudan kapatılabilir (GEMINI_ENABLED = "false"): uygulama güncellemeden herkes realtime'a döner
+  const geminiOn = !!env.GEMINI_API_KEY && env.GEMINI_ENABLED !== "false";
+  if (body.engine === "cascade" || (body.engine === "gemini" && geminiOn)) return createCascadeSession(env, body, plan, device, seconds);
   const session = {
     type: "realtime",
     model,
@@ -581,6 +587,12 @@ async function geminiRelay(req: Request, env: Env, ctx: ExecutionContext): Promi
     if (finished) return;
     finished = true;
     clearTimeout(wallTimer);
+    // Gemini 3.8 Live fiyatı: ses girişi $3, ses çıkışı $12, yazı girişi $0.75, yazı çıkışı $4.5 (1M token)
+    const usd = ((tokens.prompt - tokens.promptAudio) * 0.75 + tokens.promptAudio * 3
+      + tokens.responseAudio * 12 + (tokens.response - tokens.responseAudio) * 4.5) / 1e6;
+    console.log("gemini_cost", JSON.stringify({ session: sessionId.slice(0, 8), tier: s.plan.tier, seconds: activeSeconds.size,
+      wall: Math.round((Date.now() - startedAt) / 1000), ...tokens, usd: Number(usd.toFixed(4)),
+      usdPerMin: activeSeconds.size ? Number((usd / activeSeconds.size * 60).toFixed(4)) : 0 }));
     ctx.waitUntil(addUsage(env, sessionId, s, s.reported + activeSeconds.size));
   };
   const tick = () => {
@@ -600,6 +612,11 @@ async function geminiRelay(req: Request, env: Env, ctx: ExecutionContext): Promi
         if (msg.setup) {
           msg.setup.model = `models/${env.GEMINI_MODEL || "gemini-3.8-live"}`;
           msg.setup.systemInstruction = { parts: [{ text: s.instructions ?? "" }] };
+          // Geçmiş her turda yeniden faturalanır: sınırla (ayrıca 15 dk oturum sınırını kaldırır)
+          msg.setup.contextWindowCompression = {
+            triggerTokens: Number(env.GEMINI_TRIGGER_TOKENS || 9000),
+            slidingWindow: { targetTokens: Number(env.GEMINI_TARGET_TOKENS || 6000) },
+          };
           msg.setup.generationConfig = { ...(msg.setup.generationConfig ?? {}), responseModalities: ["AUDIO"],
             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: env.GEMINI_VOICE || "Sulafat" } } } };
           data = JSON.stringify(msg);
@@ -610,10 +627,20 @@ async function geminiRelay(req: Request, env: Env, ctx: ExecutionContext): Promi
   });
   // Gemini JSON'u ikili çerçeveyle yollar: uygulamaya metin olarak iletilir
   const decoder = new TextDecoder();
+  // Maliyet ölçümü: her turun token sayısı (yalnızca usageMetadata içeren mesajlar çözülür)
+  const tokens = { prompt: 0, promptAudio: 0, response: 0, responseAudio: 0, turns: 0 };
+  const audioOf = (list: any) => (Array.isArray(list) ? list : []).filter((x: any) => x.modality === "AUDIO").reduce((a: number, x: any) => a + (x.tokenCount || 0), 0);
   remote.addEventListener("message", async (e) => {
     tick();
     const d: unknown = e.data;
     const text = typeof d === "string" ? d : d instanceof ArrayBuffer ? decoder.decode(d) : await (d as Blob).text();
+    if (text.includes('"usageMetadata"')) {
+      try {
+        const u = JSON.parse(text).usageMetadata;
+        tokens.prompt += u.promptTokenCount || 0; tokens.response += u.responseTokenCount || 0; tokens.turns++;
+        tokens.promptAudio += audioOf(u.promptTokensDetails); tokens.responseAudio += audioOf(u.responseTokensDetails);
+      } catch {}
+    }
     try { server.send(text); } catch { close(remote); }
   });
   server.addEventListener("close", (e) => { close(remote, e.code, e.reason); finish(); });
