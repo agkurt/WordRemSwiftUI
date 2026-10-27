@@ -75,6 +75,15 @@ struct VoiceTutorView: View {
         }
         .paperBackground()
         .task {
+            // Ücretsiz süresi bitmiş, Pro olmayan kullanıcı: sunucuya gitmeden ödeme ekranı
+            if FreeTrial.exhausted, !InAppPurchaseManager.shared.isPremium {
+                await InAppPurchaseManager.shared.syncPremiumStatus()   // yeni alınmış Pro geç görünmesin
+                if !InAppPurchaseManager.shared.isPremium {
+                    Track.tutor("trial_exhausted_gate", mode: modeName)
+                    if isDemo { onFinished(true) } else { showPaywall = true }
+                    return
+                }
+            }
             // Ses üçüncü taraf yapay zekâya (OpenAI) gider: ilk seferde açıkça izin istenir (App Store 5.1.2)
             if UserDefaults.standard.bool(forKey: Self.consentKey) { await begin() } else { askConsent = true }
         }
@@ -95,7 +104,10 @@ struct VoiceTutorView: View {
         .animation(.spring(response: 0.55, dampingFraction: 0.85), value: isConnecting)
         .onChange(of: session.phase) { phase in
             // Pro kullanıcıya asla paywall yok: aylık süresi bittiyse yalnızca bilgi gösterilir
-            if case .failed(let code) = phase, code == "paywall", !InAppPurchaseManager.shared.isPremium { showPaywall = true }
+            if case .failed(let code) = phase, code == "paywall", !InAppPurchaseManager.shared.isPremium {
+                FreeTrial.markExhausted()
+                showPaywall = true
+            }
             guard phase == .listening else { return }
             // Hedefler bitti ve öğretmen kapanışı yaptı → ders tamamlandı
             if session.lessonComplete || finishedSuccess == true {
@@ -194,6 +206,7 @@ struct VoiceTutorView: View {
         // Günlük süre doldu: AI vedalaştıktan sonra paywall (demoda onboarding'in paywall'ı)
         session.onLimitReached = {
             phrase = nil
+            if !InAppPurchaseManager.shared.isPremium { FreeTrial.markExhausted() }
             if isDemo { onFinished(true) }
             else if InAppPurchaseManager.shared.isPremium { dismiss() }
             else { showPaywall = true }

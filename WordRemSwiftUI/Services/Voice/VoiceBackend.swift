@@ -866,3 +866,38 @@ final class GeminiEngine {
         }
     }
 }
+
+/// Ücretsiz konuşma süresi bitti mi: Keychain'de tutulur, uygulama silinip yeniden kurulsa da kalır.
+/// Sunucunun sayacı gecikebildiği için (KV önbelleği) bitti bilgisi önce burada tutulur; Pro olmayan
+/// kullanıcı sesli bölümlere girmeye çalışınca sunucuya hiç gitmeden ödeme ekranı açılır.
+enum FreeTrial {
+    private static let service = "com.twinflare.WordRemSwiftUI.device"
+    private static let account = "free-trial-exhausted"
+
+    static var exhausted: Bool {
+        if FreshUser.isOn { return UserDefaults.standard.bool(forKey: "debugFreeTrialExhausted") }
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+        ]
+        var item: CFTypeRef?
+        return SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess
+    }
+
+    static func markExhausted() {
+        guard !exhausted else { return }
+        voiceLog.info("free trial exhausted")
+        if FreshUser.isOn { UserDefaults.standard.set(true, forKey: "debugFreeTrialExhausted"); return }
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecValueData as String: Data("1".utf8),
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+        ]
+        SecItemAdd(query as CFDictionary, nil)
+    }
+}

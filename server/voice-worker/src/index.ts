@@ -197,6 +197,8 @@ async function freeUsed(env: Env, user: string, device?: string): Promise<number
 async function allowance(env: Env, user: string, plan: Plan, device?: string): Promise<number> {
   const session = Number(env.SESSION_MAX_SECONDS);
   if (plan.tier === "free") {
+    // KV okuması bir dakikaya kadar eski kalabilir: süre bitince yazılan anlık işaret önce kontrol edilir
+    if ((await cacheGet(`fx:${user}`)) || (device && (await cacheGet(`fx:${device}`)))) return 0;
     const used = await freeUsed(env, user, device);
     return Math.max(0, Number(env.FREE_TASTE_SECONDS) - used);
   }
@@ -310,6 +312,11 @@ async function addUsage(env: Env, sessionId: string, s: SessionRecord, seconds: 
   const delta = Math.max(0, total - s.reported);
   if (delta <= 0) return;
   if (s.plan.tier === "free") {
+    const freeTotal = (await freeUsed(env, s.user, s.device)) + delta;
+    if (freeTotal >= Number(env.FREE_TASTE_SECONDS) - 15) {
+      await cachePut(`fx:${s.user}`, "1", 60 * 60 * 24 * 30);
+      if (s.device) await cachePut(`fx:${s.device}`, "1", 60 * 60 * 24 * 30);
+    }
     await safePut(env, `free:${s.user}`, String((await getNum(env, `free:${s.user}`)) + delta));
     if (s.device) await safePut(env, `freed:${s.device}`, String((await getNum(env, `freed:${s.device}`)) + delta));
   } else {
