@@ -231,6 +231,9 @@ async function createSession(req: Request, env: Env): Promise<Response> {
     model,
     instructions: body.instructions,
     max_output_tokens: 1200,
+    // Konuşma geçmişi her turda yeniden faturalanır; yalnızca uzun derslerde (~15 dk+) en eski
+    // turlar atılır. İlerleme (kelimeler, özetler) talimatta olduğundan etkilenmez.
+    truncation: { type: "retention_ratio", retention_ratio: 0.7, token_limits: { post_instructions: 16000 } },
     audio: {
       input: {
         format: { type: "audio/pcm", rate: 24000 },
