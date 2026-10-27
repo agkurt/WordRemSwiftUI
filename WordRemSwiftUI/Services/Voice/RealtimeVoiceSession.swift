@@ -664,10 +664,12 @@ final class RealtimeVoiceSession: ObservableObject {
         let s = AVAudioSession.sharedInstance()
         // .voiceChat + ses işleme (VPIO) gerçek iPhone'da AVAudioPlayerNode çıkışını susturabiliyor;
         // bas-konuş kullandığımız için yankı engellemeye gerek yok → sade playAndRecord + hoparlör.
+        // Kulaklık takılıysa ses kulaklığa gider (.defaultToSpeaker yalnızca kulaklık yokken hoparlörü seçer).
+        // Bluetooth kulaklık yüksek kaliteli (A2DP) çalar, mikrofon telefonunki olur: HFP'ye geçmek sesi
+        // telefon kalitesine düşürüyor ve mikrofon biçimini değiştirip kaydı bozabiliyor.
         try s.setCategory(.playAndRecord, mode: .default,
-                          options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP])
+                          options: [.defaultToSpeaker, .allowBluetoothA2DP])
         try s.setActive(true)
-        try? s.overrideOutputAudioPort(.speaker)
 
         if player.engine == nil { engine.attach(player) }
         engine.connect(player, to: engine.mainMixerNode, format: outFormat)
@@ -681,7 +683,7 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Mikrofon dokunuşu kuruldu mu (giriş biçimi bazen bir an 0 Hz gelir: yeniden denenir)
     private var micTapInstalled = false
 
-    private func installMicTap(retries: Int = 4) {
+    private func installMicTap(retries: Int = 10) {
         let input = engine.inputNode
         input.removeTap(onBus: 0)
         micTapInstalled = false
