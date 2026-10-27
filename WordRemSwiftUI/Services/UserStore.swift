@@ -200,8 +200,10 @@ enum FreshUser {
 
     /// Tüm yerel veriyi siler, yeni kimlik verir ve uygulamayı kapatır; yeniden açınca onboarding başlar
     static func start() {
+        let engine = UserDefaults.standard.string(forKey: "voiceEngine")   // test için seçilen ses motoru korunur
         if let bundle = Bundle.main.bundleIdentifier { UserDefaults.standard.removePersistentDomain(forName: bundle) }
         UserDefaults.standard.set(UUID().uuidString, forKey: key)
+        if let engine { UserDefaults.standard.set(engine, forKey: "voiceEngine") }
         relaunch()
     }
 
