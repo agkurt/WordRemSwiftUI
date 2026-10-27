@@ -393,7 +393,7 @@ final class CascadeEngine {
         }
         var body: [String: Any] = ["messages": sanitized(), "tools": tools, "tool_choice": opts["tool_choice"] ?? "auto"]
         if let instr = opts["instructions"] as? String { body["instructions"] = instr }
-        guard let payload = try? JSONSerialization.data(withJSONObject: body),
+        guard JSONSerialization.isValidJSONObject(body), let payload = try? JSONSerialization.data(withJSONObject: body),
               let req = VoiceBackend.shared.cascadeRequest("chat", sessionId: sessionId, body: payload) else { return }
 
         deliver(["type": "response.created"])
@@ -629,7 +629,7 @@ final class GeminiEngine {
     }
 
     private func send(_ obj: [String: Any]) {
-        guard let socket, let data = try? JSONSerialization.data(withJSONObject: obj),
+        guard let socket, JSONSerialization.isValidJSONObject(obj), let data = try? JSONSerialization.data(withJSONObject: obj),
               let text = String(data: data, encoding: .utf8) else { return }
         socket.send(.string(text)) { error in
             if let error { voiceLog.error("gemini send failed: \(error.localizedDescription, privacy: .public)") }
@@ -681,7 +681,9 @@ final class GeminiEngine {
                 let id = c["id"] as? String ?? UUID().uuidString
                 let name = c["name"] as? String ?? ""
                 callNames[id] = name
-                let args = (try? JSONSerialization.data(withJSONObject: c["args"] ?? [String: Any]())).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+                let argObj = c["args"] as? [String: Any] ?? [:]
+                let args = (JSONSerialization.isValidJSONObject(argObj) ? try? JSONSerialization.data(withJSONObject: argObj) : nil)
+                    .flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
                 let event: [String: Any] = ["type": "response.function_call_arguments.done", "name": name, "call_id": id, "arguments": args]
                 if spoken.isEmpty && name == "show_phrase" {
                     // Kartı önce açıp hiç konuşmadı: kart bekler, Gemini'ye hemen "gösterildi" denir
@@ -805,10 +807,10 @@ final class GeminiEngine {
         let tools: [[String: Any]] = (opts["tools"] as? [[String: Any]] ?? realtimeTools).map { t in
             ["type": "function", "function": ["name": t["name"] ?? "", "description": t["description"] ?? "", "parameters": t["parameters"] ?? [:]]]
         }
-        var body: [String: Any] = ["messages": history.suffix(12), "tools": tools, "tool_choice": "required"]
+        var body: [String: Any] = ["messages": Array(history.suffix(12)), "tools": tools, "tool_choice": "required"]
         if let instr = opts["instructions"] as? String { body["instructions"] = instr }
         Task { [weak self] in
-            guard let self, let payload = try? JSONSerialization.data(withJSONObject: body),
+            guard let self, JSONSerialization.isValidJSONObject(body), let payload = try? JSONSerialization.data(withJSONObject: body),
                   let req = VoiceBackend.shared.cascadeRequest("chat", sessionId: self.sessionId, body: payload) else { return }
             self.deliver(["type": "response.created"])
             var calls: [Int: (id: String, name: String, args: String)] = [:]

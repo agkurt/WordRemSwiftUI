@@ -1083,7 +1083,7 @@ final class RealtimeVoiceSession: ObservableObject {
     private func send(_ event: [String: Any]) {
         if let cascade { cascade.handle(event); return }
         if let gemini { gemini.handle(event); return }
-        guard let socket, let data = try? JSONSerialization.data(withJSONObject: event),
+        guard let socket, JSONSerialization.isValidJSONObject(event), let data = try? JSONSerialization.data(withJSONObject: event),
               let text = String(data: data, encoding: .utf8) else { return }
         socket.send(.string(text)) { _ in }
     }
