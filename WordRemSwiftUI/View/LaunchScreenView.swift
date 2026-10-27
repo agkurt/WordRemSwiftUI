@@ -53,7 +53,8 @@ struct LaunchScreenView: View {
                 logoOpacity = 1.0
             }
 
-            // Profil gelince geç; yavaş ağda en fazla 4 sn bekle, logo da en az 1.2 sn görünsün
+            // Profil gelince geç; yavaş ağda en fazla 4 sn bekle. Logo en az 2 sn görünür:
+            // bu sırada arka planda RevenueCat, Firebase ve Game Center hazırlanır
             let start = Date()
             // Profil isteği iptal edilmesin; geç gelirse arka planda tamamlansın
             let profile = Task { _ = try? await DataService.shared.fetchUserProfile() }
@@ -63,7 +64,7 @@ struct LaunchScreenView: View {
                 await group.next()
                 group.cancelAll()
             }
-            let remaining = 1.2 - Date().timeIntervalSince(start)
+            let remaining = 2.0 - Date().timeIntervalSince(start)
             if remaining > 0 { try? await Task.sleep(nanoseconds: UInt64(remaining * 1_000_000_000)) }
 
             onReady()
