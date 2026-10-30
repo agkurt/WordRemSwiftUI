@@ -1,0 +1,100 @@
+package app.wordrem.android.i18n
+
+import app.wordrem.android.data.Store
+
+/**
+ * Uygulama metinleri: dil cihazdan değil, onboarding'de seçilen ana dilden gelir (iOS AL/OL ile aynı mantık).
+ * Sıra: tr, en, de, fr, es, it, ru, zh.
+ */
+enum class K(vararg val t: String) {
+    WELCOME_TITLE("Merhaba! Ben Lupa", "Hi! I'm Lupa", "Hallo! Ich bin Lupa", "Salut ! Je suis Lupa", "¡Hola! Soy Lupa", "Ciao! Sono Lupa", "Привет! Я Лупа", "你好！我是 Lupa"),
+    WELCOME_SUB("Yapay zekâ dil öğretmenin. Her gün biraz konuşarak öğrenelim.", "Your AI language tutor. Let's learn by talking a little every day.", "Deine KI-Sprachlehrerin. Lass uns jeden Tag ein bisschen sprechen.", "Ta prof de langues IA. Apprenons en parlant un peu chaque jour.", "Tu tutora de idiomas con IA. Aprendamos hablando un poco cada día.", "La tua tutor di lingue IA. Impariamo parlando un po' ogni giorno.", "Твой ИИ-репетитор. Учимся, немного разговаривая каждый день.", "你的 AI 语言老师。每天聊一点，轻松学会。"),
+    START("Başlayalım", "Let's start", "Los geht's", "C'est parti", "Empecemos", "Iniziamo", "Начнём", "开始吧"),
+    CONTINUE("Devam", "Continue", "Weiter", "Continuer", "Continuar", "Continua", "Далее", "继续"),
+    NATIVE_Q("Hangi dili konuşuyorsun?", "Which language do you speak?", "Welche Sprache sprichst du?", "Quelle langue parles-tu ?", "¿Qué idioma hablas?", "Che lingua parli?", "На каком языке ты говоришь?", "你说哪种语言？"),
+    TARGET_Q("Hangi dili öğrenmek istiyorsun?", "Which language do you want to learn?", "Welche Sprache möchtest du lernen?", "Quelle langue veux-tu apprendre ?", "¿Qué idioma quieres aprender?", "Che lingua vuoi imparare?", "Какой язык ты хочешь выучить?", "你想学哪种语言？"),
+    NAME_Q("Sana nasıl hitap edelim?", "What should we call you?", "Wie sollen wir dich nennen?", "Comment doit-on t'appeler ?", "¿Cómo te llamamos?", "Come ti chiamiamo?", "Как к тебе обращаться?", "我们该怎么称呼你？"),
+    NAME_HINT("Adın", "Your name", "Dein Name", "Ton prénom", "Tu nombre", "Il tuo nome", "Твоё имя", "你的名字"),
+    DEMO_TITLE("Lupa ile tanış", "Meet Lupa", "Lerne Lupa kennen", "Rencontre Lupa", "Conoce a Lupa", "Conosci Lupa", "Познакомься с Лупой", "认识 Lupa"),
+    DEMO_SUB("İlk dersin bir dakika sürer. Butona basılı tut ve konuş.", "Your first lesson takes a minute. Hold the button and talk.", "Deine erste Lektion dauert eine Minute. Halte die Taste gedrückt und sprich.", "Ta première leçon dure une minute. Maintiens le bouton et parle.", "Tu primera lección dura un minuto. Mantén pulsado el botón y habla.", "La tua prima lezione dura un minuto. Tieni premuto il pulsante e parla.", "Первый урок займёт минуту. Удерживай кнопку и говори.", "第一课只要一分钟。按住按钮说话。"),
+    SKIP("Atla", "Skip", "Überspringen", "Passer", "Omitir", "Salta", "Пропустить", "跳过"),
+    TAB_TALK("Konuş", "Talk", "Sprechen", "Parler", "Hablar", "Parla", "Говорить", "对话"),
+    TAB_WORDS("Kelimeler", "Words", "Wörter", "Mots", "Palabras", "Parole", "Слова", "单词"),
+    TAB_PROFILE("Profil", "Profile", "Profil", "Profil", "Perfil", "Profilo", "Профиль", "我的"),
+    NEXT_LESSON("Sıradaki ders", "Next lesson", "Nächste Lektion", "Prochaine leçon", "Próxima lección", "Prossima lezione", "Следующий урок", "下一课"),
+    START_LESSON("Derse başla", "Start lesson", "Lektion starten", "Commencer", "Empezar", "Inizia", "Начать урок", "开始上课"),
+    TALK_ASSISTANT("Asistanınla konuş", "Talk with your assistant", "Sprich mit deiner Assistentin", "Parle avec ton assistante", "Habla con tu asistente", "Parla con la tua assistente", "Поговори с ассистентом", "和你的助手聊天"),
+    TALK_ASSISTANT_SUB("Canlandırma, yeni kalıplar, hızlı soru ya da gününü anlat.", "Roleplay, new phrases, a quick question or tell her about your day.", "Rollenspiel, neue Sätze, eine kurze Frage oder erzähl von deinem Tag.", "Jeu de rôle, nouvelles phrases, une question rapide ou raconte ta journée.", "Juego de rol, frases nuevas, una pregunta rápida o cuéntale tu día.", "Gioco di ruolo, nuove frasi, una domanda veloce o raccontale la tua giornata.", "Ролевая игра, новые фразы, быстрый вопрос или расскажи о своём дне.", "角色扮演、新句子、快速提问，或者聊聊你的一天。"),
+    REVIEW_DUE("%d kelimenin tekrar zamanı geldi", "%d words to review", "%d Wörter zum Wiederholen", "%d mots à réviser", "%d palabras para repasar", "%d parole da ripassare", "%d слов на повторение", "%d 个单词待复习"),
+    REVIEW_START("Tekrar et", "Review", "Wiederholen", "Réviser", "Repasar", "Ripassa", "Повторить", "复习"),
+    HOLD_TO_TALK("Basılı tut ve konuş", "Hold to talk", "Gedrückt halten und sprechen", "Maintiens pour parler", "Mantén para hablar", "Tieni premuto per parlare", "Удерживай и говори", "按住说话"),
+    LISTENING("Dinliyorum…", "Listening…", "Ich höre zu…", "J'écoute…", "Te escucho…", "Ti ascolto…", "Слушаю…", "正在听…"),
+    THINKING("Düşünüyor…", "Thinking…", "Denkt nach…", "Réfléchit…", "Pensando…", "Sta pensando…", "Думает…", "思考中…"),
+    CONNECTING("Lupa'ya bağlanıyor…", "Connecting to Lupa…", "Verbinde mit Lupa…", "Connexion à Lupa…", "Conectando con Lupa…", "Connessione a Lupa…", "Подключаемся к Лупе…", "正在连接 Lupa…"),
+    SPEAKING("Lupa konuşuyor — sözünü kesmek için basılı tut", "Lupa is talking — hold to interrupt", "Lupa spricht — gedrückt halten zum Unterbrechen", "Lupa parle — maintiens pour l'interrompre", "Lupa está hablando — mantén para interrumpir", "Lupa sta parlando — tieni premuto per interrompere", "Лупа говорит — удерживай, чтобы перебить", "Lupa 正在说话 — 按住可打断"),
+    TYPE_MESSAGE("Yaz…", "Type a message…", "Nachricht schreiben…", "Écris un message…", "Escribe un mensaje…", "Scrivi un messaggio…", "Напиши сообщение…", "输入消息…"),
+    END("Bitir", "End", "Beenden", "Terminer", "Terminar", "Termina", "Завершить", "结束"),
+    MIC_NEEDED("Lupa ile konuşmak için mikrofon izni gerekiyor.", "Lupa needs microphone access to hear you.", "Lupa braucht Mikrofonzugriff, um dich zu hören.", "Lupa a besoin du micro pour t'entendre.", "Lupa necesita el micrófono para oírte.", "Lupa ha bisogno del microfono per sentirti.", "Лупе нужен доступ к микрофону.", "Lupa 需要麦克风权限才能听到你。"),
+    ALLOW("İzin ver", "Allow", "Erlauben", "Autoriser", "Permitir", "Consenti", "Разрешить", "允许"),
+    ERROR_NETWORK("Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.", "Couldn't connect. Check your internet and try again.", "Keine Verbindung. Prüfe dein Internet und versuche es erneut.", "Connexion impossible. Vérifie ta connexion et réessaie.", "No se pudo conectar. Revisa tu internet e inténtalo de nuevo.", "Connessione non riuscita. Controlla internet e riprova.", "Не удалось подключиться. Проверь интернет и попробуй снова.", "无法连接。请检查网络后重试。"),
+    LIMIT_REACHED("Bugünkü konuşma süren doldu. Yarın görüşürüz!", "You've used today's talk time. See you tomorrow!", "Deine Sprechzeit für heute ist aufgebraucht. Bis morgen!", "Ton temps de parole du jour est écoulé. À demain !", "Has usado el tiempo de hoy. ¡Hasta mañana!", "Hai finito il tempo di oggi. A domani!", "Время на сегодня закончилось. До завтра!", "今天的对话时间已用完。明天见！"),
+    TRY_AGAIN("Tekrar dene", "Try again", "Erneut versuchen", "Réessayer", "Reintentar", "Riprova", "Повторить", "重试"),
+    LESSON_COMPLETE("Ders tamamlandı!", "Lesson complete!", "Lektion geschafft!", "Leçon terminée !", "¡Lección completada!", "Lezione completata!", "Урок пройден!", "课程完成！"),
+    PHRASES_LEARNED("Öğrendiğin ifadeler", "Phrases you learned", "Gelernte Sätze", "Phrases apprises", "Frases aprendidas", "Frasi imparate", "Выученные фразы", "学到的句子"),
+    DONE("Tamam", "Done", "Fertig", "Terminé", "Listo", "Fatto", "Готово", "完成"),
+    LEARNED("Öğrendiklerim", "Learned", "Gelernt", "Appris", "Aprendidas", "Imparate", "Выученные", "已学"),
+    COURSE("Kurs", "Course", "Kurs", "Cours", "Curso", "Corso", "Курс", "课程"),
+    NO_WORDS("Henüz kelime yok. Lupa ile bir ders yap ya da kurstan kelime ekle.", "No words yet. Do a lesson with Lupa or add words from the course.", "Noch keine Wörter. Mach eine Lektion mit Lupa oder füge Wörter aus dem Kurs hinzu.", "Pas encore de mots. Fais une leçon avec Lupa ou ajoute des mots du cours.", "Aún no hay palabras. Haz una lección con Lupa o añade palabras del curso.", "Ancora nessuna parola. Fai una lezione con Lupa o aggiungi parole dal corso.", "Пока нет слов. Пройди урок с Лупой или добавь слова из курса.", "还没有单词。和 Lupa 上一课，或从课程中添加单词。"),
+    ADD_TO_REVIEW("Tekrar listeme ekle", "Add to my reviews", "Zu meinen Wiederholungen", "Ajouter à mes révisions", "Añadir a mis repasos", "Aggiungi ai ripassi", "Добавить в повторение", "加入复习"),
+    ADDED("%d kelime eklendi", "%d words added", "%d Wörter hinzugefügt", "%d mots ajoutés", "%d palabras añadidas", "%d parole aggiunte", "Добавлено слов: %d", "已添加 %d 个单词"),
+    NO_COURSE("Bu dil için kelime kursu henüz yok; Lupa ile konuşarak öğrenebilirsin.", "There's no word course for this language yet; you can learn by talking with Lupa.", "Für diese Sprache gibt es noch keinen Wortkurs; lerne im Gespräch mit Lupa.", "Pas encore de cours de mots pour cette langue ; apprends en parlant avec Lupa.", "Aún no hay curso de palabras para este idioma; aprende hablando con Lupa.", "Non c'è ancora un corso di parole per questa lingua; impara parlando con Lupa.", "Для этого языка пока нет курса слов; учись в разговоре с Лупой.", "该语言暂无单词课程，可以和 Lupa 对话学习。"),
+    PRACTICE_WORDS("Kelimelerimi konuşarak çalış", "Practice my words by talking", "Meine Wörter im Gespräch üben", "Pratiquer mes mots à l'oral", "Practicar mis palabras hablando", "Pratica le mie parole parlando", "Практиковать слова в разговоре", "通过对话练习我的单词"),
+    SHOW_ANSWER("Anlamını göster", "Show meaning", "Bedeutung zeigen", "Voir le sens", "Ver significado", "Mostra significato", "Показать значение", "显示释义"),
+    AGAIN("Tekrar", "Again", "Nochmal", "À revoir", "Otra vez", "Di nuovo", "Снова", "重来"),
+    HARD("Zor", "Hard", "Schwer", "Difficile", "Difícil", "Difficile", "Трудно", "困难"),
+    GOOD("İyi", "Good", "Gut", "Bien", "Bien", "Bene", "Хорошо", "良好"),
+    EASY("Kolay", "Easy", "Leicht", "Facile", "Fácil", "Facile", "Легко", "简单"),
+    REVIEW_DONE("Bugünlük tekrar bitti!", "All reviews done for today!", "Für heute alles wiederholt!", "Révisions du jour terminées !", "¡Repasos de hoy completados!", "Ripassi di oggi completati!", "На сегодня всё повторено!", "今天的复习完成了！"),
+    STREAK_DAYS("%d günlük seri", "%d-day streak", "%d-Tage-Serie", "Série de %d jours", "Racha de %d días", "Serie di %d giorni", "Серия: %d дн.", "连续 %d 天"),
+    WORDS_LEARNED("Kelime", "Words", "Wörter", "Mots", "Palabras", "Parole", "Слова", "单词"),
+    LESSONS_DONE("Ders", "Lessons", "Lektionen", "Leçons", "Lecciones", "Lezioni", "Уроки", "课程"),
+    STUDY_DAYS("Gün", "Days", "Tage", "Jours", "Días", "Giorni", "Дни", "天数"),
+    PRO_ACTIVE("WordRem Pro aktif", "WordRem Pro is active", "WordRem Pro ist aktiv", "WordRem Pro est actif", "WordRem Pro está activo", "WordRem Pro è attivo", "WordRem Pro активен", "WordRem Pro 已开通"),
+    GO_PRO("WordRem Pro'ya geç", "Get WordRem Pro", "Hol dir WordRem Pro", "Passe à WordRem Pro", "Hazte WordRem Pro", "Passa a WordRem Pro", "Перейти на WordRem Pro", "升级 WordRem Pro"),
+    GO_PRO_SUB("Lupa ile sınırsız konuş, her gün yeni ders.", "Talk with Lupa without limits, a new lesson every day.", "Sprich unbegrenzt mit Lupa, jeden Tag eine neue Lektion.", "Parle sans limite avec Lupa, une nouvelle leçon chaque jour.", "Habla sin límites con Lupa, una lección nueva cada día.", "Parla senza limiti con Lupa, una nuova lezione ogni giorno.", "Говори с Лупой без ограничений, новый урок каждый день.", "与 Lupa 无限畅聊，每天一节新课。"),
+    NATIVE_LANGUAGE("Ana dil", "Native language", "Muttersprache", "Langue maternelle", "Idioma nativo", "Lingua madre", "Родной язык", "母语"),
+    LEARNING_LANGUAGE("Öğrendiğim dil", "Learning", "Ich lerne", "J'apprends", "Aprendo", "Sto imparando", "Изучаю", "正在学习"),
+    RESTORE("Satın alımları geri yükle", "Restore purchases", "Käufe wiederherstellen", "Restaurer les achats", "Restaurar compras", "Ripristina acquisti", "Восстановить покупки", "恢复购买"),
+    MANAGE_SUB("Aboneliği yönet", "Manage subscription", "Abo verwalten", "Gérer l'abonnement", "Gestionar suscripción", "Gestisci abbonamento", "Управлять подпиской", "管理订阅"),
+    PRIVACY("Gizlilik politikası", "Privacy policy", "Datenschutz", "Confidentialité", "Privacidad", "Privacy", "Конфиденциальность", "隐私政策"),
+    TERMS("Kullanım koşulları", "Terms of use", "Nutzungsbedingungen", "Conditions d'utilisation", "Términos de uso", "Termini d'uso", "Условия использования", "使用条款"),
+    RESET("İlerlemeyi sıfırla", "Reset progress", "Fortschritt zurücksetzen", "Réinitialiser", "Restablecer progreso", "Azzera i progressi", "Сбросить прогресс", "重置进度"),
+    RESET_CONFIRM("Tüm kelimeler, seri ve ders ilerlemen bu cihazdan silinecek.", "All your words, streak and lesson progress will be deleted from this device.", "Alle Wörter, Serie und Fortschritt werden von diesem Gerät gelöscht.", "Tous tes mots, ta série et ta progression seront supprimés de cet appareil.", "Se borrarán de este dispositivo todas tus palabras, racha y progreso.", "Tutte le parole, la serie e i progressi verranno eliminati da questo dispositivo.", "Все слова, серия и прогресс будут удалены с этого устройства.", "此设备上的所有单词、连续记录和课程进度都将被删除。"),
+    CANCEL("Vazgeç", "Cancel", "Abbrechen", "Annuler", "Cancelar", "Annulla", "Отмена", "取消"),
+    PAYWALL_TITLE("Lupa ile her gün konuş", "Talk with Lupa every day", "Sprich jeden Tag mit Lupa", "Parle avec Lupa chaque jour", "Habla con Lupa cada día", "Parla con Lupa ogni giorno", "Говори с Лупой каждый день", "每天和 Lupa 对话"),
+    PF_TALK("Gerçek sohbetlerle konuşmaya başla", "Start speaking with real conversations", "Sprich von Anfang an in echten Gesprächen", "Parle dès le début avec de vraies conversations", "Habla desde el principio con conversaciones reales", "Parla subito con conversazioni vere", "Начни говорить в настоящих диалогах", "通过真实对话开口说"),
+    PF_PLAN("Sana özel ders planı", "A lesson plan made for you", "Ein Lernplan nur für dich", "Un plan de cours rien que pour toi", "Un plan de lecciones para ti", "Un piano di lezioni su misura", "Персональный план уроков", "为你定制的课程计划"),
+    PF_FIX("Telaffuzunu nazikçe düzeltir", "Gentle pronunciation fixes", "Sanfte Aussprachekorrektur", "Corrections de prononciation en douceur", "Corrige tu pronunciación con suavidad", "Corregge la pronuncia con gentilezza", "Мягко исправляет произношение", "温和地纠正发音"),
+    PF_REMEMBER("Öğrendiklerini aralıklı tekrarla kalıcı yap", "Spaced reviews make it stick", "Wiederholungen mit System, damit es bleibt", "Des révisions espacées pour retenir", "Repasos espaciados para que no se olvide", "Ripassi distanziati per ricordare", "Интервальные повторения для запоминания", "间隔复习，牢牢记住"),
+    TRIAL_NOTE("7 gün ücretsiz dene, istediğin zaman iptal et.", "Try 7 days free, cancel anytime.", "7 Tage kostenlos testen, jederzeit kündbar.", "7 jours gratuits, annulable à tout moment.", "Prueba 7 días gratis, cancela cuando quieras.", "Prova 7 giorni gratis, annulla quando vuoi.", "7 дней бесплатно, отмена в любой момент.", "免费试用 7 天，随时取消。"),
+    SUBSCRIBE("Devam et", "Continue", "Weiter", "Continuer", "Continuar", "Continua", "Продолжить", "继续"),
+    BEST_VALUE("En avantajlı", "Best value", "Bestes Angebot", "Meilleure offre", "Mejor precio", "Più conveniente", "Выгоднее всего", "最划算"),
+    YEARLY("Yıllık", "Yearly", "Jährlich", "Annuel", "Anual", "Annuale", "Год", "年度"),
+    MONTHLY("Aylık", "Monthly", "Monatlich", "Mensuel", "Mensual", "Mensile", "Месяц", "月度"),
+    WEEKLY("Haftalık", "Weekly", "Wöchentlich", "Hebdomadaire", "Semanal", "Settimanale", "Неделя", "每周"),
+    STORE_UNAVAILABLE("Abonelikler şu an yüklenemedi.", "Subscriptions couldn't be loaded right now.", "Abos konnten gerade nicht geladen werden.", "Impossible de charger les abonnements.", "No se pudieron cargar las suscripciones.", "Impossibile caricare gli abbonamenti.", "Не удалось загрузить подписки.", "暂时无法加载订阅。"),
+    NOT_NOW("Şimdi değil", "Not now", "Nicht jetzt", "Pas maintenant", "Ahora no", "Non ora", "Не сейчас", "以后再说"),
+    FREE_TIME_UP("Ücretsiz konuşma süren bitti. Lupa ile devam etmek için Pro'ya geç.", "Your free talk time is up. Go Pro to keep talking with Lupa.", "Deine kostenlose Sprechzeit ist vorbei. Mit Pro sprichst du weiter mit Lupa.", "Ton temps gratuit est écoulé. Passe à Pro pour continuer avec Lupa.", "Se acabó tu tiempo gratis. Hazte Pro para seguir con Lupa.", "Il tempo gratuito è finito. Passa a Pro per continuare con Lupa.", "Бесплатное время закончилось. Перейди на Pro, чтобы продолжить.", "免费时间已用完。升级 Pro 继续和 Lupa 对话。"),
+    LEVEL("Seviye %d", "Level %d", "Level %d", "Niveau %d", "Nivel %d", "Livello %d", "Уровень %d", "第 %d 级"),
+    HELLO("Merhaba %s!", "Hi %s!", "Hallo %s!", "Salut %s !", "¡Hola, %s!", "Ciao %s!", "Привет, %s!", "你好，%s！"),
+    YOUR_TURN("Sıra sende", "Your turn", "Du bist dran", "À toi", "Tu turno", "Tocca a te", "Твоя очередь", "轮到你了"),
+    ;
+
+    operator fun invoke(): String = s(this)
+    fun f(n: Int): String = s(this).replace("%d", n.toString())
+    fun f(text: String): String = s(this).replace("%s", text)
+}
+
+private val ORDER = listOf("tr", "en", "de", "fr", "es", "it", "ru", "zh")
+
+fun s(key: K, lang: String = Store.nativeLang): String = key.t[ORDER.indexOf(lang).takeIf { it >= 0 } ?: 1]
