@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-01",
+  "reel": "ex01",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Phrase of the day 🥾",
+      "phrase": "*I'm into* hiking.",
+      "meaning": "I really like hiking",
+      "note": "Sounds more natural than \"I like\": I'm into + your hobby.",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Your turn ✍️",
+      "question": "What are *you* into?",
+      "hint": "Answer in English, we'll correct it",
+      "sticker": "Question box: I'm into…",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New video 🎬",
+      "title": "4 phrases that make you sound *rude* 😬",
+      "image": "stories/ex01.jpg",
+      "cta": "Watch it on our profile 👆",
+      "at": "20:30"
+    }
+  ]
+}

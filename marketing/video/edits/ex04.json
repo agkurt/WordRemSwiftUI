@@ -1,0 +1,556 @@
+{
+  "kind": "explainer",
+  "id": "ex04",
+  "hook": "3 things to say when you don't understand",
+  "cta": "Coming soon on the App Store",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "3",
+        "title": "things to say when you *don't understand*",
+        "sub": "without sounding rude 😬"
+      },
+      "from": 0,
+      "to": 4.43
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 3,
+        "label": "Too fast 🏃",
+        "wrong": "Speak slowly!",
+        "right": "Could you speak *more slowly*, please?"
+      },
+      "from": 4.43,
+      "to": 11.85
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 3,
+        "label": "New word 🤔",
+        "wrong": "What is mean?",
+        "right": "What does that *mean*?"
+      },
+      "from": 11.85,
+      "to": 18.69
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 3,
+        "label": "You missed it 👂",
+        "wrong": "I don't understand you.",
+        "right": "Sorry, I didn't *catch* that."
+      },
+      "from": 18.69,
+      "to": 26.27
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Practise real conversations with *Lupa* 🎙️",
+        "sub": "📌 Save this"
+      },
+      "from": 26.27,
+      "to": 31.65
+    }
+  ],
+  "sentences": [
+    {
+      "beat": 0,
+      "k": 0,
+      "text": "Three things to say when you *don't understand* someone.",
+      "src": "voice/8dfcb2f470a54ede.wav",
+      "lead": 0.34,
+      "at": 0.15,
+      "dur": 2.56,
+      "words": [
+        {
+          "w": "Three",
+          "key": false,
+          "t": 0.15
+        },
+        {
+          "w": "things",
+          "key": false,
+          "t": 0.47
+        },
+        {
+          "w": "to",
+          "key": false,
+          "t": 0.73
+        },
+        {
+          "w": "say",
+          "key": false,
+          "t": 1.03
+        },
+        {
+          "w": "when",
+          "key": false,
+          "t": 1.25
+        },
+        {
+          "w": "you",
+          "key": false,
+          "t": 1.47
+        },
+        {
+          "w": "don't",
+          "key": true,
+          "t": 1.63
+        },
+        {
+          "w": "understand",
+          "key": true,
+          "t": 1.91
+        },
+        {
+          "w": "someone.",
+          "key": false,
+          "t": 2.31
+        }
+      ]
+    },
+    {
+      "beat": 0,
+      "k": 1,
+      "text": "Without sounding *rude*.",
+      "src": "voice/3183f97a8ff7c50c.wav",
+      "lead": 0.02,
+      "at": 2.93,
+      "dur": 1.28,
+      "words": [
+        {
+          "w": "Without",
+          "key": false,
+          "t": 2.93
+        },
+        {
+          "w": "sounding",
+          "key": false,
+          "t": 3.37
+        },
+        {
+          "w": "rude.",
+          "key": true,
+          "t": 3.81
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 0,
+      "text": "Number one: \"Speak slowly!\" Way too *bossy*.",
+      "src": "voice/0ebe5ccfe51f98dc.wav",
+      "lead": 0.02,
+      "at": 4.63,
+      "dur": 4.06,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 4.63
+        },
+        {
+          "w": "one:",
+          "key": false,
+          "t": 5.03
+        },
+        {
+          "w": "\"Speak",
+          "key": false,
+          "t": 6.09
+        },
+        {
+          "w": "slowly!\"",
+          "key": false,
+          "t": 6.15
+        },
+        {
+          "w": "Way",
+          "key": false,
+          "t": 7.53
+        },
+        {
+          "w": "too",
+          "key": false,
+          "t": 7.91
+        },
+        {
+          "w": "bossy.",
+          "key": true,
+          "t": 8.25
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 1,
+      "text": "Ask: \"Could you speak *more slowly*, please?\"",
+      "src": "voice/e6e7697f7a2bbf7f.wav",
+      "lead": 0,
+      "at": 8.91,
+      "dur": 2.72,
+      "words": [
+        {
+          "w": "Ask:",
+          "key": false,
+          "t": 8.91
+        },
+        {
+          "w": "\"Could",
+          "key": false,
+          "t": 9.81
+        },
+        {
+          "w": "you",
+          "key": false,
+          "t": 10.17
+        },
+        {
+          "w": "speak",
+          "key": false,
+          "t": 10.39
+        },
+        {
+          "w": "more",
+          "key": true,
+          "t": 10.59
+        },
+        {
+          "w": "slowly,",
+          "key": true,
+          "t": 10.89
+        },
+        {
+          "w": "please?\"",
+          "key": false,
+          "t": 11.57
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 0,
+      "text": "Number two: \"What is mean?\" Very common, but *wrong*.",
+      "src": "voice/632c36503b5bb3d7.wav",
+      "lead": 0.02,
+      "at": 12.05,
+      "dur": 4.44,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 12.05
+        },
+        {
+          "w": "two:",
+          "key": false,
+          "t": 12.45
+        },
+        {
+          "w": "\"What",
+          "key": false,
+          "t": 13.59
+        },
+        {
+          "w": "is",
+          "key": false,
+          "t": 13.75
+        },
+        {
+          "w": "mean?\"",
+          "key": false,
+          "t": 14.19
+        },
+        {
+          "w": "Very",
+          "key": false,
+          "t": 15.07
+        },
+        {
+          "w": "common,",
+          "key": false,
+          "t": 15.37
+        },
+        {
+          "w": "but",
+          "key": false,
+          "t": 16.03
+        },
+        {
+          "w": "wrong.",
+          "key": true,
+          "t": 16.19
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 1,
+      "text": "Try: \"What does that *mean*?\"",
+      "src": "voice/6b3a7cfa5b74d21b.wav",
+      "lead": 0.02,
+      "at": 16.71,
+      "dur": 1.76,
+      "words": [
+        {
+          "w": "Try:",
+          "key": false,
+          "t": 16.71
+        },
+        {
+          "w": "\"What",
+          "key": false,
+          "t": 17.49
+        },
+        {
+          "w": "does",
+          "key": false,
+          "t": 17.85
+        },
+        {
+          "w": "that",
+          "key": false,
+          "t": 17.99
+        },
+        {
+          "w": "mean?\"",
+          "key": true,
+          "t": 18.19
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 0,
+      "text": "Number three: \"I don't understand you.\" Sounds a bit *cold*.",
+      "src": "voice/f059e19692ba5f94.wav",
+      "lead": 0,
+      "at": 18.89,
+      "dur": 4.16,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 18.89
+        },
+        {
+          "w": "three:",
+          "key": false,
+          "t": 19.27
+        },
+        {
+          "w": "\"I",
+          "key": false,
+          "t": 20.63
+        },
+        {
+          "w": "don't",
+          "key": false,
+          "t": 20.63
+        },
+        {
+          "w": "understand",
+          "key": false,
+          "t": 20.93
+        },
+        {
+          "w": "you.\"",
+          "key": false,
+          "t": 21.39
+        },
+        {
+          "w": "Sounds",
+          "key": false,
+          "t": 22.25
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 22.43
+        },
+        {
+          "w": "bit",
+          "key": false,
+          "t": 22.57
+        },
+        {
+          "w": "cold.",
+          "key": true,
+          "t": 22.69
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 1,
+      "text": "Better: \"Sorry, I didn't *catch* that.\"",
+      "src": "voice/cfeb44154f739a23.wav",
+      "lead": 0.02,
+      "at": 23.27,
+      "dur": 2.78,
+      "words": [
+        {
+          "w": "Better:",
+          "key": false,
+          "t": 23.27
+        },
+        {
+          "w": "\"Sorry,",
+          "key": false,
+          "t": 24.33
+        },
+        {
+          "w": "I",
+          "key": false,
+          "t": 25.11
+        },
+        {
+          "w": "didn't",
+          "key": false,
+          "t": 25.39
+        },
+        {
+          "w": "catch",
+          "key": true,
+          "t": 25.59
+        },
+        {
+          "w": "that.\"",
+          "key": false,
+          "t": 25.81
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "k": 0,
+      "text": "Save this, and practise real conversations with *Lupa*.",
+      "src": "voice/a8c4e23d225d6e99.wav",
+      "lead": 0.06,
+      "at": 26.47,
+      "dur": 3.58,
+      "words": [
+        {
+          "w": "Save",
+          "key": false,
+          "t": 26.47
+        },
+        {
+          "w": "this,",
+          "key": false,
+          "t": 26.97
+        },
+        {
+          "w": "and",
+          "key": false,
+          "t": 27.41
+        },
+        {
+          "w": "practise",
+          "key": false,
+          "t": 27.91
+        },
+        {
+          "w": "real",
+          "key": false,
+          "t": 28.35
+        },
+        {
+          "w": "conversations",
+          "key": false,
+          "t": 28.79
+        },
+        {
+          "w": "with",
+          "key": false,
+          "t": 29.39
+        },
+        {
+          "w": "Lupa.",
+          "key": true,
+          "t": 29.71
+        }
+      ]
+    }
+  ],
+  "total": 31.65,
+  "keeps": [
+    {
+      "from": 0,
+      "to": 31.65
+    }
+  ],
+  "lines": [
+    {
+      "who": "voice",
+      "start": 0.15,
+      "end": 2.71,
+      "text": "Three things to say when you don't understand someone.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 2.93,
+      "end": 4.21,
+      "text": "Without sounding rude.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 4.63,
+      "end": 8.69,
+      "text": "Number one: \"Speak slowly!\" Way too bossy.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 8.91,
+      "end": 11.63,
+      "text": "Ask: \"Could you speak more slowly, please?\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 12.05,
+      "end": 16.49,
+      "text": "Number two: \"What is mean?\" Very common, but wrong.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 16.71,
+      "end": 18.47,
+      "text": "Try: \"What does that mean?\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 18.89,
+      "end": 23.05,
+      "text": "Number three: \"I don't understand you.\" Sounds a bit cold.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 23.27,
+      "end": 26.05,
+      "text": "Better: \"Sorry, I didn't catch that.\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 26.47,
+      "end": 30.05,
+      "text": "Save this, and practise real conversations with Lupa.",
+      "words": []
+    }
+  ]
+}

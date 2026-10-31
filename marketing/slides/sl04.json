@@ -1,0 +1,55 @@
+{
+  "caption": "Bored or boring? 🥱 The -ed / -ing rule that B1 learners still mix up.\n\n-ed = how you feel · -ing = what causes the feeling\n\nBe honest, which one did you get wrong? 👇 Save it 📌\n\n#learnenglish #englishgrammar #englishmistakes #b1english #esl",
+  "slides": [
+    {
+      "kind": "cover",
+      "title": "*Bored* or *boring*? 🥱",
+      "sub": "the -ed / -ing rule in 5 slides"
+    },
+    {
+      "kind": "fix",
+      "n": 1,
+      "label": "Bored",
+      "wrong": "I'm boring in this class.",
+      "right": "I'm *bored* in this class.",
+      "tip": "*-ed* = how you feel · *-ing* = what causes it"
+    },
+    {
+      "kind": "fix",
+      "n": 2,
+      "label": "Interested",
+      "wrong": "I'm very interesting in art.",
+      "right": "I'm very *interested* in art.",
+      "tip": "interest*ed* *in* something"
+    },
+    {
+      "kind": "fix",
+      "n": 3,
+      "label": "Confusing",
+      "wrong": "This movie is confused.",
+      "right": "This movie is *confusing*.",
+      "tip": "the movie *causes* the feeling → *-ing*"
+    },
+    {
+      "kind": "fix",
+      "n": 4,
+      "label": "Excited",
+      "wrong": "I'm so exciting for the trip!",
+      "right": "I'm so *excited* for the trip!",
+      "tip": "you *feel* it → *-ed*"
+    },
+    {
+      "kind": "fix",
+      "n": 5,
+      "label": "Tiring",
+      "wrong": "The flight was very tired.",
+      "right": "The flight was very *tiring*.",
+      "tip": "the flight made you tired → *tiring*"
+    },
+    {
+      "kind": "cta",
+      "title": "Practise it out loud with *Lupa* 🎙️",
+      "sub": "Save this 📌"
+    }
+  ]
+}

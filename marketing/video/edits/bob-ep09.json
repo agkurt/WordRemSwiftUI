@@ -1,0 +1,125 @@
+{
+  "video": "clips/bob-ep09.mp4",
+  "keeps": [
+    {
+      "from": 0.6,
+      "to": 10.0
+    }
+  ],
+  "series": "🐜 Bob in London · Ep. 4",
+  "hook": "Bob in a London *heatwave* 🥵",
+  "pan": [
+    [
+      0,
+      0.37
+    ],
+    [
+      3.8,
+      0.37
+    ],
+    [
+      4.3,
+      0.7
+    ],
+    [
+      5.6,
+      0.68
+    ],
+    [
+      6.2,
+      0.52
+    ],
+    [
+      6.9,
+      0.4
+    ],
+    [
+      10,
+      0.4
+    ]
+  ],
+  "lines": [
+    {
+      "who": "Bob",
+      "text": "Excuse me... I am so hot.",
+      "words": [
+        {
+          "w": "Excuse",
+          "t": 1.48,
+          "end": 2.04
+        },
+        {
+          "w": "me...",
+          "t": 2.04,
+          "end": 2.3
+        },
+        {
+          "w": "I",
+          "t": 2.42,
+          "end": 2.62
+        },
+        {
+          "w": "am",
+          "t": 2.62,
+          "end": 2.82
+        },
+        {
+          "w": "so",
+          "t": 2.82,
+          "end": 3.2
+        },
+        {
+          "w": "hot.",
+          "t": 3.2,
+          "end": 3.58
+        }
+      ]
+    },
+    {
+      "who": "Lady",
+      "icon": "👵",
+      "text": "Well, you're not bad yourself, dear.",
+      "words": [
+        {
+          "w": "Well,",
+          "t": 4.24,
+          "end": 4.58
+        },
+        {
+          "w": "you're",
+          "t": 4.62,
+          "end": 4.8
+        },
+        {
+          "w": "not",
+          "t": 4.8,
+          "end": 5.04
+        },
+        {
+          "w": "bad",
+          "t": 5.04,
+          "end": 5.32
+        },
+        {
+          "w": "yourself,",
+          "t": 5.32,
+          "end": 5.84
+        },
+        {
+          "w": "dear.",
+          "t": 6.16,
+          "end": 6.28
+        }
+      ]
+    }
+  ],
+  "fix": {
+    "from": 7.4,
+    "to": 10.0,
+    "wrong": "I am so hot.",
+    "right": "I'm *boiling*!",
+    "tr": "\"I'm hot\" = I'm sexy 😳"
+  },
+  "outro": "Don't be *Bob* 😅 Practise with Lupa",
+  "cta": "Coming soon on the App Store"
+}

@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-04",
+  "reel": "sl03",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Question of the day 💬",
+      "phrase": "Where would you go for your *dream holiday*?",
+      "meaning": "Your perfect trip, anywhere in the world",
+      "note": "Answer like this: \"I would go to … because …\"",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Your turn ✍️",
+      "question": "Where is your *dream holiday*?",
+      "hint": "Answer in English, we'll share the best ones",
+      "sticker": "Question box: I would go to…",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New post 📚",
+      "title": "Same word… *different* meaning 😬",
+      "image": "stories/sl03.jpg",
+      "cta": "See it on our profile 👆",
+      "at": "13:00"
+    },
+    {
+      "kind": "promo",
+      "label": "New Bob episode 🐜",
+      "title": "Bob compliments his colleague's *pants* 🩲",
+      "image": "stories/bob-ep13.jpg",
+      "cta": "Watch it on our profile 👆",
+      "at": "19:30",
+      "reel": "bob-ep13"
+    }
+  ]
+}

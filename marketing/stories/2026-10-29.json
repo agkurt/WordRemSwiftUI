@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-29",
+  "reel": "bob-ep01",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Phrase of the day ✈️",
+      "phrase": "What's the *purpose* of your visit?",
+      "meaning": "Why are you visiting? (passport control)",
+      "note": "Short answer is enough: \"I'm here on holiday.\"",
+      "target": "en"
+    },
+    {
+      "kind": "ask",
+      "label": "Be honest 🛂",
+      "question": "Have you ever *frozen* at passport control?",
+      "hint": "No judgement 😅",
+      "sticker": "Poll: Yes 😳 / No 😎"
+    },
+    {
+      "kind": "promo",
+      "label": "New episode 🎬",
+      "title": "Bob orders his *first coffee* in London ☕",
+      "image": "stories/bob-ep01-cover.jpg",
+      "cta": "Watch it on our profile 👆"
+    }
+  ]
+}

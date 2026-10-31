@@ -1,0 +1,72 @@
+{
+  "id": "ex04",
+  "hook": "3 things to say when you don't understand",
+  "caption": "3 things to say when you don't understand someone, without sounding rude 😬\n\nSpeak slowly! → Could you speak more slowly, please?\nWhat is mean? → What does that mean?\nI don't understand you → Sorry, I didn't catch that.\n\nSave it for your next conversation 📌 Which one do you need most? 👇\n\n#learnenglish #englishphrases #speakenglish #englishtips #esl",
+  "tiktokCaption": "3 things to say when you don't understand someone 😬 Could you speak more slowly, please? · What does that mean? · Sorry, I didn't catch that. Save it 📌 #learnenglish #englishphrases #esl",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "3",
+        "title": "things to say when you *don't understand*",
+        "sub": "without sounding rude 😬"
+      },
+      "say": [
+        "Three things to say when you *don't understand* someone.",
+        "Without sounding *rude*."
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 3,
+        "label": "Too fast 🏃",
+        "wrong": "Speak slowly!",
+        "right": "Could you speak *more slowly*, please?"
+      },
+      "say": [
+        "Number one: \"Speak slowly!\" Way too *bossy*.",
+        "Ask: \"Could you speak *more slowly*, please?\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 3,
+        "label": "New word 🤔",
+        "wrong": "What is mean?",
+        "right": "What does that *mean*?"
+      },
+      "say": [
+        "Number two: \"What is mean?\" Very common, but *wrong*.",
+        "Try: \"What does that *mean*?\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 3,
+        "label": "You missed it 👂",
+        "wrong": "I don't understand you.",
+        "right": "Sorry, I didn't *catch* that."
+      },
+      "say": [
+        "Number three: \"I don't understand you.\" Sounds a bit *cold*.",
+        "Better: \"Sorry, I didn't *catch* that.\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Practise real conversations with *Lupa* 🎙️",
+        "sub": "📌 Save this"
+      },
+      "say": [
+        "Save this, and practise real conversations with *Lupa*."
+      ]
+    }
+  ]
+}

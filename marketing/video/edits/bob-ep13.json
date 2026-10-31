@@ -1,0 +1,107 @@
+{
+  "video": "clips/bob-ep13.mp4",
+  "keeps": [
+    {
+      "from": 0.4,
+      "to": 9.4
+    }
+  ],
+  "series": "🐜 Bob in London · Ep. 5",
+  "hook": "Bob's first day at a *London office* 👔",
+  "hookEnd": 2.6,
+  "lines": [
+    {
+      "who": "Bob",
+      "text": "Good morning! I really like your pants!",
+      "words": [
+        {
+          "w": "Good",
+          "t": 0.84,
+          "end": 1.44
+        },
+        {
+          "w": "morning!",
+          "t": 1.44,
+          "end": 1.84
+        },
+        {
+          "w": "I",
+          "t": 2.14,
+          "end": 2.46
+        },
+        {
+          "w": "really",
+          "t": 2.46,
+          "end": 2.68
+        },
+        {
+          "w": "like",
+          "t": 2.68,
+          "end": 2.9
+        },
+        {
+          "w": "your",
+          "t": 2.9,
+          "end": 3.52
+        },
+        {
+          "w": "pants!",
+          "t": 3.52,
+          "end": 3.9
+        }
+      ]
+    },
+    {
+      "who": "Colleague",
+      "icon": "👔",
+      "text": "How do you know about my pants?",
+      "words": [
+        {
+          "w": "How",
+          "t": 4.04,
+          "end": 4.22
+        },
+        {
+          "w": "do",
+          "t": 4.22,
+          "end": 4.34
+        },
+        {
+          "w": "you",
+          "t": 4.34,
+          "end": 4.46
+        },
+        {
+          "w": "know",
+          "t": 4.46,
+          "end": 4.6
+        },
+        {
+          "w": "about",
+          "t": 4.6,
+          "end": 4.78
+        },
+        {
+          "w": "my",
+          "t": 4.78,
+          "end": 5.3
+        },
+        {
+          "w": "pants?",
+          "t": 5.3,
+          "end": 5.75
+        }
+      ]
+    }
+  ],
+  "fix": {
+    "from": 7.3,
+    "to": 9.4,
+    "wrong": "I like your pants!",
+    "right": "I like your *trousers*!",
+    "tr": "UK: pants = underwear 🩲",
+    "at": "top"
+  },
+  "outro": "Don't be *Bob* 😅 Practise with Lupa",
+  "cta": "Coming soon on the App Store"
+}

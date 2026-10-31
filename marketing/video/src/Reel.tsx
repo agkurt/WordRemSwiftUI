@@ -4,7 +4,7 @@ import {
 import { loadFont as loadSerif } from "@remotion/google-fonts/Fraunces";
 import { loadFont as loadHeavy } from "@remotion/google-fonts/Montserrat";
 import { mainSeconds, outputAt, sourceAt } from "./Conversation";
-import { Edit, FLAGS, FPS, HOOK_SECONDS, Line, OUTRO_SECONDS, UI } from "./types";
+import { Edit, FLAGS, FPS, HOOK_SECONDS, Line, OUTRO_SECONDS, RECAP_SECONDS, UI } from "./types";
 
 const { fontFamily: serif } = loadSerif("normal", { weights: ["700"], subsets: ["latin", "latin-ext"] });
 const { fontFamily: heavy } = loadHeavy("normal", { weights: ["700", "800", "900"], subsets: ["latin", "latin-ext"] });
@@ -19,9 +19,22 @@ const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 type Token = { w: string; t: number; target: boolean };
 
-/** Satırı kelimelere böler: tırnak içi öğrenilen dil (sarı), zamanlar öğrencide gerçek, Lupa'da harf sayısına göre */
+/** Satırdaki konuşmanın oranı (0–1) → kaynak saniye: yalnızca sesli bölümlerde ilerler, susulan aralarda durur */
+const voicedAt = (l: Line, frac: number) => {
+  const segs = l.segs?.length ? l.segs : [[l.start + 0.15, l.end] as [number, number]];
+  const total = segs.reduce((a, [x, y]) => a + y - x, 0);
+  let left = frac * total;
+  for (const [x, y] of segs) {
+    if (left <= y - x) return x + left;
+    left -= y - x;
+  }
+  return segs[segs.length - 1][1];
+};
+
+/** Satırı kelimelere böler: tırnak içi öğrenilen dil (sarı), zamanlar öğrencide gerçek, Lupa'da sesli bölümlere harf sayısına göre */
 const tokens = (l: Line): Token[] => {
   if (l.who === "you" && l.words.length) return l.words.map((w) => ({ w: w.w, t: w.t, target: true }));
+  const you = l.who === "you";
   const raw = l.text.split(/\s+/).filter(Boolean);
   const total = raw.reduce((a, w) => a + w.length + 1, 0);
   // Öğrenilen dil *yıldız* içinde işaretliyse o, değilse tırnak içi
@@ -34,7 +47,7 @@ const tokens = (l: Line): Token[] => {
     const opens = open.test(w);
     const closes = close.test(w);
     if (opens) quoted = true;
-    const tok = { w: w.replace(/["“”*]/g, ""), t: l.start + 0.15 + (l.end - l.start - 0.15) * (acc / total), target: quoted && l.who === "lupa" };
+    const tok = { w: w.replace(/["“”*]/g, ""), t: voicedAt(l, acc / total), target: you || (quoted && l.who === "lupa") };
     if (closes) quoted = false;
     acc += w.length + 1;
     return tok;
@@ -52,6 +65,24 @@ const chunks = (toks: Token[]) => {
   if (cur.length) out.push(cur);
   return out;
 };
+
+const muted = (e: Edit, s: number) => e.lines.some((l) => l.mute && s >= l.mute[0] && s <= l.mute[1]);
+
+/** Öğrencinin OpenAI sesi: konuşma satırın başladığı anda başlar */
+const Voices: React.FC<{ e: Edit }> = ({ e }) => (
+  <>
+    {e.lines.filter((l) => l.voice).map((l, i) => {
+      const at = outputAt(e, l.start);
+      if (at == null) return null;
+      const from = Math.round((at - l.voice!.lead) * FPS);
+      return (
+        <Sequence key={i} from={Math.max(0, from)} layout="none">
+          <Audio src={staticFile(l.voice!.src)} trimBefore={Math.max(0, -from)} />
+        </Sequence>
+      );
+    })}
+  </>
+);
 
 const lineAt = (e: Edit, s: number) => e.lines.findIndex((l) => s >= l.start - 0.15 && s <= l.end + 0.4);
 const lastStarted = (e: Edit, s: number) => e.lines.reduce((acc, l, i) => (s >= l.start - 0.15 ? i : acc), -1);
@@ -76,8 +107,8 @@ export const Reel: React.FC<Edit> = (e) => {
     return (
       <Sequence key={i} from={from} durationInFrames={to - from} layout="none">
         <OffthreadVideo src={staticFile(e.video)} trimBefore={Math.round(k.from * FPS)} trimAfter={Math.round(k.to * FPS)}
-          // Kesimlerde çıt sesi olmasın: her parçanın sesi 2 karede açılıp kapanır
-          volume={(f) => interpolate(f, [0, 2, to - from - 2, to - from], [0, 1, 1, 0], clamp)}
+          // Kesimlerde çıt sesi olmasın: her parçanın sesi 2 karede açılıp kapanır; öğrencinin telefondaki sesi yerine OpenAI sesi çalar
+          volume={(f) => muted(e, k.from + f / FPS) ? 0 : interpolate(f, [0, 2, to - from - 2, to - from], [0, 1, 1, 0], clamp)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </Sequence>
     );
@@ -107,13 +138,19 @@ export const Reel: React.FC<Edit> = (e) => {
           {clips}
         </div>
         <CardMoments e={e} s={s} t={t} />
+        <Phrase e={e} s={s} />
         <Counter e={e} s={s} t={t} />
         <Hook text={e.hook} sub={ui.real} t={t} />
         {/* Altyazı ilk saniye yazısının da üstünde: video doğrudan öğretilen cümleyle başlar */}
         <Captions e={e} s={s} />
+        <Progress p={t / main} />
       </AbsoluteFill>
+      <Voices e={e} />
       <Sfx e={e} mainFrames={mainFrames} />
-      <Sequence from={mainFrames} durationInFrames={Math.round(OUTRO_SECONDS * FPS)}>
+      <Sequence from={mainFrames} durationInFrames={Math.round(RECAP_SECONDS * FPS)}>
+        <Recap e={e} />
+      </Sequence>
+      <Sequence from={mainFrames + Math.round(RECAP_SECONDS * FPS)} durationInFrames={Math.round(OUTRO_SECONDS * FPS)}>
         <Outro e={e} />
       </Sequence>
     </AbsoluteFill>
@@ -301,7 +338,9 @@ const Sfx: React.FC<{ e: Edit; mainFrames: number }> = ({ e, mainFrames }) => {
   const items: { f: number | null; src: string; v: number }[] = [
     { f: 0, src: "whoosh.wav", v: 0.5 },
     { f: mainFrames - 6, src: "whoosh.wav", v: 0.5 },
-    { f: mainFrames + 4, src: "sparkle.wav", v: 0.35 },
+    { f: mainFrames + Math.round(RECAP_SECONDS * FPS) - 6, src: "whoosh.wav", v: 0.45 },
+    { f: mainFrames + Math.round(RECAP_SECONDS * FPS) + 4, src: "sparkle.wav", v: 0.35 },
+    ...e.lines.filter((l) => l.who === "you").map((_, i) => ({ f: mainFrames + 8 + i * 7, src: "pop.wav", v: 0.4 })),
     ...e.cards.map((c) => ({ f: at(outputAt(e, c.t)), src: "pop.wav", v: 0.55 })),
     ...e.lines.filter((l) => l.who === "you").map((l) => ({ f: at(outputAt(e, l.end)), src: "sparkle.wav", v: 0.3 })),
   ];
@@ -338,5 +377,72 @@ const Outro: React.FC<{ e: Edit }> = ({ e }) => {
       <div style={{ marginTop: 70, transform: `scale(${btn * pulse})`, background: "white", color: C.accent, fontSize: 48, fontWeight: 900,
         padding: "30px 60px", borderRadius: 999, boxShadow: "0 20px 44px rgba(0,0,0,0.3)" }}>{e.cta}</div>
     </AbsoluteFill>
+  );
+};
+
+/** Alttaki ince ilerleme çizgisi: izleyici videonun ne kadar kaldığını görür, sonuna kadar kalır */
+const Progress: React.FC<{ p: number }> = ({ p }) => (
+  <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 10, background: "rgba(255,255,255,0.12)" }}>
+    <div style={{ width: `${Math.min(1, p) * 100}%`, height: "100%", background: `linear-gradient(90deg, ${C.yellow}, ${C.accent})` }} />
+  </div>
+);
+
+/** Kapanıştan önce özet: öğrencinin söylediği cümleler ve anlamları sırayla düşer ("kaydet" çağrısıyla) */
+const Recap: React.FC<{ e: Edit }> = ({ e }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const ui = UI[e.lang ?? "en"];
+  const you = e.lines.filter((l) => l.who === "you");
+  const head = spring({ frame, fps, config: { damping: 14 } });
+  const save = spring({ frame: frame - 8 - you.length * 7, fps, config: { damping: 9, stiffness: 180 } });
+  return (
+    <AbsoluteFill style={{ background: C.night, fontFamily: heavy, alignItems: "center", justifyContent: "center", padding: "0 70px" }}>
+      <Glow t={frame / fps} />
+      <div style={{ fontSize: 60, fontWeight: 900, color: C.yellow, letterSpacing: 1, opacity: head, transform: `translateY(${(1 - head) * -30}px)`,
+        marginBottom: 46, textAlign: "center" }}>{ui.recap} {FLAGS[e.target ?? "en"]}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 30, width: "100%" }}>
+        {you.map((l, i) => {
+          const p = spring({ frame: frame - 8 - i * 7, fps, config: { damping: 13, stiffness: 170 } });
+          return (
+            <div key={i} style={{ background: "white", borderRadius: 30, padding: "26px 34px", boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
+              opacity: p, transform: `translateX(${(1 - p) * (i % 2 ? 160 : -160)}px) rotate(${(i % 2 ? 1 : -1) * (1 - p) * 4}deg)` }}>
+              <div style={{ fontSize: 64, fontWeight: 900, color: C.ink, lineHeight: 1.12 }}>{l.text}</div>
+              {l.tr ? <div style={{ fontSize: 44, fontWeight: 800, color: C.accent, marginTop: 10 }}>= {l.tr}</div> : null}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ marginTop: 60, background: C.accent, color: "white", fontSize: 48, fontWeight: 900, padding: "18px 36px", borderRadius: 999,
+        transform: `scale(${save}) rotate(-2deg)` }}>{ui.save}</div>
+    </AbsoluteFill>
+  );
+};
+
+/** Lupa öğrenilen dilde bir cümle söylerken o cümle üstte büyük bir kart olarak düşer (uzun satırlarda yeni görsel ödül) */
+const Phrase: React.FC<{ e: Edit; s: number }> = ({ e, s }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const i = lineAt(e, s);
+  const line = e.lines[i];
+  if (!line || line.who !== "lupa" || s > line.end + 0.2) return null;
+  // Ardışık öğrenilen dil kelimeleri bir ifade
+  const phrases: { t: number; text: string }[] = [];
+  let prev = false;
+  for (const tk of tokens(line)) {
+    if (tk.target && !prev) phrases.push({ t: tk.t, text: tk.w });
+    else if (tk.target) phrases[phrases.length - 1].text += ` ${tk.w}`;
+    prev = tk.target;
+  }
+  const cur = [...phrases].reverse().find((p) => s >= p.t - 0.1);
+  if (!cur) return null;
+  const pop = spring({ frame: frame - Math.round((s - cur.t) * fps), fps, config: { damping: 11, stiffness: 190 } });
+  const out = interpolate(s, [line.end, line.end + 0.2], [1, 0], clamp);
+  return (
+    <div style={{ position: "absolute", top: 470, left: 60, right: 60, display: "flex", justifyContent: "center", opacity: out }}>
+      <div style={{ background: C.yellow, color: C.ink, fontSize: 56, fontWeight: 900, lineHeight: 1.12, padding: "22px 36px", borderRadius: 28,
+        textAlign: "center", boxShadow: "0 18px 44px rgba(0,0,0,0.45)", transform: `scale(${pop}) rotate(${-2 + 2 * (phrases.indexOf(cur) % 2) * 2}deg)` }}>
+        {FLAGS[e.target ?? "en"]} {cur.text}
+      </div>
+    </div>
   );
 };

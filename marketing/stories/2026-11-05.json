@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-05",
+  "reel": "ex04",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Phrase of the day 👂",
+      "phrase": "Sorry, I didn't *catch* that.",
+      "meaning": "I didn't hear or understand what you said",
+      "note": "Softer than \"What?\" or \"I don't understand you.\"",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Quiz 🤔",
+      "question": "\"I didn't *catch* that\" means…",
+      "hint": "You learned it this morning 😏",
+      "sticker": "Quiz: I didn't hear you ✅ / I dropped the ball 🏀 / I missed the bus 🚌",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New video 🎬",
+      "title": "What to say when you *don't understand* 👂",
+      "image": "stories/ex04.jpg",
+      "cta": "Watch it on our profile 👆",
+      "at": "19:30"
+    }
+  ]
+}

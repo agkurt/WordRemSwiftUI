@@ -1,0 +1,50 @@
+{
+  "caption": "Make, do or take? 🤔 These 5 traps catch almost every intermediate learner.\n\nWhich one did you get wrong? Be honest 👇 Save it for later 📌\n\n#learnenglish #englishvocabulary #collocations #englishmistakes #esl",
+  "slides": [
+    {
+      "kind": "cover",
+      "title": "*Make*, *do* or *take*? 🤔",
+      "sub": "5 traps B1 learners fall into"
+    },
+    {
+      "kind": "fix",
+      "n": 1,
+      "wrong": "I did a mistake",
+      "right": "I *made* a mistake",
+      "tip": "*make* a mistake · a decision · a plan"
+    },
+    {
+      "kind": "fix",
+      "n": 2,
+      "wrong": "Can you make a photo of us?",
+      "right": "Can you *take* a photo of us?",
+      "tip": "*take* a photo · a shower · a break"
+    },
+    {
+      "kind": "fix",
+      "n": 3,
+      "wrong": "I have to make my homework",
+      "right": "I have to *do* my homework",
+      "tip": "*do* homework · the dishes · a favour"
+    },
+    {
+      "kind": "fix",
+      "n": 4,
+      "wrong": "Can you borrow me your charger?",
+      "right": "Can you *lend* me your charger?",
+      "tip": "*lend* = you give · *borrow* = you take"
+    },
+    {
+      "kind": "fix",
+      "n": 5,
+      "wrong": "I need some informations",
+      "right": "I need some *information*",
+      "tip": "Never plural: *information, advice, news*"
+    },
+    {
+      "kind": "cta",
+      "title": "Use them in real conversations with *Lupa* 🎙️",
+      "sub": "Save this 📌"
+    }
+  ]
+}

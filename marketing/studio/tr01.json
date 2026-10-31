@@ -1,0 +1,19 @@
+{
+  "id": "tr01",
+  "title": "Londra'da pasaport kontrolü",
+  "mode": "freechat",
+  "native": "tr",
+  "target": "en",
+  "opener": "Good morning. What's the purpose of your visit?",
+  "voice": "en-US",
+  "rate": 0.48,
+  "lines": [
+    "@card",
+    "@card",
+    "@card",
+    "@card"
+  ],
+  "note": "This is a short recording of a real lesson: you are teaching a Turkish speaker English through a passport-control role-play at London Heathrow, and you play the border officer. Speak Turkish to the learner, like a warm tutor; the officer's lines are in English inside quotes, each followed by its short Turkish meaning. Do not introduce the exercise and do not use the learner's name: your very first words are the officer's first line: \"Good morning. What's the purpose of your visit?\" with its Turkish meaning, and show the learner's English reply (a holiday) as the card. Every turn after that: react in two or three Turkish words, then the officer's next English line with its Turkish meaning, then show the learner's English reply as the card. The second question is how long they are staying (one week). After that, the officer says \"Enjoy your stay!\" with its meaning and you show the learner's English goodbye as the card: \"Thank you, have a nice day!\". At most two short sentences per turn, no long explanations, no pronunciation comments, never repeat the learner's sentence back.",
+  "hook": "Pasaport kontrolünde ne diyeceksin? 🛂",
+  "videoTitle": "🛂 Londra'da pasaport kontrolü"
+}

@@ -1,0 +1,589 @@
+{
+  "kind": "explainer",
+  "id": "ex03",
+  "hook": "4 ways to stop saying very",
+  "cta": "Coming soon on the App Store",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "4",
+        "title": "ways to stop saying *very*",
+        "sub": "sound fluent, not basic ✨"
+      },
+      "from": 0,
+      "to": 5.73
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 4,
+        "label": "After a long day 😮‍💨",
+        "wrong": "I'm very tired.",
+        "right": "I'm *exhausted*."
+      },
+      "from": 5.73,
+      "to": 11.99
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 4,
+        "label": "Lunch time 🍔",
+        "wrong": "I'm very hungry.",
+        "right": "I'm *starving*!"
+      },
+      "from": 11.99,
+      "to": 17.67
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 4,
+        "label": "Good news 🎉",
+        "wrong": "That's very good!",
+        "right": "That's *amazing*!"
+      },
+      "from": 17.67,
+      "to": 23.67
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 4,
+        "of": 4,
+        "label": "Big city 🏙️",
+        "wrong": "It's very big.",
+        "right": "It's *huge*."
+      },
+      "from": 23.67,
+      "to": 29.81
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Use them *today* with Lupa 🎙️",
+        "sub": "📌 Save this"
+      },
+      "from": 29.81,
+      "to": 34.43
+    }
+  ],
+  "sentences": [
+    {
+      "beat": 0,
+      "k": 0,
+      "text": "Four ways to stop saying *very* in English.",
+      "src": "voice/e88adba4c21ca1d1.wav",
+      "lead": 0.04,
+      "at": 0.15,
+      "dur": 2.8,
+      "words": [
+        {
+          "w": "Four",
+          "key": false,
+          "t": 0.15
+        },
+        {
+          "w": "ways",
+          "key": false,
+          "t": 0.55
+        },
+        {
+          "w": "to",
+          "key": false,
+          "t": 0.87
+        },
+        {
+          "w": "stop",
+          "key": false,
+          "t": 1.17
+        },
+        {
+          "w": "saying",
+          "key": false,
+          "t": 1.47
+        },
+        {
+          "w": "very",
+          "key": true,
+          "t": 1.81
+        },
+        {
+          "w": "in",
+          "key": false,
+          "t": 2.21
+        },
+        {
+          "w": "English.",
+          "key": false,
+          "t": 2.45
+        }
+      ]
+    },
+    {
+      "beat": 0,
+      "k": 1,
+      "text": "Native speakers use them *every* day.",
+      "src": "voice/65e18d7ea61b98e7.wav",
+      "lead": 0.02,
+      "at": 3.17,
+      "dur": 2.34,
+      "words": [
+        {
+          "w": "Native",
+          "key": false,
+          "t": 3.17
+        },
+        {
+          "w": "speakers",
+          "key": false,
+          "t": 3.53
+        },
+        {
+          "w": "use",
+          "key": false,
+          "t": 4.05
+        },
+        {
+          "w": "them",
+          "key": false,
+          "t": 4.55
+        },
+        {
+          "w": "every",
+          "key": true,
+          "t": 4.77
+        },
+        {
+          "w": "day.",
+          "key": false,
+          "t": 5.21
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 0,
+      "text": "Number one: \"very tired.\" Fine, but *boring*.",
+      "src": "voice/e260bd4c17b58476.wav",
+      "lead": 0.02,
+      "at": 5.93,
+      "dur": 3.74,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 5.93
+        },
+        {
+          "w": "one:",
+          "key": false,
+          "t": 6.35
+        },
+        {
+          "w": "\"very",
+          "key": false,
+          "t": 7.27
+        },
+        {
+          "w": "tired.\"",
+          "key": false,
+          "t": 7.57
+        },
+        {
+          "w": "Fine,",
+          "key": false,
+          "t": 8.61
+        },
+        {
+          "w": "but",
+          "key": false,
+          "t": 8.91
+        },
+        {
+          "w": "boring.",
+          "key": true,
+          "t": 9.31
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 1,
+      "text": "Try: \"I'm *exhausted*.\"",
+      "src": "voice/fc95f7ef0226bbff.wav",
+      "lead": 0.1,
+      "at": 9.89,
+      "dur": 1.88,
+      "words": [
+        {
+          "w": "Try:",
+          "key": false,
+          "t": 9.89
+        },
+        {
+          "w": "\"I'm",
+          "key": false,
+          "t": 10.95
+        },
+        {
+          "w": "exhausted.\"",
+          "key": true,
+          "t": 11.15
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 0,
+      "text": "Number two: \"very hungry.\" *Again*?",
+      "src": "voice/87767fc8e94fbfc8.wav",
+      "lead": 0.02,
+      "at": 12.19,
+      "dur": 3,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 12.19
+        },
+        {
+          "w": "two:",
+          "key": false,
+          "t": 12.53
+        },
+        {
+          "w": "\"very",
+          "key": false,
+          "t": 13.45
+        },
+        {
+          "w": "hungry.\"",
+          "key": false,
+          "t": 13.79
+        },
+        {
+          "w": "Again?",
+          "key": true,
+          "t": 14.71
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 1,
+      "text": "Try: \"I'm *starving*!\"",
+      "src": "voice/864a785decf69d22.wav",
+      "lead": 0.06,
+      "at": 15.41,
+      "dur": 2.04,
+      "words": [
+        {
+          "w": "Try:",
+          "key": false,
+          "t": 15.41
+        },
+        {
+          "w": "\"I'm",
+          "key": false,
+          "t": 15.87
+        },
+        {
+          "w": "starving!\"",
+          "key": true,
+          "t": 16.77
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 0,
+      "text": "Number three: \"very good.\" Too *flat*.",
+      "src": "voice/86a55544bb99b3be.wav",
+      "lead": 0,
+      "at": 17.87,
+      "dur": 3.24,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 17.87
+        },
+        {
+          "w": "three:",
+          "key": false,
+          "t": 18.25
+        },
+        {
+          "w": "\"very",
+          "key": false,
+          "t": 19.37
+        },
+        {
+          "w": "good.\"",
+          "key": false,
+          "t": 19.63
+        },
+        {
+          "w": "Too",
+          "key": false,
+          "t": 20.65
+        },
+        {
+          "w": "flat.",
+          "key": true,
+          "t": 20.83
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 1,
+      "text": "Better: \"That's *amazing*!\"",
+      "src": "voice/0bd010385cb3eda4.wav",
+      "lead": 0.02,
+      "at": 21.33,
+      "dur": 2.12,
+      "words": [
+        {
+          "w": "Better:",
+          "key": false,
+          "t": 21.33
+        },
+        {
+          "w": "\"That's",
+          "key": false,
+          "t": 22.71
+        },
+        {
+          "w": "amazing!\"",
+          "key": true,
+          "t": 22.91
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "k": 0,
+      "text": "And number four: \"very big.\" You can do *better*.",
+      "src": "voice/ba07c70250960291.wav",
+      "lead": 0.8,
+      "at": 23.87,
+      "dur": 3.58,
+      "words": [
+        {
+          "w": "And",
+          "key": false,
+          "t": 23.87
+        },
+        {
+          "w": "number",
+          "key": false,
+          "t": 24.07
+        },
+        {
+          "w": "four:",
+          "key": false,
+          "t": 24.35
+        },
+        {
+          "w": "\"very",
+          "key": false,
+          "t": 25.47
+        },
+        {
+          "w": "big.\"",
+          "key": false,
+          "t": 25.83
+        },
+        {
+          "w": "You",
+          "key": false,
+          "t": 26.71
+        },
+        {
+          "w": "can",
+          "key": false,
+          "t": 26.83
+        },
+        {
+          "w": "do",
+          "key": false,
+          "t": 27.01
+        },
+        {
+          "w": "better.",
+          "key": true,
+          "t": 27.19
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "k": 1,
+      "text": "Try: \"It's *huge*.\"",
+      "src": "voice/70e48087d458284c.wav",
+      "lead": 0.02,
+      "at": 27.67,
+      "dur": 1.92,
+      "words": [
+        {
+          "w": "Try:",
+          "key": false,
+          "t": 27.67
+        },
+        {
+          "w": "\"It's",
+          "key": false,
+          "t": 28.55
+        },
+        {
+          "w": "huge.\"",
+          "key": true,
+          "t": 28.91
+        }
+      ]
+    },
+    {
+      "beat": 5,
+      "k": 0,
+      "text": "Save this, and use them *today* with Lupa.",
+      "src": "voice/bc11186387ed3b9d.wav",
+      "lead": 0.4,
+      "at": 30.01,
+      "dur": 2.82,
+      "words": [
+        {
+          "w": "Save",
+          "key": false,
+          "t": 30.01
+        },
+        {
+          "w": "this,",
+          "key": false,
+          "t": 30.39
+        },
+        {
+          "w": "and",
+          "key": false,
+          "t": 30.73
+        },
+        {
+          "w": "use",
+          "key": false,
+          "t": 31.15
+        },
+        {
+          "w": "them",
+          "key": false,
+          "t": 31.39
+        },
+        {
+          "w": "today",
+          "key": true,
+          "t": 31.61
+        },
+        {
+          "w": "with",
+          "key": false,
+          "t": 32.07
+        },
+        {
+          "w": "Lupa.",
+          "key": false,
+          "t": 32.51
+        }
+      ]
+    }
+  ],
+  "total": 34.43,
+  "keeps": [
+    {
+      "from": 0,
+      "to": 34.43
+    }
+  ],
+  "lines": [
+    {
+      "who": "voice",
+      "start": 0.15,
+      "end": 2.95,
+      "text": "Four ways to stop saying very in English.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 3.17,
+      "end": 5.51,
+      "text": "Native speakers use them every day.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 5.93,
+      "end": 9.67,
+      "text": "Number one: \"very tired.\" Fine, but boring.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 9.89,
+      "end": 11.77,
+      "text": "Try: \"I'm exhausted.\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 12.19,
+      "end": 15.19,
+      "text": "Number two: \"very hungry.\" Again?",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 15.41,
+      "end": 17.45,
+      "text": "Try: \"I'm starving!\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 17.87,
+      "end": 21.11,
+      "text": "Number three: \"very good.\" Too flat.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 21.33,
+      "end": 23.45,
+      "text": "Better: \"That's amazing!\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 23.87,
+      "end": 27.45,
+      "text": "And number four: \"very big.\" You can do better.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 27.67,
+      "end": 29.59,
+      "text": "Try: \"It's huge.\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 30.01,
+      "end": 32.83,
+      "text": "Save this, and use them today with Lupa.",
+      "words": []
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-06",
+  "reel": "sl04",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Grammar in 5 seconds ⚡",
+      "phrase": "This class is *boring*. I'm *bored*.",
+      "meaning": "-ing = the thing · -ed = your feeling",
+      "note": "Never say \"I'm boring\" when you mean you feel bored 😅",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Quiz 🤔",
+      "question": "The movie was so long. I was…",
+      "hint": "-ed or -ing?",
+      "sticker": "Quiz: bored ✅ / boring",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New post 📚",
+      "title": "*Bored* or *boring*? 🥱",
+      "image": "stories/sl04.jpg",
+      "cta": "See it on our profile 👆",
+      "at": "13:00"
+    }
+  ]
+}

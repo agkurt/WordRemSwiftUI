@@ -1,0 +1,72 @@
+{
+  "id": "ex02",
+  "hook": "3 mistakes in your first English conversation",
+  "caption": "3 mistakes in your first English conversation 😅\n\n1. I have 25 years → I'm 25.\n2. I am agree → I agree.\n3. I am engineer → I'm an engineer.\n\nWhich one did you make? Be honest 👇 Save it before your next chat 📌\n\n#learnenglish #englishgrammar #englishmistakes #speakenglish #esl",
+  "tiktokCaption": "3 mistakes in your first English conversation 😅 I have 25 years → I'm 25 · I am agree → I agree · I am engineer → I'm an engineer. Which one did you make? 👇 #learnenglish #englishmistakes #esl",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "3",
+        "title": "mistakes in your *first* English conversation",
+        "sub": "almost everyone makes them 😅"
+      },
+      "say": [
+        "Three mistakes you make in your *first* English conversation.",
+        "Number three is *everywhere*."
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 3,
+        "label": "Your age 🎂",
+        "wrong": "I have 25 years.",
+        "right": "*I'm* 25."
+      },
+      "say": [
+        "Number one: \"I have twenty-five years.\" Sounds like a *prison* sentence.",
+        "Better: \"*I'm* twenty-five.\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 3,
+        "label": "Agreeing 👍",
+        "wrong": "I am agree.",
+        "right": "I *agree*."
+      },
+      "say": [
+        "Number two: \"I am agree.\" Agree is already a *verb*.",
+        "Try: \"I *agree*.\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 3,
+        "label": "Your job 💼",
+        "wrong": "I am engineer.",
+        "right": "I'm *an* engineer."
+      },
+      "say": [
+        "Number three: \"I am engineer.\" You're missing a tiny *word*.",
+        "Better: \"I'm *an* engineer.\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Fix them *out loud* with Lupa 🎙️",
+        "sub": "📌 Save this before your next chat"
+      },
+      "say": [
+        "Save this, and fix them *out loud* with Lupa."
+      ]
+    }
+  ]
+}

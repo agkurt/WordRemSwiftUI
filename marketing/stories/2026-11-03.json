@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-03",
+  "reel": "ex03",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Common mistake ❌",
+      "phrase": "I *agree* with you.",
+      "meaning": "not \"I am agree\"",
+      "note": "\"Agree\" is already a verb: I agree, she agrees.",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Quiz 🤔",
+      "question": "Which one is *correct*?",
+      "hint": "Be honest, which one did you say? 😅",
+      "sticker": "Quiz: I am agree / I agree",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New video 🎬",
+      "title": "4 ways to stop saying *very* ✨",
+      "image": "stories/ex03.jpg",
+      "cta": "Watch it on our profile 👆",
+      "at": "19:30"
+    }
+  ]
+}

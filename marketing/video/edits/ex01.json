@@ -1,0 +1,694 @@
+{
+  "kind": "explainer",
+  "id": "ex01",
+  "hook": "4 phrases that make you sound rude",
+  "cta": "Coming soon on the App Store",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "4",
+        "title": "phrases that make you sound *rude*",
+        "sub": "in English 😬"
+      },
+      "from": 0,
+      "to": 6.19
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 4,
+        "label": "At the café ☕",
+        "wrong": "Give me a coffee.",
+        "right": "*Could I get* a coffee, please?"
+      },
+      "from": 6.19,
+      "to": 12.11
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 4,
+        "label": "At the restaurant 🍝",
+        "wrong": "I want the bill.",
+        "right": "*I'd like* the bill, please."
+      },
+      "from": 12.11,
+      "to": 18.57
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 4,
+        "label": "You didn't hear 👂",
+        "wrong": "What?",
+        "right": "*Sorry?*"
+      },
+      "from": 18.57,
+      "to": 24.63
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 4,
+        "of": 4,
+        "label": "Asking again 🔁",
+        "wrong": "Repeat!",
+        "right": "*Could you say that again?*"
+      },
+      "from": 24.63,
+      "to": 31.01
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Practise them *out loud* with Lupa 🎙️",
+        "sub": "📌 Save this for your next trip"
+      },
+      "from": 31.01,
+      "to": 36.03
+    }
+  ],
+  "sentences": [
+    {
+      "beat": 0,
+      "k": 0,
+      "text": "These four phrases make you sound *rude* in English.",
+      "src": "voice/05a9ef0d67a47501.wav",
+      "lead": 0.02,
+      "at": 0.15,
+      "dur": 3.4,
+      "words": [
+        {
+          "w": "These",
+          "key": false,
+          "t": 0.15
+        },
+        {
+          "w": "four",
+          "key": false,
+          "t": 0.53
+        },
+        {
+          "w": "phrases",
+          "key": false,
+          "t": 0.95
+        },
+        {
+          "w": "make",
+          "key": false,
+          "t": 1.37
+        },
+        {
+          "w": "you",
+          "key": false,
+          "t": 1.87
+        },
+        {
+          "w": "sound",
+          "key": false,
+          "t": 2.15
+        },
+        {
+          "w": "rude",
+          "key": true,
+          "t": 2.33
+        },
+        {
+          "w": "in",
+          "key": false,
+          "t": 2.75
+        },
+        {
+          "w": "English.",
+          "key": false,
+          "t": 3.15
+        }
+      ]
+    },
+    {
+      "beat": 0,
+      "k": 1,
+      "text": "And you probably said one *today*.",
+      "src": "voice/446f7a1084b4aac9.wav",
+      "lead": 0,
+      "at": 3.77,
+      "dur": 2.2,
+      "words": [
+        {
+          "w": "And",
+          "key": false,
+          "t": 3.77
+        },
+        {
+          "w": "you",
+          "key": false,
+          "t": 4.11
+        },
+        {
+          "w": "probably",
+          "key": false,
+          "t": 4.37
+        },
+        {
+          "w": "said",
+          "key": false,
+          "t": 4.99
+        },
+        {
+          "w": "one",
+          "key": false,
+          "t": 5.39
+        },
+        {
+          "w": "today.",
+          "key": true,
+          "t": 5.65
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 0,
+      "text": "Number one: \"Give me a coffee.\" Way too *direct*.",
+      "src": "voice/0333d428563f9f93.wav",
+      "lead": 0.02,
+      "at": 6.39,
+      "dur": 3.14,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 6.39
+        },
+        {
+          "w": "one:",
+          "key": false,
+          "t": 6.71
+        },
+        {
+          "w": "\"Give",
+          "key": false,
+          "t": 7.43
+        },
+        {
+          "w": "me",
+          "key": false,
+          "t": 7.49
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 7.65
+        },
+        {
+          "w": "coffee.\"",
+          "key": false,
+          "t": 7.81
+        },
+        {
+          "w": "Way",
+          "key": false,
+          "t": 8.37
+        },
+        {
+          "w": "too",
+          "key": false,
+          "t": 8.85
+        },
+        {
+          "w": "direct.",
+          "key": true,
+          "t": 9.11
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 1,
+      "text": "Better: \"*Could I get* a coffee, please?\"",
+      "src": "voice/c2854e8a600ad4bc.wav",
+      "lead": 0.02,
+      "at": 9.75,
+      "dur": 2.14,
+      "words": [
+        {
+          "w": "Better:",
+          "key": false,
+          "t": 9.75
+        },
+        {
+          "w": "\"Could",
+          "key": true,
+          "t": 10.59
+        },
+        {
+          "w": "I",
+          "key": true,
+          "t": 10.75
+        },
+        {
+          "w": "get",
+          "key": true,
+          "t": 10.91
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 10.99
+        },
+        {
+          "w": "coffee,",
+          "key": false,
+          "t": 11.27
+        },
+        {
+          "w": "please?\"",
+          "key": false,
+          "t": 11.71
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 0,
+      "text": "Number two: \"I want the bill.\" You sound like a *child*.",
+      "src": "voice/e31b9ec78dc3ebe9.wav",
+      "lead": 0,
+      "at": 12.31,
+      "dur": 3.58,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 12.31
+        },
+        {
+          "w": "two:",
+          "key": false,
+          "t": 12.75
+        },
+        {
+          "w": "\"I",
+          "key": false,
+          "t": 13.75
+        },
+        {
+          "w": "want",
+          "key": false,
+          "t": 13.75
+        },
+        {
+          "w": "the",
+          "key": false,
+          "t": 13.93
+        },
+        {
+          "w": "bill.\"",
+          "key": false,
+          "t": 14.13
+        },
+        {
+          "w": "You",
+          "key": false,
+          "t": 14.93
+        },
+        {
+          "w": "sound",
+          "key": false,
+          "t": 15.05
+        },
+        {
+          "w": "like",
+          "key": false,
+          "t": 15.21
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 15.37
+        },
+        {
+          "w": "child.",
+          "key": true,
+          "t": 15.71
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 1,
+      "text": "Try: \"*I'd like* the bill, please.\"",
+      "src": "voice/c8c9e2a4561b9605.wav",
+      "lead": 0.02,
+      "at": 16.11,
+      "dur": 2.24,
+      "words": [
+        {
+          "w": "Try:",
+          "key": false,
+          "t": 16.11
+        },
+        {
+          "w": "\"I'd",
+          "key": true,
+          "t": 16.97
+        },
+        {
+          "w": "like",
+          "key": true,
+          "t": 17.19
+        },
+        {
+          "w": "the",
+          "key": false,
+          "t": 17.43
+        },
+        {
+          "w": "bill,",
+          "key": false,
+          "t": 17.67
+        },
+        {
+          "w": "please.\"",
+          "key": false,
+          "t": 17.87
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 0,
+      "text": "Number three: \"What?\" Too *sharp*.",
+      "src": "voice/c200c261dc490abe.wav",
+      "lead": 0.02,
+      "at": 18.77,
+      "dur": 2.5,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 18.77
+        },
+        {
+          "w": "three:",
+          "key": false,
+          "t": 19.09
+        },
+        {
+          "w": "\"What?\"",
+          "key": false,
+          "t": 20.07
+        },
+        {
+          "w": "Too",
+          "key": false,
+          "t": 20.77
+        },
+        {
+          "w": "sharp.",
+          "key": true,
+          "t": 20.97
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 1,
+      "text": "Instead, a simple \"*Sorry?*\" works.",
+      "src": "voice/5209355e5a64ea17.wav",
+      "lead": 0,
+      "at": 21.49,
+      "dur": 2.92,
+      "words": [
+        {
+          "w": "Instead,",
+          "key": false,
+          "t": 21.49
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 22.53
+        },
+        {
+          "w": "simple",
+          "key": false,
+          "t": 22.71
+        },
+        {
+          "w": "\"Sorry?\"",
+          "key": true,
+          "t": 23.01
+        },
+        {
+          "w": "works.",
+          "key": false,
+          "t": 23.67
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "k": 0,
+      "text": "Number four: \"Repeat!\" That's an *order*, not a question.",
+      "src": "voice/6208a91794841499.wav",
+      "lead": 0.02,
+      "at": 24.83,
+      "dur": 4.06,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 24.83
+        },
+        {
+          "w": "four:",
+          "key": false,
+          "t": 25.11
+        },
+        {
+          "w": "\"Repeat!\"",
+          "key": false,
+          "t": 26.49
+        },
+        {
+          "w": "That's",
+          "key": false,
+          "t": 27.03
+        },
+        {
+          "w": "an",
+          "key": false,
+          "t": 27.19
+        },
+        {
+          "w": "order,",
+          "key": true,
+          "t": 27.45
+        },
+        {
+          "w": "not",
+          "key": false,
+          "t": 28.11
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 28.29
+        },
+        {
+          "w": "question.",
+          "key": false,
+          "t": 28.63
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "k": 1,
+      "text": "Ask: \"*Could you say that again?*\"",
+      "src": "voice/e6b59074a4f35031.wav",
+      "lead": 0.12,
+      "at": 29.11,
+      "dur": 1.68,
+      "words": [
+        {
+          "w": "Ask:",
+          "key": false,
+          "t": 29.11
+        },
+        {
+          "w": "\"Could",
+          "key": true,
+          "t": 29.69
+        },
+        {
+          "w": "you",
+          "key": true,
+          "t": 29.97
+        },
+        {
+          "w": "say",
+          "key": true,
+          "t": 30.15
+        },
+        {
+          "w": "that",
+          "key": true,
+          "t": 30.29
+        },
+        {
+          "w": "again?\"",
+          "key": true,
+          "t": 30.51
+        }
+      ]
+    },
+    {
+      "beat": 5,
+      "k": 0,
+      "text": "Save this, and practise them *out loud* with Lupa.",
+      "src": "voice/b018db8f15ceb0fa.wav",
+      "lead": 0.02,
+      "at": 31.21,
+      "dur": 3.22,
+      "words": [
+        {
+          "w": "Save",
+          "key": false,
+          "t": 31.21
+        },
+        {
+          "w": "this,",
+          "key": false,
+          "t": 31.59
+        },
+        {
+          "w": "and",
+          "key": false,
+          "t": 31.97
+        },
+        {
+          "w": "practise",
+          "key": false,
+          "t": 32.49
+        },
+        {
+          "w": "them",
+          "key": false,
+          "t": 32.97
+        },
+        {
+          "w": "out",
+          "key": true,
+          "t": 33.29
+        },
+        {
+          "w": "loud",
+          "key": true,
+          "t": 33.51
+        },
+        {
+          "w": "with",
+          "key": false,
+          "t": 33.75
+        },
+        {
+          "w": "Lupa.",
+          "key": false,
+          "t": 34.13
+        }
+      ]
+    }
+  ],
+  "total": 36.03,
+  "keeps": [
+    {
+      "from": 0,
+      "to": 36.03
+    }
+  ],
+  "lines": [
+    {
+      "who": "voice",
+      "start": 0.15,
+      "end": 3.55,
+      "text": "These four phrases make you sound rude in English.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 3.77,
+      "end": 5.97,
+      "text": "And you probably said one today.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 6.39,
+      "end": 9.53,
+      "text": "Number one: \"Give me a coffee.\" Way too direct.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 9.75,
+      "end": 11.89,
+      "text": "Better: \"Could I get a coffee, please?\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 12.31,
+      "end": 15.89,
+      "text": "Number two: \"I want the bill.\" You sound like a child.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 16.11,
+      "end": 18.35,
+      "text": "Try: \"I'd like the bill, please.\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 18.77,
+      "end": 21.27,
+      "text": "Number three: \"What?\" Too sharp.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 21.49,
+      "end": 24.41,
+      "text": "Instead, a simple \"Sorry?\" works.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 24.83,
+      "end": 28.89,
+      "text": "Number four: \"Repeat!\" That's an order, not a question.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 29.11,
+      "end": 30.79,
+      "text": "Ask: \"Could you say that again?\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 31.21,
+      "end": 34.43,
+      "text": "Save this, and practise them out loud with Lupa.",
+      "words": []
+    }
+  ]
+}

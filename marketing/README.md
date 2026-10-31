@@ -1,76 +1,66 @@
 # WordRem sosyal medya — iç araç
 
-Organik büyüme için TikTok, Instagram Reels ve X. Bu klasör içeriğin tek kaynağı: marka rehberi, senaryolar, stüdyo dosyaları ve paylaşım geçmişi.
+Organik büyüme için Instagram ve TikTok, tek hesap: `@wordremai`. Bu klasör içeriğin tek kaynağı: marka rehberi, senaryolar, stüdyo dosyaları, kurgu ve paylaşım. Claude için kurallar ve yapı: `CLAUDE.md`. Haftalık plan: `gunluk-plan.md`.
 
 | Dosya | Ne |
 |---|---|
-| `README.md` | Marka rehberi, hesap kurulumu, çekim akışı |
-| `content-plan.md` | İlk 30 video: ilk saniye yazısı, çekim, açıklama |
-| `studio/*.json` | Stüdyo modunun oynattığı konuşma senaryoları |
-| `log.csv` | Paylaşılan her video ve sonuçları (ölçüm aşamasında eklenecek) |
+| `CLAUDE.md` | Yapı, kurallar, paylaşım akışı (önce bunu oku) |
+| `gunluk-plan.md` | Haftalık döngü ve bu haftanın takvimi |
+| `studio/*.json` | Stüdyo modunun oynattığı Lupa sahneleri |
+| `bob/` | "Bob in London" bölümlerinin Gemini prompt'ları |
+| `explainers/*.json` | Dış sesli açıklama reel'lerinin senaryoları |
+| `slides/`, `stories/` | Kaydırmalı gönderiler ve günlük hikâye kareleri |
+| `video/` | Remotion kurgu projesi (`BRIEF.md`, `GUIDE-explainer-reels.md`) |
+| `publish/`, `cloud/` | Onay paneli ve bulut zamanlayıcısı |
+| `content-plan.md` | Eski (Türkçe dönem) fikir listesi; sadece fikir havuzu |
 
 ## Kitle ve konum
 
-- **İlk kitle:** İngilizce konuşmaktan çekinen, 18-35 yaş Türkler. Okulda yıllarca İngilizce gördü ama konuşamıyor.
-- **Tek cümlelik vaat:** "Utanmadan, yargılanmadan İngilizce konuş. Lupa seni bekliyor."
+- **Kitle:** Dünyanın her yerinden A2–B1 seviyesinde İngilizce öğrenen, konuşmaktan çekinen yetişkinler. Okulda İngilizce gördü ama konuşurken donuyor.
+- **Dil:** Ekrandaki bütün yazılar İngilizce. Türkçe içerik yok; platformların otomatik çevirisi gerisini yapar.
+- **Tek cümlelik vaat:** "Speak without fear. Lupa is waiting."
 - **Rakiplerden farkımız:** Duolingo test çözdürür, biz konuşturuyoruz. Kurslar pahalı ve randevulu, Lupa her an cebinde.
-- **Dil:** Videolar Türkçe anlatım ve altyazıyla, konuşmalar İngilizce. İngilizce hesap sonra açılacak.
 
 ## Lupa'nın karakteri
 
 - Sabırlı, sıcak, esprili; asla küçümsemez ve flört etmez.
-- Hatayı yüzüne vurmaz, doğrusunu söyleyip devam eder. Videolarda öne çıkan şey bu: "Hata yapmak serbest."
-- Adı her yerde **Lupa**. Kişi zamiriyle değil adıyla anılır ("Lupa düzeltti", "Lupa sordu").
+- Hatayı yüzüne vurmaz, doğrusunu söyleyip devam eder. Videolarda öne çıkan şey bu: "Mistakes are welcome."
+- Adı her yerde **Lupa**. Kişi zamiriyle değil adıyla anılır ("Lupa corrected it", "Lupa asked").
 
 ## Görsel dil
 
-- Uygulamanın kâğıt rengi arka planı ve turuncu vurgu rengi. Kapak görsellerinde aynı ikisi.
-- İlk saniye yazısı: büyük, beyaz, siyah konturlu, ekranın üst üçte birinde. En fazla 7 kelime.
-- Altyazı: kelime kelime yanan, ekranın ortasının altında; vurgu rengi turuncu.
-- Son 1,5 saniye: uygulama ikonu ve "WordRem AI · App Store". Onay gelene kadar "Çok yakında".
+- Uygulamanın kâğıt rengi (`#F6F2EA`), koyu zemin (`#14110F`), turuncu vurgu (`#C2512F`), sarı (`#FFD84D`). Ayrıntı: `video/BRIEF.md`.
+- İlk saniye yazısı: büyük, kalın, en fazla 7 kelime. İlk kare kapak olur.
+- Yazılar ortadaki güvenli alanda: Instagram'ın sağ düğmeleri ve alttaki açıklama alanı boş kalır.
+- Kapanış: uygulama ikonu, "WordRem AI" ve "Coming soon on the App Store" (onay gelince "Download on the App Store").
 
 ## İçerik türleri
 
-1. **Gerçek konuşma:** Stüdyo kaydı, Lupa'yla canlandırma (kafe, havalimanı, iş görüşmesi).
-2. **Hata düzeltme:** Türklerin klasik hataları, Lupa düzeltir.
-3. **Sınama:** Argo, seviye tahmini, zor sorular.
-4. **Günün sorusu:** Widget'taki soru. Takipçiden yorumda cevap istenir.
-5. **Geliştirici hikâyesi:** Ahmet'in kendi ağzından, uygulamayı nasıl yaptığı. X'te de yazılı hâli.
-6. **Uygulama anları:** Widget, seri, ders sonu ekranı. Kısa ve görsel.
+1. **Bob in London:** Gemini'de üretilen karınca vlog'u; gerçek bir öğrenci hatası komik bir yanlış anlaşılmaya yol açar, sonda düzeltme kartı.
+2. **Lupa sahnesi:** Stüdyo kaydı, Lupa'yla canlandırma (otel, iş görüşmesi, kafe).
+3. **Açıklama reel'i:** Sayılı kanca, dış ses, her maddede ❌/✅ kartı.
+4. **Slayt:** 5 hata + tek satırlık kural, kaydetmelik.
+5. **Hikâye:** Günün kalıbı, anket/quiz, o günün paylaşımına yönlendirme.
 
-Kural: Sahte kullanıcı yorumu ya da var olmayan kişinin hikâyesi yok. Konuşmalar gerçek uygulama kaydı; öğrenci sesi senaryodan okunduğunda bu bir canlandırmadır, "kullanıcımız Ayşe" gibi sunulmaz.
+Kural: Sahte kullanıcı yorumu ya da var olmayan kişinin hikâyesi yok. Öğrenci sesi senaryodan okunduğunda bu bir canlandırmadır, "our user Anna" gibi sunulmaz.
 
-## Hesap kurulumu (Ahmet)
-
-- [ ] Kullanıcı adı üç platformda aynı: `@wordremai` (dolu ise `@wordrem.app`)
-- [ ] Profil fotoğrafı: uygulama ikonu (`WordRemSwiftUI/Assets.xcassets/AppIcon.appiconset`)
-- [ ] TikTok: işletme hesabı, kategori "Eğitim"
-- [ ] Instagram: profesyonel hesap (içerik üreticisi), bir Facebook sayfasına bağlı (API için şart)
-- [ ] X: profil + sabitlenmiş tanıtım paylaşımı
-- [ ] İlk 2-3 gün sadece izle, beğen, yorum yap (dil öğrenme içerikleri)
-
-**Bio (TikTok / Instagram):**
-> Lupa ile konuşarak İngilizce öğren 🎙️
-> Yapay zekâ öğretmenin cebinde, hata yapmak serbest.
-> 👇 Çok yakında App Store'da
-
-**Bio (X):**
-> WordRem AI: Lupa'yla konuşarak dil öğren. Tek kişilik ekip, geliştirme sürecini burada paylaşıyorum. 🎙️🇹🇷
+**Bio (Instagram / TikTok):**
+> Learn English by talking with Lupa 🎙️
+> Your AI tutor. Mistakes are welcome.
+> 👇 Coming soon on the App Store
 
 ## Stüdyo ile çekim ve kurgu
 
-Stüdyo modu sadece telefondaki geliştirici (Debug) sürümünde var, App Store sürümünde görünmez. Uygulama sahneyi oynatırken kendi ekranını sesiyle birlikte kaydeder; kayıt ve zaman çizelgesi Mac'e çekilip otomatik kurgulanır.
-
-**Bir kerelik:** Ayarlar → Erişilebilirlik → Oku ve Konuş → Sesler → İngilizce → Ava → "Ava (Premium)" indir. Öğrenci sesi bununla okunur.
+Stüdyo modu sadece telefondaki geliştirici (Debug) sürümünde var, App Store sürümünde görünmez. Uygulama sahneyi oynatırken kendi ekranını sesiyle birlikte kaydeder; kayıt ve zaman çizelgesi Mac'e çekilip otomatik kurgulanır. Öğrencinin sesi kurguda OpenAI sesiyle değiştirilir (`video/voice.mjs`), telefondaki ses susturulur.
 
 **Akış (Claude yürütür):**
-1. `video/record.sh s01`: senaryoları telefona yükler, uygulamayı açar, sahneyi başlatır. Telefonda iOS "Ekranı Kaydet" izni sorar, **bir kez dokunulur**. Sahne bitince kayıt Mac'e (`inbox/`) çekilir, `video/edits/s01.json` hazırlanır.
-2. Claude `edits/s01.json` içine ilk saniye yazısını, başlığı ve Lupa'nın cümlelerinin Türkçesini yazar (öğrencinin cümlelerinin Türkçesi kartlardan gelir).
-3. `cd video && node render.mjs s01` → `video/out/s01.mp4` (1080×1920, 30 fps).
+1. `video/record.sh <id>`: senaryoları telefona yükler, uygulamayı açar, sahneyi başlatır. Telefonda iOS "Ekranı Kaydet" izni sorar, **bir kez dokunulur**. Sahne bitince kayıt Mac'e (`inbox/`) çekilir.
+2. `cd video && node prep.mjs <id>` → `edits/<id>.json`; Claude kancayı ve Lupa'nın öğrettiği cümlelerin anlamlarını yazar.
+3. `node preview.mjs <id>` (render öncesi kareler) → `node render.mjs <id>` → `node review.mjs <id>` (zorunlu, `video/BRIEF.md`).
 
 **Elle başlatmak istersen:** Profil → **Stüdyo: sosyal medya kaydı** → senaryo → "Ekranı Kaydet". Telefonu kilitsiz bırak, ekrana dokunma.
 
-**Videoda olanlar:** ilk 2,4 saniyede büyük soru, telefon çerçevesinde gerçek kayıt, konuşmalar arasındaki bekleme anlarının kesilmesi, "Lupa"/"Sen" etiketi, Türkçe altyazı, öğrenci konuşurken karta yakınlaşma, kart gelince "ding", üstte ilerleme çubuğu, ikon ve App Store çağrısıyla kapanış. Şablon: `video/src/Conversation.tsx`. Canlı önizleme: `cd video && npm run studio`.
+Şablon: `video/src/Reel.tsx`. Canlı önizleme: `cd video && npm run studio`.
 
 Senaryoyu değiştirmek ya da yenisini eklemek için `studio/` klasöründeki JSON'u düzenle, Claude telefona gönderir:
 
@@ -97,15 +87,26 @@ Senaryoyu değiştirmek ya da yenisini eklemek için `studio/` klasöründeki JS
 
 ## Hashtag setleri
 
-- **Genel:** `#ingilizce #ingilizceöğren #ingilizcekonuşma #yapayzeka #dilöğrenme`
-- **Canlandırma:** `+ #yurtdışı #seyahat #ingilizcepratik`
-- **Hata:** `+ #ingilizcehataları #gramer`
-- **Hikâye:** `+ #girişimcilik #yazılım #indiedev`
+- **Genel:** `#learnenglish #englishtips #speakenglish #esl`
+- **Hata / gramer:** `+ #englishgrammar #englishmistakes`
+- **Seyahat / sahne:** `+ #travelenglish #englishconversation`
+- **Bob:** `+ #aivideo #london`
 
-Her videoda 4-6 hashtag; fazlası işe yaramıyor.
+Her paylaşımda 4-6 hashtag; fazlası işe yaramıyor.
 
 ## Paylaşım temposu
 
-- TikTok: her gün 1 video (ilk 30 gün), akşam 19:00-22:00.
-- Instagram Reels: aynı video, TikTok logosu olmadan, aynı akşam.
-- X: günde 1-2 kısa paylaşım, haftada bir geliştirme hikâyesi (thread).
+Günde 1 ana paylaşım (reel 20:00, slayt 19:00, TR saati) + 3 hikâye (09:00, 13:00, 20:00). Ayrıntı: `gunluk-plan.md`.
+
+## Paylaşım paneli
+
+`caffeinate -i node publish/server.mjs` → http://localhost:4747 (`caffeinate` Mac'in uykuya geçip zamanlanmış paylaşımı kaçırmasını önler). Hazır videolar (`video/out`) listelenir; açıklama düzenlenir, her paylaşım panelde tıklamayla başlar.
+
+- **Reel zamanlama:** Kartta tarih/saat seçip "Bu saatte paylaşılsın". Saati gelince Instagram'da Reels olarak yayınlanır, ardından TikTok gelen kutuna taslak gider; Mac bildirimi gelir ve TikTok açıklaması panoya kopyalanır (aynı Apple hesabındaki iPhone'da yapıştırılır). TikTok'ta taslağa dokunup "Paylaş" denir: TikTok kendi hesabına paylaşan iç araçlara doğrudan paylaşım izni vermiyor.
+- **Hikâyeler:** `stories/<tarih>.json` → `cd video && node stories.mjs <tarih>` üç kareyi üretir. Panelde "Saatinde paylaşılsın" onaylanınca öğret karesi 09:00'da, yönlendir karesi 20:00'de (o günün reel'i yayındaysa) Instagram'a gider; etkileşim karesi için 13:00'te Mac bildirimi gelir, anket çıkartması API'den eklenemediği için telefondan paylaşılır. Saatler karede `"at": "SS:DD"` ile değişir.
+
+- **Instagram:** "Instagram'da paylaş" Reels olarak yayınlar. Instagram videoyu herkese açık bir adresten çektiği için paylaşım süresince geçici bir Cloudflare tüneli açılır; tünelden yalnızca o videonun tek seferlik adresi erişilebilir, panel ve API kapalıdır.
+- **TikTok:** "TikTok'a taslak gönder" videoyu TikTok gelen kutusuna yükler; ses seçip paylaşmayı TikTok uygulamasında yaparsın.
+- **Anahtarlar:** `.env.example` → `.env` (repoya gönderilmez). TikTok oturumu `publish/tokens.json` içinde (repoya gönderilmez).
+- Açıklamalar `publish/posts/<id>.json` içinde saklanır.
+- **Bulut:** `.env`'de `CLOUD_URL` ve `CLOUD_TOKEN` doluyken onaylanan işleri Mac yerine bulut zamanlayıcısı (`cloud/`, https://publish.wordremai.app) paylaşır; Mac kapalı olabilir. Bildirimler (TikTok taslağı açıklaması, 13:00 anket görseli) telefona ntfy ile gelir.

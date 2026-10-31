@@ -1,0 +1,17 @@
+# WordRem sosyal medya zamanlayıcısı: Mac kapalıyken de saati gelen reel ve hikâyeleri paylaşır.
+# Kurulum ve deploy: README.md
+name = "wordrem-social"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+routes = [{ pattern = "publish.wordremai.app", custom_domain = true }]
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[[kv_namespaces]]
+binding = "STATE"
+id = "43085fee1e4b43e09f857978c120a346"
+
+[vars]
+PUBLIC_URL = "https://publish.wordremai.app"

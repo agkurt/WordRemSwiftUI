@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-30",
+  "reel": "sl01",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Slang of the day 🧢",
+      "phrase": "This pizza is the best, *no cap*.",
+      "meaning": "no lie, for real",
+      "note": "Very casual. Use it with friends, not in a job interview 😄",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Quiz 🤔",
+      "question": "What does \"*no cap*\" mean?",
+      "hint": "You learned it this morning 😏",
+      "sticker": "Quiz: For real ✅ / No hat 🧢 / No limit ♾️",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New post 📚",
+      "title": "You're B1… but you still say *these* 😬",
+      "image": "stories/sl01.jpg",
+      "cta": "See it on our profile 👆",
+      "at": "13:00"
+    }
+  ]
+}

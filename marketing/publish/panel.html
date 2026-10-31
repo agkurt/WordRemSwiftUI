@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WordRem Paylaşım</title>
+<style>
+:root { --paper:#F6F2EA; --raised:#FFFDF9; --ink:#1C1A17; --soft:#6F6A64; --line:#E6DFD4; --accent:#C2512F; --accentSoft:#F3E2D8; --green:#2E9E5B; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+header { padding: 28px 32px 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; justify-content: space-between; }
+h1 { margin: 0; font: 600 28px/1.1 ui-serif, "New York", Georgia, serif; }
+h1 small { display: block; font: 500 13px/1.6 -apple-system, sans-serif; color: var(--soft); }
+.links { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip { display: flex; align-items: center; gap: 8px; background: var(--raised); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-weight: 600; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: #C9C2B8; }
+.dot.on { background: var(--green); }
+.dot.err { background: var(--accent); }
+main { padding: 16px 32px 48px; display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); }
+.card { background: var(--raised); border: 1px solid var(--line); border-radius: 22px; padding: 18px; display: flex; gap: 18px; }
+video { width: 220px; aspect-ratio: 9/16; border-radius: 14px; background: #000; flex-shrink: 0; }
+.body { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.id { font-weight: 700; font-size: 17px; }
+textarea { width: 100%; min-height: 120px; resize: vertical; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; background: var(--paper); color: var(--ink); }
+.count { font-size: 12px; color: var(--soft); text-align: right; margin-top: -6px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+button { border: 0; border-radius: 12px; padding: 11px 16px; font: 700 14px -apple-system, sans-serif; cursor: pointer; }
+button.ig { background: var(--accent); color: white; }
+button.tt { background: var(--ink); color: white; }
+button.ghost { background: var(--accentSoft); color: var(--accent); }
+button:disabled { opacity: .45; cursor: default; }
+.status { font-size: 13px; color: var(--soft); }
+.status a { color: var(--accent); font-weight: 600; }
+.log { background: var(--paper); border-radius: 12px; padding: 10px 12px; font: 12px/1.6 ui-monospace, Menlo, monospace; color: var(--soft); max-height: 140px; overflow: auto; white-space: pre-wrap; }
+.connect { margin: 0 32px; background: var(--raised); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; display: none; gap: 10px; flex-direction: column; }
+.connect input { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; background: var(--paper); }
+.empty { color: var(--soft); padding: 40px 32px; }
+.stories { padding: 8px 32px 0; }
+.stories h2 { font: 600 22px/1.2 ui-serif, "New York", Georgia, serif; margin: 8px 0 14px; }
+.day { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.frame { background: var(--raised); border: 1px solid var(--line); border-radius: 18px; padding: 12px; width: 220px; display: flex; flex-direction: column; gap: 8px; }
+.frame img { width: 100%; aspect-ratio: 9/16; border-radius: 10px; background: #000; object-fit: cover; }
+.frame .kind { font-weight: 700; font-size: 13px; }
+.frame .note { font-size: 12px; color: var(--soft); }
+.frame a.dl { font-size: 13px; color: var(--accent); font-weight: 700; }
+.strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+.strip img { width: 110px; aspect-ratio: 9/16; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.ccard { background: var(--raised); border: 1px solid var(--line); border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+@media (max-width: 640px) { header, main { padding-left: 16px; padding-right: 16px; } main { grid-template-columns: 1fr; } .card { flex-direction: column; } video { width: 100%; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Paylaşım paneli<small>Hiçbir şey kendiliğinden paylaşılmaz: her video senin tıklamanla gider.</small></h1>
+  <div class="links" id="links"></div>
+</header>
+<section class="connect" id="connect">
+  <strong>TikTok'u bağla</strong>
+  <div class="status">1) Aşağıdaki düğmeyle TikTok'ta giriş yapıp onayla. 2) Açılan sayfa hata verebilir, önemli değil: adres çubuğundaki adresin tamamını kopyala ve buraya yapıştır.</div>
+  <div class="row"><button class="ghost" id="ttOpen">TikTok'ta onayla</button></div>
+  <input id="ttUrl" placeholder="https://api.wordremai.app/tiktok/callback?code=…">
+  <div class="row"><button class="tt" id="ttFinish">Bağlantıyı tamamla</button><span class="status" id="ttMsg"></span></div>
+</section>
+<section class="stories" id="carousels"></section>
+<section class="stories" id="stories"></section>
+<main id="posts"></main>
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+let state = null;
+let typing = {};
+
+async function api(path, body) {
+  const res = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(out.error || res.status);
+  return out;
+}
+
+function chip(name, s) {
+  const on = (s.username || s.connected) && !s.error;
+  const text = on ? `${name} · ${s.username ? "@" + s.username : "bağlı"}` : s.error ? `${name} · hata` : s.configured === false ? `${name} · anahtar yok` : `${name} · bağlı değil`;
+  return `<div class="chip" title="${s.error ?? ""}"><span class="dot ${on ? "on" : s.error ? "err" : ""}"></span>${text}</div>`;
+}
+
+const kinds = { teach: "1 · Öğret", ask: "2 · Etkileşim", promo: "3 · Yönlendir" };
+
+function renderStories() {
+  const root = $("#stories");
+  if (!state.stories?.length) { root.innerHTML = ""; return; }
+  const ig = state.instagram.username && !state.instagram.error;
+  root.innerHTML = state.stories.map((d) => `<h2>Hikâyeler · ${d.date}</h2>
+    <div class="row" style="margin-bottom:12px;align-items:center">
+      <button class="${d.approved ? "ghost" : "tt"} approve" data-date="${d.date}" data-on="${d.approved ? 0 : 1}">${d.approved ? "Zamanlamayı durdur" : "Saatinde paylaşılsın"}</button>
+      <span class="status">${d.approved ? "Zamanlandı ✓ Mac açık ve panel çalışır durumda olmalı." : "Onaylayınca kareler aşağıdaki saatlerde kendiliğinden gider."}</span>
+    </div>
+    <div class="day">${d.frames.map((f) => `
+    <div class="frame">
+      <img src="/story/${d.date}/${f.n}.jpg?v=${Date.now() >> 16}">
+      <div class="kind">${kinds[f.kind] ?? f.n} ${f.label ? "· " + f.label : ""}</div>
+      ${f.at ? `<div class="note">🕘 ${f.at}${f.kind === "ask" ? " hatırlatma" : f.kind === "promo" ? " (reel yayındaysa)" : ""}</div>` : ""}
+      ${f.kind === "ask"
+        ? `<div class="note">Çıkartmalı kare (${f.sticker ?? "anket"}): indir, telefondan hikâye olarak paylaş, çıkartmayı orada ekle.</div>
+           <a class="dl" href="/story/${d.date}/${f.n}.jpg" download="${d.date}-${f.n}.jpg">İndir</a>`
+        : f.instagram?.mediaId ? `<div class="note">Instagram: paylaşıldı · ${new Date(f.instagram.at).toLocaleTimeString("tr-TR")}</div>`
+        : `<button class="ig" data-date="${d.date}" data-n="${f.n}" ${f.busy || !ig ? "disabled" : ""}>Hikâye olarak paylaş</button>`}
+      ${f.log.length ? `<div class="note">${f.log.at(-1)}</div>` : ""}
+    </div>`).join("")}</div>`).join("");
+  root.querySelectorAll("button.approve").forEach((b) => b.onclick = async () => {
+    await api("/api/story/approve", { date: b.dataset.date, approved: b.dataset.on === "1" });
+    refresh();
+  });
+  root.querySelectorAll("button.ig").forEach((b) => b.onclick = async () => {
+    if (!confirm(`${b.dataset.date} · ${b.dataset.n}. kare Instagram hikâyesi olarak paylaşılacak. Emin misin?`)) return;
+    b.disabled = true;
+    await api("/api/story", { date: b.dataset.date, n: Number(b.dataset.n) }).catch((e) => alert(e.message));
+    refresh();
+  });
+}
+
+function renderCarousels() {
+  const root = $("#carousels");
+  if (!state.carousels?.length) { root.innerHTML = ""; return; }
+  if (root.dataset.ids !== state.carousels.map((c) => c.id).join()) {
+    root.dataset.ids = state.carousels.map((c) => c.id).join();
+    root.innerHTML = `<h2>Kaydırmalı gönderiler</h2>` + state.carousels.map((c) => `
+      <div class="ccard" data-cid="${c.id}">
+        <div class="id">${c.id} · ${c.count} slayt</div>
+        <div class="strip">${Array.from({ length: c.count }, (_, i) => `<img src="/slide/${c.id}/${i + 1}.jpg">`).join("")}</div>
+        <label class="status">Instagram açıklaması</label><textarea class="cap"></textarea>
+        <label class="status">TikTok açıklaması (boşsa Instagram'ınki)</label><textarea class="ttcap" style="min-height:70px"></textarea>
+        <div class="row" style="align-items:center">
+          <input type="datetime-local" class="at" style="border:1px solid var(--line);border-radius:10px;padding:9px 10px;font:inherit;background:var(--paper)">
+          <button class="ghost sched"></button><span class="status sched-s"></span>
+        </div>
+      </div>`).join("");
+    for (const c of state.carousels) {
+      const card = $(`[data-cid="${c.id}"]`, root);
+      const ta = $("textarea.cap", card), tc = $("textarea.ttcap", card);
+      ta.value = c.caption ?? ""; tc.value = c.tiktokCaption ?? "";
+      $("input.at", card).value = c.schedule?.at ?? "";
+      const saveText = () => { clearTimeout(typing[c.id]); typing[c.id] = setTimeout(() => api("/api/caption", { id: c.id, caption: ta.value, tiktokCaption: tc.value }), 500); };
+      ta.addEventListener("input", saveText); tc.addEventListener("input", saveText);
+      $("button.sched", card).onclick = async () => {
+        const cur = state.carousels.find((x) => x.id === c.id);
+        const on = !cur?.schedule?.approved;
+        const at = $("input.at", card).value;
+        if (on && !at) return alert("Önce tarih ve saat seç");
+        if (on && !confirm(`${c.id} ${at.replace("T", " ")} saatinde Instagram'da paylaşılacak, TikTok'a fotoğraf taslağı gidecek. Onaylıyor musun?`)) return;
+        await api("/api/caption", { id: c.id, caption: ta.value, tiktokCaption: tc.value });
+        await api("/api/carousel/schedule", { id: c.id, at, approved: on }).catch((e) => alert(e.message));
+        refresh();
+      };
+    }
+  }
+  for (const c of state.carousels) {
+    const card = $(`[data-cid="${c.id}"]`, root);
+    $("button.sched", card).textContent = c.schedule?.approved ? "Zamanlamayı iptal et" : "Bu saatte paylaşılsın";
+    $("button.sched", card).disabled = !!c.instagram;
+    $(".sched-s", card).textContent = c.instagram ? `Instagram: paylaşıldı${c.tiktok?.publishId ? " · TikTok taslağı gitti" : c.tiktok?.error ? " · TikTok: " + c.tiktok.error : ""}`
+      : c.schedule?.approved ? `Zamanlandı ✓ ${c.schedule.at.replace("T", " ")}${c.cloud?.error ? " · " + c.cloud.error : ""}` : "";
+  }
+}
+
+function render() {
+  renderCarousels();
+  renderStories();
+  const c = state.cloud;
+  const cloudChip = !c ? `<div class="chip"><span class="dot"></span>Bulut · kapalı (Mac paylaşır)</div>`
+    : `<div class="chip" title="${c.error ?? ""}"><span class="dot ${c.ok ? "on" : "err"}"></span>Bulut · ${c.ok ? "açık" : "hata"}</div>`;
+  $("#links").innerHTML = chip("Instagram", state.instagram) + chip("TikTok", state.tiktok) + cloudChip;
+  $("#connect").style.display = state.tiktok.configured && !state.tiktok.connected ? "flex" : "none";
+  const root = $("#posts");
+  if (!state.posts.length) { root.innerHTML = `<div class="empty">video/out içinde hazır video yok.</div>`; return; }
+  for (const p of state.posts) {
+    let card = $(`[data-id="${p.id}"]`, root);
+    if (!card) {
+      card = document.createElement("div");
+      card.className = "card";
+      card.dataset.id = p.id;
+      card.innerHTML = `<video src="/video/${p.id}.mp4" controls playsinline preload="metadata"></video>
+        <div class="body"><div class="id">${p.id}</div>
+        <label class="status">Instagram açıklaması</label>
+        <textarea class="cap"></textarea><div class="count"></div>
+        <label class="status">TikTok açıklaması (taslak gelince panoya kopyalanır; boşsa Instagram'ınki)</label>
+        <textarea class="ttcap" style="min-height:70px"></textarea>
+        <div class="row" style="align-items:center">
+          <input type="datetime-local" class="at" style="border:1px solid var(--line);border-radius:10px;padding:9px 10px;font:inherit;background:var(--paper)">
+          <button class="ghost sched"></button>
+          <span class="status sched-s"></span>
+        </div>
+        <div class="row"><button class="ig">Şimdi Instagram'da paylaş</button><button class="tt">TikTok'a taslak gönder</button></div>
+        <div class="status ig-s"></div><div class="status tt-s"></div><div class="log"></div></div>`;
+      const ta = $("textarea.cap", card);
+      ta.value = p.caption;
+      const tc = $("textarea.ttcap", card);
+      tc.value = p.tiktokCaption ?? "";
+      tc.addEventListener("input", () => {
+        clearTimeout(typing[p.id + "t"]);
+        typing[p.id + "t"] = setTimeout(() => api("/api/caption", { id: p.id, tiktokCaption: tc.value }), 500);
+      });
+      $("input.at", card).value = p.schedule?.at ?? "";
+      $("button.sched", card).onclick = async () => {
+        const on = !state.posts.find((x) => x.id === p.id)?.schedule?.approved;
+        const at = $("input.at", card).value;
+        if (on && !at) return alert("Önce tarih ve saat seç");
+        if (on && !confirm(`${p.id} ${at.replace("T", " ")} saatinde Instagram'da herkese açık paylaşılacak, ardından TikTok'a taslak gidecek. Onaylıyor musun?`)) return;
+        await api("/api/caption", { id: p.id, caption: ta.value, tiktokCaption: tc.value });
+        await api("/api/schedule", { id: p.id, at, approved: on });
+        refresh();
+      };
+      ta.addEventListener("input", () => {
+        $(".count", card).textContent = `${ta.value.length} / 2200`;
+        clearTimeout(typing[p.id]);
+        typing[p.id] = setTimeout(() => api("/api/caption", { id: p.id, caption: ta.value }), 500);
+      });
+      $(".count", card).textContent = `${p.caption.length} / 2200`;
+      $("button.ig", card).onclick = async () => {
+        if (!confirm(`${p.id} Instagram'da herkese açık paylaşılacak. Emin misin?`)) return;
+        await api("/api/caption", { id: p.id, caption: ta.value });
+        await api("/api/instagram", { id: p.id }).catch((e) => alert(e.message));
+        refresh();
+      };
+      $("button.tt", card).onclick = async () => {
+        await api("/api/tiktok", { id: p.id }).catch((e) => alert(e.message));
+        refresh();
+      };
+      root.appendChild(card);
+    }
+    const ig = state.instagram.username && !state.instagram.error;
+    const tt = state.tiktok.connected && !state.tiktok.error;
+    $("button.ig", card).disabled = p.busy || !ig;
+    $("button.tt", card).disabled = p.busy || !tt;
+    const sch = p.schedule?.approved;
+    $("button.sched", card).textContent = sch ? "Zamanlamayı iptal et" : "Bu saatte paylaşılsın";
+    $("button.sched", card).disabled = !!p.instagram;
+    $(".sched-s", card).textContent = p.instagram ? "" : sch ? `Zamanlandı ✓ ${p.schedule.at.replace("T", " ")}` : "";
+    $(".ig-s", card).innerHTML = p.instagram ? `Instagram: <a href="${p.instagram.permalink}" target="_blank">yayında</a> · ${new Date(p.instagram.at).toLocaleString("tr-TR")}` : "Instagram: paylaşılmadı";
+    $(".tt-s", card).textContent = p.tiktok ? `TikTok: gelen kutusuna gönderildi · ${new Date(p.tiktok.at).toLocaleString("tr-TR")}` : "TikTok: gönderilmedi";
+    const log = $(".log", card);
+    log.textContent = p.log.join("\n");
+    log.style.display = p.log.length ? "block" : "none";
+    log.scrollTop = log.scrollHeight;
+  }
+}
+
+async function refresh() {
+  state = await api("/api/state");
+  render();
+  if (state.posts.some((p) => p.busy) || state.stories?.some((d) => d.frames.some((f) => f.busy))) setTimeout(refresh, 2000);
+}
+
+$("#ttOpen").onclick = async () => {
+  try { window.open((await api("/api/tiktok/login", {})).url, "_blank"); } catch (e) { $("#ttMsg").textContent = e.message; }
+};
+$("#ttFinish").onclick = async () => {
+  try { await api("/api/tiktok/finish", { url: $("#ttUrl").value }); $("#ttMsg").textContent = "Bağlandı ✓"; refresh(); }
+  catch (e) { $("#ttMsg").textContent = e.message; }
+};
+refresh();
+</script>
+</body>
+</html>

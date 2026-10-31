@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-02",
+  "reel": "sl02",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "At the restaurant 🍝",
+      "phrase": "*Could I get* the bill, please?",
+      "meaning": "Can you bring the bill? (polite)",
+      "note": "\"Give me the bill\" sounds rude. \"Could I get…\" is polite and natural.",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Quiz 🤔",
+      "question": "Which one is more *polite*?",
+      "hint": "What would you tell the waiter?",
+      "sticker": "Quiz: Give me the bill / Could I get the bill?",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New post 📚",
+      "title": "*Make*, *do* or *take*? 🤔",
+      "image": "stories/sl02.jpg",
+      "cta": "See it on our profile 👆",
+      "at": "13:00"
+    },
+    {
+      "kind": "promo",
+      "label": "New Bob episode 🐜",
+      "title": "Bob in a London *heatwave* 🥵",
+      "image": "stories/bob-ep09.jpg",
+      "cta": "Watch it on our profile 👆",
+      "at": "19:30",
+      "reel": "bob-ep09"
+    }
+  ]
+}

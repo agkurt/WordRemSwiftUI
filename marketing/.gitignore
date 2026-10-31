@@ -1,2 +1,8 @@
 inbox/
 out/
+.env
+publish/tokens.json
+video/review/
+video/public/review/
+video/public/voice/
+video/preview/

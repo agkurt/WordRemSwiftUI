@@ -4,6 +4,7 @@
 // Konuşma sınırları kayıttaki gerçek sesten ölçülür; elle düzeltilen metinler (aynı orijinal cümle) korunur.
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
+import { defaultTts, speak } from "./voice.mjs";
 
 const id = process.argv[2];
 if (!id) throw new Error("kullanım: node prep.mjs <id> [--skip a-b]...");
@@ -35,17 +36,33 @@ for (let i = 0; i + 320 <= pcm.length; i += 320) {
 }
 const loud = [...env].sort((a, b) => a - b)[Math.floor(env.length * 0.95)] ?? 1000;
 const TH = Math.max(300, loud * 0.08);
-/** [lo, hi] içindeki ilk ve son konuşma (en az 60 ms süren ses) */
+/** [lo, hi] içindeki ilk ve son konuşma (en az 60 ms süren ses); kelimenin yumuşak başı ve sönen sonu da dahil */
 const speech = (lo, hi) => {
+  const a = Math.max(0, Math.floor(lo / STEP)), b = Math.min(env.length, Math.ceil(hi / STEP));
   let first = null, last = null, run = 0;
-  for (let i = Math.max(0, Math.floor(lo / STEP)); i < Math.min(env.length, Math.ceil(hi / STEP)); i++) {
+  for (let i = a; i < b; i++) {
     run = env[i] > TH ? run + 1 : 0;
-    if (run === 3) { first ??= (i - 2) * STEP; }
-    if (run >= 3) last = (i + 1) * STEP;
+    if (run === 3) { first ??= i - 2; }
+    if (run >= 3) last = i + 1;
   }
-  return first == null ? null : { from: first, to: last };
+  if (first == null) return null;
+  while (first > a && env[first - 1] > TH * 0.35) first--;
+  while (last < b && env[last] > TH * 0.35) last++;
+  return { from: first * STEP, to: last * STEP };
+};
+/** Satırın içindeki sesli bölümler: altyazı kelimeleri sessiz aralara düşmesin */
+const voiced = (from, to) => {
+  const segs = [];
+  for (let i = Math.floor(from / STEP); i < Math.ceil(to / STEP) && i < env.length; i++) {
+    if (env[i] <= TH * 0.5) continue;
+    const t = i * STEP, prev = segs.at(-1);
+    if (prev && t - prev[1] < 0.15) prev[1] = t + STEP;
+    else segs.push([t, t + STEP]);
+  }
+  return segs.filter(([a, b]) => b - a >= 0.06);
 };
 
+const r = (n) => Math.round(n * 1000) / 1000;
 const turns = timeline.turns;
 const clean = (s) => s.trim().replace(/^"(.*)"$/s, "$1");
 const lines = [];
@@ -66,24 +83,49 @@ for (const e of timeline.events) {
   if (e.ev === "learner_end") { const l = lines.findLast((l) => l.who === "you"); if (l) l.end = e.t; }
   if (e.ev === "turn" && e.role === "card") cards.push({ t: e.t, text: turns[e.i].text, tr: turns[e.i].detail || undefined });
 }
+// Ses aranacak pencere olayların kendisinden: önceki satırın bitişi ile sonrakinin başlangıcı arası
+const events = lines.map((l) => ({ start: l.start, end: l.end }));
+const tts = script.tts === false ? null : { ...defaultTts(script.native), ...(script.tts ?? {}) };
 for (const [i, l] of lines.entries()) {
   if (l.end == null) l.end = Math.min(duration, l.start + 4);
   l.orig = l.text;
-  // Gerçek ses: öğrenci sesi bazen geç başlar, Lupa olaydan önce susar
-  const next = lines[i + 1];
-  const v = speech(l.start - 0.1, next ? next.start + 0.05 : l.end + 1.5);
+  const lo = i ? (events[i - 1].end ?? events[i - 1].start) + 0.05 : Math.max(0, l.start - 3);
+  const hi = lines[i + 1] ? events[i + 1].start - 0.02 : l.end + 1.5;
+  // Gerçek ses: öğrenci sesi bazen geç başlar, Lupa'nın sesi yazısından önce başlar ve olaydan önce susar
+  const v = speech(Math.min(lo, l.start - 0.1), Math.max(hi, l.start + 0.3));
   if (v) { l.start = v.from; l.end = v.to; }
+  l.segs = voiced(l.start, l.end).map(([a, b]) => [r(a), r(b)]);
   if (l.who === "you") l.tr = cards.find((c) => c.text === l.text)?.tr;
+  // Öğrencinin sesi: telefondaki Ava sesi susturulur, yerine OpenAI sesi aynı anda başlar; satırın süresi yeni sese göre
+  if (l.who === "you" && tts) {
+    const v = await speak(l.text, tts).catch((err) => { console.warn(`! ${err.message.split("\n")[0]}`); return null; });
+    if (v) {
+      l.mute = [r(l.start - 0.1), r(l.end + 0.15)];
+      l.voice = { src: v.src, lead: v.lead };
+      const end = l.start + v.dur;
+      const room = lines[i + 1] ? events[i + 1].start - 0.4 : Infinity;
+      if (end > room) console.warn(`! "${l.text}" yeni seste ${(end - room).toFixed(2)} sn uzun: Lupa'nın cevabına biniyor`);
+      l.end = end;
+      l.segs = v.segs.map(([a, b]) => [r(l.start + a), r(l.start + b)]);
+      l.words = [];
+    } else if (i === lines.findIndex((x) => x.who === "you")) console.warn("! OpenAI sesi yok: öğrenci sesi telefondaki ses (Ava) olarak kalıyor");
+  }
   // Lupa'nın öğrettiği cümle ve anlamı: "¡Hola!", "Hello!" → "¡Hola!" (Hello!)
   if (l.who === "lupa") l.text = l.text.replace(/"([^"]+)",\s*"([^"]+)"/g, '"$1" ($2)');
 }
-// Atlanan aralıklar: içindeki satır ve kartlar çıkar, yarısı atılan satır kalan kısmından başlar
-for (const [a, b] of skips) {
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const l = lines[i];
-    if (l.start >= a && l.end <= b) lines.splice(i, 1);
-    else if (l.start < b && l.end > b && l.start >= a - 0.5) { l.start = b; l.partial = true; }
+// Atlanan aralıklar yalnızca bütün satırları atar: yarısına denk gelen satır kesilmez, aralık o satırı dışarıda bırakır
+for (const sk of skips) {
+  for (const l of lines) {
+    if (l.start >= sk[0] && l.end <= sk[1]) continue;
+    if (l.start < sk[1] && l.end > sk[0]) {
+      console.warn(`! --skip ${sk[0]}-${sk[1]} "${l.text.slice(0, 40)}" satırını yarıdan keserdi: satır korunuyor`);
+      if (l.start <= sk[0]) sk[0] = l.end + 0.35; else sk[1] = l.start - 0.2;
+    }
   }
+}
+for (const [a, b] of skips) {
+  if (b <= a) continue;
+  for (let i = lines.length - 1; i >= 0; i--) if (lines[i].start >= a && lines[i].end <= b) lines.splice(i, 1);
   cards.splice(0, cards.length, ...cards.filter((c) => c.t < a || c.t > b));
 }
 // Video öğrencinin son cümlesiyle (vedasıyla) biter; Lupa'nın sonrasındaki yorumu ve boş satırlar atılır
@@ -94,17 +136,18 @@ const lastCardAt = lines.at(-1)?.end ?? duration;
 cards.splice(0, cards.length, ...cards.filter((c) => c.t <= lastCardAt + 0.5));
 
 // Konuşma olmayan boşluklar kesilir; kart gelişi ve son satır biraz nefes alır
-const spans = lines.map((l) => ({ from: l.start - (l.partial ? 0 : 0.12), to: l.end + 0.22 }));
+// Konuşmanın başına 0,2, sonuna 0,35 sn pay: ses kesimde yarım kalmaz
+const spans = lines.map((l) => ({ from: l.start - 0.2, to: l.end + 0.35 }));
 const last = lines.at(-1);
 if (last) spans.push({ from: last.end, to: Math.min(duration - 0.05, last.end + 0.9) });
 spans.sort((a, b) => a.from - b.from);
 const keeps = [];
 for (const s of spans) {
   const prev = keeps.at(-1);
-  if (prev && s.from - prev.to < 0.25) prev.to = Math.max(prev.to, s.to);
+  if (prev && s.from - prev.to < 0.4) prev.to = Math.max(prev.to, s.to);
   else keeps.push({ from: Math.max(0, s.from), to: s.to });
 }
-for (const [a, b] of skips) {
+for (const [a, b] of skips.filter(([a, b]) => b > a)) {
   for (let i = keeps.length - 1; i >= 0; i--) {
     const k = keeps[i];
     if (k.to <= a || k.from >= b) continue;
@@ -114,7 +157,6 @@ for (const [a, b] of skips) {
     keeps.splice(i, 1, ...parts);
   }
 }
-const r = (n) => Math.round(n * 1000) / 1000;
 
 const out = `edits/${id}.json`;
 const old = fs.existsSync(out) ? JSON.parse(fs.readFileSync(out)) : {};

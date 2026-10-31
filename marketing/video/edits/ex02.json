@@ -1,0 +1,551 @@
+{
+  "kind": "explainer",
+  "id": "ex02",
+  "hook": "3 mistakes in your first English conversation",
+  "cta": "Coming soon on the App Store",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "3",
+        "title": "mistakes in your *first* English conversation",
+        "sub": "almost everyone makes them 😅"
+      },
+      "from": 0,
+      "to": 5.53
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 3,
+        "label": "Your age 🎂",
+        "wrong": "I have 25 years.",
+        "right": "*I'm* 25."
+      },
+      "from": 5.53,
+      "to": 12.89
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 3,
+        "label": "Agreeing 👍",
+        "wrong": "I am agree.",
+        "right": "I *agree*."
+      },
+      "from": 12.89,
+      "to": 18.65
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 3,
+        "label": "Your job 💼",
+        "wrong": "I am engineer.",
+        "right": "I'm *an* engineer."
+      },
+      "from": 18.65,
+      "to": 25.15
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Fix them *out loud* with Lupa 🎙️",
+        "sub": "📌 Save this before your next chat"
+      },
+      "from": 25.15,
+      "to": 30.43
+    }
+  ],
+  "sentences": [
+    {
+      "beat": 0,
+      "k": 0,
+      "text": "Three mistakes you make in your *first* English conversation.",
+      "src": "voice/b608dbe54628a5e4.wav",
+      "lead": 0.3,
+      "at": 0.15,
+      "dur": 3.52,
+      "words": [
+        {
+          "w": "Three",
+          "key": false,
+          "t": 0.15
+        },
+        {
+          "w": "mistakes",
+          "key": false,
+          "t": 0.65
+        },
+        {
+          "w": "you",
+          "key": false,
+          "t": 1.17
+        },
+        {
+          "w": "make",
+          "key": false,
+          "t": 1.47
+        },
+        {
+          "w": "in",
+          "key": false,
+          "t": 1.73
+        },
+        {
+          "w": "your",
+          "key": false,
+          "t": 1.97
+        },
+        {
+          "w": "first",
+          "key": true,
+          "t": 2.15
+        },
+        {
+          "w": "English",
+          "key": false,
+          "t": 2.55
+        },
+        {
+          "w": "conversation.",
+          "key": false,
+          "t": 2.95
+        }
+      ]
+    },
+    {
+      "beat": 0,
+      "k": 1,
+      "text": "Number three is *everywhere*.",
+      "src": "voice/545feeb4acee87d6.wav",
+      "lead": 0,
+      "at": 3.89,
+      "dur": 1.42,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 3.89
+        },
+        {
+          "w": "three",
+          "key": false,
+          "t": 4.21
+        },
+        {
+          "w": "is",
+          "key": false,
+          "t": 4.57
+        },
+        {
+          "w": "everywhere.",
+          "key": true,
+          "t": 4.83
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 0,
+      "text": "Number one: \"I have twenty-five years.\" Sounds like a *prison* sentence.",
+      "src": "voice/f671fcbb83bee4f2.wav",
+      "lead": 0.02,
+      "at": 5.73,
+      "dur": 4.68,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 5.73
+        },
+        {
+          "w": "one:",
+          "key": false,
+          "t": 6.15
+        },
+        {
+          "w": "\"I",
+          "key": false,
+          "t": 7.19
+        },
+        {
+          "w": "have",
+          "key": false,
+          "t": 7.27
+        },
+        {
+          "w": "twenty-five",
+          "key": false,
+          "t": 7.49
+        },
+        {
+          "w": "years.\"",
+          "key": false,
+          "t": 8.11
+        },
+        {
+          "w": "Sounds",
+          "key": false,
+          "t": 9.17
+        },
+        {
+          "w": "like",
+          "key": false,
+          "t": 9.31
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 9.47
+        },
+        {
+          "w": "prison",
+          "key": true,
+          "t": 9.89
+        },
+        {
+          "w": "sentence.",
+          "key": false,
+          "t": 9.89
+        }
+      ]
+    },
+    {
+      "beat": 1,
+      "k": 1,
+      "text": "Better: \"*I'm* twenty-five.\"",
+      "src": "voice/c39163f9ed245ad7.wav",
+      "lead": 0.06,
+      "at": 10.63,
+      "dur": 2.04,
+      "words": [
+        {
+          "w": "Better:",
+          "key": false,
+          "t": 10.63
+        },
+        {
+          "w": "\"I'm",
+          "key": true,
+          "t": 11.35
+        },
+        {
+          "w": "twenty-five.\"",
+          "key": false,
+          "t": 12.05
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 0,
+      "text": "Number two: \"I am agree.\" Agree is already a *verb*.",
+      "src": "voice/312aa6bfe095cc1b.wav",
+      "lead": 0.02,
+      "at": 13.09,
+      "dur": 3.6,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 13.09
+        },
+        {
+          "w": "two:",
+          "key": false,
+          "t": 13.35
+        },
+        {
+          "w": "\"I",
+          "key": false,
+          "t": 14.39
+        },
+        {
+          "w": "am",
+          "key": false,
+          "t": 14.39
+        },
+        {
+          "w": "agree.\"",
+          "key": false,
+          "t": 14.63
+        },
+        {
+          "w": "Agree",
+          "key": false,
+          "t": 15.57
+        },
+        {
+          "w": "is",
+          "key": false,
+          "t": 15.57
+        },
+        {
+          "w": "already",
+          "key": false,
+          "t": 15.89
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 16.25
+        },
+        {
+          "w": "verb.",
+          "key": true,
+          "t": 16.61
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "k": 1,
+      "text": "Try: \"I *agree*.\"",
+      "src": "voice/618930fff6533ec6.wav",
+      "lead": 0.06,
+      "at": 16.91,
+      "dur": 1.52,
+      "words": [
+        {
+          "w": "Try:",
+          "key": false,
+          "t": 16.91
+        },
+        {
+          "w": "\"I",
+          "key": false,
+          "t": 17.41
+        },
+        {
+          "w": "agree.\"",
+          "key": true,
+          "t": 18.07
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 0,
+      "text": "Number three: \"I am engineer.\" You're missing a tiny *word*.",
+      "src": "voice/8c4055ee7ea6d98b.wav",
+      "lead": 0.02,
+      "at": 18.85,
+      "dur": 4.06,
+      "words": [
+        {
+          "w": "Number",
+          "key": false,
+          "t": 18.85
+        },
+        {
+          "w": "three:",
+          "key": false,
+          "t": 19.17
+        },
+        {
+          "w": "\"I",
+          "key": false,
+          "t": 20.09
+        },
+        {
+          "w": "am",
+          "key": false,
+          "t": 20.25
+        },
+        {
+          "w": "engineer.\"",
+          "key": false,
+          "t": 20.45
+        },
+        {
+          "w": "You're",
+          "key": false,
+          "t": 21.51
+        },
+        {
+          "w": "missing",
+          "key": false,
+          "t": 21.99
+        },
+        {
+          "w": "a",
+          "key": false,
+          "t": 21.99
+        },
+        {
+          "w": "tiny",
+          "key": false,
+          "t": 22.33
+        },
+        {
+          "w": "word.",
+          "key": true,
+          "t": 22.61
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "k": 1,
+      "text": "Better: \"I'm *an* engineer.\"",
+      "src": "voice/9d3be16f1bca1d9a.wav",
+      "lead": 0.02,
+      "at": 23.13,
+      "dur": 1.8,
+      "words": [
+        {
+          "w": "Better:",
+          "key": false,
+          "t": 23.13
+        },
+        {
+          "w": "\"I'm",
+          "key": false,
+          "t": 23.93
+        },
+        {
+          "w": "an",
+          "key": true,
+          "t": 24.29
+        },
+        {
+          "w": "engineer.\"",
+          "key": false,
+          "t": 24.55
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "k": 0,
+      "text": "Save this, and fix them *out loud* with Lupa.",
+      "src": "voice/00b2db3d252279d9.wav",
+      "lead": 0.02,
+      "at": 25.35,
+      "dur": 3.48,
+      "words": [
+        {
+          "w": "Save",
+          "key": false,
+          "t": 25.35
+        },
+        {
+          "w": "this,",
+          "key": false,
+          "t": 25.87
+        },
+        {
+          "w": "and",
+          "key": false,
+          "t": 26.33
+        },
+        {
+          "w": "fix",
+          "key": false,
+          "t": 26.93
+        },
+        {
+          "w": "them",
+          "key": false,
+          "t": 27.17
+        },
+        {
+          "w": "out",
+          "key": true,
+          "t": 27.51
+        },
+        {
+          "w": "loud",
+          "key": true,
+          "t": 27.81
+        },
+        {
+          "w": "with",
+          "key": false,
+          "t": 28.09
+        },
+        {
+          "w": "Lupa.",
+          "key": false,
+          "t": 28.51
+        }
+      ]
+    }
+  ],
+  "total": 30.43,
+  "keeps": [
+    {
+      "from": 0,
+      "to": 30.43
+    }
+  ],
+  "lines": [
+    {
+      "who": "voice",
+      "start": 0.15,
+      "end": 3.67,
+      "text": "Three mistakes you make in your first English conversation.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 3.89,
+      "end": 5.31,
+      "text": "Number three is everywhere.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 5.73,
+      "end": 10.41,
+      "text": "Number one: \"I have twenty-five years.\" Sounds like a prison sentence.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 10.63,
+      "end": 12.67,
+      "text": "Better: \"I'm twenty-five.\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 13.09,
+      "end": 16.69,
+      "text": "Number two: \"I am agree.\" Agree is already a verb.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 16.91,
+      "end": 18.43,
+      "text": "Try: \"I agree.\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 18.85,
+      "end": 22.91,
+      "text": "Number three: \"I am engineer.\" You're missing a tiny word.",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 23.13,
+      "end": 24.93,
+      "text": "Better: \"I'm an engineer.\"",
+      "words": []
+    },
+    {
+      "who": "voice",
+      "start": 25.35,
+      "end": 28.83,
+      "text": "Save this, and fix them out loud with Lupa.",
+      "words": []
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "caption": "Same word… different meaning 😬 5 false friends that trip up B1 learners.\n\nWhich one fooled you? 👇 Save it 📌\n\n#learnenglish #englishvocabulary #falsefriends #englishmistakes #esl",
+  "slides": [
+    {
+      "kind": "cover",
+      "title": "Same word… *different* meaning 😬",
+      "sub": "5 false friends B1 learners mix up"
+    },
+    {
+      "kind": "fix",
+      "n": 1,
+      "label": "Sympathetic",
+      "wrong": "My boss is very sympathetic.",
+      "right": "My boss is very *nice*.",
+      "tip": "*sympathetic* = feels sorry for you"
+    },
+    {
+      "kind": "fix",
+      "n": 2,
+      "label": "Actually",
+      "wrong": "Actually, I live in London. (= now)",
+      "right": "*Currently*, I live in London.",
+      "tip": "*actually* = in fact · *currently* = now"
+    },
+    {
+      "kind": "fix",
+      "n": 3,
+      "label": "Eventually",
+      "wrong": "Eventually I'll come, if I have time.",
+      "right": "*Maybe* I'll come, if I have time.",
+      "tip": "*eventually* = in the end, after a long time"
+    },
+    {
+      "kind": "fix",
+      "n": 4,
+      "label": "Sensible",
+      "wrong": "Don't shout, I'm very sensible.",
+      "right": "Don't shout, I'm very *sensitive*.",
+      "tip": "*sensible* = logical · *sensitive* = easily hurt"
+    },
+    {
+      "kind": "fix",
+      "n": 5,
+      "label": "Library",
+      "wrong": "I bought this book at the library.",
+      "right": "I bought this book at the *bookshop*.",
+      "tip": "*library* = you borrow books · *bookshop* = you buy them"
+    },
+    {
+      "kind": "cta",
+      "title": "Use them right in real conversations with *Lupa* 🎙️",
+      "sub": "Save this 📌"
+    }
+  ]
+}

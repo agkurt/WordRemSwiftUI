@@ -1,0 +1,86 @@
+{
+  "id": "ex03",
+  "hook": "4 ways to stop saying very",
+  "caption": "Stop saying \"very\" 🙅 4 words that make you sound more fluent:\n\nvery tired → exhausted\nvery hungry → starving\nvery good → amazing\nvery big → huge\n\nWhich one will you use today? 👇 Save it 📌\n\n#learnenglish #englishvocabulary #speakenglish #englishtips #esl",
+  "tiktokCaption": "Stop saying \"very\" 🙅 very tired → exhausted · very hungry → starving · very good → amazing · very big → huge. Which one will you use today? 👇 #learnenglish #englishvocabulary #esl",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "4",
+        "title": "ways to stop saying *very*",
+        "sub": "sound fluent, not basic ✨"
+      },
+      "say": [
+        "Four ways to stop saying *very* in English.",
+        "Native speakers use them *every* day."
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 4,
+        "label": "After a long day 😮‍💨",
+        "wrong": "I'm very tired.",
+        "right": "I'm *exhausted*."
+      },
+      "say": [
+        "Number one: \"very tired.\" Fine, but *boring*.",
+        "Try: \"I'm *exhausted*.\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 4,
+        "label": "Lunch time 🍔",
+        "wrong": "I'm very hungry.",
+        "right": "I'm *starving*!"
+      },
+      "say": [
+        "Number two: \"very hungry.\" *Again*?",
+        "Try: \"I'm *starving*!\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 4,
+        "label": "Good news 🎉",
+        "wrong": "That's very good!",
+        "right": "That's *amazing*!"
+      },
+      "say": [
+        "Number three: \"very good.\" Too *flat*.",
+        "Better: \"That's *amazing*!\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 4,
+        "of": 4,
+        "label": "Big city 🏙️",
+        "wrong": "It's very big.",
+        "right": "It's *huge*."
+      },
+      "say": [
+        "And number four: \"very big.\" You can do *better*.",
+        "Try: \"It's *huge*.\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Use them *today* with Lupa 🎙️",
+        "sub": "📌 Save this"
+      },
+      "say": [
+        "Save this, and use them *today* with Lupa."
+      ]
+    }
+  ]
+}

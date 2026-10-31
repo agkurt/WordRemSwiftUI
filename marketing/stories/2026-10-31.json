@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-31",
+  "reel": "ex02",
+  "frames": [
+    {
+      "kind": "teach",
+      "label": "Happy Halloween 🎃",
+      "phrase": "*Trick or treat!*",
+      "meaning": "what kids say at your door on Halloween",
+      "note": "Your answer: \"Here you go!\" (and give them candy 🍬)",
+      "target": "en",
+      "at": "08:30"
+    },
+    {
+      "kind": "ask",
+      "label": "Your turn 🎃",
+      "question": "Do you *celebrate* Halloween?",
+      "hint": "What would your costume be?",
+      "sticker": "Poll: Yes 🎃 / No 🙅",
+      "at": "13:30"
+    },
+    {
+      "kind": "promo",
+      "label": "New video 🎬",
+      "title": "3 mistakes in your *first* English conversation 😅",
+      "image": "stories/ex02.jpg",
+      "cta": "Watch it on our profile 👆",
+      "at": "13:00"
+    },
+    {
+      "kind": "promo",
+      "label": "New Bob episode 🐜",
+      "title": "Bob asks for his *kiss* at a London hotel 💋",
+      "image": "stories/bob-ep12.jpg",
+      "cta": "Watch it on our profile 👆",
+      "at": "19:30",
+      "reel": "bob-ep12"
+    }
+  ]
+}

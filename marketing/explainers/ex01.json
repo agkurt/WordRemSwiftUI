@@ -1,0 +1,85 @@
+{
+  "id": "ex01",
+  "hook": "4 phrases that make you sound rude",
+  "caption": "4 phrases that make you sound rude in English 😬 (and what to say instead)\n\n1. Give me a coffee → Could I get a coffee, please?\n2. I want the bill → I'd like the bill, please.\n3. What? → Sorry?\n4. Repeat! → Could you say that again?\n\nWhich one did you say today? Be honest 👇 Save it for your next trip 📌\n\n#learnenglish #englishtips #speakenglish #esl #englishphrases",
+  "beats": [
+    {
+      "card": {
+        "kind": "hook",
+        "n": "4",
+        "title": "phrases that make you sound *rude*",
+        "sub": "in English 😬"
+      },
+      "say": [
+        "These four phrases make you sound *rude* in English.",
+        "And you probably said one *today*."
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 1,
+        "of": 4,
+        "label": "At the café ☕",
+        "wrong": "Give me a coffee.",
+        "right": "*Could I get* a coffee, please?"
+      },
+      "say": [
+        "Number one: \"Give me a coffee.\" Way too *direct*.",
+        "Better: \"*Could I get* a coffee, please?\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 2,
+        "of": 4,
+        "label": "At the restaurant 🍝",
+        "wrong": "I want the bill.",
+        "right": "*I'd like* the bill, please."
+      },
+      "say": [
+        "Number two: \"I want the bill.\" You sound like a *child*.",
+        "Try: \"*I'd like* the bill, please.\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 3,
+        "of": 4,
+        "label": "You didn't hear 👂",
+        "wrong": "What?",
+        "right": "*Sorry?*"
+      },
+      "say": [
+        "Number three: \"What?\" Too *sharp*.",
+        "Instead, a simple \"*Sorry?*\" works."
+      ]
+    },
+    {
+      "card": {
+        "kind": "fix",
+        "n": 4,
+        "of": 4,
+        "label": "Asking again 🔁",
+        "wrong": "Repeat!",
+        "right": "*Could you say that again?*"
+      },
+      "say": [
+        "Number four: \"Repeat!\" That's an *order*, not a question.",
+        "Ask: \"*Could you say that again?*\""
+      ]
+    },
+    {
+      "card": {
+        "kind": "cta",
+        "title": "Practise them *out loud* with Lupa 🎙️",
+        "sub": "📌 Save this for your next trip"
+      },
+      "say": [
+        "Save this, and practise them *out loud* with Lupa."
+      ]
+    }
+  ]
+}

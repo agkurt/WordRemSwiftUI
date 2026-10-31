@@ -1,0 +1,184 @@
+{
+  "video": "clips/bob-ep01.mp4",
+  "keeps": [
+    {
+      "from": 0.5,
+      "to": 7.05
+    },
+    {
+      "from": 10.0,
+      "to": 13.0
+    },
+    {
+      "from": 14.5,
+      "to": 29.9
+    }
+  ],
+  "series": "🐜 Bob in London · Ep. 1",
+  "hook": "How hard can ordering a *coffee* be? ☕",
+  "lines": [
+    {
+      "who": "Bob",
+      "text": "Today, I order my first coffee in London. Huh, easy!",
+      "words": [
+        {
+          "w": "Today,",
+          "t": 2.66,
+          "end": 3.46
+        },
+        {
+          "w": "I",
+          "t": 3.58,
+          "end": 3.98
+        },
+        {
+          "w": "order",
+          "t": 3.98,
+          "end": 4.16
+        },
+        {
+          "w": "my",
+          "t": 4.16,
+          "end": 4.46
+        },
+        {
+          "w": "first",
+          "t": 4.46,
+          "end": 4.8
+        },
+        {
+          "w": "coffee",
+          "t": 4.8,
+          "end": 5.06
+        },
+        {
+          "w": "in",
+          "t": 5.06,
+          "end": 5.78
+        },
+        {
+          "w": "London.",
+          "t": 5.78,
+          "end": 5.92
+        },
+        {
+          "w": "Huh,",
+          "t": 6.18,
+          "end": 6.56
+        },
+        {
+          "w": "easy!",
+          "t": 6.56,
+          "end": 7
+        }
+      ]
+    },
+    {
+      "who": "Bob",
+      "text": "Give me coffee!",
+      "words": [
+        {
+          "w": "Give",
+          "t": 11.14,
+          "end": 11.94
+        },
+        {
+          "w": "me",
+          "t": 11.94,
+          "end": 12.22
+        },
+        {
+          "w": "coffee!",
+          "t": 12.22,
+          "end": 12.72
+        }
+      ]
+    },
+    {
+      "who": "Barista",
+      "text": "Excuse me?",
+      "words": [
+        {
+          "w": "Excuse",
+          "t": 15.18,
+          "end": 15.6
+        },
+        {
+          "w": "me?",
+          "t": 15.6,
+          "end": 16.08
+        }
+      ]
+    },
+    {
+      "who": "Bob",
+      "text": "Could I get a coffee, please?",
+      "words": [
+        {
+          "w": "Could",
+          "t": 20.84,
+          "end": 21.24
+        },
+        {
+          "w": "I",
+          "t": 21.24,
+          "end": 21.42
+        },
+        {
+          "w": "get",
+          "t": 21.42,
+          "end": 21.52
+        },
+        {
+          "w": "a",
+          "t": 21.52,
+          "end": 21.98
+        },
+        {
+          "w": "coffee,",
+          "t": 21.98,
+          "end": 21.98
+        },
+        {
+          "w": "please?",
+          "t": 21.98,
+          "end": 22.52
+        }
+      ]
+    },
+    {
+      "who": "Barista",
+      "text": "Of course, love.",
+      "words": [
+        {
+          "w": "Of",
+          "t": 23.18,
+          "end": 23.4
+        },
+        {
+          "w": "course,",
+          "t": 23.4,
+          "end": 23.64
+        },
+        {
+          "w": "love.",
+          "t": 23.9,
+          "end": 23.98
+        }
+      ]
+    }
+  ],
+  "fix": {
+    "from": 16.4,
+    "to": 20.6,
+    "wrong": "Give me coffee!",
+    "right": "*Could I get* a coffee, please?"
+  },
+  "outro": "Don't be *Bob* 😅 Practice with Lupa",
+  "cta": "Coming soon on the App Store",
+  "win": {
+    "from": 24.6,
+    "to": 29.9,
+    "text": "Bob did it! 🎉"
+  }
+}

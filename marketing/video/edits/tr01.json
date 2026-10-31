@@ -1,0 +1,206 @@
+{
+  "id": "tr01",
+  "video": "clips/tr01.mp4",
+  "width": 886,
+  "height": 1920,
+  "hook": "Pasaport kontrolünde ne diyeceksin? 🛂",
+  "title": "🛂 Londra'da pasaport kontrolü",
+  "lang": "tr",
+  "target": "en",
+  "cta": "Çok yakında App Store'da",
+  "keeps": [
+    {
+      "from": 3.56,
+      "to": 13.97
+    },
+    {
+      "from": 16.5,
+      "to": 25.11
+    },
+    {
+      "from": 26.36,
+      "to": 32.83
+    },
+    {
+      "from": 34.08,
+      "to": 36.5
+    }
+  ],
+  "lines": [
+    {
+      "who": "lupa",
+      "start": 3.76,
+      "end": 13.62,
+      "text": "Ahmet, seninle pasaport kontrolü çalışacağız ve ben memur olacağım. \"Good morning. What's the purpose of your visit?\" yani Ziyaretinizin amacı nedir?",
+      "words": [],
+      "orig": "Ahmet, seninle pasaport kontrolü çalışacağız ve ben memur olacağım. \"Good morning. What's the purpose of your visit?\" yani Ziyaretinizin amacı nedir?",
+      "segs": [
+        [
+          3.76,
+          4.28
+        ],
+        [
+          4.46,
+          8.16
+        ],
+        [
+          8.52,
+          9.2
+        ],
+        [
+          9.4,
+          11.04
+        ],
+        [
+          11.28,
+          11.66
+        ],
+        [
+          11.84,
+          13.62
+        ]
+      ],
+      "tr": ""
+    },
+    {
+      "who": "you",
+      "start": 16.7,
+      "end": 18.1,
+      "text": "I'm here for a holiday.",
+      "words": [],
+      "orig": "I'm here for a holiday.",
+      "segs": [
+        [
+          16.7,
+          18.1
+        ]
+      ],
+      "tr": "Tatil için buradayım.",
+      "mute": [
+        16.6,
+        18.17
+      ],
+      "voice": {
+        "src": "voice/b79e43c0cffd5b2d.wav",
+        "lead": 0
+      }
+    },
+    {
+      "who": "lupa",
+      "start": 18.76,
+      "end": 24.76,
+      "text": "Harika, tatil çok güzel. \"How long are you staying?\" yani ne kadar kalacaksınız?",
+      "words": [],
+      "orig": "Harika, tatil çok güzel. \"How long are you staying?\" yani ne kadar kalacaksınız?",
+      "segs": [
+        [
+          18.76,
+          19.38
+        ],
+        [
+          19.66,
+          20.84
+        ],
+        [
+          21.26,
+          22.54
+        ],
+        [
+          22.76,
+          23.16
+        ],
+        [
+          23.34,
+          24.74
+        ]
+      ],
+      "tr": ""
+    },
+    {
+      "who": "you",
+      "start": 26.56,
+      "end": 28.28,
+      "text": "I'm staying for one week.",
+      "words": [],
+      "orig": "I'm staying for one week.",
+      "segs": [
+        [
+          26.56,
+          28.28
+        ]
+      ],
+      "tr": "Bir hafta kalacağım.",
+      "mute": [
+        26.46,
+        28.11
+      ],
+      "voice": {
+        "src": "voice/76355ea1f8f2df7e.wav",
+        "lead": 0
+      }
+    },
+    {
+      "who": "lupa",
+      "start": 28.82,
+      "end": 32.48,
+      "text": "Gayet net. \"Enjoy your stay!\" yani iyi tatiller.",
+      "words": [],
+      "orig": "Gayet net. \"Enjoy your stay!\" yani iyi tatiller.",
+      "segs": [
+        [
+          28.82,
+          29.6
+        ],
+        [
+          29.92,
+          32.46
+        ]
+      ],
+      "tr": ""
+    },
+    {
+      "who": "you",
+      "start": 34.28,
+      "end": 35.6,
+      "text": "Thank you, have a nice day!",
+      "words": [],
+      "orig": "Thank you, have a nice day!",
+      "segs": [
+        [
+          34.28,
+          34.68
+        ],
+        [
+          34.92,
+          35.6
+        ]
+      ],
+      "tr": "Teşekkürler, iyi günler!",
+      "mute": [
+        34.18,
+        36.19
+      ],
+      "voice": {
+        "src": "voice/848f02bf0e33df90.wav",
+        "lead": 0.08
+      }
+    }
+  ],
+  "cards": [
+    {
+      "t": 13.909,
+      "text": "I'm here for a holiday.",
+      "tr": "Tatil için buradayım."
+    },
+    {
+      "t": 25.12,
+      "text": "I'm staying for one week.",
+      "tr": "Bir hafta kalacağım."
+    },
+    {
+      "t": 32.832,
+      "text": "Thank you, have a nice day!",
+      "tr": "Teşekkürler, iyi günler!"
+    }
+  ]
+}

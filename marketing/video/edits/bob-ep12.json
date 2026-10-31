@@ -1,0 +1,81 @@
+{
+  "video": "clips/bob-ep12.mp4",
+  "keeps": [
+    {
+      "from": 1.6,
+      "to": 10.0
+    }
+  ],
+  "series": "🐜 Bob in London · Ep. 3",
+  "hook": "Bob checks out of a *London hotel* 🔑",
+  "hookEnd": 2.4,
+  "lines": [
+    {
+      "who": "Bob",
+      "text": "Excuse me, can I have my kiss, please?",
+      "words": [
+        {
+          "w": "Excuse",
+          "t": 2.3,
+          "end": 2.8
+        },
+        {
+          "w": "me,",
+          "t": 2.8,
+          "end": 3.04
+        },
+        {
+          "w": "can",
+          "t": 3.36,
+          "end": 3.44
+        },
+        {
+          "w": "I",
+          "t": 3.44,
+          "end": 3.58
+        },
+        {
+          "w": "have",
+          "t": 3.58,
+          "end": 3.72
+        },
+        {
+          "w": "my",
+          "t": 3.72,
+          "end": 3.98
+        },
+        {
+          "w": "kiss,",
+          "t": 3.98,
+          "end": 4.2
+        },
+        {
+          "w": "please?",
+          "t": 4.2,
+          "end": 5.16
+        }
+      ]
+    },
+    {
+      "who": "Bob",
+      "text": "AAAAH!",
+      "words": [
+        {
+          "w": "AAAAH!",
+          "t": 6.46,
+          "end": 6.96
+        }
+      ]
+    }
+  ],
+  "fix": {
+    "from": 7.6,
+    "to": 10.0,
+    "wrong": "Can I have my kiss?",
+    "right": "Can I have my *keys*?",
+    "tr": "keys = \"ee\" · kiss = \"i\"",
+    "at": "top"
+  },
+  "outro": "Don't be *Bob* 😅 Practise with Lupa",
+  "cta": "Coming soon on the App Store"
+}

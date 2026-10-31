@@ -1,0 +1,56 @@
+{
+  "caption": "You're B1… but you still say these 😬\n\n5 grammar mistakes that make intermediate learners sound like beginners, with the rule in one line.\n\nSave it 📌 and tell me which one you say the most 👇\n\n#learnenglish #englishgrammar #englishmistakes #b1english #esl",
+  "slides": [
+    {
+      "kind": "cover",
+      "title": "You're B1… but you still say *these* 😬",
+      "sub": "5 mistakes + the rule",
+      "image": "slides/bob-cover.jpg"
+    },
+    {
+      "kind": "fix",
+      "n": 1,
+      "label": "Present perfect",
+      "wrong": "I live here since 2020",
+      "right": "I've *lived* here since 2020",
+      "tip": "Started in the past, still true → *have + V3*"
+    },
+    {
+      "kind": "fix",
+      "n": 2,
+      "label": "Say vs tell",
+      "wrong": "He said me the truth",
+      "right": "He *told* me the truth",
+      "tip": "*tell* + someone · *say* + something"
+    },
+    {
+      "kind": "fix",
+      "n": 3,
+      "label": "Explain",
+      "wrong": "Can you explain me?",
+      "right": "Can you explain *it to* me?",
+      "tip": "explain *something to* someone"
+    },
+    {
+      "kind": "fix",
+      "n": 4,
+      "label": "Look forward to",
+      "wrong": "I look forward to see you",
+      "right": "I look forward to *seeing* you",
+      "tip": "Here *to* is a preposition → verb + *-ing*"
+    },
+    {
+      "kind": "fix",
+      "n": 5,
+      "label": "If clauses",
+      "wrong": "If I will have time, I'll call you",
+      "right": "If I *have* time, I'll call you",
+      "tip": "No *will* after *if* (first conditional)"
+    },
+    {
+      "kind": "cta",
+      "title": "Grammar sticks when you *speak* it 🎙️ Practise with Lupa",
+      "sub": "Save this 📌"
+    }
+  ]
+}
