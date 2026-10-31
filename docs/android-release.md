@@ -90,9 +90,9 @@ Kimlikler iOS ile aynı olsun ki RevenueCat'te tek entitlement'a bağlansın:
 
 | Ürün kimliği (Product ID) | Temel plan | Not |
 |---|---|---|
-| `wordrem_annual_subscription` | `annual` — 1 yıl, otomatik yenilenir | **7 gün ücretsiz deneme** teklifi ekle (yeni aboneler) |
-| `wordrem_ai_monthly` | `monthly` — 1 ay | |
-| `wordrem_weekly_subscription` | `weekly` — 1 hafta | İsteğe bağlı; aylık varken uygulama gizler |
+| `wordrem_pro_annual` | `annual` — 1 yıl, otomatik yenilenir | **7 gün ücretsiz deneme** teklifi ekle (yeni aboneler) |
+| `wordrem_pro_monthly` | `monthly` — 1 ay | |
+| `wordrem_pro_weekly` | `weekly` — 1 hafta | İsteğe bağlı; aylık varken uygulama gizler |
 
 - [ ] *Para kazanma → Abonelikler* → her biri için oluştur, fiyatları iOS'la aynı seviyede ayarla, **Etkinleştir**.
 

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Face Forecast</title>
+<meta name="description" content="Every morning, your sleep, steps and screen time redraw your face 20 years from now. Join the early access list.">
+<meta property="og:title" content="Face Forecast: see the face your habits are building">
+<meta property="og:description" content="Your sleep, steps and screen time redraw your future face every morning.">
+<meta property="og:image" content="img/today.jpg">
+<style>
+  :root {
+    --bg: #f6f4f0;
+    --surface: #ffffff;
+    --text: #17161a;
+    --muted: #5f5c66;
+    --line: #e4e0d8;
+    --accent: #e8572a;
+    --accent-text: #ffffff;
+    --good: #2f8f5b;
+    --bad: #b2453a;
+    --shadow: 0 10px 30px rgba(23, 22, 26, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111114;
+      --surface: #1b1b20;
+      --text: #f2f0ec;
+      --muted: #a29fa8;
+      --line: #2c2c33;
+      --accent: #ff6a3d;
+      --good: #4fbf83;
+      --bad: #e06a5d;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 20px 0; }
+  .brand { font-weight: 700; letter-spacing: -.01em; font-size: 18px; }
+  .brand span { color: var(--accent); }
+
+  .hero { display: grid; gap: 32px; padding: 24px 0 56px; align-items: center; }
+  @media (min-width: 860px) { .hero { grid-template-columns: 1.05fr 1fr; padding-top: 48px; } }
+  h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.05; letter-spacing: -.03em; margin: 0 0 16px; }
+  .lede { color: var(--muted); font-size: 19px; margin: 0 0 28px; max-width: 34ch; }
+  .cta {
+    display: inline-block; background: var(--accent); color: var(--accent-text);
+    text-decoration: none; font-weight: 650; padding: 15px 26px; border-radius: 999px;
+    box-shadow: var(--shadow); transition: transform .15s ease;
+  }
+  .cta:hover { transform: translateY(-1px); }
+  .note { color: var(--muted); font-size: 14px; margin-top: 12px; }
+
+  .faces { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .face {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .face .img { aspect-ratio: 4 / 5; position: relative; background: var(--line); }
+  .face img { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 1; }
+  .face .placeholder {
+    position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+    color: var(--muted); font-size: 13px; padding: 12px;
+  }
+  .face figcaption { padding: 12px 14px 14px; }
+  .face .label { font-size: 13px; color: var(--muted); }
+  .face .delta { font-weight: 700; font-size: 18px; line-height: 1.25; }
+  @media (max-width: 480px) { .face .delta { font-size: 15px; } .face .label { font-size: 12px; } }
+  .delta.bad { color: var(--bad); }
+  .delta.good { color: var(--good); }
+
+  section { padding: 48px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 4vw, 34px); letter-spacing: -.02em; margin: 0 0 24px; line-height: 1.15; }
+  .steps { display: grid; gap: 16px; }
+  @media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .step { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .step b { display: block; font-size: 18px; margin-bottom: 6px; }
+  .step p { margin: 0; color: var(--muted); }
+  .num { color: var(--accent); font-weight: 700; font-size: 14px; letter-spacing: .06em; }
+
+  .split { display: grid; gap: 24px; align-items: center; }
+  @media (min-width: 760px) { .split { grid-template-columns: 1fr 1fr; } }
+  .split p { color: var(--muted); margin: 0 0 12px; }
+  .phone {
+    justify-self: center; width: 220px; aspect-ratio: 9 / 19; border-radius: 34px;
+    border: 8px solid var(--text); background: var(--line); overflow: hidden; position: relative;
+    box-shadow: var(--shadow);
+  }
+  .phone img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .phone .clock {
+    position: absolute; top: 34px; left: 0; right: 0; text-align: center; color: #fff;
+    font-size: 44px; font-weight: 300; text-shadow: 0 2px 12px rgba(0,0,0,.5);
+  }
+  .phone .chip {
+    position: absolute; bottom: 22px; left: 14px; right: 14px; text-align: center;
+    background: rgba(0,0,0,.55); color: #fff; font-size: 12px; padding: 8px 10px; border-radius: 12px;
+  }
+
+  .faq { display: grid; gap: 12px; }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  summary { cursor: pointer; font-weight: 650; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+
+  .final { text-align: center; padding: 64px 0; }
+  .final p { color: var(--muted); margin: 0 0 24px; }
+  footer { color: var(--muted); font-size: 13px; padding: 24px 0 40px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header><div class="brand">Face <span>Forecast</span></div></header>
+
+    <div class="hero">
+      <div>
+        <h1>See the face your habits are building.</h1>
+        <p class="lede">Every morning, your sleep, steps and screen time redraw you 20 years from now. Same you. Different future, depending on today.</p>
+        <a class="cta js-join" href="#">Get early access</a>
+        <div class="note">Launching soon on Android, then iPhone. Free to join the list.</div>
+      </div>
+
+      <div class="faces">
+        <figure class="face" style="margin:0">
+          <div class="img">
+            <img src="img/today.jpg" alt="Future face if current habits continue" onerror="this.remove()">
+            <div class="placeholder">Your future face<br>at this pace</div>
+          </div>
+          <figcaption>
+            <div class="label">If you keep going like this</div>
+            <div class="delta bad">Looks +4.2 years older</div>
+          </figcaption>
+        </figure>
+        <figure class="face" style="margin:0">
+          <div class="img">
+            <img src="img/better.jpg" alt="Future face with better sleep and less screen time" onerror="this.remove()">
+            <div class="placeholder">Your future face<br>with 8h sleep</div>
+          </div>
+          <figcaption>
+            <div class="label">8h sleep · 8k steps · 4h screen</div>
+            <div class="delta good">Looks 2.1 years younger</div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <section>
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step"><div class="num">01</div><b>Take three selfies</b><p>We build your face 20 years from now. Your photos are processed, not stored.</p></div>
+        <div class="step"><div class="num">02</div><b>Connect your day</b><p>Sleep, steps and screen time come in automatically. No logging, no typing.</p></div>
+        <div class="step"><div class="num">03</div><b>Wake up to your forecast</b><p>A new future face every morning, plus the one habit that would change it most today.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="split">
+        <div>
+          <h2>Your future face, every time you unlock</h2>
+          <p>On Android, Face Forecast can set today's future face as your lock screen. Scroll until 2am and you'll see it in the morning.</p>
+          <p>Watch it improve as your habits do, and share your 30-day timelapse.</p>
+        </div>
+        <div class="phone">
+          <img src="img/today.jpg" alt="" onerror="this.remove()">
+          <div class="clock">07:12</div>
+          <div class="chip">Sleep 5h 40m → under-eyes worse today</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Questions</h2>
+      <div class="faq">
+        <details><summary>Is this a medical prediction?</summary><p>No. It's an AI visualisation designed to make the long-term effect of everyday habits feel real. It isn't medical advice.</p></details>
+        <details><summary>What happens to my photos?</summary><p>Your selfies are used to create your future face and are not kept on our servers.</p></details>
+        <details><summary>How much will it cost?</summary><p>There will be a free trial. Early-access members get launch pricing first.</p></details>
+        <details><summary>Which phones?</summary><p>Android first, iPhone soon after. Tell us which one you use when you join.</p></details>
+      </div>
+    </section>
+
+    <div class="final">
+      <h2>Meet your future face first.</h2>
+      <p>Join the early access list. We'll email you once, at launch.</p>
+      <a class="cta js-join" href="#">Get early access</a>
+    </div>
+
+    <footer>© 2026 Face Forecast. Joining the list means we email you about the launch. Unsubscribe anytime.</footer>
+  </div>
+
+<script>
+  // Paste the Tally (or Google Form) URL here. UTM parameters on this page are passed through to the form.
+  var FORM_URL = "https://tally.so/r/REPLACE_ME";
+
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var url;
+    try { url = new URL(FORM_URL); } catch (e) { return; }
+    ["utm_source", "utm_medium", "utm_campaign", "utm_content"].forEach(function (k) {
+      if (params.get(k)) url.searchParams.set(k, params.get(k));
+    });
+    document.querySelectorAll(".js-join").forEach(function (a) { a.href = url.toString(); });
+  })();
+</script>
+</body>
+</html>
