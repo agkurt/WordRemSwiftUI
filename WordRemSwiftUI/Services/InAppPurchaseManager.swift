@@ -9,9 +9,9 @@ import RevenueCat
 // MARK: - Product Identifier
 /// App Store Connect'te aynı abonelik grubunda olmalı; yıllıkta 7 günlük ücretsiz deneme tanımlı.
 enum ProductIdentifier: String, CaseIterable {
-    case annual  = "wordrem_annual_subscription"
-    case monthly = "wordrem_ai_monthly"
-    case weekly  = "wordrem_weekly_subscription"
+    case annual  = "wordrem_pro_annual"
+    case monthly = "wordrem_pro_monthly"
+    case weekly  = "wordrem_pro_weekly"
 
     static var all: [String] { allCases.map(\.rawValue) }
 }

@@ -34,6 +34,7 @@ final class AuthManager: ObservableObject {
         isResetting = true
         UserStore.shared.reset()
         DeckService.shared.deleteAll()
+        NotebookStore.shared.deleteAll()
         LearnedWordsStore.clear()
         ReviewScheduler.shared.clear()
         MistakesManager.shared.removeMistakes(Set(MistakesManager.shared.mistakeUUIDs.map(\.uuidString)))

@@ -283,6 +283,8 @@ final class AppRouter: ObservableObject {
         case lupa(question: Int)
         /// Ücretsiz süresi bitmiş kullanıcıya Pro daveti
         case paywall
+        /// Üst satırdaki dil seçiminden yeni dil: Konuş sekmesinde kurulum konuşması başlar
+        case languageSetup(code: String)
     }
     @Published var route: Route?
 

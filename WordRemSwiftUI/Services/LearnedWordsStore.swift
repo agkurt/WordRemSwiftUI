@@ -66,6 +66,15 @@ enum LearnedWordsStore {
         WidgetCenter.shared.reloadAllTimelines()
     }
 
+    /// Öğrenci kelimeyi listesinden siler
+    static func remove(ids: Set<String>) {
+        guard !ids.isEmpty, let defaults else { return }
+        let words = load().filter { !ids.contains($0.id) }
+        guard let data = try? JSONEncoder().encode(words) else { return }
+        defaults.set(data, forKey: wordsKey)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
     /// Çıkış / hesap silme sonrası widget'ta eski kullanıcının kelimeleri kalmasın
     static func clear() {
         defaults?.removeObject(forKey: wordsKey)

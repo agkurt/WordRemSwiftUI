@@ -2,7 +2,7 @@
 //  CardView.swift
 //  WordRemSwiftUI
 //
-//  Deste listesi satırı: bayrak, serif deste adı, kelime sayısı, chevron.
+//  Kelime defteri satırı (raf): küçük defter kapağı (bayrak etiketli), serif defter adı, kelime sayısı.
 //
 
 import SwiftUI
@@ -14,16 +14,26 @@ struct CardView: View {
     var wordCount: Int = 0
     var onDelete: () -> Void
 
+    /// Defter kapağı bezleri (yeni defter oluştururken seçilir)
+    static let covers: [Color] = [DS.Colors.slate, DS.Colors.accentDeep, DS.Colors.ink, DS.Colors.success,
+                                  DS.Colors.gold, Color(hex: "#6B4E71")]
+
+    /// Kapak rengi: oluştururken seçildiyse o; yoksa adından sabit seçilir (her açılışta aynı)
+    static func coverColor(for title: String) -> Color {
+        let key = "deckCover." + title.trimmingCharacters(in: .whitespaces)
+        if let i = UserDefaults.standard.object(forKey: key) as? Int, covers.indices.contains(i) { return covers[i] }
+        let sum = title.unicodeScalars.reduce(0) { $0 + Int($1.value) }
+        return covers[sum % 4]
+    }
+
+    static func saveCover(_ index: Int, for title: String) {
+        UserDefaults.standard.set(index, forKey: "deckCover." + title.trimmingCharacters(in: .whitespaces))
+    }
+    private var coverColor: Color { Self.coverColor(for: title) }
+
     var body: some View {
-        HStack(spacing: 14) {
-            if !image.isEmpty, UIImage(named: image) != nil {
-                Image(image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 32, height: 32)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
-            }
+        HStack(spacing: 16) {
+            cover
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
@@ -52,8 +62,41 @@ struct CardView: View {
                     .foregroundStyle(DS.Colors.muted)
             }
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, 12)
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
+    }
+
+    /// Küçük defter kapağı: bez renk, solda sırt çizgisi, ortada kâğıt etiket; bayrak etikete yapışık
+    private var cover: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3)
+                .fill(coverColor)
+            // Sırt
+            Rectangle()
+                .fill(Color.white.opacity(0.16))
+                .frame(width: 2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 5)
+            // Etiket
+            VStack(spacing: 3) {
+                if !image.isEmpty, UIImage(named: image) != nil {
+                    Image(image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 14, height: 14)
+                        .clipShape(Circle())
+                } else {
+                    Rectangle().fill(DS.Colors.rule).frame(width: 14, height: 1)
+                }
+                Rectangle().fill(DS.Colors.rule).frame(width: 18, height: 1)
+            }
+            .frame(width: 26, height: 24)
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 1.5))
+            .offset(x: 2)
+        }
+        .frame(width: 40, height: 52)
+        .shadow(color: Color(red: 0.24, green: 0.16, blue: 0.08).opacity(0.12), radius: 2, x: 1, y: 2)
+        .accessibilityHidden(true)
     }
 }

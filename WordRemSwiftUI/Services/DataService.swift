@@ -189,6 +189,12 @@ final class DataService {
 
     func updateUsername(_ name: String) {
         store.update { s in
+            let old = s.username.trimmingCharacters(in: .whitespaces)
+            // Ad değişince Lupa'nın hafızasındaki eski ad da gider (yoksa yeni kişiye eski adla hitap ediyor)
+            if !old.isEmpty, old.caseInsensitiveCompare(name) != .orderedSame {
+                s.tutorFacts = s.tutorFacts?.filter { $0.range(of: old, options: .caseInsensitive) == nil }
+                s.tutorSummaries = s.tutorSummaries?.map { $0.replacingOccurrences(of: old, with: name, options: .caseInsensitive) }
+            }
             s.username = name
             s.usernameChanges += 1
         }

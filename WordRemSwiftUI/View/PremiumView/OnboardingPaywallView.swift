@@ -2,6 +2,10 @@
 //  OnboardingPaywallView.swift
 //  WordRemSwiftUI
 //
+//  Defter görünümlü paywall: 1) değer (kişisel söz, 30 gün önce/sonra, gerçek yorumlar)
+//  2) plan (yıllık seçili, tasarruf mührü, deneme takvimi) 3) deneme hatırlatma sözü.
+//  `isHard`: kapatma yok — yalnızca satın alma / geri yükleme ile geçilir.
+//
 
 import SwiftUI
 import RevenueCat
@@ -12,17 +16,19 @@ struct OnboardingPaywallView: View {
 
     @EnvironmentObject var langManager: LanguageManager
     var onContinue: () -> Void
-    /// Paywall'un nereden açıldığı (analitik): onboarding, lesson_limit, profile, ai_quiz, grammar_voice
+    /// Paywall'un nereden açıldığı (analitik): onboarding, lesson_limit, profile, ai_quiz, grammar_voice, launch_gate
     var entryPoint: String = "other"
+    /// Sert paywall: X yok, aşağı kaydırarak kapanmaz; yalnızca satın alma / geri yükleme ile geçilir
+    var isHard: Bool = false
 
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var plans: [SubscriptionPlan] = []
     @State private var selectedId: String?
     @State private var fetchAttempts: Int = 0
     @State private var fetchFailed: Bool = false
     @State private var isLoading: Bool = false
-    @State private var isCloseVisible: Bool = true
     @State private var showPrivacy: Bool = false
     @State private var showTerms: Bool = false
     @State private var showPurchaseErrorAlert: Bool = false
@@ -32,18 +38,9 @@ struct OnboardingPaywallView: View {
     @State private var step = 0
     @State private var visit: Track.PaywallVisit?
     @State private var purchased = false
-
-    // (SF Symbol, title, subtitle) — Pro'nun gerçekten açtığı özellikler
-    // AI satırları yalnızca Apple Intelligence olan cihazlarda gösterilir (vaat edilen her şey çalışmalı)
-    // iPhone'da kaydırmadan tek ekrana sığsın diye en güçlü 4 madde
-    private var features: [(String, String, String)] {
-        [
-            ("waveform.circle", AL.s(.pwTalkTitle), AL.s(.pwTalkSub)),
-            ("map", AL.s(.pwPlanTitle), AL.s(.pwPlanSub)),
-            ("checkmark.bubble", AL.s(.pwFixTitle), AL.s(.pwFixSub)),
-            ("bookmark", AL.s(.pwRemTitle), AL.s(.pwRemSub)),
-        ]
-    }
+    /// Satın alma / geri yükleme sürerken Pro durumu değişirse paywall kendiliğinden kapanmasın (Hoş geldin ekranı gelsin)
+    @State private var transactionInFlight = false
+    @State private var ctaPulse = false
 
     var body: some View {
         NavigationStack {
@@ -51,18 +48,23 @@ struct OnboardingPaywallView: View {
                 DS.Colors.paper.ignoresSafeArea()
 
                 ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-
-                    switch step {
-                    case 0:  valueStep
-                    case 1:  planStep
-                    default: reminderStep
+                    VStack(alignment: .leading, spacing: 0) {
+                        switch step {
+                        case 0:  valueStep
+                        case 1:  planStep
+                        default: reminderStep
+                        }
+                        // Apple: gizlilik, kullanım şartları ve abonelik açıklaması her adımda görünür
+                        legalFooter.padding(.top, 12)
                     }
+                    .padding(.horizontal, 24)
+                    .frame(maxWidth: 560)
+                    .frame(maxWidth: .infinity)
                 }
-                .padding(.horizontal, 24)
-                .frame(maxWidth: 560)
-                .frame(maxWidth: .infinity)
-                }
+                .id(step)   // adım değişince sayfanın başından başla
+                .scrollBounceBehavior(.basedOnSize)
+                // Ana düğme hep görünür: kaydırmaya gerek yok
+                .safeAreaInset(edge: .bottom, spacing: 0) { ctaBar }
 
                 if isLoading {
                     Color.black.opacity(0.25).ignoresSafeArea()
@@ -78,7 +80,7 @@ struct OnboardingPaywallView: View {
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(DS.Colors.inkSoft)
                         }
-                    } else if isCloseVisible {
+                    } else if !isHard {
                         Button {
                             presentationMode.wrappedValue.dismiss()
                             onContinue()
@@ -87,6 +89,8 @@ struct OnboardingPaywallView: View {
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(DS.Colors.inkSoft)
                         }
+                    } else {
+                        debugSkip
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -96,6 +100,7 @@ struct OnboardingPaywallView: View {
                 }
             }
         }
+        .interactiveDismissDisabled(isHard)
         .onAppear {
             if visit == nil {
                 let v = Track.PaywallVisit(entryPoint: entryPoint)
@@ -110,6 +115,13 @@ struct OnboardingPaywallView: View {
         }
         .onChange(of: step) { newStep in
             if let visit { Track.paywall("step_view", visit, step: newStep, plan: selectedPlan) }
+            updatePulse(on: newStep == 2)
+        }
+        // Sert paywall: Pro durumu başka yoldan geldiyse (geç gelen senkron, başka cihazda alım) hemen içeri al
+        .onReceive(InAppPurchaseManager.shared.$isPremium) { premium in
+            guard isHard, premium, !purchased, !transactionInFlight, !showWelcomePro else { return }
+            purchased = true
+            onContinue()
         }
         .alert(langManager.s(.paywallRestoreTitle), isPresented: Binding(
             get: { restoreMessage != nil },
@@ -140,58 +152,188 @@ struct OnboardingPaywallView: View {
         }
     }
 
-    // MARK: - Adım 1: değer
-    private var valueStep: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 10) {
-                Eyebrow(text: "WordRem Pro")
-                Text(AL.s(.paywallHeroVoice))
-                    .font(DS.Font.display(34, weight: .bold))
-                    .foregroundStyle(DS.Colors.ink)
-                    .fixedSize(horizontal: false, vertical: true)
+    /// Yalnızca Debug: sert paywall'u geçmek için (test cihazı Pro değilken DebugDriver akışları çalışsın)
+    @ViewBuilder
+    private var debugSkip: some View {
+        #if DEBUG
+        Button {
+            UserDefaults.standard.set(true, forKey: "debugSkipPaywall")
+            onContinue()
+        } label: {
+            Text("DEBUG ›")
+                .font(DS.Font.ui(12, weight: .semibold))
+                .foregroundStyle(DS.Colors.muted)
+        }
+        #endif
+    }
+
+    // MARK: - Kişiselleştirme
+    private var learnerName: String? {
+        let n = UserStore.shared.snapshot.username.trimmingCharacters(in: .whitespacesAndNewlines)
+        return n.isEmpty ? nil : n
+    }
+
+    private var targetLanguageName: String {
+        langManager.languageName(for: LearningLanguages.current)
+    }
+
+    private var heroTitle: String {
+        if let name = learnerName { return AL.f(.pwxHeroName, name) }
+        return AL.s(.pwxHero)
+    }
+
+    /// Önce → sonra: öğrencinin eski şikâyeti kırmızı kalemle çizilir, yerine yenisi yazılır
+    private var outcomes: [(before: String, after: String)] {
+        [
+            (AL.s(.pwxBefore1), AL.s(.pwxAfter1)),
+            (AL.s(.pwxBefore2), AL.s(.pwxAfter2)),
+            (AL.s(.pwxBefore3), AL.s(.pwxAfter3)),
+        ]
+    }
+
+    // MARK: - Alt çubuk: adım adım ana düğme
+    private var ctaBar: some View {
+        VStack(spacing: 8) {
+            Button(action: primaryAction) {
+                HStack(spacing: 8) {
+                    Text(primaryTitle)
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 15, weight: .bold))
+                }
             }
-            .padding(.top, 12)
-            .padding(.bottom, 16)
+            .buttonStyle(PaywallHeroButtonStyle(tall: step == 2))
+            .scaleEffect(ctaPulse ? 1.025 : 1)
+            .disabled(primaryDisabled)
+            .opacity(primaryDisabled ? 0.4 : 1)
 
-            VoiceLogoView(phase: .aiSpeaking, level: 0.4)
-                .scaleEffect(1.8)
-                .frame(maxWidth: .infinity)
-                .frame(height: 80)
-
-            featureList.padding(.vertical, 12)
-
-            Button(langManager.s(.paywallContinue)) { withAnimation { step = 1 } }
-                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-                .padding(.bottom, 10)
-            Text(AL.s(.paywallNoCommit))
+            Text(primarySubtitle)
                 .font(DS.Font.ui(13))
                 .foregroundStyle(DS.Colors.inkSoft)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity)
-                .padding(.bottom, 16)
+
+            if step == 1, selectedPlan?.trialDays != nil {
+                Label(AL.s(.paywallTLReminderSub), systemImage: "bell")
+                    .font(DS.Font.ui(12, weight: .medium))
+                    .foregroundStyle(DS.Colors.accentText)
+            } else if step == 2 {
+                Label(AL.s(.paywallEasyCancel), systemImage: "checkmark")
+                    .font(DS.Font.ui(12, weight: .medium))
+                    .foregroundStyle(DS.Colors.inkSoft)
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+        .frame(maxWidth: 560)
+        .frame(maxWidth: .infinity)
+        .background {
+            DS.Colors.paper
+                .overlay(alignment: .top) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+                .ignoresSafeArea(edges: .bottom)
         }
     }
 
-    private var featureList: some View {
+    private var primaryTitle: String {
+        step == 0 ? AL.s(.pwxCtaValue) : ctaTitle
+    }
+
+    private var primaryDisabled: Bool {
+        step > 0 && (selectedPlan == nil || isLoading)
+    }
+
+    private var primarySubtitle: String {
+        if step == 0 {
+            if let days = selectedPlan?.trialDays { return AL.f(.pwxFreeNoPay, days) }
+            return AL.s(.paywallNoCommit)
+        }
+        return ctaSubtitle
+    }
+
+    private func primaryAction() {
+        switch step {
+        case 0:
+            withAnimation { step = 1 }
+        case 1:
+            if let visit { Track.paywall("cta_tap", visit, step: step, plan: selectedPlan) }
+            if selectedPlan?.trialDays != nil { withAnimation { step = 2 } } else { purchaseSelected() }
+        default:
+            purchaseSelected()
+        }
+    }
+
+    /// 3. adımda ana düğme hafifçe nefes alır (hareket azaltma açıksa durur)
+    private func updatePulse(on: Bool) {
+        if on && !reduceMotion {
+            // Sayfa geçişi bittikten sonra başlasın (sonsuz animasyon geçişe karışmasın)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                guard step == 2, !ctaPulse else { return }
+                withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) { ctaPulse = true }
+            }
+        } else {
+            withAnimation(.easeOut(duration: 0.15)) { ctaPulse = false }
+        }
+    }
+
+    // MARK: - Adım 1: değer
+    private var valueStep: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(features, id: \.0) { symbol, title, subtitle in
-                HStack(alignment: .top, spacing: 16) {
-                    Image(systemName: symbol)
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundStyle(DS.Colors.accent)
-                        .frame(width: 24)
-                        .padding(.top, 2)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(title)
+            HStack(alignment: .top) {
+                Eyebrow(text: "WordRem Pro · \(targetLanguageName)", color: DS.Colors.accentText)
+                    .padding(.top, 16)
+                Spacer(minLength: 12)
+                BookmarkMark(width: 9)
+            }
+
+            Text(heroTitle)
+                .font(DS.Font.display(34, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 2)
+
+            Text(AL.s(.paywallHeroVoice))
+                .font(.system(size: 18, design: .serif).italic())
+                .foregroundStyle(DS.Colors.inkSoft)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 10)
+
+            Text(AL.s(.pwx30Days))
+                .font(DS.Font.display(21, weight: .bold))
+                .foregroundStyle(DS.Colors.ink)
+                .padding(.top, 30)
+                .padding(.bottom, 2)
+            outcomeList
+
+        }
+    }
+
+    /// Kırmızı kalemle çizilmiş eski hal → kalem tikiyle yeni hal
+    private var outcomeList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(outcomes.enumerated()), id: \.offset) { i, o in
+                HStack(alignment: .top, spacing: 14) {
+                    PenTick()
+                        .stroke(DS.Colors.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                        .frame(width: 24, height: 20)
+                        .padding(.top, 24)
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(o.before)
+                            .font(.system(size: 15, design: .serif).italic())
+                            .strikethrough(true, color: DS.Colors.redPen)
+                            .foregroundStyle(DS.Colors.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(o.after)
                             .font(DS.Font.ui(17, weight: .semibold))
                             .foregroundStyle(DS.Colors.ink)
-                        Text(subtitle)
-                            .font(DS.Font.ui(14))
-                            .foregroundStyle(DS.Colors.muted)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 0)
                 }
-                .padding(.vertical, 9)
+                .padding(.vertical, 13)
+                .overlay(alignment: .bottom) {
+                    if i < outcomes.count - 1 { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+                }
             }
         }
     }
@@ -203,11 +345,11 @@ struct OnboardingPaywallView: View {
                 .font(DS.Font.display(32, weight: .bold))
                 .foregroundStyle(DS.Colors.ink)
                 .padding(.top, 16)
-                .padding(.bottom, 24)
+                .padding(.bottom, 30)
 
             Group {
                 if !plans.isEmpty {
-                    VStack(spacing: 14) {
+                    VStack(spacing: 16) {
                         ForEach(plans) { plan in planCard(plan) }
                     }
                 } else if fetchFailed {
@@ -231,25 +373,49 @@ struct OnboardingPaywallView: View {
                         .overlay(ProgressView().tint(DS.Colors.muted))
                 }
             }
-            .padding(.bottom, 24)
+            .padding(.bottom, 20)
 
-            Button(selectedPlan?.trialDays != nil ? langManager.s(.paywallContinue) : ctaTitle) {
-                if let visit { Track.paywall("cta_tap", visit, step: step, plan: selectedPlan) }
-                if selectedPlan?.trialDays != nil { withAnimation { step = 2 } } else { purchaseSelected() }
+            if let days = selectedPlan?.trialDays {
+                trialTeaser(days: days).padding(.bottom, 22)
             }
-            .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-            .disabled(selectedPlan == nil || isLoading)
-            .opacity(selectedPlan == nil ? 0.4 : 1)
-            .padding(.bottom, 8)
 
-            Text(ctaSubtitle)
-                .font(DS.Font.ui(13))
-                .foregroundStyle(DS.Colors.inkSoft)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 16)
-            legalFooter
         }
+    }
+
+    /// Deneme takvimi önizlemesi: bugün ücretsiz → hatırlatma → ilk ödeme
+    private func trialTeaser(days: Int) -> some View {
+        let items: [(day: String, text: String)] = [
+            (AL.s(.paywallTLToday), AL.s(.pwxTLFree)),
+            (AL.f(.paywallTLDay, max(1, days - 2)), AL.s(.pwxTLRemind)),
+            (AL.f(.paywallTLDay, days), AL.s(.pwxTLCharge)),
+        ]
+        return HStack(alignment: .top, spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.offset) { i, item in
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 0) {
+                        Circle()
+                            .fill(i == 0 ? DS.Colors.accent : (i == 1 ? DS.Colors.margin : DS.Colors.muted))
+                            .frame(width: 10, height: 10)
+                        if i < items.count - 1 {
+                            Rectangle().fill(DS.Colors.line).frame(height: 2)
+                        } else {
+                            Spacer(minLength: 0)
+                        }
+                    }
+                    Text(item.day)
+                        .font(.system(size: 14, design: .serif).italic())
+                        .foregroundStyle(i == 2 ? DS.Colors.muted : DS.Colors.accentText)
+                    Text(item.text)
+                        .font(DS.Font.ui(12, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.trailing, 6)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(16)
+        .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: DS.Radius.card))
     }
 
     // MARK: - Adım 3: hatırlatma sözü
@@ -260,26 +426,38 @@ struct OnboardingPaywallView: View {
                 .foregroundStyle(DS.Colors.ink)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 16)
-                .padding(.bottom, 28)
+                .padding(.bottom, 24)
             if let days = selectedPlan?.trialDays {
-                trialTimeline(days: days).padding(.bottom, 32)
+                trialTimeline(days: days).padding(.bottom, 30)
             }
-            Button(ctaTitle, action: purchaseSelected)
-                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-                .disabled(selectedPlan == nil || isLoading)
-                .padding(.bottom, 8)
-            Text(ctaSubtitle)
-                .font(DS.Font.ui(13))
-                .foregroundStyle(DS.Colors.inkSoft)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 6)
-            Label(AL.s(.paywallEasyCancel), systemImage: "checkmark")
-                .font(DS.Font.ui(13, weight: .medium))
-                .foregroundStyle(DS.Colors.inkSoft)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 16)
-            legalFooter
+            if let plan = selectedPlan, let days = plan.trialDays {
+                dueNote(plan, days: days).padding(.bottom, 26)
+            }
+            Text(AL.s(.pwxReady))
+                .font(.system(size: 17, design: .serif).italic())
+                .foregroundStyle(DS.Colors.accentText)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, 12)
+        }
+        .onAppear { updatePulse(on: true) }
+    }
+
+    /// "Bugün ödenecek ........ 0" — denemenin gerçekten ücretsiz olduğunu açıkça yazar
+    private func dueNote(_ plan: SubscriptionPlan, days: Int) -> some View {
+        let chargeDay = Calendar.current.date(byAdding: .day, value: days, to: Date()) ?? Date()
+        let dateText = chargeDay.formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: OL.nativeLangCode)))
+        return StickyNote(angle: -1) {
+            VStack(alignment: .leading, spacing: 14) {
+                LeaderRow(label: AL.s(.pwxDueToday),
+                          value: formatted(0, like: plan) ?? "0",
+                          size: 19,
+                          valueColor: DS.Colors.success)
+                LeaderRow(label: AL.f(.pwxFromDate, dateText),
+                          value: periodPrice(plan),
+                          size: 16,
+                          labelColor: DS.Colors.inkSoft,
+                          valueColor: DS.Colors.inkSoft)
+            }
         }
     }
 
@@ -338,6 +516,11 @@ struct OnboardingPaywallView: View {
         return pct >= 10 ? pct : nil
     }
 
+    /// Dile göre yüzde: "62%", "%62", "62 %"
+    private func percentText(_ pct: Int) -> String {
+        (Double(pct) / 100).formatted(.percent.precision(.fractionLength(0)).locale(Locale(identifier: AL.currentCode)))
+    }
+
     private func periodPrice(_ plan: SubscriptionPlan) -> String {
         if plan.isAnnual { return AL.f(.paywallPerYear, plan.product.localizedPriceString) }
         if plan.isMonthly { return AL.f(.paywallPerMonth, plan.product.localizedPriceString) }
@@ -360,34 +543,55 @@ struct OnboardingPaywallView: View {
     @ViewBuilder
     private func planCard(_ plan: SubscriptionPlan) -> some View {
         let selected = plan.id == selectedId
+        let saving = savingsPercent(plan)
         Button {
             if selectedId != plan.id, let visit {
                 visit.planSwitches += 1
                 Track.paywall("plan_select", visit, step: step, plan: plan)
             }
+            if selectedId != plan.id { Haptics.tap() }
             selectedId = plan.id
         } label: {
-            HStack(alignment: .center, spacing: 14) {
-                Image(systemName: selected ? "largecircle.fill.circle" : "circle")
-                    .font(.system(size: 20, weight: .regular))
-                    .foregroundStyle(selected ? DS.Colors.accent : DS.Colors.line)
+            HStack(alignment: plan.isAnnual ? .top : .center, spacing: 14) {
+                Circle()
+                    .strokeBorder(selected ? DS.Colors.ink : Color(hex: "#B8B0A4"), lineWidth: 2)
+                    .frame(width: 24, height: 24)
+                    .overlay(Circle().fill(DS.Colors.accent).frame(width: 12, height: 12).opacity(selected ? 1 : 0))
+                    .padding(.top, plan.isAnnual ? 2 : 0)
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 8) {
                         Text(plan.isAnnual ? AL.s(.paywallAnnual) : (plan.isMonthly ? AL.s(.paywallMonthlyPlan) : AL.s(.paywallWeeklyPlan)))
-                            .font(DS.Font.ui(17, weight: .semibold))
+                            .font(DS.Font.display(20, weight: plan.isAnnual ? .bold : .semibold))
                             .foregroundStyle(DS.Colors.ink)
                         if let days = plan.trialDays {
                             Text(AL.f(.paywallTrialBadge, days))
                                 .font(DS.Font.ui(11, weight: .semibold))
-                                .foregroundStyle(DS.Colors.accent)
-                                .padding(.horizontal, 7).padding(.vertical, 3)
-                                .background(DS.Colors.accent.opacity(0.1), in: Capsule())
+                                .foregroundStyle(DS.Colors.accentText)
                         }
                     }
-                    if plan.isAnnual, let perWeek = plan.product.localizedPricePerWeek {
-                        Text(AL.f(.paywallWeeklyEquiv, perWeek))
-                            .font(DS.Font.ui(13))
-                            .foregroundStyle(DS.Colors.muted)
+                    if plan.isAnnual {
+                        // Apple: faturalanan tutar en belirgin fiyat olmalı; haftalık karşılığı fosforlu kalemle altında
+                        Text(periodPrice(plan))
+                            .font(DS.Font.display(24, weight: .bold))
+                            .foregroundStyle(DS.Colors.ink)
+                            .padding(.top, 2)
+                        if let perWeek = plan.product.localizedPricePerWeek {
+                            highlightedText(AL.f(.paywallWeeklyEquiv, perWeek))
+                                .font(DS.Font.ui(15, weight: .semibold))
+                                .foregroundStyle(DS.Colors.ink)
+                        }
+                        if monthlyPlan != nil, let y = yearlyEquivalent(), y > plan.product.price, let f = formatted(y, like: plan) {
+                            HStack(spacing: 6) {
+                                Text(f)
+                                    .font(DS.Font.ui(13, weight: .medium))
+                                    .strikethrough(true, color: DS.Colors.redPen)
+                                    .foregroundStyle(DS.Colors.muted)
+                                Text(AL.s(.pwxVsMonthly))
+                                    .font(DS.Font.ui(13))
+                                    .foregroundStyle(DS.Colors.muted)
+                            }
+                            .padding(.top, 2)
+                        }
                     } else {
                         Text(plan.isMonthly ? AL.s(.paywallMonthlyTerm) : langManager.s(.paywallWeeklyTerm))
                             .font(DS.Font.ui(13))
@@ -395,13 +599,7 @@ struct OnboardingPaywallView: View {
                     }
                 }
                 Spacer(minLength: 8)
-                VStack(alignment: .trailing, spacing: 2) {
-                    if plan.isAnnual, let y = yearlyEquivalent(), y > plan.product.price, let f = formatted(y, like: plan) {
-                        Text(f)
-                            .font(DS.Font.ui(13, weight: .medium))
-                            .strikethrough(true, color: DS.Colors.muted)
-                            .foregroundStyle(DS.Colors.muted)
-                    }
+                if !plan.isAnnual {
                     Text(periodPrice(plan))
                         .font(DS.Font.display(18, weight: .bold))
                         .foregroundStyle(DS.Colors.ink)
@@ -409,17 +607,34 @@ struct OnboardingPaywallView: View {
                 }
             }
             .padding(18)
+            .padding(.top, plan.isAnnual && saving == nil ? 8 : 0)
             .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
             .overlay(RoundedRectangle(cornerRadius: DS.Radius.card)
-                .stroke(selected ? DS.Colors.ink : DS.Colors.line, lineWidth: selected ? 1.5 : 1))
+                .stroke(selected ? DS.Colors.ink : DS.Colors.line, lineWidth: selected ? 2 : 1))
             .overlay(alignment: .topTrailing) {
-                if plan.isAnnual {
-                    Text(savingsPercent(plan).map { AL.f(.paywallSave, $0) } ?? AL.s(.paywallBestValue))
-                        .font(DS.Font.ui(11, weight: .bold))
-                        .foregroundStyle(DS.Colors.paper)
-                        .padding(.horizontal, 9).padding(.vertical, 4)
-                        .background(DS.Colors.accent, in: Capsule())
-                        .offset(x: -14, y: -10)
+                // Gerçek tasarruf (aylık × 12'ye göre) sayfaya basılmış mühür olarak
+                if plan.isAnnual, let saving {
+                    InkStamp(top: AL.s(.pwxStampSave).uppercased(with: Locale(identifier: AL.currentCode)),
+                             title: percentText(saving),
+                             bottom: AL.s(.paywallAnnual).uppercased(with: Locale(identifier: AL.currentCode)),
+                             size: 92,
+                             angle: -12)
+                        .background(Circle().fill(DS.Colors.paper.opacity(0.92)))
+                        .offset(x: 8, y: -30)
+                }
+            }
+            .overlay(alignment: .topLeading) {
+                // Tasarruf hesaplanamazsa küçük "en avantajlı" etiketi
+                if plan.isAnnual, saving == nil {
+                    Text(AL.s(.paywallBestValue).uppercased(with: Locale(identifier: AL.currentCode)))
+                        .font(DS.Font.ui(10, weight: .bold))
+                        .tracking(0.6)
+                        .foregroundStyle(DS.Colors.accentText)
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .background(DS.Colors.paper, in: RoundedRectangle(cornerRadius: 4))
+                        .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(DS.Colors.accent, lineWidth: 1.5))
+                        .rotationEffect(.degrees(-4))
+                        .offset(x: 16, y: -12)
                 }
             }
         }
@@ -427,38 +642,34 @@ struct OnboardingPaywallView: View {
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
-    /// Bugün → hatırlatma (bitişten 2 gün önce) → ücretlendirme
+    /// Bugün → hatırlatma (bitişten 2 gün önce) → ücretlendirme: günlük sayfası gibi, tarih kenar boşluğunda
     private func trialTimeline(days: Int) -> some View {
-        let steps: [(String, String, String)] = [
-            ("lock.open", AL.s(.paywallTLToday), AL.s(.paywallTLTodaySub)),
-            ("bell", AL.f(.paywallTLDay, days - 2), AL.s(.paywallTLReminderSub)),
-            ("creditcard", AL.f(.paywallTLDay, days), AL.s(.paywallTLChargeSub)),
+        let steps: [(day: String, text: String)] = [
+            (AL.s(.paywallTLToday), AL.s(.paywallTLTodaySub)),
+            (AL.f(.paywallTLDay, max(1, days - 2)), AL.s(.paywallTLReminderSub)),
+            (AL.f(.paywallTLDay, days), AL.s(.paywallTLChargeSub)),
         ]
         return VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
-                HStack(alignment: .top, spacing: 14) {
-                    VStack(spacing: 0) {
-                        Image(systemName: step.0)
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(index == 0 ? DS.Colors.paper : DS.Colors.inkSoft)
-                            .frame(width: 30, height: 30)
-                            .background(index == 0 ? DS.Colors.accent : DS.Colors.paperSunken, in: Circle())
-                        if index < steps.count - 1 {
-                            Rectangle().fill(DS.Colors.line).frame(width: 1.5, height: 22)
-                        }
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(step.1)
-                            .font(DS.Font.ui(15, weight: .semibold))
-                            .foregroundStyle(DS.Colors.ink)
-                        Text(step.2)
-                            .font(DS.Font.ui(13))
-                            .foregroundStyle(DS.Colors.muted)
-                    }
-                    .padding(.top, 5)
+                HStack(alignment: .firstTextBaseline, spacing: 14) {
+                    Text(step.day)
+                        .font(.system(size: 16, design: .serif).italic())
+                        .foregroundStyle(index == 2 ? DS.Colors.muted : DS.Colors.accentText)
+                        .frame(width: 64, alignment: .trailing)
+                    Text(step.text)
+                        .font(DS.Font.ui(16, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
                 }
+                .padding(.vertical, 16)
+                .overlay(alignment: .bottom) {
+                    if index < steps.count - 1 { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+                }
             }
+        }
+        .background(alignment: .leading) {
+            Rectangle().fill(DS.Colors.margin).frame(width: 1.5).padding(.leading, 71)
         }
     }
 
@@ -485,6 +696,7 @@ struct OnboardingPaywallView: View {
     private func purchaseSelected() {
         guard let plan = selectedPlan else { return }
         isLoading = true
+        transactionInFlight = true
         let visit = visit
         if let visit { Track.paywall("purchase_start", visit, step: step, plan: plan) }
         InAppPurchaseManager.shared.purchase(product: plan.product) { outcome in
@@ -501,9 +713,15 @@ struct OnboardingPaywallView: View {
                 if let days = plan.trialDays { scheduleTrialReminder(trialDays: days) }
                 DispatchQueue.main.async { self.showWelcomePro = true }
             case .cancelled:
-                DispatchQueue.main.async { if let visit { Track.paywall("purchase_cancel", visit, step: self.step, plan: plan) } }
+                DispatchQueue.main.async {
+                    self.transactionInFlight = false
+                    if let visit { Track.paywall("purchase_cancel", visit, step: self.step, plan: plan) }
+                }
             case .failed(let code):
-                DispatchQueue.main.async { if let visit { Track.paywall("purchase_fail", visit, step: self.step, plan: plan, error: code) } }
+                DispatchQueue.main.async {
+                    self.transactionInFlight = false
+                    if let visit { Track.paywall("purchase_fail", visit, step: self.step, plan: plan, error: code) }
+                }
                 DispatchQueue.main.async { self.showPurchaseErrorAlert = true }
             }
         }
@@ -523,6 +741,7 @@ struct OnboardingPaywallView: View {
 
     private func restorePurchases() {
         isLoading = true
+        transactionInFlight = true
         if let visit { Track.paywall("restore_start", visit, step: step) }
         InAppPurchaseManager.shared.restorePurchases { result in
             DispatchQueue.main.async { self.isLoading = false }
@@ -535,11 +754,32 @@ struct OnboardingPaywallView: View {
                 }
             case .failure:
                 DispatchQueue.main.async {
+                    self.transactionInFlight = false
                     if let visit = self.visit { Track.paywall("restore_fail", visit, step: self.step) }
                     self.restoreMessage = langManager.s(.paywallRestoreNothing)
                 }
             }
         }
+    }
+}
+
+/// Paywall'un ana düğmesi: imza renginde, biraz daha iri; son adımda daha da büyük
+private struct PaywallHeroButtonStyle: ButtonStyle {
+    var tall = false
+    // RevenueCat'in Configuration tipiyle karışmasın diye tam ad
+    func makeBody(configuration: ButtonStyleConfiguration) -> some View {
+        configuration.label
+            .font(DS.Font.ui(tall ? 19 : 18, weight: .bold))
+            .foregroundStyle(DS.Colors.paperRaised)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity)
+            .frame(height: tall ? 64 : 58)
+            .background(DS.Colors.accent, in: RoundedRectangle(cornerRadius: DS.Radius.button))
+            .opacity(configuration.isPressed ? 0.85 : 1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 
@@ -552,4 +792,5 @@ struct SafariWebView: UIViewControllerRepresentable {
 
 #Preview {
     OnboardingPaywallView(onContinue: {})
+        .environmentObject(LanguageManager.shared)
 }

@@ -2,6 +2,9 @@
 //  LeaderboardView.swift
 //  WordRemSwiftUI
 //
+//  Sıralama bir defter sayfası: sıra numaraları kenar boşluğunda, isimden XP'ye noktalı çizgi,
+//  ilk üçe madalya yerine küçük mürekkep mühürleri, kendi satırın yapışkan not renginde.
+//
 
 import SwiftUI
 
@@ -17,10 +20,12 @@ struct LeaderboardView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
                 leaderboardHeader
+                    .modifier(BoardTextColumn())
 
                 // Guest kullanıcıya login yönlendirme
                 if !gameCenter.isAuthenticated {
                     guestPromptView
+                        .modifier(BoardTextColumn())
 
                 } else if vm.isLoading && vm.users.isEmpty {
                     ProgressView()
@@ -30,17 +35,21 @@ struct LeaderboardView: View {
 
                 } else if let err = vm.errorMessage {
                     errorView(err)
+                        .modifier(BoardTextColumn())
 
                 } else if vm.users.isEmpty {
                     emptyView
+                        .modifier(BoardTextColumn())
 
                 } else {
                     // ── Benim Sıram ───────────────────────────
                     if let rank = vm.currentUserRank(), let me = vm.currentUser {
                         BoardOwnRankCard(rank: rank, user: me)
+                            .modifier(BoardTextColumn())
+                            .padding(.vertical, 6)
                     }
 
-                    // ── Sıralama (ilk 20) ─────────────────────
+                    // ── Sıralama (ilk 20): çizgili satırlar ───
                     LazyVStack(spacing: 0) {
                         let top = Array(vm.users.prefix(20).enumerated())
                         ForEach(top, id: \.element.id) { index, user in
@@ -49,18 +58,22 @@ struct LeaderboardView: View {
                                 user: user,
                                 isCurrentUser: user.id == vm.currentUserId
                             )
-                            if index < top.count - 1 {
-                                Rectangle().fill(DS.Colors.line).frame(height: 1)
-                            }
                         }
                     }
+                    .overlay(alignment: .top) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
                 }
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
+            .padding(.top, 20)
             .padding(.bottom, 40)
             .frame(maxWidth: 620)
             .frame(maxWidth: .infinity)
+        }
+        // Kenar boşluğu çizgisi sayfa boyunca; içerikle aynı genişlikte ortalanır (iPad'de de hizalı)
+        .overlay {
+            MarginLine()
+                .frame(maxWidth: 620)
+                .frame(maxWidth: .infinity)
+                .allowsHitTesting(false)
         }
         // Sheet içinde aşağı çekmek sayfayı kapatsın diye pull-to-refresh yok; kapatma butonu da var
         .overlay(alignment: .topTrailing) {
@@ -68,11 +81,10 @@ struct LeaderboardView: View {
                 Image(systemName: "xmark")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(DS.Colors.inkSoft)
-                    .frame(width: 36, height: 36)
-                    .background(DS.Colors.paperSunken, in: Circle())
+                    .frame(width: 44, height: 44)
             }
-            .padding(.top, 14)
-            .padding(.trailing, 20)
+            .padding(.top, 8)
+            .padding(.trailing, 12)
             .accessibilityLabel(AL.s(.paywallOk))
         }
         .presentationDragIndicator(.visible)
@@ -94,14 +106,15 @@ struct LeaderboardView: View {
                 .font(DS.Font.display(34, weight: .bold))
                 .foregroundStyle(DS.Colors.ink)
             Text(langManager.s(.leaderboardSubtitle))
-                .font(DS.Font.ui(14))
+                .font(.system(size: 16, design: .serif).italic())
                 .foregroundStyle(DS.Colors.muted)
         }
+        .padding(.trailing, 28)   // kapatma düğmesine yer
     }
 
     // MARK: - Guest Prompt
     private var guestPromptView: some View {
-        PaperCard(padding: 24) {
+        StickyNote {
             VStack(alignment: .leading, spacing: 12) {
                 Text(langManager.s(.gcJoinTitle))
                     .font(DS.Font.display(24))
@@ -158,59 +171,71 @@ struct LeaderboardView: View {
 // MARK: - Components
 // MARK: ═══════════════════════════════════════════════════════════
 
-/// İlk harf dairesi
-private struct BoardInitials: View {
-    let name: String
-    var size: CGFloat = 40
+/// Metin sütunu: kenar boşluğu çizgisinin sağından başlar
+private struct BoardTextColumn: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding(.leading, DS.Page.textX)
+            .padding(.trailing, 24)
+    }
+}
+
+/// İlk üç için küçük mürekkep mührü (madalya yerine)
+private struct BoardRankStamp: View {
+    let rank: Int
+    var size: CGFloat = 36
+
+    private var color: Color {
+        switch rank {
+        case 1:  return DS.Colors.accent
+        case 2:  return DS.Colors.slate
+        default: return DS.Colors.inkSoft
+        }
+    }
+
     var body: some View {
-        Text(name.prefix(1).uppercased())
-            .font(DS.Font.display(size * 0.42))
-            .foregroundStyle(DS.Colors.ink)
-            .frame(width: size, height: size)
-            .background(DS.Colors.paperSunken, in: Circle())
+        ZStack {
+            Circle().strokeBorder(color, lineWidth: 2)
+            Circle().strokeBorder(color, lineWidth: 1).padding(size * 0.1)
+            Text("\(rank)")
+                .font(DS.Font.display(size * 0.42, weight: .bold))
+                .monospacedDigit()
+        }
+        .foregroundStyle(color)
+        .frame(width: size, height: size)
+        .rotationEffect(.degrees(rank == 2 ? 8 : -12))
+        .accessibilityLabel("\(rank)")
     }
 }
 
-/// Sıra numarası rengi: ilk 3 vurgulu, gerisi soluk
-private func boardRankColor(_ rank: Int) -> Color {
-    switch rank {
-    case 1:    return DS.Colors.gold
-    case 2, 3: return DS.Colors.inkSoft
-    default:   return DS.Colors.muted
-    }
-}
-
+/// Kendi sıran: sayfaya yapıştırılmış not
 private struct BoardOwnRankCard: View {
     @EnvironmentObject var langManager: LanguageManager
     let rank: Int
     let user: SBUser
 
     var body: some View {
-        PaperCard {
-            HStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("#\(rank)")
-                        .font(DS.Font.display(34, weight: .bold))
-                        .foregroundStyle(DS.Colors.ink)
-                }
-                Rectangle().fill(DS.Colors.line).frame(width: 1, height: 40)
-                BoardInitials(name: user.username, size: 40)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(user.username)
-                        .font(DS.Font.ui(16, weight: .semibold))
-                        .foregroundStyle(DS.Colors.ink)
-                        .lineLimit(1)
-                }
+        StickyNote(angle: -1) {
+            HStack(alignment: .lastTextBaseline, spacing: 12) {
+                Text("#\(rank)")
+                    .font(DS.Font.display(34, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .monospacedDigit()
+                Text(user.username)
+                    .font(DS.Font.display(18, weight: .semibold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineLimit(1)
                 Spacer(minLength: 8)
                 Text("\(user.totalXp) XP")
-                    .font(DS.Font.ui(14, weight: .medium))
-                    .foregroundStyle(DS.Colors.inkSoft)
+                    .font(DS.Font.ui(14, weight: .semibold))
+                    .foregroundStyle(DS.Colors.accentText)
                     .monospacedDigit()
             }
         }
     }
 }
 
+/// Defter satırı: kenar boşluğunda sıra (ilk üçte mühür), isim ........ XP
 private struct BoardRankRow: View {
     @EnvironmentObject var langManager: LanguageManager
     let rank: Int
@@ -218,36 +243,38 @@ private struct BoardRankRow: View {
     let isCurrentUser: Bool
 
     var body: some View {
-        HStack(spacing: 14) {
-            Text("\(rank)")
-                .font(DS.Font.display(20, weight: rank <= 3 ? .bold : .semibold))
-                .foregroundStyle(boardRankColor(rank))
-                .monospacedDigit()
-                .frame(width: 30, alignment: .leading)
-
-            BoardInitials(name: user.username, size: 40)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(user.username)
-                    .font(DS.Font.ui(16, weight: isCurrentUser ? .bold : .semibold))
-                    .foregroundStyle(DS.Colors.ink)
-                    .lineLimit(1)
-            }
-
-            Spacer(minLength: 8)
-
+        HStack(alignment: .lastTextBaseline, spacing: 8) {
+            Text(user.username)
+                .font(DS.Font.display(18, weight: isCurrentUser ? .bold : .regular))
+                .foregroundStyle(DS.Colors.ink)
+                .lineLimit(1)
+            DottedLeader().alignmentGuide(.lastTextBaseline) { d in d[.bottom] }
             Text("\(user.totalXp) XP")
-                .font(DS.Font.ui(14, weight: .medium))
-                .foregroundStyle(DS.Colors.muted)
+                .font(DS.Font.ui(15, weight: isCurrentUser ? .bold : .semibold))
+                .foregroundStyle(isCurrentUser ? DS.Colors.accentText : DS.Colors.inkSoft)
                 .monospacedDigit()
         }
-        .padding(.vertical, 14)
-        .padding(.horizontal, isCurrentUser ? 12 : 0)
-        .background {
-            if isCurrentUser {
-                RoundedRectangle(cornerRadius: 12).fill(DS.Colors.paperSunken)
+        .padding(.leading, DS.Page.textX)
+        .padding(.trailing, 24)
+        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+        .overlay(alignment: .leading) {
+            // Sıra numarası kenar boşluğunda, çizgiye yaslı
+            Group {
+                if rank <= 3 {
+                    BoardRankStamp(rank: rank)
+                        .frame(width: DS.Page.marginX, alignment: .center)
+                } else {
+                    Text("\(rank)")
+                        .font(.system(size: 17, design: .serif).italic())
+                        .foregroundStyle(DS.Colors.muted)
+                        .monospacedDigit()
+                        .frame(width: DS.Page.marginX - 14, alignment: .trailing)
+                }
             }
         }
+        .background(isCurrentUser ? DS.Colors.note : .clear)
+        .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+        .accessibilityElement(children: .combine)
     }
 }
 

@@ -2,8 +2,8 @@
 //  TalkHomeView.swift
 //  WordRemSwiftUI
 //
-//  "Konuş" ana ekranı: üstte dil/seviye ve seri, bugünün tekrar şeridi, ortada tek ders kartı
-//  ("Başla") ile "Asistanınla konuş" yana kaydırılır; altında "Planım" yol haritası.
+//  "Konuş" ana ekranı: üstte dil defteri ve seri, ortada "bugünün sayfası" (tekrar satırı, günün dersi,
+//  boş sayfa); aşağı kaydırınca içindekiler.
 //
 
 import SwiftUI
@@ -12,63 +12,68 @@ struct TalkHomeView: View {
     @EnvironmentObject var langManager: LanguageManager
     @ObservedObject private var scheduler = ReviewScheduler.shared
     var onOpenLeaderboard: () -> Void
-    var onOpenSettings: () -> Void = {}
 
     @State private var activeMode: TutorMode?
     @State private var showPlan = false
     @State private var showReview = false
     @State private var refresh = 0   // hedef tamamlanınca kartı yenile
     /// Seri artınca kutla (son görülen değer)
-    @AppStorage("talk.lastSeenStreak") private var lastSeenStreak = 0
-    @State private var streakCelebration = 0
-    /// Yana kaydırılan kartlar: 0 = sıradaki ders, 1 = asistanla serbest sohbet
-    @State private var page = 0
-    @State private var showLanguages = false
-    @State private var pendingSetup: String?
 
     private var store: ScenarioStore { ScenarioStore.shared }
     private var targetCode: String { UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "EN" }
 
     var body: some View {
+        // Bugünün sayfası, aşağısında içindekiler yaprağı. Serbest ve akıcı kaydırma: aşağı indikçe
+        // bugünün sayfası hafifçe küçülüp geride kalır, içindekiler yaprağı üstüne gelir.
         GeometryReader { geo in
             ScrollViewReader { proxy in
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
-                        // 1. ekran: ders/asistan kartları
-                        VStack(spacing: 26) {
-                            topBar
-                            if !scheduler.dueToday.isEmpty { reviewStrip }
-                            pager
-                            planHint { withAnimation(.spring(response: 0.6, dampingFraction: 0.88)) { proxy.scrollTo("plan", anchor: .top) } }
+                        VStack(spacing: 12) {
+                            AppHeader(onOpenLeaderboard: onOpenLeaderboard, onSwitched: { refresh += 1 })
+                                .padding(.horizontal, 20)
+                            todayPage {
+                                withAnimation(.spring(response: 0.55, dampingFraction: 0.9)) { proxy.scrollTo("plan", anchor: .top) }
+                            }
+                            .padding(.horizontal, 12)
                         }
-                        .padding(.horizontal, 24)
                         .padding(.top, 8)
+                        .padding(.bottom, 14)
                         .frame(maxWidth: 620)
                         .frame(maxWidth: .infinity)
-                        .frame(height: geo.size.height, alignment: .top)
+                        .frame(height: max(560, geo.size.height - 22), alignment: .top)
+                        .scrollTransition(.interactive, axis: .vertical) { content, phase in
+                            content
+                                .scaleEffect(phase.value < 0 ? 1 + phase.value * 0.06 : 1, anchor: .top)
+                                .opacity(phase.value < 0 ? 1 + phase.value * 0.5 : 1)
+                        }
 
-                        // 2. ekran: plan, alttan gelen ayrı bir yaprak gibi (kaydırınca yerine oturur)
+                        // İçindekiler yaprağı: bugünün sayfasının üstüne kayar
                         VStack(spacing: 0) {
-                            Capsule().fill(DS.Colors.line).frame(width: 40, height: 5).padding(.top, 12).padding(.bottom, 18)
-                            planSection
-                                .padding(.horizontal, 24)
-                                .frame(maxWidth: 620)
+                            Capsule().fill(DS.Colors.line).frame(width: 40, height: 5).padding(.top, 10).padding(.bottom, 6)
+                            ContentsView { chapter, goal in
+                                activeMode = .goal(chapterId: chapter.id, goalId: goal.id)
+                            }
+                            .frame(maxWidth: 620)
                             Spacer(minLength: 40)
                         }
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: geo.size.height, alignment: .top)
                         .background(
-                            DS.Colors.paperSunken
-                                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 36, topTrailingRadius: 36))
-                                .shadow(color: .black.opacity(0.06), radius: 18, y: -6)
+                            DS.Colors.paperRaised
+                                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 22, topTrailingRadius: 22))
+                                .shadow(color: .black.opacity(0.08), radius: 18, y: -6)
                         )
                         .id("plan")
                     }
-                    .scrollTargetLayout()
                     .id(refresh)
                 }
-                .scrollTargetBehavior(.viewAligned)
+                .scrollBounceBehavior(.basedOnSize)
             }
+        }
+        // Kaydırınca yazılar saat/pil satırının altına girip okunmaz olmasın
+        .overlay(alignment: .top) {
+            DS.Colors.paper.frame(height: 0).ignoresSafeArea(edges: .top)
         }
         .paperBackground()
         .onAppear { scheduler.reload(); openRoute(AppRouter.shared.route) }
@@ -86,7 +91,9 @@ struct TalkHomeView: View {
             }
         }
         #endif
-        .fullScreenCover(item: Binding(get: { activeMode.map(ModeBox.init) }, set: { activeMode = $0?.mode })) { box in
+        // Dersten çıkınca sayfa yenilenir: yarım kalan ders "Devam et" olarak görünür
+        .fullScreenCover(item: Binding(get: { activeMode.map(ModeBox.init) }, set: { activeMode = $0?.mode }),
+                         onDismiss: { refresh += 1 }) { box in
             VoiceTutorView(mode: box.mode) { ok in
                 // Yeni dil kurulumu tamamlandı → öğrenilen dil değişir, plan o dilde baştan
                 if case .languageSetup(let code) = box.mode {
@@ -97,22 +104,6 @@ struct TalkHomeView: View {
                 refresh += 1
             }
         }
-        // Kurulum konuşması, dil sayfası tamamen kapandıktan sonra açılır (üst üste sunum oturumu bozuyor)
-        .onChange(of: showLanguages) { open in
-            if open { Track.language("sheet_open", from: LearningLanguages.current); Track.screen("learning_sheet") }
-        }
-        .sheet(isPresented: $showLanguages, onDismiss: {
-            if let code = pendingSetup { pendingSetup = nil; activeMode = .languageSetup(code: code) }
-        }) {
-            LearningLanguageSheet(onSwitch: { code in
-                Track.language("switch", from: LearningLanguages.current, to: code, entryPoint: "learning_sheet")
-                LearningLanguages.switchTo(code)
-                refresh += 1
-            }, onSetup: { code in
-                Track.language("add_start", from: LearningLanguages.current, to: code, entryPoint: "learning_sheet")
-                pendingSetup = code
-            }, onSettings: onOpenSettings)
-        }
         .sheet(isPresented: $showPlan) {
             TalkPlanSheet { chapter, goal in
                 showPlan = false
@@ -120,6 +111,15 @@ struct TalkHomeView: View {
             }
         }
         #if DEBUG
+        // Mağaza görselleri: -DemoStage lesson → hazır ders sayfası, plan → içindekiler
+        .fullScreenCover(isPresented: .constant(DemoData.stage == "lesson")) {
+            if let ch = ScenarioStore.shared.chapters.first, ch.goals.count > 2 {
+                VoiceTutorView(mode: .goal(chapterId: ch.id, goalId: ch.goals[2].id))
+            }
+        }
+        .sheet(isPresented: .constant(DemoData.stage == "plan")) {
+            TalkPlanSheet { _, _ in }
+        }
         // Ekran görüntüsü/test: -DemoLessonComplete YES ile ders sonu akışını doğrudan aç
         .fullScreenCover(isPresented: .constant(UserDefaults.standard.bool(forKey: "DemoLessonComplete"))) {
             let demo = DemoData.lessonCompletePreview
@@ -142,30 +142,402 @@ struct TalkHomeView: View {
         case .lupa(let q):
             TutorBrain.chatOpener = LupaShared.question(q, lang: LearningLanguages.current)
             activeMode = .freeChat
+        case .languageSetup(let code): activeMode = .languageSetup(code: code)
         case .talk, .paywall:      break
         }
         AppRouter.shared.route = nil
     }
 
-    // MARK: - Top bar: dil + seviye · seri · sıralama
-    private var topBar: some View {
-        let s = UserStore.shared.snapshot
+    // MARK: - Bugünün sayfası: tarih, tekrar satırı, günün dersi, boş sayfa, içindekiler
+    private func todayPage(_ openContents: @escaping () -> Void) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                Eyebrow(text: HomeText.todayPage, color: DS.Colors.accentText)
+                Text(Date().formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: OL.nativeLangCode))))
+                    .font(.system(size: 16, design: .serif).italic())
+                    .foregroundStyle(DS.Colors.muted)
+            }
+            .padding(.top, 24)
+
+            if !scheduler.dueToday.isEmpty { reviewRow.padding(.top, 18) }
+
+            Spacer(minLength: 16)
+            lessonBlock
+            Spacer(minLength: 16)
+
+            Button { activeMode = .freeChat } label: {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(PageText.blankPage)
+                            .font(DS.Font.display(18, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                        Text(HomeText.blankPageSub)
+                            .font(DS.Font.ui(13))
+                            .foregroundStyle(DS.Colors.muted)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                }
+                .frame(minHeight: 64)
+                .overlay(alignment: .top) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            Button(action: openContents) {
+                Label(HomeText.contents, systemImage: "list.bullet")
+                    .font(DS.Font.ui(14, weight: .semibold))
+                    .foregroundStyle(DS.Colors.accentText)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .padding(.bottom, 6)
+        }
+        .padding(.leading, 66 - 12)
+        .padding(.trailing, 18)
+        .padding(.leading, 12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(DS.Colors.paperRaised, in: UnevenRoundedRectangle(topLeadingRadius: 6, bottomLeadingRadius: 6,
+                                                                      bottomTrailingRadius: 18, topTrailingRadius: 18))
+        .overlay(UnevenRoundedRectangle(topLeadingRadius: 6, bottomLeadingRadius: 6, bottomTrailingRadius: 18, topTrailingRadius: 18)
+            .stroke(DS.Colors.line))
+        .overlay(alignment: .leading) {
+            Rectangle().fill(DS.Colors.margin).frame(width: 1.5).padding(.leading, 52)
+        }
+        .overlay(alignment: .topTrailing) {
+            BookmarkMark(width: 12).padding(.trailing, 22)
+        }
+    }
+
+    // MARK: - Tekrar satırı (dersler ↔ sohbet köprüsü)
+    private var reviewRow: some View {
+        Button { showReview = true } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "arrow.triangle.2.circlepath")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(DS.Colors.accentText)
+                Text(AL.f(.talkReviewsDue, scheduler.dueToday.count))
+                    .font(DS.Font.ui(14, weight: .medium))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+                Spacer(minLength: 6)
+                Text(AL.s(.talkReviewNow))
+                    .font(DS.Font.ui(14, weight: .semibold))
+                    .foregroundStyle(DS.Colors.accentText)
+            }
+            .frame(minHeight: 54)
+            .overlay(alignment: .top) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+            .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Günün dersi (bitti ise serbest sohbet)
+    @ViewBuilder
+    private var lessonBlock: some View {
+        if let next = store.next {
+            VStack(alignment: .leading, spacing: 0) {
+                Eyebrow(text: "\(next.chapter.localizedTitle) · \(PageText.page(store.pageNumber(of: next.goal)))", color: DS.Colors.muted)
+                    .lineLimit(1)
+                Text(next.goal.localizedTitle)
+                    .font(DS.Font.display(36, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .lineLimit(3)
+                    .minimumScaleFactor(0.75)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 10)
+                let mode = TutorMode.goal(chapterId: next.chapter.id, goalId: next.goal.id)
+                // Yarım kalan ders: Lupa'nın son sözü kenar notu gibi, düğme "Devam et"
+                if let page = TutorBrain.savedPage(for: mode),
+                   let last = page.turns.last(where: { $0.role == .ai })?.text {
+                    (Text("“\(last)” ")
+                        .font(.system(size: 16, design: .serif).italic())
+                        .foregroundColor(DS.Colors.inkSoft)
+                     + Text("— Lupa").font(.system(size: 14, design: .serif).italic()).foregroundColor(DS.Colors.accentText))
+                        .lineLimit(3)
+                        .padding(.top, 12)
+                } else if !next.chapter.localizedSubtitle.isEmpty {
+                    Text(next.chapter.localizedSubtitle)
+                        .font(.system(size: 17, design: .serif).italic())
+                        .foregroundStyle(DS.Colors.inkSoft)
+                        .padding(.top, 12)
+                }
+                Button { activeMode = mode } label: {
+                    Label(TutorBrain.savedPage(for: mode) != nil ? PageText.continueLesson : HomeText.startLesson,
+                          systemImage: "mic")
+                }
+                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                .padding(.top, 24)
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 0) {
+                Eyebrow(text: PageText.freeChat, color: DS.Colors.muted)
+                Text(AL.s(.talkAssistantTitle))
+                    .font(DS.Font.display(36, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .padding(.top, 10)
+                Text(AL.s(.talkMoreComing))
+                    .font(.system(size: 17, design: .serif).italic())
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .padding(.top, 12)
+                Button { activeMode = .freeChat } label: { Label(AL.s(.talkStart), systemImage: "mic") }
+                    .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
+                    .padding(.top, 24)
+            }
+        }
+    }
+}
+
+/// fullScreenCover(item:) için Identifiable sarmalayıcı
+private struct ModeBox: Identifiable {
+    let mode: TutorMode
+    var id: String { String(describing: mode) }
+}
+
+// MARK: - Planım: tüm içindekiler (sayfa)
+struct TalkPlanSheet: View {
+    var onStart: (VoiceChapter, VoiceGoal) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                ContentsView(onStart: onStart).frame(maxWidth: 620).frame(maxWidth: .infinity)
+            }
+            .background(DS.Colors.paperRaised.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { dismiss() } label: { Image(systemName: "xmark") }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - İçindekiler
+/// Kitap içindekiler sayfası: bulunduğun bölüm açık (hedefler noktalı satırlarla, sayfa numaralı,
+/// kaldığın yerde terrakota ayraç), sonraki iki bölüm yalnızca başlık, daha ilerisi silikleşir.
+struct ContentsView: View {
+    var onStart: (VoiceChapter, VoiceGoal) -> Void
+    private var store: ScenarioStore { ScenarioStore.shared }
+
+    var body: some View {
+        let chapters = store.chapters
+        let ci = chapters.firstIndex { $0.id == store.next?.chapter.id } ?? max(0, chapters.count - 1)
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(HomeText.contents)
+                    .font(DS.Font.display(34, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                Text(HomeText.notebookOf(OL.languageName(for: LearningLanguages.current.lowercased())
+                        .capitalized(with: Locale(identifier: OL.nativeLangCode)),
+                     level: LearningLanguages.level(LearningLanguages.current.lowercased())))
+                    .font(.system(size: 16, design: .serif).italic())
+                    .foregroundStyle(DS.Colors.muted)
+            }
+            .padding(.leading, 66)
+            .padding(.top, 20)
+            .padding(.bottom, 22)
+
+            ForEach(Array(chapters.enumerated()).filter { $0.offset <= ci + 2 }, id: \.element.id) { i, chapter in
+                if i == ci {
+                    chapterOpen(i, chapter)
+                } else {
+                    chapterLine(i, chapter, done: i < ci)
+                }
+            }
+            if chapters.count > ci + 3 {
+                ForEach(Array(chapters.dropFirst(ci + 3).prefix(3).enumerated()), id: \.element.id) { j, chapter in
+                    chapterLine(ci + 3 + j, chapter, done: false)
+                        .opacity(max(0.25, 0.7 - Double(j) * 0.2))
+                }
+            }
+            Text(AL.s(.talkMoreComing))
+                .font(.system(size: 15, design: .serif).italic())
+                .foregroundStyle(DS.Colors.muted)
+                .padding(.leading, 66)
+                .padding(.top, 26)
+        }
+        .padding(.trailing, 22)
+        .padding(.bottom, 24)
+        .background(alignment: .leading) {
+            Rectangle().fill(DS.Colors.margin).frame(width: 1.5).padding(.leading, 52)
+        }
+    }
+
+    /// Bulunduğun bölüm: başlık + hedef satırları
+    private func chapterOpen(_ i: Int, _ chapter: VoiceChapter) -> some View {
+        let currentId = store.next?.goal.id
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                Text("\(i + 1)")
+                    .font(DS.Font.display(22, weight: .bold))
+                    .foregroundStyle(DS.Colors.accentText)
+                    .frame(width: 66 - 22, alignment: .center)
+                Text(chapter.localizedTitle)
+                    .font(DS.Font.display(21, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+            }
+            .padding(.leading, 22)
+            if !chapter.localizedSubtitle.isEmpty {
+                Text(chapter.localizedSubtitle)
+                    .font(DS.Font.ui(13))
+                    .foregroundStyle(DS.Colors.muted)
+                    .padding(.leading, 66)
+                    .padding(.top, 2)
+            }
+            VStack(spacing: 0) {
+                ForEach(Array(chapter.goals.enumerated()), id: \.element.id) { g, goal in
+                    goalLine(i, g, chapter, goal, current: goal.id == currentId)
+                }
+            }
+            .padding(.top, 12)
+        }
+        .padding(.bottom, 22)
+    }
+
+    private func goalLine(_ c: Int, _ g: Int, _ chapter: VoiceChapter, _ goal: VoiceGoal, current: Bool) -> some View {
+        let done = store.isDone(goal)
+        let locked = !done && !current
+        return Button { onStart(chapter, goal) } label: {
+            HStack(alignment: .center, spacing: 8) {
+                Text("\(c + 1).\(g + 1)  \(goal.localizedTitle)")
+                    .font(DS.Font.display(current ? 18 : 17, weight: current ? .bold : .regular))
+                    .foregroundStyle(locked ? Color(hex: "#9A9286") : done ? DS.Colors.muted : DS.Colors.ink)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .layoutPriority(1)
+                if current {
+                    Spacer(minLength: 8)
+                    Text(TutorBrain.savedPage(for: .goal(chapterId: chapter.id, goalId: goal.id)) != nil
+                         ? PageText.continueLesson : AL.s(.talkStart))
+                        .font(DS.Font.ui(14, weight: .semibold))
+                        .foregroundStyle(DS.Colors.paperRaised)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 7)
+                        .background(DS.Colors.accent, in: RoundedRectangle(cornerRadius: 10))
+                } else {
+                    DottedLeader(color: Color(hex: "#D3CBBE"))
+                    Text("\(store.pageNumber(of: goal))")
+                        .font(.system(size: 16, design: .serif).italic())
+                        .foregroundStyle(DS.Colors.muted)
+                }
+            }
+            .padding(.leading, 66)
+            .padding(.trailing, current ? 12 : 0)
+            .frame(minHeight: current ? 58 : 46)
+            .background(current ? DS.Colors.note : .clear)
+            .overlay(alignment: .leading) {
+                if done {
+                    PenTick()
+                        .stroke(DS.Colors.success, style: StrokeStyle(lineWidth: 2.4, lineCap: .round, lineJoin: .round))
+                        .frame(width: 20, height: 18)
+                        .padding(.leading, 20)
+                } else if current {
+                    RibbonShape().fill(DS.Colors.accent)
+                        .frame(width: 16, height: 44)
+                        .padding(.leading, 18)
+                        .offset(y: -6)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(locked)
+        .accessibilityAddTraits(current ? .isSelected : [])
+    }
+
+    /// Kapalı bölüm satırı: numara · ad ....... sayfa
+    private func chapterLine(_ i: Int, _ chapter: VoiceChapter, done: Bool) -> some View {
+        HStack(alignment: .lastTextBaseline, spacing: 8) {
+            Text(chapter.localizedTitle)
+                .font(DS.Font.display(19, weight: .semibold))
+                .lineLimit(1)
+            DottedLeader(color: Color(hex: "#D3CBBE"))
+            Text("\(chapter.goals.first.map { store.pageNumber(of: $0) } ?? 0)")
+                .font(.system(size: 16, design: .serif).italic())
+        }
+        .foregroundStyle(DS.Colors.muted)
+        .padding(.leading, 66)
+        .overlay(alignment: .leading) {
+            Text("\(i + 1)")
+                .font(DS.Font.display(20, weight: .bold))
+                .foregroundStyle(DS.Colors.muted)
+                .frame(width: 44)
+                .padding(.leading, 22)
+        }
+        .frame(minHeight: 44)
+    }
+}
+
+/// Ana sayfanın defter metinleri (sıra: tr, en, de, fr, es, it, ru, zh)
+enum HomeText {
+    static var todayPage: String { PageText.t(["Bugünün sayfası", "Today's page", "Heutige Seite", "Page du jour", "Página de hoy", "Pagina di oggi", "Страница дня", "今日一页"]) }
+    static var contents: String { PageText.t(["İçindekiler", "Contents", "Inhalt", "Sommaire", "Índice", "Indice", "Содержание", "目录"]) }
+    static var startLesson: String { PageText.t(["Derse başla", "Start lesson", "Lektion starten", "Commencer", "Empezar lección", "Inizia lezione", "Начать урок", "开始上课"]) }
+    static var blankPageSub: String { PageText.t(["Lupa ile istediğin konuda konuş", "Talk with Lupa about anything", "Sprich mit Lupa über alles", "Parle de tout avec Lupa", "Habla con Lupa de lo que quieras", "Parla con Lupa di ciò che vuoi", "Говори с Лупой о чём угодно", "和 Lupa 随便聊聊"]) }
+    static func level(_ n: Int) -> String { PageText.t(["Sv. \(n)", "Lv. \(n)", "Nv. \(n)", "Nv. \(n)", "Nv. \(n)", "Lv. \(n)", "Ур. \(n)", "\(n) 级"]) }
+    static func notebookOf(_ language: String, level n: Int) -> String {
+        PageText.t(["\(language) defteri · Seviye \(n)", "\(language) notebook · Level \(n)", "\(language)heft · Niveau \(n)",
+                    "Carnet de \(language) · Niveau \(n)", "Cuaderno de \(language) · Nivel \(n)", "Quaderno di \(language) · Livello \(n)",
+                    "Тетрадь: \(language) · Уровень \(n)", "\(language)笔记本 · \(n) 级"])
+    }
+}
+
+extension ScenarioStore {
+    /// Hedefin defterdeki sayfa numarası: önceki bölümlerin hedefleri + sırası
+    func pageNumber(of goal: VoiceGoal) -> Int {
+        var n = 0
+        for chapter in chapters {
+            if let i = chapter.goals.firstIndex(where: { $0.id == goal.id }) { return n + i + 1 }
+            n += chapter.goals.count
+        }
+        return n
+    }
+}
+
+// MARK: - Uygulamanın ortak üst satırı (Konuş, Defterlerim, Profil): dil defteri + seviye · sıralama · seri
+struct AppHeader: View {
+    var onOpenLeaderboard: () -> Void
+    /// Dil değiştiğinde sayfa yenilensin
+    var onSwitched: () -> Void = {}
+
+    @AppStorage("talk.lastSeenStreak") private var lastSeenStreak = 0
+    @State private var streakCelebration = 0
+    @State private var showLanguages = false
+    @State private var pendingSetup: String?
+
+    var body: some View {
         let streak = StudyStreak.current
-        let lang = ContentStore.shared.language(code: targetCode)
-        return HStack(spacing: 10) {
-            // Pingo gibi: dile dokununca öğrenilen diller / yeni dil ekleme
+        let code = LearningLanguages.current
+        return HStack(spacing: 6) {
+            // Dile dokununca defterlerim: öğrenilen diller / yeni dil ekleme
             Button { showLanguages = true } label: {
                 HStack(spacing: 8) {
-                    Text(lang?.flagEmoji ?? LearningLanguages.flags[targetCode.lowercased()] ?? "🌐").font(.system(size: 22))
-                    Text("L\(LearningLanguages.level(targetCode.lowercased()))")
+                    Text(code.uppercased())
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(0.5)
+                        .foregroundStyle(DS.Colors.paperRaised)
+                        .frame(width: 22, height: 28)
+                        .background(DS.Colors.slate, in: UnevenRoundedRectangle(topLeadingRadius: 3, bottomLeadingRadius: 3,
+                                                                                  bottomTrailingRadius: 5, topTrailingRadius: 5))
+                    Text(OL.languageName(for: code).capitalized(with: Locale(identifier: OL.nativeLangCode)))
                         .font(DS.Font.ui(15, weight: .semibold))
                         .foregroundStyle(DS.Colors.ink)
+                    Text("· \(HomeText.level(LearningLanguages.level(code)))")
+                        .font(DS.Font.ui(15))
+                        .foregroundStyle(DS.Colors.muted)
                     Image(systemName: "chevron.down")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(DS.Colors.inkSoft)
                 }
-                .padding(.horizontal, 14).padding(.vertical, 8)
-                .background(DS.Colors.paperSunken, in: Capsule())
+                .frame(height: 44)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
@@ -173,27 +545,22 @@ struct TalkHomeView: View {
 
             Button(action: onOpenLeaderboard) {
                 Image(systemName: "trophy")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 17, weight: .regular))
                     .foregroundStyle(DS.Colors.inkSoft)
-                    .frame(width: 40, height: 40)
-                    .background(DS.Colors.paperSunken, in: Circle())
+                    .frame(width: 44, height: 44)
             }
             .accessibilityLabel(AL.s(.tabRank))
 
-            HStack(spacing: 6) {
+            HStack(spacing: 7) {
+                TallyMarks(count: 5, color: DS.Colors.accent, accentLast: nil, height: 15)
                 Text("\(streak)")
                     .font(DS.Font.ui(15, weight: .semibold))
                     .foregroundStyle(DS.Colors.ink)
                     .contentTransition(.numericText(value: Double(streak)))
-                LiveFlame(size: 16)
             }
-            .padding(.horizontal, 14).padding(.vertical, 8)
-            .background(DS.Colors.paperSunken, in: Capsule())
-            .scaleEffect(streakCelebration > 0 ? 1.0 : 1.0)
+            .frame(height: 44)
             .phaseAnimator([1.0, 1.25, 1.0], trigger: streakCelebration) { v, scale in v.scaleEffect(scale) }
-            .overlay(ConfettiBurst(origin: .center, count: 40, trigger: streakCelebration)
-                        .frame(width: 220, height: 220).allowsHitTesting(false)
-                        .opacity(streakCelebration > 0 ? 1 : 0))
+            .accessibilityElement(children: .combine)
             .onAppear {
                 // Seri arttıysa kutla
                 if streak > lastSeenStreak, lastSeenStreak > 0 {
@@ -205,384 +572,21 @@ struct TalkHomeView: View {
                 lastSeenStreak = streak
             }
         }
-    }
-
-    // MARK: - Tekrar şeridi (dersler ↔ sohbet köprüsü)
-    private var reviewStrip: some View {
-        Button { showReview = true } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(DS.Colors.accent)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(AL.f(.talkReviewsDue, scheduler.dueToday.count))
-                        .font(DS.Font.ui(15, weight: .semibold))
-                        .foregroundStyle(DS.Colors.ink)
-                    Text(AL.s(.talkReviewHint))
-                        .font(DS.Font.ui(13))
-                        .foregroundStyle(DS.Colors.muted)
-                }
-                Spacer()
-                Text(AL.s(.talkReviewNow))
-                    .font(DS.Font.ui(14, weight: .semibold))
-                    .foregroundStyle(DS.Colors.accent)
-            }
-            .padding(16)
-            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.card))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.line))
+        // Kurulum konuşması, dil sayfası tamamen kapandıktan sonra Konuş sekmesinde açılır
+        .onChange(of: showLanguages) { open in
+            if open { Track.language("sheet_open", from: LearningLanguages.current); Track.screen("learning_sheet") }
         }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Sahneler (kutu yok: logo, başlık ve Başla doğrudan zeminde)
-    @ViewBuilder
-    private var lessonCard: some View {
-        if let next = store.next {
-            stage(phase: .connecting, kicker: next.chapter.localizedTitle, title: next.goal.localizedTitle) {
-                activeMode = .goal(chapterId: next.chapter.id, goalId: next.goal.id)
-            }
+        .sheet(isPresented: $showLanguages, onDismiss: {
+            if let code = pendingSetup { pendingSetup = nil; AppRouter.shared.route = .languageSetup(code: code) }
+        }) {
+            LearningLanguageSheet(onSwitch: { code in
+                Track.language("switch", from: LearningLanguages.current, to: code, entryPoint: "learning_sheet")
+                LearningLanguages.switchTo(code)
+                onSwitched()
+            }, onSetup: { code in
+                Track.language("add_start", from: LearningLanguages.current, to: code, entryPoint: "learning_sheet")
+                pendingSetup = code
+            })
         }
-    }
-
-    /// Asistanla dolu dolu serbest sohbet
-    private var assistantCard: some View {
-        stage(phase: .connecting, kicker: AL.s(.talkAssistantKicker), title: AL.s(.talkAssistantTitle)) {
-            activeMode = .freeChat
-        }
-    }
-
-    private func stage(phase: RealtimeVoiceSession.Phase, kicker: String, title: String, start: @escaping () -> Void) -> some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: 0)
-            ZStack {
-                // Yumuşak ışık hâlesi + canlı logo
-                Circle()
-                    .fill(RadialGradient(colors: [DS.Colors.accent.opacity(0.16), DS.Colors.accent.opacity(0)],
-                                         center: .center, startRadius: 10, endRadius: 140))
-                    .frame(width: 280, height: 280)
-                VoiceLogoView(phase: phase, level: 0.45)
-                    .scaleEffect(2.6)
-            }
-            .frame(height: 200)
-            Spacer(minLength: 12)
-            Text(kicker.uppercased(with: Locale(identifier: LanguageManager.shared.currentLanguageCode)))
-                .font(DS.Font.ui(13, weight: .semibold))
-                .tracking(1.4)
-                .foregroundStyle(DS.Colors.accent)
-                .padding(.bottom, 10)
-            Text(title)
-                .font(DS.Font.display(38, weight: .bold))
-                .foregroundStyle(DS.Colors.ink)
-                .multilineTextAlignment(.center)
-                .lineLimit(3)
-                .minimumScaleFactor(0.8)
-                .padding(.horizontal, 8)
-            Button(AL.s(.talkStart), action: start)
-                .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-                .frame(maxWidth: 260)
-                .padding(.top, 28)
-            Spacer(minLength: 0)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .contentShape(Rectangle())
-    }
-
-    // MARK: - Yana kaydırılan kartlar (Pingo gibi)
-    private var pager: some View {
-        VStack(spacing: 14) {
-            TabView(selection: $page) {
-                lessonCard.padding(.horizontal, 2).tag(0)
-                assistantCard.padding(.horizontal, 2).tag(1)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(minHeight: 420, maxHeight: .infinity)
-            HStack(spacing: 6) {
-                ForEach(0..<2, id: \.self) { i in
-                    Capsule()
-                        .fill(page == i ? DS.Colors.accent : DS.Colors.line)
-                        .frame(width: page == i ? 18 : 7, height: 7)
-                }
-            }
-            .animation(.spring(response: 0.3), value: page)
-        }
-    }
-
-    /// İlk ekranın altında: "Planım" ve aşağı ok (dokununca plana kayar)
-    private func planHint(_ go: @escaping () -> Void) -> some View {
-        Button(action: go) {
-            VStack(spacing: 4) {
-                Text(AL.s(.talkPlan))
-                    .font(DS.Font.ui(15, weight: .semibold))
-                Image(systemName: "chevron.compact.down")
-                    .font(.system(size: 22, weight: .medium))
-                    .symbolEffect(.pulse)
-            }
-            .foregroundStyle(DS.Colors.accent)
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Plan: bulunduğun bölüm, hedefler dalgalı bir yol üzerinde
-    @ViewBuilder
-    private var planSection: some View {
-        if let next = store.next {
-            let chapter = next.chapter
-            VStack(alignment: .leading, spacing: 18) {
-                HStack(spacing: 14) {
-                    Image(systemName: chapter.icon)
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundStyle(DS.Colors.accent)
-                        .frame(width: 52, height: 52)
-                        .background(DS.Colors.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(AL.s(.talkInProgress))
-                            .font(DS.Font.ui(13, weight: .medium))
-                            .foregroundStyle(DS.Colors.muted)
-                        Text(chapter.localizedTitle)
-                            .font(DS.Font.display(24, weight: .bold))
-                            .foregroundStyle(DS.Colors.ink)
-                            .lineLimit(2)
-                    }
-                }
-                PlanPathView(goals: chapter.goals, currentId: next.goal.id, isDone: store.isDone) { goal in
-                    activeMode = .goal(chapterId: chapter.id, goalId: goal.id)
-                }
-                Button { showPlan = true } label: {
-                    HStack {
-                        if let i = store.chapters.firstIndex(where: { $0.id == chapter.id }), i + 1 < store.chapters.count {
-                            Text(AL.f(.talkNextChapter, store.chapters[i + 1].localizedTitle))
-                        } else {
-                            Text(AL.s(.talkSeeFullPlan))
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                    }
-                    .font(DS.Font.ui(14, weight: .medium))
-                    .foregroundStyle(DS.Colors.muted)
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 14)
-                    .background(DS.Colors.paperSunken.opacity(0.7), in: RoundedRectangle(cornerRadius: 14))
-                    .contentShape(Rectangle())   // satırın tamamı dokunulabilir
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(22)
-            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 30))
-            .overlay(RoundedRectangle(cornerRadius: 30).stroke(DS.Colors.line))
-        }
-    }
-}
-
-/// fullScreenCover(item:) için Identifiable sarmalayıcı
-private struct ModeBox: Identifiable {
-    let mode: TutorMode
-    var id: String { String(describing: mode) }
-}
-
-// MARK: - Planım: bölüm haritası (bulunduğun bölüm + sonraki ikisi; çok ilerisi gösterilmez)
-struct TalkPlanSheet: View {
-    var onStart: (VoiceChapter, VoiceGoal) -> Void
-    @Environment(\.dismiss) private var dismiss
-    private var store: ScenarioStore { ScenarioStore.shared }
-
-    var body: some View {
-        let chapters = store.chapters
-        let currentChapter = store.next?.chapter.id
-        let ci = chapters.firstIndex { $0.id == currentChapter } ?? 0
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 34) {
-                    ForEach(Array(chapters.enumerated()).filter { $0.offset <= ci + 2 }, id: \.element.id) { i, chapter in
-                        VStack(alignment: .leading, spacing: 14) {
-                            HStack(spacing: 12) {
-                                Image(systemName: i > ci ? "lock.fill" : chapter.icon)
-                                    .font(.system(size: 17, weight: .medium))
-                                    .foregroundStyle(i > ci ? DS.Colors.muted : DS.Colors.accent)
-                                    .frame(width: 44, height: 44)
-                                    .background(i > ci ? DS.Colors.paperSunken : DS.Colors.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(chapter.localizedTitle)
-                                        .font(DS.Font.display(21, weight: .semibold))
-                                        .foregroundStyle(i > ci ? DS.Colors.inkSoft : DS.Colors.ink)
-                                    Text(chapter.localizedSubtitle)
-                                        .font(DS.Font.ui(13))
-                                        .foregroundStyle(DS.Colors.muted)
-                                }
-                            }
-                            PlanPathView(goals: chapter.goals, currentId: i == ci ? store.next?.goal.id ?? "" : "",
-                                         isDone: store.isDone, lockedChapter: i > ci) { goal in
-                                onStart(chapter, goal)
-                            }
-                        }
-                        .opacity(i > ci ? 0.85 : 1)
-                    }
-                    // Daha ilerisi: yalnızca adlar, giderek silikleşir; yol noktalı devam edip kaybolur (bitmeyen yolculuk)
-                    let later = Array(chapters.dropFirst(ci + 3))
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(Array(later.enumerated()), id: \.element.id) { j, chapter in
-                            HStack(spacing: 14) {
-                                Circle().stroke(DS.Colors.line, lineWidth: 2.5).frame(width: 18, height: 18)
-                                    .frame(width: 60)
-                                Text(chapter.localizedTitle)
-                                    .font(DS.Font.ui(16, weight: .medium))
-                                    .foregroundStyle(DS.Colors.inkSoft)
-                                Spacer()
-                                Image(systemName: "lock.fill").font(.system(size: 11)).foregroundStyle(DS.Colors.muted)
-                            }
-                            .frame(height: 52)
-                            .opacity(max(0.25, 0.8 - Double(j) * 0.18))
-                        }
-                        ForEach(0..<5, id: \.self) { k in
-                            Circle().fill(DS.Colors.line)
-                                .frame(width: 5, height: 5)
-                                .frame(width: 60, height: 14)
-                                .opacity(0.9 - Double(k) * 0.18)
-                        }
-                        HStack(spacing: 8) {
-                            Image(systemName: "sparkles")
-                            Text(AL.s(.talkMoreComing))
-                        }
-                        .font(DS.Font.ui(14, weight: .medium))
-                        .foregroundStyle(DS.Colors.muted)
-                        .padding(.top, 10)
-                        .padding(.leading, 18)
-                    }
-                }
-                .padding(24)
-                .frame(maxWidth: 620)
-                .frame(maxWidth: .infinity)
-            }
-            .paperBackground()
-            .navigationTitle(AL.s(.talkPlan))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { dismiss() } label: { Image(systemName: "xmark") }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Dalgalı plan yolu
-/// Solda hafif dalgalanan bir yol: tamamlanan kısım dolu, kalan kısım noktalı; hedef kartları sağda.
-struct PlanPathView: View {
-    let goals: [VoiceGoal]
-    let currentId: String
-    let isDone: (VoiceGoal) -> Bool
-    /// Henüz açılmamış bölüm: tüm hedefler kilitli
-    var lockedChapter = false
-    var onTap: (VoiceGoal) -> Void
-
-    private let rowH: CGFloat = 86
-    private let lane: CGFloat = 30           // yolun orta çizgisi (x)
-    private let sway: CGFloat = 10           // dalga genliği
-
-    private var currentIndex: Int { lockedChapter ? -1 : goals.firstIndex { $0.id == currentId } ?? goals.count }
-    private func x(_ i: Int) -> CGFloat { lane + (i % 2 == 0 ? -sway : sway) }
-    private func y(_ i: Int) -> CGFloat { rowH * CGFloat(i) + rowH / 2 }
-
-    var body: some View {
-        let progress = goals.count > 1 ? CGFloat(max(0, min(currentIndex, goals.count - 1))) / CGFloat(goals.count - 1) : 0
-        ZStack(alignment: .topLeading) {
-            WavyLane(points: goals.indices.map { CGPoint(x: x($0), y: y($0)) })
-                .trim(from: progress, to: 1)
-                .stroke(DS.Colors.line, style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [1, 8]))
-            WavyLane(points: goals.indices.map { CGPoint(x: x($0), y: y($0)) })
-                .trim(from: 0, to: progress)
-                .stroke(DS.Colors.accent, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
-            ForEach(Array(goals.enumerated()), id: \.element.id) { i, goal in
-                node(i, goal).position(x: x(i), y: y(i))
-                row(i, goal)
-                    .padding(.leading, lane + sway + 26)
-                    .frame(height: rowH)
-                    .offset(y: rowH * CGFloat(i))
-            }
-        }
-        .frame(height: rowH * CGFloat(goals.count))
-    }
-
-    @ViewBuilder
-    private func node(_ i: Int, _ goal: VoiceGoal) -> some View {
-        if isDone(goal) {
-            Image(systemName: "checkmark")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(DS.Colors.paper)
-                .frame(width: 26, height: 26)
-                .background(DS.Colors.accent, in: Circle())
-        } else if i == currentIndex {
-            Circle()
-                .fill(DS.Colors.accent)
-                .frame(width: 14, height: 14)
-                .padding(6)
-                .background(DS.Colors.accent.opacity(0.18), in: Circle())
-                .overlay(Circle().stroke(DS.Colors.accent.opacity(0.35), lineWidth: 1).scaleEffect(1.35))
-        } else {
-            Circle()
-                .stroke(DS.Colors.line, lineWidth: 2.5)
-                .background(Circle().fill(DS.Colors.paperRaised))
-                .frame(width: 18, height: 18)
-        }
-    }
-
-    private func row(_ i: Int, _ goal: VoiceGoal) -> some View {
-        let current = i == currentIndex
-        let done = isDone(goal)
-        // Adım adım: yalnızca tamamlanan ve sıradaki hedef açılır
-        let locked = !done && !current
-        return Button { onTap(goal) } label: {
-            HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(AL.s(.talkGoal))
-                        .font(DS.Font.ui(11, weight: .semibold))
-                        .tracking(0.8)
-                        .foregroundStyle(current ? DS.Colors.accent : DS.Colors.muted)
-                    Text(goal.localizedTitle)
-                        .font(DS.Font.ui(16, weight: current ? .semibold : .medium))
-                        .foregroundStyle(done || current ? DS.Colors.ink : DS.Colors.inkSoft)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-                }
-                Spacer(minLength: 0)
-                if locked {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 12))
-                        .foregroundStyle(DS.Colors.muted.opacity(0.7))
-                } else if current {
-                    Text(AL.s(.talkStart))
-                        .font(DS.Font.ui(13, weight: .semibold))
-                        .foregroundStyle(DS.Colors.paper)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(DS.Colors.accent, in: Capsule())
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(current ? DS.Colors.accent.opacity(0.07) : DS.Colors.paperSunken.opacity(0.6),
-                        in: RoundedRectangle(cornerRadius: 18))
-            .overlay(RoundedRectangle(cornerRadius: 18).stroke(current ? DS.Colors.accent.opacity(0.35) : .clear))
-        }
-        .buttonStyle(.plain)
-        .disabled(locked)
-        .opacity(locked ? 0.75 : 1)
-    }
-}
-
-/// Noktaları yumuşak S eğrileriyle bağlayan dikey yol
-private struct WavyLane: Shape {
-    let points: [CGPoint]
-    func path(in rect: CGRect) -> Path {
-        var p = Path()
-        guard let first = points.first else { return p }
-        p.move(to: first)
-        for (a, b) in zip(points, points.dropFirst()) {
-            let midY = (a.y + b.y) / 2
-            p.addCurve(to: b, control1: CGPoint(x: a.x, y: midY), control2: CGPoint(x: b.x, y: midY))
-        }
-        return p
     }
 }

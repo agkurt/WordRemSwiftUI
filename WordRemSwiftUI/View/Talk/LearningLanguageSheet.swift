@@ -3,7 +3,7 @@
 //  WordRemSwiftUI
 //
 //  Ana sayfadaki dil rozeti: öğrenilen dilleri listeler, yeni dil eklemek için
-//  öğretmenle kısa bir kurulum konuşması başlatır (Pingo'daki "Öğrenme" gibi).
+//  öğretmenle kısa bir kurulum konuşması başlatır. Her dil ayrı bir defter.
 //
 
 import SwiftUI
@@ -15,7 +15,9 @@ private func loc(_ v: [String]) -> String {
 }
 
 enum LearningText {
-    static var title: String { loc(["Öğrenme", "Learning", "Lernen", "Apprentissage", "Aprendizaje", "Apprendimento", "Обучение", "学习"]) }
+    static var title: String { loc(["Dillerim", "My languages", "Meine Sprachen", "Mes langues", "Mis idiomas", "Le mie lingue", "Мои языки", "我的语言"]) }
+    static var subtitle: String { loc(["Her dil ayrı bir defter.", "Each language is its own notebook.", "Jede Sprache ist ein eigenes Heft.", "Chaque langue a son carnet.", "Cada idioma es un cuaderno.", "Ogni lingua è un quaderno.", "Каждый язык — своя тетрадь.", "每种语言一本笔记。"]) }
+    static var newNotebook: String { loc(["YENİ DEFTER AÇ", "START A NEW NOTEBOOK", "NEUES HEFT", "NOUVEAU CARNET", "NUEVO CUADERNO", "NUOVO QUADERNO", "НОВАЯ ТЕТРАДЬ", "新笔记本"]) }
     static func level(_ n: Int) -> String {
         String(format: loc(["Seviye %d", "Level %d", "Level %d", "Niveau %d", "Nivel %d", "Livello %d", "Уровень %d", "等级 %d"]), n)
     }
@@ -98,7 +100,6 @@ struct LearningLanguageSheet: View {
     /// Eklenmiş bir dil: hemen geçilir. Yeni dil: kurulum konuşması başlar.
     var onSwitch: (String) -> Void
     var onSetup: (String) -> Void
-    var onSettings: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     private let current = LearningLanguages.current
@@ -111,57 +112,51 @@ struct LearningLanguageSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(LearningText.title)
+                        .font(DS.Font.display(34, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                    Text(LearningText.subtitle)
+                        .font(DS.Font.ui(14))
+                        .foregroundStyle(DS.Colors.muted)
+                }
                 Spacer()
                 Button { dismiss() } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(DS.Colors.inkSoft)
-                        .frame(width: 40, height: 40)
-                        .background(DS.Colors.paperSunken, in: Circle())
+                        .frame(width: 44, height: 44)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 16)
-
-            Text(LearningText.title)
-                .font(DS.Font.display(34, weight: .bold))
-                .foregroundStyle(DS.Colors.ink)
-                .padding(.bottom, 20)
+            .padding(.leading, 20)
+            .padding(.trailing, 10)
+            .padding(.top, 24)
+            .padding(.bottom, 18)
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 10) {
-                    ForEach(codes, id: \.self) { code in row(code) }
+                VStack(alignment: .leading, spacing: 0) {
+                    // Açık defterler (öğrenilenler) kapak olarak, yeniler kesik çizgili satır
+                    VStack(spacing: 10) {
+                        ForEach(codes.filter { added.contains($0) }, id: \.self) { code in notebook(code) }
+                    }
+                    let fresh = codes.filter { !added.contains($0) }
+                    if !fresh.isEmpty {
+                        Text(LearningText.newNotebook)
+                            .font(DS.Font.eyebrow)
+                            .tracking(1.4)
+                            .foregroundStyle(DS.Colors.muted)
+                            .padding(.top, 26)
+                            .padding(.bottom, 4)
+                        ForEach(fresh, id: \.self) { code in newRow(code) }
+                    }
 
                     Text(LearningText.footer)
-                        .font(DS.Font.ui(14))
-                        .foregroundStyle(DS.Colors.inkSoft)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 14)
-                        .padding(.horizontal, 12)
+                        .font(DS.Font.ui(13))
+                        .foregroundStyle(DS.Colors.muted)
+                        .padding(.top, 16)
 
-                    Button {
-                        dismiss()
-                        onSettings()
-                    } label: {
-                        HStack {
-                            Image(systemName: "gearshape")
-                                .foregroundStyle(DS.Colors.inkSoft)
-                            Text(LearningText.settings)
-                                .font(DS.Font.ui(17, weight: .medium))
-                                .foregroundStyle(DS.Colors.ink)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(DS.Colors.inkSoft)
-                        }
-                        .padding(.horizontal, 18).padding(.vertical, 18)
-                        .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 18))
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, 8)
                 }
                 .frame(maxWidth: 560)
                 .padding(.horizontal, 20)
@@ -172,49 +167,78 @@ struct LearningLanguageSheet: View {
         .paperBackground()
     }
 
-    private func row(_ code: String) -> some View {
+    private func languageName(_ code: String) -> String {
+        let n = LanguageManager.shared.languageName(for: code)
+        return n.prefix(1).uppercased() + n.dropFirst()
+    }
+
+    /// Küçük defter kapağı: dolu (açılmış) ya da kesik çizgili (yeni)
+    private func cover(_ code: String, filled: Bool, width: CGFloat) -> some View {
+        let shape = UnevenRoundedRectangle(topLeadingRadius: width * 0.08, bottomLeadingRadius: width * 0.08,
+                                           bottomTrailingRadius: width * 0.16, topTrailingRadius: width * 0.16)
+        return Text(code.uppercased())
+            .font(.system(size: width * 0.2, weight: .bold))
+            .tracking(0.6)
+            .foregroundStyle(filled ? DS.Colors.ink : DS.Colors.muted)
+            .padding(.horizontal, width * 0.1).padding(.vertical, width * 0.05)
+            .background(filled ? DS.Colors.paperRaised : .clear, in: RoundedRectangle(cornerRadius: 3))
+            .frame(width: width, height: width * 1.3)
+            .background(filled ? DS.Colors.slate : .clear, in: shape)
+            .overlay(shape.strokeBorder(filled ? .clear : Color(hex: "#B8B0A4"), style: StrokeStyle(lineWidth: 1.5, dash: [3, 2])))
+    }
+
+    private func notebook(_ code: String) -> some View {
         let isCurrent = code == current
-        let isAdded = added.contains(code)
         return Button {
-            if !isCurrent { if isAdded { onSwitch(code) } else { onSetup(code) } }
+            if !isCurrent { onSwitch(code) }
             dismiss()
         } label: {
-            HStack(spacing: 14) {
-                Text(LearningLanguages.flags[code] ?? "🌐")
-                    .font(.system(size: 30))
-                    .frame(width: 48, height: 48)
-                    .background(DS.Colors.paper, in: Circle())
-                VStack(alignment: .leading, spacing: 2) {
-                    Text({ let n = LanguageManager.shared.languageName(for: code); return n.prefix(1).uppercased() + n.dropFirst() }())
-                        .font(DS.Font.ui(18, weight: .semibold))
-                        .foregroundStyle(DS.Colors.ink)
-                    if isAdded {
-                        Text(LearningText.level(LearningLanguages.level(code)))
-                            .font(DS.Font.ui(13, weight: .medium))
-                            .foregroundStyle(DS.Colors.inkSoft)
+            HStack(spacing: 16) {
+                cover(code, filled: true, width: 54)
+                    .overlay(alignment: .topTrailing) {
+                        if isCurrent { RibbonShape().fill(DS.Colors.accent).frame(width: 8, height: 20).padding(.trailing, 8).offset(y: -2) }
                     }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(languageName(code))
+                        .font(DS.Font.display(21, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                    Text(LearningText.level(LearningLanguages.level(code)))
+                        .font(DS.Font.ui(13))
+                        .foregroundStyle(DS.Colors.muted)
                 }
                 Spacer()
                 if isCurrent {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 22))
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(DS.Colors.accent)
-                } else if !isAdded {
-                    Image(systemName: "plus")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(DS.Colors.inkSoft)
                 }
             }
-            .padding(.horizontal, 16).padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(isCurrent ? DS.Colors.paper : DS.Colors.paperSunken)
-                    .shadow(color: .black.opacity(isCurrent ? 0.07 : 0), radius: 12, y: 4)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(isCurrent ? DS.Colors.accent.opacity(0.5) : .clear, lineWidth: 1.5)
-            )
+            .padding(14)
+            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(isCurrent ? DS.Colors.accent : DS.Colors.line, lineWidth: isCurrent ? 1.5 : 1))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isCurrent ? .isSelected : [])
+    }
+
+    private func newRow(_ code: String) -> some View {
+        Button {
+            onSetup(code)
+            dismiss()
+        } label: {
+            HStack(spacing: 16) {
+                cover(code, filled: false, width: 32)
+                Text(languageName(code))
+                    .font(DS.Font.ui(17, weight: .medium))
+                    .foregroundStyle(DS.Colors.ink)
+                Spacer()
+                Image(systemName: "plus")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(DS.Colors.inkSoft)
+            }
+            .frame(minHeight: 62)
+            .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

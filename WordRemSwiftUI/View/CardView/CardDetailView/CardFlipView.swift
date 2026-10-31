@@ -69,6 +69,10 @@ struct CardFlipView: View {
             )
             }
         }
+        // Masaya bırakılmış fişler gibi: biri sola, biri sağa hafif yatık
+        .rotationEffect(.degrees(index % 2 == 0 ? -0.8 : 0.6))
+        .shadow(color: Color(red: 0.24, green: 0.16, blue: 0.08).opacity(0.06), radius: 8, y: 5)
+        .padding(.vertical, 2)
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.35)) {

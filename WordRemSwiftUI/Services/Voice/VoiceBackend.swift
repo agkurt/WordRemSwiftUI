@@ -91,7 +91,8 @@ final class VoiceBackend {
     private var appUserId: String { Purchases.isConfigured ? Purchases.shared.appUserID : UserStore.shared.userId.uuidString }
 
     /// Ses hızı hep doğal (yapay yavaşlatma sesi bulanıklaştırıyor); yavaşlık talimatla sağlanır
-    private var speechSpeed: Double { 1.0 }
+    /// Lupa'nın konuşma hızı (Ayarlar)
+    private var speechSpeed: Double { TutorPrefs.speed }
 
     /// quality: "high" → tam model (demo ve dersler), "standard" → mini (serbest sohbet)
     func createSession(instructions: String, tools: [[String: Any]], quality: String = "standard", engine: String = VoiceEngineChoice.current) async throws -> Grant {

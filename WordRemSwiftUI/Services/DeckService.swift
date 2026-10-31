@@ -197,3 +197,8 @@ final class DeckService {
         try? data.write(to: fileURL, options: .atomic)
     }
 }
+
+extension Notification.Name {
+    /// Sesli dersten desteye kart düştü: Destelerim listesi yenilensin
+    static let pathMistakesDeckCreated = Notification.Name("pathMistakesDeckCreated")
+}

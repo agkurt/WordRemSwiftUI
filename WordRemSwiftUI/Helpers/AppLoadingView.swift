@@ -12,14 +12,13 @@ struct AppLoadingView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            ProgressView()
-                .tint(DS.Colors.muted)
-                .scaleEffect(1.2)
+            // Yüklenirken dört ayraç hafifçe sallanır
+            BookmarkMark(mood: .speaking, width: 12)
 
             if let message {
                 Text(message)
                     .font(.system(size: 14))
-                    .foregroundStyle(Color(hex: "#8A8277"))
+                    .foregroundStyle(DS.Colors.muted)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }

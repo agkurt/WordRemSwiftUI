@@ -46,15 +46,16 @@ struct QuizSessionView: View {
                             .foregroundStyle(DS.Colors.inkSoft)
                             .frame(width: 36, height: 36)
                     }
-                    GeometryReader { geo in
-                        ZStack(alignment: .leading) {
-                            Capsule().fill(DS.Colors.line)
-                            Capsule().fill(DS.Colors.ink)
-                                .frame(width: geo.size.width * min(1, viewModel.progress))
-                                .animation(.easeOut(duration: 0.35), value: viewModel.progress)
+                    // Her soru bir çentik (defter cetveli gibi)
+                    let parts = max(1, min(viewModel.questions.count, 20))
+                    HStack(spacing: 3) {
+                        ForEach(0..<parts, id: \.self) { i in
+                            Capsule()
+                                .fill(Double(i) < min(1, viewModel.progress) * Double(parts) ? DS.Colors.accent : DS.Colors.line)
+                                .frame(height: 4)
                         }
                     }
-                    .frame(height: 4)
+                    .animation(.easeOut(duration: 0.35), value: viewModel.progress)
                     Text("\(viewModel.currentIndex + 1)/\(viewModel.questions.count)")
                         .font(DS.Font.ui(13, weight: .medium).monospacedDigit())
                         .foregroundStyle(DS.Colors.muted)
@@ -197,19 +198,80 @@ private func quizChoiceStatus(_ option: String, correct: String, answered: Bool,
     return .dimmed
 }
 
-private extension View {
-    /// paperRaised yüzey, 1pt çizgi; cevaptan sonra başarı/hata tonu
-    func quizChoiceSurface(_ status: QuizChoiceStatus, radius: CGFloat = DS.Radius.button) -> some View {
-        let fill: Color = status == .correct ? DS.Colors.successSoft
-            : status == .wrong ? DS.Colors.dangerSoft : DS.Colors.paperRaised
-        let border: Color = status == .correct ? DS.Colors.success
-            : status == .wrong ? DS.Colors.danger : DS.Colors.line
-        let width: CGFloat = (status == .correct || status == .wrong) ? 1.5 : 1
-        return self
-            .background(fill, in: RoundedRectangle(cornerRadius: radius))
-            .overlay(RoundedRectangle(cornerRadius: radius).strokeBorder(border, lineWidth: width))
+/// Seçenek harfi: a, b, c, d…
+private func choiceLetter(_ i: Int) -> String {
+    let letters = Array("abcdefgh")
+    return i < letters.count ? String(letters[i]) : "\(i + 1)"
+}
+
+/// Kırmızı kalemle atılmış çarpı
+private struct PenCross: Shape {
+    func path(in r: CGRect) -> Path {
+        var p = Path()
+        let sx = r.width / 24, sy = r.height / 24
+        p.move(to: CGPoint(x: r.minX + 4 * sx, y: r.minY + 4 * sy))
+        p.addQuadCurve(to: CGPoint(x: r.minX + 20 * sx, y: r.minY + 21 * sy),
+                       control: CGPoint(x: r.minX + 11 * sx, y: r.minY + 11 * sy))
+        p.move(to: CGPoint(x: r.minX + 20 * sx, y: r.minY + 3 * sy))
+        p.addQuadCurve(to: CGPoint(x: r.minX + 3 * sx, y: r.minY + 20 * sy),
+                       control: CGPoint(x: r.minX + 12 * sx, y: r.minY + 10 * sy))
+        return p
+    }
+}
+
+/// Cevap işareti: doğruya yeşil kalem tiki, yanlışa kırmızı kalem çarpısı (kalemle çizilir gibi)
+private struct ChoiceMark: View {
+    let status: QuizChoiceStatus
+    var size: CGFloat = 22
+
+    var body: some View {
+        ZStack {
+            PenTick()
+                .trim(from: 0, to: status == .correct ? 1 : 0)
+                .stroke(DS.Colors.success, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+            PenCross()
+                .trim(from: 0, to: status == .wrong ? 1 : 0)
+                .stroke(DS.Colors.redPen, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                .padding(size * 0.1)
+        }
+        .frame(width: size, height: size * 0.86)
+        .animation(.easeOut(duration: 0.3), value: status)
+        .accessibilityHidden(true)
+    }
+}
+
+/// Seçenek metni: yanlış seçilen kırmızı kalemle üstü çizili
+private func choiceText(_ s: String, status: QuizChoiceStatus, font: Font) -> some View {
+    Text(s)
+        .strikethrough(status == .wrong, color: DS.Colors.redPen)
+        .font(font)
+        .foregroundStyle(status == .wrong ? DS.Colors.inkSoft : DS.Colors.ink)
+}
+
+/// Fiş kartı biçimli kelime kutucuğu (boşluk doldurma, cümle kurma)
+private struct ChoiceTile: View {
+    let word: String
+    let status: QuizChoiceStatus
+    var fontSize: CGFloat = 17
+    var minHeight: CGFloat = 52
+
+    var body: some View {
+        choiceText(word, status: status, font: DS.Font.display(fontSize, weight: .medium))
+            .multilineTextAlignment(.center)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, minHeight: minHeight)
+            .background(status == .correct ? DS.Colors.successSoft : DS.Colors.paperRaised,
+                        in: RoundedRectangle(cornerRadius: 6))
+            .overlay(RoundedRectangle(cornerRadius: 6)
+                .strokeBorder(status == .correct ? DS.Colors.success : DS.Colors.line, lineWidth: 1))
+            .overlay(alignment: .topTrailing) {
+                if status == .correct || status == .wrong {
+                    ChoiceMark(status: status, size: 16).padding(5)
+                }
+            }
             .opacity(status == .dimmed ? 0.5 : 1)
-            .contentShape(RoundedRectangle(cornerRadius: radius))
+            .contentShape(RoundedRectangle(cornerRadius: 6))
     }
 }
 
@@ -219,11 +281,15 @@ private struct QuizQuestionCard: View {
     let modeTitle: String
 
     var body: some View {
+        // Fiş kartı: üstte terrakota çizgi, altında açık mavi satırlar
         VStack(alignment: .leading, spacing: 12) {
-            Eyebrow(text: modeTitle)
+            Eyebrow(text: modeTitle, color: DS.Colors.accentText)
+                .padding(.bottom, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.accent).frame(height: 2).padding(.horizontal, -24) }
 
             Text(AL.s(.quizMeaningOf))
-                .font(DS.Font.ui(15, weight: .medium))
+                .font(.system(size: 16, design: .serif).italic())
                 .foregroundStyle(DS.Colors.muted)
 
             Text(question.wordInfo.names)
@@ -235,14 +301,23 @@ private struct QuizQuestionCard: View {
             if !question.wordInfo.descriptions.isEmpty {
                 Text(question.wordInfo.descriptions)
                     .font(DS.Font.display(17, weight: .regular).italic())
-                    .foregroundStyle(DS.Colors.inkSoft)
+                    .foregroundStyle(DS.Colors.slate)
                     .lineLimit(2)
             }
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 24))
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(DS.Colors.line, lineWidth: 1))
+        .background {
+            ZStack(alignment: .top) {
+                DS.Colors.paperRaised
+                RuledLines(pitch: 36, color: DS.Colors.cardRule).padding(.top, 58)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(DS.Colors.line, lineWidth: 1))
+        .rotationEffect(.degrees(-0.8))
+        .shadow(color: Color(red: 0.24, green: 0.16, blue: 0.08).opacity(0.08), radius: 12, y: 8)
+        .padding(.vertical, 4)
     }
 }
 
@@ -261,10 +336,12 @@ private struct MultipleChoiceOptions: View {
     }
 
     var body: some View {
-        VStack(spacing: 10) {
-            ForEach(options, id: \.self) { option in
+        // Çizgili defter satırları
+        VStack(spacing: 0) {
+            ForEach(Array(options.enumerated()), id: \.element) { index, option in
                 OptionRow(
                     option: option,
+                    letter: choiceLetter(index),
                     status: quizChoiceStatus(option, correct: correctAnswer, answered: isAnswered, picked: picked),
                     onSelect: {
                         picked = option
@@ -275,36 +352,40 @@ private struct MultipleChoiceOptions: View {
                 .animation(.easeOut(duration: 0.15), value: isAnswered)
             }
         }
+        .overlay(alignment: .top) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
         .onChange(of: options) { _ in picked = nil }
     }
 }
 
+/// Defter satırı: solda harf (cevaptan sonra kalem işareti), doğru satır yeşil zemin, yanlış üstü çizili
 private struct OptionRow: View {
     let option: String
+    let letter: String
     let status: QuizChoiceStatus
     let onSelect: () -> Void
 
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: 12) {
-                Text(option)
-                    .font(DS.Font.ui(17, weight: .medium))
-                    .foregroundStyle(DS.Colors.ink)
+                ZStack {
+                    Text(letter)
+                        .font(.system(size: 16, design: .serif).italic())
+                        .foregroundStyle(DS.Colors.muted)
+                        .opacity(status == .correct || status == .wrong ? 0 : 1)
+                    ChoiceMark(status: status)
+                }
+                .frame(width: 28)
+                choiceText(option, status: status, font: DS.Font.display(19, weight: .medium))
                     .multilineTextAlignment(.leading)
                 Spacer(minLength: 8)
-                if status == .correct {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(DS.Colors.success)
-                } else if status == .wrong {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(DS.Colors.danger)
-                }
             }
-            .padding(.horizontal, 16)
-            .frame(minHeight: 56)
-            .quizChoiceSurface(status)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 10)
+            .frame(minHeight: 58)
+            .background(status == .correct ? DS.Colors.successSoft : .clear)
+            .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
+            .opacity(status == .dimmed ? 0.5 : 1)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -322,37 +403,52 @@ private struct TrueFalseButtons: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            TFButton(title: AL.s(.quizTrue), icon: "checkmark", tint: DS.Colors.success, disabled: isAnswered) {
+            TFButton(title: AL.s(.quizTrue), isTrue: true, disabled: isAnswered) {
                 onAnswer(true)
             }
-            TFButton(title: AL.s(.quizFalse), icon: "xmark", tint: DS.Colors.danger, disabled: isAnswered) {
+            TFButton(title: AL.s(.quizFalse), isTrue: false, disabled: isAnswered) {
                 onAnswer(false)
             }
         }
     }
 }
 
+/// Fiş kartı: üstte kalemle tik ya da çarpı, altında serif başlık
 private struct TFButton: View {
     let title: String
-    let icon: String
-    let tint: Color
+    let isTrue: Bool
     let disabled: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(tint)
+            VStack(spacing: 10) {
+                Group {
+                    if isTrue {
+                        PenTick()
+                            .stroke(DS.Colors.success, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                    } else {
+                        PenCross()
+                            .stroke(DS.Colors.redPen, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                            .padding(2)
+                    }
+                }
+                .frame(width: 26, height: 22)
                 Text(title)
-                    .font(DS.Font.display(20, weight: .semibold))
+                    .font(DS.Font.display(21, weight: .semibold))
                     .foregroundStyle(DS.Colors.ink)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 90)
-            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.button).stroke(DS.Colors.line, lineWidth: 1))
+            .frame(height: 96)
+            .background {
+                ZStack(alignment: .top) {
+                    DS.Colors.paperRaised
+                    Rectangle().fill(DS.Colors.accent).frame(height: 2).padding(.top, 14)
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(DS.Colors.line, lineWidth: 1))
+            .rotationEffect(.degrees(isTrue ? -1 : 1))
             .opacity(disabled ? 0.5 : 1)
         }
         .buttonStyle(.plain)
@@ -375,14 +471,17 @@ private struct WritingInput: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            // Defter satırına yazılır: kutu yok, altında mürekkep çizgi
             TextField(AL.s(.quizTypeMeaning), text: $text)
-                .font(DS.Font.ui(17, weight: .medium))
+                .font(DS.Font.display(22, weight: .medium))
                 .foregroundStyle(DS.Colors.ink)
                 .tint(DS.Colors.accent)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 4)
                 .frame(height: 56)
-                .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
-                .overlay(RoundedRectangle(cornerRadius: DS.Radius.button).stroke(DS.Colors.line, lineWidth: 1))
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(isAnswered ? DS.Colors.line : DS.Colors.inkSoft).frame(height: 1.5)
+                }
+                .padding(.bottom, 8)
                 .disabled(isAnswered)
                 .autocorrectionDisabled()
                 .autocapitalization(.none)
@@ -419,36 +518,56 @@ private struct ListeningModeInput: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Audio buttons
-            HStack(spacing: 10) {
+            HStack(spacing: 14) {
+                // Mühür biçimli çal düğmesi
                 Button {
                     TTSManager.shared.speak(wordToPlay, langCode: langCode)
                 } label: {
-                    Label(AL.s(.quizPlay), systemImage: "play.fill")
-                        .font(DS.Font.ui(14, weight: .semibold))
-                        .foregroundStyle(DS.Colors.paperRaised)
-                        .padding(.horizontal, 18)
-                        .frame(height: 40)
-                        .background(DS.Colors.ink, in: Capsule())
+                    HStack(spacing: 12) {
+                        ZStack {
+                            Circle().fill(DS.Colors.paperRaised)
+                            Circle().strokeBorder(DS.Colors.ink, lineWidth: 2)
+                            Circle()
+                                .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                                .foregroundStyle(DS.Colors.ink)
+                                .padding(5)
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 17, weight: .medium))
+                                .foregroundStyle(DS.Colors.ink)
+                                .offset(x: 1.5)
+                        }
+                        .frame(width: 54, height: 54)
+                        Text(AL.s(.quizPlay))
+                            .font(DS.Font.ui(15, weight: .semibold))
+                            .foregroundStyle(DS.Colors.ink)
+                    }
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                Spacer(minLength: 8)
+                // Yavaş: kâğıt üstünde altı çizili terrakota bağlantı
                 Button {
                     TTSManager.shared.speakSlow(wordToPlay, langCode: langCode)
                 } label: {
                     Label(AL.s(.quizSlow), systemImage: "tortoise")
                         .font(DS.Font.ui(14, weight: .semibold))
-                        .foregroundStyle(DS.Colors.inkSoft)
-                        .padding(.horizontal, 16)
-                        .frame(height: 40)
-                        .overlay(Capsule().stroke(DS.Colors.line, lineWidth: 1))
+                        .foregroundStyle(DS.Colors.accentText)
+                        .padding(.vertical, 6)
+                        .overlay(alignment: .bottom) {
+                            Rectangle().fill(DS.Colors.accentText.opacity(0.5)).frame(height: 1)
+                        }
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
 
-            // Options
-            VStack(spacing: 10) {
-                ForEach(options, id: \.self) { option in
+            // Options: çizgili defter satırları
+            VStack(spacing: 0) {
+                ForEach(Array(options.enumerated()), id: \.element) { index, option in
                     OptionRow(
                         option: option,
+                        letter: choiceLetter(index),
                         status: quizChoiceStatus(option, correct: correctAnswer, answered: isAnswered, picked: picked),
                         onSelect: {
                             picked = option
@@ -459,6 +578,7 @@ private struct ListeningModeInput: View {
                     .animation(.easeOut(duration: 0.15), value: isAnswered)
                 }
             }
+            .overlay(alignment: .top) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
         }
         .onChange(of: options) { _ in picked = nil }
         .onAppear {
@@ -485,13 +605,21 @@ private struct FillInTheBlankInput: View {
     var body: some View {
         VStack(spacing: 14) {
             // Gap sentence
+            // Boşluklu cümle: açık mavi çizgili fiş kartında
             Text(gapSentence)
                 .font(DS.Font.display(24, weight: .medium))
                 .foregroundStyle(DS.Colors.ink)
-                .lineSpacing(4)
+                .lineSpacing(7)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(20)
-                .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: DS.Radius.card))
+                .background {
+                    ZStack(alignment: .top) {
+                        DS.Colors.paperRaised
+                        RuledLines(pitch: 36, color: DS.Colors.cardRule).padding(.top, 18)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(DS.Colors.line, lineWidth: 1))
 
             // Word options grid (2 columns)
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
@@ -500,14 +628,9 @@ private struct FillInTheBlankInput: View {
                         picked = word
                         onSelect(word)
                     } label: {
-                        Text(word)
-                            .font(DS.Font.ui(17, weight: .medium))
-                            .foregroundStyle(DS.Colors.ink)
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 8)
-                            .frame(maxWidth: .infinity, minHeight: 52)
-                            .quizChoiceSurface(quizChoiceStatus(word, correct: correctAnswer,
-                                                                answered: isAnswered, picked: picked))
+                        ChoiceTile(word: word,
+                                   status: quizChoiceStatus(word, correct: correctAnswer,
+                                                            answered: isAnswered, picked: picked))
                     }
                     .buttonStyle(.plain)
                     .disabled(isAnswered)
@@ -536,7 +659,7 @@ private struct SentenceBuilderInput: View {
         VStack(alignment: .leading, spacing: 12) {
             Eyebrow(text: AL.s(.quizTapTranslation), color: DS.Colors.muted)
 
-            // Word chips (flexible grid)
+            // Kelime fişleri (esnek ızgara)
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10),
                                 GridItem(.flexible(), spacing: 10)],
                       spacing: 10) {
@@ -545,15 +668,10 @@ private struct SentenceBuilderInput: View {
                         picked = word
                         onSelect(word)
                     } label: {
-                        Text(word)
-                            .font(DS.Font.ui(16, weight: .medium))
-                            .foregroundStyle(DS.Colors.ink)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 6)
-                            .frame(maxWidth: .infinity, minHeight: 46)
-                            .quizChoiceSurface(quizChoiceStatus(word, correct: correctAnswer,
-                                                                answered: isAnswered, picked: picked),
-                                               radius: 12)
+                        ChoiceTile(word: word,
+                                   status: quizChoiceStatus(word, correct: correctAnswer,
+                                                            answered: isAnswered, picked: picked),
+                                   fontSize: 16, minHeight: 46)
                     }
                     .buttonStyle(.plain)
                     .disabled(isAnswered)
@@ -565,31 +683,45 @@ private struct SentenceBuilderInput: View {
 }
 
 // MARK: - Feedback Banner
+/// Öğretmen notu: doğruysa yeşil kalem tiki, yanlışsa kenarda kırmızı kalem çizgisi ve doğru cevap
 private struct QuizFeedbackBanner: View {
     let isCorrect: Bool
     let correctAnswer: String
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: isCorrect ? "checkmark" : "xmark")
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(isCorrect ? DS.Colors.success : DS.Colors.danger)
-                .frame(width: 28, height: 28)
-                .overlay(Circle().stroke((isCorrect ? DS.Colors.success : DS.Colors.danger).opacity(0.5), lineWidth: 1))
+            Group {
+                if isCorrect {
+                    PenTick()
+                        .stroke(DS.Colors.success, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                } else {
+                    PenCross()
+                        .stroke(DS.Colors.redPen, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                        .padding(2)
+                }
+            }
+            .frame(width: 26, height: 22)
+            .padding(.top, 2)
             VStack(alignment: .leading, spacing: 4) {
                 Text(isCorrect ? AL.s(.quizCorrectBang) : AL.s(.quizNotQuite))
-                    .font(DS.Font.display(20, weight: .bold))
-                    .foregroundStyle(isCorrect ? DS.Colors.success : DS.Colors.danger)
+                    .font(DS.Font.display(20, weight: .bold).italic())
+                    .foregroundStyle(isCorrect ? DS.Colors.success : DS.Colors.redPen)
                 if !isCorrect {
                     Text(AL.f(.quizAnswerFmt, correctAnswer))
-                        .font(DS.Font.ui(16, weight: .medium))
+                        .font(DS.Font.display(18, weight: .medium))
                         .foregroundStyle(DS.Colors.ink)
                 }
             }
             Spacer(minLength: 0)
         }
         .padding(16)
-        .background(isCorrect ? DS.Colors.successSoft : DS.Colors.dangerSoft,
-                    in: RoundedRectangle(cornerRadius: DS.Radius.button))
+        .background(isCorrect ? DS.Colors.successSoft : DS.Colors.note,
+                    in: RoundedRectangle(cornerRadius: 6))
+        .overlay(alignment: .leading) {
+            // Yanlışta öğretmenin kırmızı kalem kenar çizgisi
+            if !isCorrect {
+                Rectangle().fill(DS.Colors.redPen).frame(width: 2.5).padding(.vertical, 10)
+            }
+        }
     }
 }

@@ -8,7 +8,6 @@ import SwiftUI
 enum AppTab: Int, CaseIterable {
     case today
     case words
-    case path
     case profile
     /// Sekme çubuğunda yok; Bugün ekranındaki kupa butonundan sheet olarak açılır
     case leaderboard
@@ -18,9 +17,8 @@ enum AppTab: Int, CaseIterable {
 
     var icon: String {
         switch self {
-        case .today:       return "waveform"
-        case .words:       return "text.book.closed"
-        case .path:        return "square.grid.2x2"
+        case .today:       return "book.pages"
+        case .words:       return "books.vertical"
         case .profile:     return "person"
         case .leaderboard: return "trophy"
         }
@@ -29,8 +27,7 @@ enum AppTab: Int, CaseIterable {
     var label: String {
         switch self {
         case .today:       return AL.s(.tabTalk)
-        case .words:       return AL.s(.tabWords)
-        case .path:        return AL.s(.tabPractice)
+        case .words:       return NoteText.title
         case .profile:     return AL.s(.tabProfile)
         case .leaderboard: return AL.s(.tabRank)
         }
@@ -41,10 +38,9 @@ struct MainTabView: View {
     @EnvironmentObject var tabBarModifier: TabBarModifier
     @EnvironmentObject var langManager: LanguageManager
     @StateObject private var homeVM = HomeScreenViewModel()
-    @StateObject private var pathVM = PathMapViewModel()
     @State private var selectedTab: AppTab = DemoData.startTab ?? .today
     @State private var showRoutePaywall = false
-    @State private var wordsSegment: WordsView.Segment = .learned
+    @State private var wordsSegment: WordsView.Segment = .decks
     @State private var showCreateDeck = false
     @State private var showLeaderboard = false
     @Environment(\.scenePhase) private var scenePhase
@@ -53,13 +49,12 @@ struct MainTabView: View {
         Group {
             switch selectedTab {
             case .today, .leaderboard:
-                TalkHomeView(onOpenLeaderboard: { showLeaderboard = true }, onOpenSettings: { selectedTab = .profile })
+                TalkHomeView(onOpenLeaderboard: { showLeaderboard = true })
             case .words:
-                WordsView(homeVM: homeVM, showCreateDeck: $showCreateDeck, segment: $wordsSegment)
-            case .path:
-                PathMapView(vm: pathVM)
+                WordsView(homeVM: homeVM, showCreateDeck: $showCreateDeck, segment: $wordsSegment,
+                          onOpenLeaderboard: { showLeaderboard = true })
             case .profile:
-                NavigationStack { ProfileView() }
+                NavigationStack { ProfileView(onOpenLeaderboard: { showLeaderboard = true }) }
             }
         }
         // Dil değişince sekme içeriği baştan çizilsin: AL.s ile okunan metinler gözlemlenmiyor,
@@ -89,7 +84,16 @@ struct MainTabView: View {
         // Bildirim butonlarının (Hatırladım/Unuttum) adları da yeni dilde olsun
         .onChange(of: langManager.currentLanguageCode) { _ in SmartReminders.registerCategories() }
         .onChange(of: selectedTab) { Track.screen(Self.screenName($0)) }
-        .onAppear { Track.screen(Self.screenName(selectedTab)) }
+        .onAppear {
+            Track.screen(Self.screenName(selectedTab))
+            // Sesli dersler eskiden XP vermiyordu: bir kez, biten dersler kadar XP yazılır (sıralamada görünsün)
+            let snap = UserStore.shared.snapshot
+            if snap.totalXp == 0, !UserDefaults.standard.bool(forKey: "xp.voiceBackfilled") {
+                UserDefaults.standard.set(true, forKey: "xp.voiceBackfilled")
+                let xp = (snap.voiceGoalsDone?.count ?? 0) * 25 + (snap.voiceSeconds ?? 0) / 10
+                if xp > 0 { Task { await DataService.shared.awardXP(xp) } }
+            }
+        }
         // "Rem": alışkanlık saati, widget/bildirim cevaplarını oku, arka plana geçerken hatırlatmaları kur
         .onChange(of: scenePhase) { phase in
             switch phase {
@@ -116,7 +120,8 @@ struct MainTabView: View {
         }
     }
 
-    private var showsAddButton: Bool { selectedTab == .words && wordsSegment == .decks }
+    /// Defterlerim'de yeni deste rafta "Yeni defter" kapağıyla açılır; yüzen + düğmesi yok
+    private var showsAddButton: Bool { false }
 
     // MARK: - Bottom Bar
     private var bottomBar: some View {
@@ -166,7 +171,6 @@ struct MainTabView: View {
         switch tab {
         case .today: return "home"
         case .words: return "words"
-        case .path: return "practice"
         case .profile: return "profile"
         case .leaderboard: return "leaderboard"
         }
@@ -187,6 +191,11 @@ private struct TabBarItem: View {
                     .frame(height: 24)
                 Text(tab.label)
                     .font(DS.Font.ui(11, weight: isSelected ? .semibold : .medium))
+                // Seçili sekmenin altında kısa terrakota kalem çizgisi
+                Capsule()
+                    .fill(DS.Colors.accent)
+                    .frame(width: 16, height: 2)
+                    .opacity(isSelected ? 1 : 0)
             }
             .foregroundStyle(isSelected ? DS.Colors.ink : DS.Colors.muted)
             .frame(maxWidth: .infinity)

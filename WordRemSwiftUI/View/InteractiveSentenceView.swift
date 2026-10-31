@@ -18,95 +18,103 @@ struct InteractiveSentenceView: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            // Play button & Sentence
+            // Dinle düğmesi & cümle
             HStack(alignment: .top, spacing: 12) {
-                // Speaker button
+                // Dinle: kâğıt üstünde mürekkep halka; çalarken imza rengiyle dolar
                 Button {
                     viewModel.speak(text: sentence, languageCode: targetLanguageCode)
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(
-                                viewModel.isPlaying
-                                ? AppTheme.Colors.primaryOrange
-                                : AppTheme.Colors.primaryOrange.opacity(0.15)
-                            )
-                            .frame(width: 36, height: 36)
-                        
-                        Image(systemName: viewModel.isPlaying ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(
-                                viewModel.isPlaying
-                                ? .white
-                                : AppTheme.Colors.primaryOrange
-                            )
+                            .fill(viewModel.isPlaying ? DS.Colors.accent : DS.Colors.paperRaised)
+                        Circle()
+                            .strokeBorder(viewModel.isPlaying ? DS.Colors.accent : DS.Colors.line, lineWidth: 1)
+
+                        Image(systemName: viewModel.isPlaying ? "speaker.wave.3.fill" : "speaker.wave.2")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(viewModel.isPlaying ? DS.Colors.paperRaised : DS.Colors.inkSoft)
                     }
+                    .frame(width: 34, height: 34)
                 }
+                .buttonStyle(.plain)
                 .animation(.easeInOut(duration: 0.2), value: viewModel.isPlaying)
-                
+
                 VStack(alignment: .leading, spacing: 8) {
-                    // Original sentence with translate button
-                    HStack(alignment: .top, spacing: 8) {
-                        AlignedSentenceText(
-                            sentence: sentence,
-                            highlightedWord: highlightedWord,
-                            translatedSentence: viewModel.translatedSentence,
-                            wordAlignments: viewModel.wordAlignments,
-                            isOriginal: true
-                        )
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        // Translate button
-                        if !viewModel.showTranslation && AIEngine.isAvailable {
-                            Button {
-                                Task {
-                                    await viewModel.translateSentence(
-                                        sentence,
-                                        fromLang: targetLanguageCode,
-                                        toLang: nativeLanguageCode
-                                    )
-                                }
-                            } label: {
-                                Image(systemName: "arrow.down.circle.fill")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(AppTheme.Colors.primaryOrange)
+                    // Asıl cümle; aranan kelime fosforlu kalemle
+                    AlignedSentenceText(
+                        sentence: sentence,
+                        highlightedWord: highlightedWord,
+                        translatedSentence: viewModel.translatedSentence,
+                        wordAlignments: viewModel.wordAlignments,
+                        isOriginal: true
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 6)
+
+                    // Çeviri bağlantısı: altı çizili küçük terrakota yazı
+                    if !viewModel.showTranslation && AIEngine.isAvailable {
+                        Button {
+                            Task {
+                                await viewModel.translateSentence(
+                                    sentence,
+                                    fromLang: targetLanguageCode,
+                                    toLang: nativeLanguageCode
+                                )
                             }
+                        } label: {
+                            HStack(spacing: 5) {
+                                Image(systemName: "arrow.down")
+                                    .font(.system(size: 11, weight: .semibold))
+                                Text(PageText.translation)
+                                    .font(DS.Font.ui(13, weight: .semibold))
+                                    .underline(true, color: DS.Colors.accent.opacity(0.5))
+                            }
+                            .foregroundStyle(DS.Colors.accentText)
+                            .frame(minHeight: 28)
+                            .contentShape(Rectangle())
                         }
+                        .buttonStyle(.plain)
                     }
-                    
-                    // Translated sentence (if shown)
+
+                    // Çeviri (gösteriliyorsa): kenara kurşun kalemle yazılmış not gibi
                     if viewModel.showTranslation {
                         if viewModel.isLoadingTranslation {
                             HStack(spacing: 8) {
                                 ProgressView()
-                                    .tint(AppTheme.Colors.primaryOrange)
+                                    .tint(DS.Colors.muted)
                                     .scaleEffect(0.8)
                                 Text(AL.s(.cardTranslating))
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundStyle(AppTheme.Colors.textSecondary)
+                                    .font(DS.Font.ui(12, weight: .semibold))
+                                    .foregroundStyle(DS.Colors.muted)
                             }
-                            .padding(.leading, 4)
                         } else if let translated = viewModel.translatedSentence {
                             HStack(alignment: .top, spacing: 8) {
                                 AlignedSentenceText(
                                     sentence: translated,
-                                    highlightedWord: "",  // No highlight in translated
+                                    highlightedWord: "",  // Çeviride vurgu yok
                                     translatedSentence: sentence,
                                     wordAlignments: viewModel.wordAlignments,
                                     isOriginal: false
                                 )
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                                // Hide button
+                                .padding(.leading, 10)
+                                .overlay(alignment: .leading) {
+                                    Rectangle().fill(DS.Colors.margin).frame(width: 1.5)
+                                }
+
+                                // Gizle
                                 Button {
                                     withAnimation(.easeInOut(duration: 0.2)) {
                                         viewModel.hideTranslation()
                                     }
                                 } label: {
-                                    Image(systemName: "arrow.up.circle.fill")
-                                        .font(.system(size: 18))
-                                        .foregroundStyle(AppTheme.Colors.textSecondary)
+                                    Image(systemName: "chevron.up")
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundStyle(DS.Colors.muted)
+                                        .frame(width: 28, height: 28)
+                                        .contentShape(Rectangle())
                                 }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
@@ -127,12 +135,13 @@ private struct AlignedSentenceText: View {
     var body: some View {
         let words = sentence.split(separator: " ")
         
-        FlowLayout(spacing: 6) {
+        FlowLayout(spacing: 4) {
             ForEach(Array(words.enumerated()), id: \.offset) { item in
                 WordView(
                     word: String(item.element),
                     highlightedWord: highlightedWord,
-                    wordAlignments: wordAlignments
+                    wordAlignments: wordAlignments,
+                    isOriginal: isOriginal
                 )
             }
         }
@@ -143,6 +152,7 @@ private struct AlignedSentenceText: View {
         let word: String
         let highlightedWord: String
         let wordAlignments: [String: (translation: String, colorIndex: Int)]
+        var isOriginal: Bool = true
 
         var body: some View {
             let cleanWord = word.trimmingCharacters(in: .punctuationCharacters).lowercased()
@@ -150,21 +160,20 @@ private struct AlignedSentenceText: View {
                 cleanWord.contains(highlightedWord.lowercased())
 
             Text(word)
-                .font(.system(size: 14, weight: .semibold))
+                .font(DS.Font.display(16, weight: isHighlighted ? .semibold : .regular))
+                .italic(!isOriginal)
                 .foregroundStyle(
                     isHighlighted
-                    ? AppTheme.Colors.primaryOrange
-                    : AppTheme.Colors.textSecondary
+                    ? DS.Colors.ink
+                    : (isOriginal ? DS.Colors.inkSoft : DS.Colors.muted)
                 )
-                .fontWeight(isHighlighted ? .semibold : .regular)
-                .padding(.horizontal, isHighlighted ? 6 : 2)
-                .padding(.vertical, isHighlighted ? 3 : 0)
-                .background(
-                    isHighlighted
-                    ? AppTheme.Colors.primaryOrange.opacity(0.15)
-                    : Color.clear
-                )
-                .cornerRadius(6)
+                .padding(.horizontal, 2)
+                // Fosforlu kalem: köşesiz, satırın alt yarısına daha çok taşar
+                .background {
+                    if isHighlighted {
+                        DS.Colors.highlight.padding(.top, 3).padding(.horizontal, -1)
+                    }
+                }
                 .fixedSize()
         }
     }

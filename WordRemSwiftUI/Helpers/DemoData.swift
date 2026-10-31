@@ -28,6 +28,80 @@ enum DemoData {
         #endif
     }
 
+    /// `-DemoStage lesson|plan|notebook` → mağaza görseli için o ekran hazır içerikle açılır
+    static var stage: String? {
+        #if DEBUG
+        return UserDefaults.standard.string(forKey: "DemoStage")
+        #else
+        return nil
+        #endif
+    }
+
+    private static var target: String { (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased() }
+
+    /// Ders sayfası: Lupa, öğrencinin doğru cevapları ve sıradaki fosforlu ifade
+    static var lessonPage: (turns: [(role: RealtimeVoiceSession.Turn.Role, text: String, detail: String?)], phrase: (text: String, translation: String)) {
+        if target == "es" {
+            return ([
+                (.ai, "Hi Ahmet! Today you'll learn to talk about your hobbies. First, how are you?", nil),
+                (.user, "Estoy bien, gracias.", nil),
+                (.ai, "Lovely! Now tell me what you enjoy. In Spanish you say:", nil),
+            ], ("Me gusta leer.", "I like reading."))
+        }
+        return ([
+            (.ai, "Merhaba Ahmet! Bugün hobilerini anlatmayı öğreneceğiz. Önce söyle, nasılsın?", nil),
+            (.user, "I'm good, thanks.", nil),
+            (.ai, "Harika! Peki boş zamanlarında ne yapmayı seversin? İngilizcede şöyle denir:", nil),
+        ], ("I love reading books.", "Kitap okumayı severim."))
+    }
+
+    /// Defterlerim: geçmiş sohbet sayfaları ve işaretli kelimeler
+    @MainActor
+    private static func seedNotebook(_ now: Date) {
+        let cal = Calendar.current
+        let chapters = ScenarioStore.shared.chapters
+        guard let ch = chapters.first, ch.goals.count > 2 else { return }
+        let es = target == "es"
+        let pages: [(Int, [NotebookPage.Line], [String])] = es ? [
+            (0, [.init(role: .ai, text: "Hi Ahmet! Let's greet someone new. How do you say hello in Spanish?"),
+                 .init(role: .card, text: "¡Hola! Me llamo Ahmet.", detail: "Hi! My name is Ahmet."),
+                 .init(role: .user, text: "¡Hola! Me llamo Ahmet."),
+                 .init(role: .ai, text: "Perfect! And when you meet someone, you can add:"),
+                 .init(role: .card, text: "¡Mucho gusto!", detail: "Nice to meet you!"),
+                 .init(role: .user, text: "¡Mucho gusto!")], ["hola", "gusto"]),
+            (1, [.init(role: .ai, text: "Where are you from, Ahmet? Answer in Spanish:"),
+                 .init(role: .card, text: "Soy de Turquía. Vivo en Estambul.", detail: "I'm from Turkey. I live in Istanbul."),
+                 .init(role: .user, text: "Soy de Turquía. Vivo en Estambul."),
+                 .init(role: .ai, text: "Great! And what do you do?"),
+                 .init(role: .card, text: "Soy diseñador.", detail: "I'm a designer."),
+                 .init(role: .user, text: "Soy diseñador.")], ["vivo", "diseñador"]),
+        ] : [
+            (0, [.init(role: .ai, text: "Merhaba Ahmet! Biriyle tanışırken İngilizce nasıl selam verirsin?"),
+                 .init(role: .card, text: "Hi! My name is Ahmet.", detail: "Merhaba! Benim adım Ahmet."),
+                 .init(role: .user, text: "Hi! My name is Ahmet."),
+                 .init(role: .ai, text: "Mükemmel! Tanışınca şunu da ekleyebilirsin:"),
+                 .init(role: .card, text: "Nice to meet you!", detail: "Tanıştığıma memnun oldum!"),
+                 .init(role: .user, text: "Nice to meet you!")], ["meet", "name"]),
+            (1, [.init(role: .ai, text: "Nerelisin Ahmet? İngilizce cevap ver:"),
+                 .init(role: .card, text: "I'm from Turkey. I live in Istanbul.", detail: "Türkiyeliyim. İstanbul'da yaşıyorum."),
+                 .init(role: .user, text: "I'm from Turkey. I live in Istanbul."),
+                 .init(role: .ai, text: "Harika! Peki ne iş yapıyorsun?"),
+                 .init(role: .card, text: "I work as a designer.", detail: "Tasarımcı olarak çalışıyorum."),
+                 .init(role: .user, text: "I work as a designer.")], ["live", "designer"]),
+        ]
+        let store = ScenarioStore.shared
+        for (k, page) in pages.enumerated() {
+            let goal = ch.goals[page.0]
+            let date = cal.date(byAdding: .day, value: -(pages.count - k), to: now) ?? now
+            let id = UUID(uuidString: String(format: "00000000-0000-0000-0000-%012d", k + 1)) ?? UUID()
+            let p = NotebookPage(id: id, date: date, language: target,
+                                 kicker: "\(ch.localizedTitle) · \(PageText.page(store.pageNumber(of: goal)))",
+                                 title: goal.localizedTitle, lines: page.1, done: true)
+            NotebookStore.shared.save(p)
+            for m in page.2 where !NotebookStore.shared.isMarked(m, in: id) { NotebookStore.shared.toggleMark(m, in: id) }
+        }
+    }
+
     static var autoOpenQuiz: Bool {
         #if DEBUG
         return UserDefaults.standard.bool(forKey: "DemoQuiz")
@@ -97,6 +171,8 @@ enum DemoData {
         let days = (1...12).compactMap { cal.date(byAdding: .day, value: -$0, to: now) }.map(fmt.string)
         defaults?.set(days, forKey: "reviewActiveDays")
         ReviewScheduler.shared.reload()
+        UserStore.shared.update { $0.voiceSeconds = max($0.voiceSeconds ?? 0, 42 * 60) }
+        seedNotebook(now)
     }
 
     /// Ders sonu ekranı önizlemesi (ekran görüntüsü): mağaza diline uygun başlık ve ifadeler

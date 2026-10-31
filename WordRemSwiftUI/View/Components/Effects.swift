@@ -11,9 +11,10 @@ import UIKit
 
 // MARK: - Titreşim
 enum Haptics {
-    static func success() { UINotificationFeedbackGenerator().notificationOccurred(.success) }
-    static func warning() { UINotificationFeedbackGenerator().notificationOccurred(.warning) }
-    static func tap() { UIImpactFeedbackGenerator(style: .soft).impactOccurred() }
+    // Ayarlardan titreşim kapatılabilir
+    static func success() { guard TutorPrefs.haptics else { return }; UINotificationFeedbackGenerator().notificationOccurred(.success) }
+    static func warning() { guard TutorPrefs.haptics else { return }; UINotificationFeedbackGenerator().notificationOccurred(.warning) }
+    static func tap() { guard TutorPrefs.haptics else { return }; UIImpactFeedbackGenerator(style: .soft).impactOccurred() }
 }
 
 // MARK: - Konfeti
@@ -135,5 +136,21 @@ struct LiveFlame: View {
             .rotationEffect(.degrees(flicker ? -4 : 3), anchor: .bottom)
             .animation(.easeInOut(duration: 0.55).repeatForever(autoreverses: true), value: flicker)
             .onAppear { flicker = true }
+    }
+}
+
+// MARK: - Speak Button (cihaz içi seslendirme)
+struct SpeakButton: View {
+    let text: String
+    let langCode: String
+    var body: some View {
+        Button {
+            TTSManager.shared.speak(text, langCode: langCode)
+        } label: {
+            Image(systemName: "speaker.wave.2")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(DS.Colors.accentText)
+                .frame(width: 44, height: 44)
+        }
     }
 }

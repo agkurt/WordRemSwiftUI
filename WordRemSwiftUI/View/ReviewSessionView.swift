@@ -74,14 +74,16 @@ struct ReviewSessionView: View {
                     .frame(width: 36, height: 36)
             }
             .accessibilityLabel(langManager.s(.reviewClose))
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(DS.Colors.line)
-                    Capsule().fill(DS.Colors.ink)
-                        .frame(width: geo.size.width * min(1, CGFloat(reviewedCount) / CGFloat(total)))
+            // Her kart bir çentik
+            let parts = min(total, 20)
+            HStack(spacing: 3) {
+                ForEach(0..<parts, id: \.self) { i in
+                    Capsule()
+                        .fill(Double(i) < Double(reviewedCount) * Double(parts) / Double(max(1, total)) ? DS.Colors.accent : DS.Colors.line)
+                        .frame(height: 4)
                 }
             }
-            .frame(height: 4)
+            .animation(.easeOut(duration: 0.25), value: reviewedCount)
             Text("\(min(reviewedCount, total))/\(total)")
                 .font(DS.Font.ui(13, weight: .medium).monospacedDigit())
                 .foregroundStyle(DS.Colors.muted)
@@ -90,11 +92,15 @@ struct ReviewSessionView: View {
         .padding(.bottom, 24)
     }
 
-    // MARK: - Card
+    // MARK: - Card: fiş kartı (üstte kırmızı çizgi, açık mavi satırlar; arkada deste)
     private func card(_ word: LearnedWord) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Eyebrow(text: Locale(identifier: langManager.currentLanguageCode)
-                .localizedString(forLanguageCode: word.languageCode.lowercased()) ?? word.languageCode)
+                .localizedString(forLanguageCode: word.languageCode.lowercased()) ?? word.languageCode,
+                    color: DS.Colors.accentText)
+                .padding(.bottom, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.accent).frame(height: 2).padding(.horizontal, -28) }
             Spacer()
             HStack(alignment: .center) {
                 Text(word.term)
@@ -113,10 +119,9 @@ struct ReviewSessionView: View {
             }
             Spacer()
             VStack(alignment: .leading, spacing: 12) {
-                Rectangle().fill(revealed ? DS.Colors.accent : DS.Colors.line).frame(width: 32, height: 2)
                 Text(word.meaning)
                     .font(DS.Font.display(28, weight: .regular))
-                    .foregroundStyle(DS.Colors.inkSoft)
+                    .foregroundStyle(DS.Colors.slate)
                     .opacity(revealed ? 1 : 0)
                     .blur(radius: revealed ? 0 : 8)
             }
@@ -124,8 +129,25 @@ struct ReviewSessionView: View {
         }
         .padding(28)
         .frame(maxWidth: .infinity, minHeight: 360, maxHeight: 520, alignment: .leading)
-        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 24))
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(DS.Colors.line, lineWidth: 1))
+        .background {
+            ZStack(alignment: .top) {
+                DS.Colors.paperRaised
+                RuledLines(pitch: 36, color: DS.Colors.cardRule).padding(.top, 66)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(DS.Colors.line, lineWidth: 1))
+        .background {
+            // Destenin bir sonraki kartı arkadan görünür
+            RoundedRectangle(cornerRadius: 10)
+                .fill(DS.Colors.paperSunken)
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(DS.Colors.line))
+                .rotationEffect(.degrees(3.5))
+                .offset(x: 8, y: 6)
+                .opacity(queue.count > 1 ? 1 : 0)
+        }
+        .rotationEffect(.degrees(-1))
+        .shadow(color: Color(red: 0.24, green: 0.16, blue: 0.08).opacity(0.08), radius: 12, y: 8)
         .contentShape(Rectangle())
         .onTapGesture { reveal() }
     }
@@ -180,11 +202,8 @@ struct ReviewSessionView: View {
     private var doneView: some View {
         VStack(alignment: .leading, spacing: 14) {
             Spacer()
-            Image(systemName: "checkmark")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(DS.Colors.success)
-                .frame(width: 48, height: 48)
-                .background(DS.Colors.successSoft, in: Circle())
+            InkStamp(top: Date().formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: OL.nativeLangCode))).uppercased(),
+                     title: "\(reviewedCount)", bottom: "WORDREM", size: 104)
             Text(langManager.s(.reviewDoneTitle))
                 .font(DS.Font.display(40, weight: .bold))
                 .foregroundStyle(DS.Colors.ink)
@@ -196,7 +215,6 @@ struct ReviewSessionView: View {
                 .buttonStyle(InkButtonStyle())
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(ConfettiBurst(origin: .top, count: 70).padding(.horizontal, -24).ignoresSafeArea())
         .onAppear { Haptics.success(); trackEnd("complete") }
     }
 

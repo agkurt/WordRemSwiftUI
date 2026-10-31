@@ -2,7 +2,7 @@
 //  TalkHelpSheets.swift
 //  WordRemSwiftUI
 //
-//  Sesli ekranın sol üst düğmesi (Pingo gibi):
+//  Sesli ekranın sol alt düğmesi:
 //   • Derste "?" → "Takıldın mı?": daha yavaş tekrar et / tekrar açıkla
 //   • Asistanla sohbette → "Bir konu seç": Temel · Hayat · Sosyal ya da kendi konun; AI sohbeti o konuya göre yönlendirir
 //
@@ -81,54 +81,56 @@ struct StuckHelpSheet: View {
     enum Need { case slower, explain }
     var onPick: (Need) -> Void
     @Environment(\.dismiss) private var dismiss
-    @State private var choice: Need?
 
+    // Sayfaya bantlanmış not kâğıdı: seçince hemen uygulanır
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Spacer()
+        StickyNote {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(HelpText.stuckTitle)
+                    .font(DS.Font.display(28, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                Text(HelpText.stuckSub)
+                    .font(.system(size: 16, design: .serif).italic())
+                    .foregroundStyle(DS.Colors.muted)
+                    .padding(.top, 4)
+                    .padding(.bottom, 14)
+                option(.slower, "arrow.triangle.2.circlepath", HelpText.slower)
+                Rectangle().fill(DS.Colors.highlight).frame(height: 1)
+                option(.explain, "book", HelpText.explain)
+                Rectangle().fill(DS.Colors.highlight).frame(height: 1)
                 Button { dismiss() } label: {
-                    Image(systemName: "xmark").font(.system(size: 17, weight: .semibold)).foregroundStyle(DS.Colors.ink)
+                    Text(HelpText.proceed)
+                        .font(DS.Font.ui(17, weight: .medium))
+                        .foregroundStyle(DS.Colors.muted)
+                        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
-            Text(HelpText.stuckTitle)
-                .font(DS.Font.display(30, weight: .bold))
-                .foregroundStyle(DS.Colors.ink)
-            Text(HelpText.stuckSub)
-                .font(DS.Font.ui(16))
-                .foregroundStyle(DS.Colors.muted)
-                .padding(.top, 4)
-                .padding(.bottom, 24)
-            option(.slower, "repeat", HelpText.slower)
-            option(.explain, "book", HelpText.explain).padding(.top, 10)
-            Spacer(minLength: 24)
-            Button(HelpText.proceed) {
-                if let choice { onPick(choice) }
-                dismiss()
-            }
-            .buttonStyle(InkButtonStyle(fill: DS.Colors.accent))
-            .disabled(choice == nil)
-            .opacity(choice == nil ? 0.5 : 1)
         }
-        .padding(24)
-        .presentationDetents([.height(440)])
+        .padding(.horizontal, 28)
+        .padding(.top, 24)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .presentationDetents([.height(380)])
         .presentationDragIndicator(.hidden)
-        .presentationBackground(DS.Colors.paper)
+        .presentationBackground(.clear)
     }
 
     private func option(_ need: Need, _ icon: String, _ title: String) -> some View {
-        let on = choice == need
-        return Button { withAnimation(.easeOut(duration: 0.15)) { choice = need } } label: {
+        Button {
+            onPick(need)
+            dismiss()
+        } label: {
             HStack(spacing: 14) {
-                Image(systemName: icon).font(.system(size: 17, weight: .medium))
-                Text(title).font(DS.Font.ui(18, weight: .medium))
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(DS.Colors.accentText)
+                    .frame(width: 24)
+                Text(title).font(DS.Font.ui(17, weight: .medium)).foregroundStyle(DS.Colors.ink)
                 Spacer()
             }
-            .foregroundStyle(on ? DS.Colors.accent : DS.Colors.inkSoft)
-            .padding(.horizontal, 20)
-            .frame(height: 60)
-            .background(on ? DS.Colors.accent.opacity(0.1) : DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20).stroke(on ? DS.Colors.accent : .clear, lineWidth: 1.5))
+            .frame(height: 56)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -140,68 +142,92 @@ struct TopicPickerSheet: View {
     var onPick: (String, String) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var category: TalkTopic.Category = .basics
-    @State private var writingOwn = false
     @State private var own = ""
+    @FocusState private var ownFocused: Bool
 
+    // Konu dizini: üstte defter sekmeleri, altında çizgili satırlar; en üst satıra kendi konunu yaz
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
+                Text(HelpText.pickTopic)
+                    .font(DS.Font.display(30, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
                 Spacer()
                 Button { dismiss() } label: {
-                    Image(systemName: "xmark").font(.system(size: 17, weight: .semibold)).foregroundStyle(DS.Colors.ink)
+                    Image(systemName: "xmark").font(.system(size: 15, weight: .semibold)).foregroundStyle(DS.Colors.inkSoft)
+                        .frame(width: 44, height: 44)
                 }
             }
-            .padding(.horizontal, 24)
+            .padding(.leading, 24)
+            .padding(.trailing, 12)
             .padding(.top, 20)
-            Text(HelpText.pickTopic)
-                .font(DS.Font.display(30, weight: .bold))
-                .foregroundStyle(DS.Colors.ink)
-                .padding(.bottom, 18)
+            .padding(.bottom, 14)
+            HStack(alignment: .bottom, spacing: 4) {
+                ForEach(TalkTopic.Category.allCases, id: \.self) { c in
+                    let on = category == c
+                    Button { withAnimation(.easeOut(duration: 0.15)) { category = c } } label: {
+                        Text(c.title)
+                            .font(DS.Font.ui(14, weight: on ? .semibold : .regular))
+                            .foregroundStyle(on ? DS.Colors.ink : DS.Colors.muted)
+                            .padding(.horizontal, 16)
+                            .frame(height: on ? 40 : 34)
+                            .background(on ? DS.Colors.paperRaised : DS.Colors.paperSunken,
+                                        in: UnevenRoundedRectangle(topLeadingRadius: 10, topTrailingRadius: 10))
+                            .overlay(UnevenRoundedRectangle(topLeadingRadius: 10, topTrailingRadius: 10).stroke(DS.Colors.line))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.leading, 20)
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 18) {
-                    HStack(spacing: 10) {
-                        ForEach(TalkTopic.Category.allCases, id: \.self) { c in
-                            Button { withAnimation(.easeOut(duration: 0.15)) { category = c } } label: {
-                                Text(c.title)
-                                    .font(DS.Font.ui(16, weight: .semibold))
-                                    .foregroundStyle(category == c ? DS.Colors.paper : DS.Colors.accent)
-                                    .padding(.horizontal, 20)
-                                    .frame(height: 44)
-                                    .background(category == c ? DS.Colors.accent : DS.Colors.accent.opacity(0.1), in: Capsule())
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    if writingOwn {
-                        HStack(spacing: 10) {
-                            TextField(HelpText.ownPlaceholder, text: $own)
-                                .font(DS.Font.ui(16))
-                                .padding(.horizontal, 16)
-                                .frame(height: 50)
-                                .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 16))
-                                .submitLabel(.go)
-                                .onSubmit(startOwn)
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "pencil").foregroundStyle(DS.Colors.accentText).frame(width: 52)
+                        TextField(HelpText.ownPlaceholder, text: $own)
+                            .font(.system(size: 18, design: .serif).italic())
+                            .focused($ownFocused)
+                            .submitLabel(.go)
+                            .onSubmit(startOwn)
+                        if !own.trimmingCharacters(in: .whitespaces).isEmpty {
                             Button(HelpText.start, action: startOwn)
-                                .font(DS.Font.ui(16, weight: .semibold))
-                                .foregroundStyle(DS.Colors.accent)
-                                .disabled(own.trimmingCharacters(in: .whitespaces).isEmpty)
+                                .font(DS.Font.ui(15, weight: .semibold))
+                                .foregroundStyle(DS.Colors.accentText)
                         }
                     }
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
-                        tile(icon: "plus", kicker: HelpText.custom, title: HelpText.createOwn) {
-                            withAnimation { writingOwn = true }
-                        }
-                        ForEach(TalkTopic.all.filter { $0.category == category }) { t in
-                            tile(icon: t.icon, kicker: t.category.title, title: t.title) {
-                                onPick(t.title, t.prompt)
-                                dismiss()
+                    .frame(height: 58)
+                    .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+                    ForEach(TalkTopic.all.filter { $0.category == category }) { t in
+                        Button {
+                            onPick(t.title, t.prompt)
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: t.icon)
+                                    .font(.system(size: 17, weight: .regular))
+                                    .foregroundStyle(DS.Colors.accentText)
+                                    .frame(width: 52)
+                                Text(t.title)
+                                    .font(.system(size: 19, design: .serif))
+                                    .foregroundStyle(DS.Colors.ink)
+                                    .lineLimit(2)
+                                Spacer(minLength: 8)
+                                Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(DS.Colors.muted)
                             }
+                            .frame(minHeight: 58)
+                            .contentShape(Rectangle())
+                            .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
                         }
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 24)
+                .padding(.trailing, 20)
                 .padding(.bottom, 32)
             }
+            .background(alignment: .leading) {
+                Rectangle().fill(DS.Colors.margin).frame(width: 1.5).padding(.leading, 52)
+            }
+            .background(DS.Colors.paperRaised)
+            .overlay(alignment: .top) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
         }
         .presentationDetents([.large])
         .presentationBackground(DS.Colors.paper)
@@ -212,28 +238,5 @@ struct TopicPickerSheet: View {
         guard !text.isEmpty else { return }
         onPick(text, text)
         dismiss()
-    }
-
-    private func tile(icon: String, kicker: String, title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.system(size: 26, weight: .medium))
-                    .foregroundStyle(DS.Colors.accent)
-                    .frame(height: 40)
-                Text(kicker).font(DS.Font.ui(13)).foregroundStyle(DS.Colors.muted)
-                Text(title)
-                    .font(DS.Font.ui(18, weight: .semibold))
-                    .foregroundStyle(DS.Colors.ink)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.85)
-            }
-            .frame(maxWidth: .infinity, minHeight: 150)
-            .padding(.horizontal, 10)
-            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 24))
-            .overlay(RoundedRectangle(cornerRadius: 24).stroke(DS.Colors.line))
-        }
-        .buttonStyle(.plain)
     }
 }

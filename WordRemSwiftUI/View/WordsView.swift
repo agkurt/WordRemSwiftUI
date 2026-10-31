@@ -15,35 +15,56 @@ struct WordsView: View {
     @ObservedObject var homeVM: HomeScreenViewModel
     @Binding var showCreateDeck: Bool
     @Binding var segment: Segment
+    var onOpenLeaderboard: () -> Void = {}
 
     @State private var searchText = ""
+    /// Düzenle: her satırın başında silme düğmesi
+    @State private var editing = false
     @State private var showPractice = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(langManager.s(.wordsTitle))
-                    .font(DS.Font.display(34, weight: .bold))
-                    .foregroundStyle(DS.Colors.ink)
-                Picker("", selection: $segment) {
-                    Text(langManager.s(.wordsLearned)).tag(Segment.learned)
-                    Text(langManager.s(.wordsDecks)).tag(Segment.decks)
-                }
-                .pickerStyle(.segmented)
+            // Uygulamanın ortak üst satırı (Konuş sekmesindekiyle aynı)
+            AppHeader(onOpenLeaderboard: onOpenLeaderboard)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+            // Defter ayırıcı sekmeleri
+            HStack(alignment: .bottom, spacing: 4) {
+                tab(NoteText.title, .decks)
+                tab(langManager.s(.wordsLearned), .learned)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
-            .padding(.bottom, 12)
+            .padding(.leading, 20)
+            .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
 
             switch segment {
             case .learned: learnedList
-            case .decks:   HomeScreenView(viewModel: homeVM, showCreateDeck: $showCreateDeck)
+            case .decks:   NotebookShelfView(homeVM: homeVM, showCreateDeck: $showCreateDeck)
             }
         }
         .frame(maxWidth: 720)
         .frame(maxWidth: .infinity)
         .paperBackground()
         .onAppear { scheduler.reload() }
+    }
+
+    private func tab(_ title: String, _ value: Segment) -> some View {
+        let on = segment == value
+        let shape = UnevenRoundedRectangle(topLeadingRadius: 10, topTrailingRadius: 10)
+        return Button { withAnimation(.easeOut(duration: 0.15)) { segment = value } } label: {
+            Text(title)
+                .font(DS.Font.ui(14, weight: on ? .semibold : .regular))
+                .foregroundStyle(on ? DS.Colors.ink : DS.Colors.muted)
+                .padding(.horizontal, 18)
+                .frame(height: on ? 40 : 34)
+                .background(on ? DS.Colors.paperRaised : DS.Colors.paperSunken, in: shape)
+                .overlay(shape.stroke(DS.Colors.line))
+                .overlay(alignment: .bottom) {
+                    if on { Rectangle().fill(DS.Colors.paperRaised).frame(height: 2).offset(y: 1) }
+                }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(on ? .isSelected : [])
     }
 
     // MARK: - Learned
@@ -69,37 +90,73 @@ struct WordsView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass").foregroundStyle(DS.Colors.muted)
                         TextField(langManager.s(.wordsSearch), text: $searchText)
                             .font(DS.Font.ui(16))
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
+                        Button { withAnimation(.easeOut(duration: 0.2)) { editing.toggle() } } label: {
+                            Text(editing ? WordsText.done : WordsText.edit)
+                                .font(DS.Font.ui(14, weight: .semibold))
+                                .foregroundStyle(DS.Colors.accentText)
+                                .frame(minWidth: 44, minHeight: 44)
+                        }
                     }
-                    .padding(.horizontal, 14)
-                    .frame(height: 44)
-                    .background(DS.Colors.paperSunken, in: RoundedRectangle(cornerRadius: 12))
+                    .frame(height: 48)
+                    .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
                     .padding(.bottom, 12)
 
-                    if searchText.isEmpty { practiceCard.padding(.bottom, 16) }
+                    if searchText.isEmpty { practiceCard.padding(.bottom, 8) }
 
-                    ForEach(filtered) { word in
-                        row(word)
-                        Rectangle().fill(DS.Colors.line).frame(height: 1)
+                    // Sözlük gibi: harfler kenar boşluğunda
+                    ForEach(groups, id: \.letter) { group in
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(group.words) { word in
+                                row(word)
+                                Rectangle().fill(DS.Colors.rule).frame(height: 1)
+                            }
+                        }
+                        .overlay(alignment: .topLeading) {
+                            Text(group.letter)
+                                .font(DS.Font.display(20, weight: .bold))
+                                .foregroundStyle(DS.Colors.accentText)
+                                .frame(width: 40)
+                                .offset(x: -52, y: 14)
+                        }
                     }
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 40)
+                .padding(.leading, 58)
+                .padding(.trailing, 20)
+                .padding(.bottom, 120)
             }
+            .background(alignment: .leading) {
+                Rectangle().fill(DS.Colors.margin).frame(width: 1.5).padding(.leading, 46)
+            }
+            .background(DS.Colors.paperRaised)
         }
+    }
+
+    /// Baş harfe göre gruplar (dile duyarlı sıralama)
+    private var groups: [(letter: String, words: [LearnedWord])] {
+        let locale = Locale(identifier: langManager.currentLanguageCode)
+        let sorted = filtered.sorted { $0.term.compare($1.term, locale: locale) == .orderedAscending }
+        var out: [(letter: String, words: [LearnedWord])] = []
+        for w in sorted {
+            let stripped = w.term.replacingOccurrences(of: #"^(el|la|los|las|le|les|l'|der|die|das|il|lo|gli|the|a|an)\s+"#,
+                                                       with: "", options: [.regularExpression, .caseInsensitive])
+            let letter = String(stripped.prefix(1)).uppercased(with: locale)
+            if out.last?.letter == letter { out[out.count - 1].words.append(w) } else { out.append((letter, [w])) }
+        }
+        return out
     }
 
     /// Öğrenilen kelimeleri sesli öğretmenle cümle içinde kullan
     private var practiceCard: some View {
         Button { showPractice = true } label: {
             HStack(spacing: 14) {
-                VoiceLogoView(phase: .aiSpeaking, level: 0.3).scaleEffect(0.8).frame(width: 52)
+                StampMic(look: .ready, size: 46)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(AL.s(.talkPracticeTitle))
                         .font(DS.Font.ui(16, weight: .semibold))
@@ -110,11 +167,10 @@ struct WordsView: View {
                         .multilineTextAlignment(.leading)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundStyle(DS.Colors.accent)
+                Image(systemName: "chevron.right").foregroundStyle(DS.Colors.accentText)
             }
-            .padding(16)
-            .background(DS.Colors.accent.opacity(0.07), in: RoundedRectangle(cornerRadius: DS.Radius.card))
-            .overlay(RoundedRectangle(cornerRadius: DS.Radius.card).stroke(DS.Colors.accent.opacity(0.25)))
+            .padding(14)
+            .background(DS.Colors.note, in: RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
         .fullScreenCover(isPresented: $showPractice) {
@@ -124,6 +180,17 @@ struct WordsView: View {
 
     private func row(_ word: LearnedWord) -> some View {
         HStack(alignment: .center, spacing: 12) {
+            if editing {
+                // Kırmızı kalemle silme düğmesi
+                Button { delete(word) } label: {
+                    Image(systemName: "minus.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(DS.Colors.redPen)
+                        .frame(width: 32, height: 44)
+                }
+                .accessibilityLabel(NoteText.delete)
+                .transition(.move(edge: .leading).combined(with: .opacity))
+            }
             VStack(alignment: .leading, spacing: 3) {
                 Text(word.term)
                     .font(DS.Font.display(20))
@@ -139,6 +206,16 @@ struct WordsView: View {
                 .scaleEffect(0.85)
         }
         .padding(.vertical, 12)
+        .contentShape(Rectangle())
+        // Uzun basınca silme
+        .contextMenu {
+            Button(role: .destructive) { delete(word) } label: { Label(NoteText.delete, systemImage: "trash") }
+        }
+    }
+
+    private func delete(_ word: LearnedWord) {
+        Haptics.tap()
+        withAnimation(.easeOut(duration: 0.25)) { scheduler.remove(word) }
     }
 
     @ViewBuilder
@@ -161,4 +238,10 @@ struct WordsView: View {
             }
         }
     }
+}
+
+/// Kelimelerim metinleri (sıra: tr, en, de, fr, es, it, ru, zh)
+private enum WordsText {
+    static var edit: String { PageText.t(["Düzenle", "Edit", "Bearbeiten", "Modifier", "Editar", "Modifica", "Изменить", "编辑"]) }
+    static var done: String { PageText.t(["Bitti", "Done", "Fertig", "OK", "Listo", "Fine", "Готово", "完成"]) }
 }

@@ -25,13 +25,34 @@ struct CardDetailView: View {
                 VStack(spacing: 0) {
                     // Empty state
                     if viewModel.wordInfo.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(AL.s(.deckNoWords))
-                                .font(DS.Font.display(26, weight: .semibold))
-                                .foregroundStyle(DS.Colors.ink)
-                            Text(AL.s(.deckTapToAdd))
-                                .font(DS.Font.ui(16))
-                                .foregroundStyle(DS.Colors.muted)
+                        // Boş deste: üstüne henüz bir şey yazılmamış fiş kartı
+                        VStack(alignment: .leading, spacing: 0) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(AL.s(.deckNoWords))
+                                    .font(DS.Font.display(26, weight: .semibold))
+                                    .foregroundStyle(DS.Colors.ink)
+                                    .padding(.bottom, 10)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .overlay(alignment: .bottom) {
+                                        Rectangle().fill(DS.Colors.accent).frame(height: 2).padding(.horizontal, -22)
+                                    }
+                                Text(AL.s(.deckTapToAdd))
+                                    .font(DS.Font.ui(16))
+                                    .foregroundStyle(DS.Colors.inkSoft)
+                                    .padding(.top, 10)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .padding(22)
+                            .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
+                            .background {
+                                ZStack(alignment: .top) {
+                                    DS.Colors.paperRaised
+                                    RuledLines(pitch: 36, color: DS.Colors.cardRule).padding(.top, 66)
+                                }
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(DS.Colors.line, lineWidth: 1))
+                            .rotationEffect(.degrees(-1))
                             Spacer()
                         }
                         .padding(.horizontal, 24)
@@ -40,18 +61,20 @@ struct CardDetailView: View {
                         .frame(maxWidth: .infinity)
                     } else {
                         ScrollView(showsIndicators: false) {
-                            VStack(spacing: 12) {
+                            VStack(spacing: 18) {
                                 // Kelime sayısı + quiz: "+" (kelime ekle) düğmesiyle çakışmasın diye üstte
                                 HStack {
-                                    Eyebrow(text: AL.f(.deckWordCount, viewModel.wordInfo.count), color: DS.Colors.muted)
+                                    Eyebrow(text: AL.f(.deckWordCount, viewModel.wordInfo.count), color: DS.Colors.accentText)
                                     Spacer()
+                                    // Quiz: dolu hap yerine mürekkep mührü gibi çerçeveli etiket
                                     Button { showQuizSheet = true } label: {
                                         Label(AL.s(.deckQuiz), systemImage: "checklist")
                                             .font(DS.Font.ui(14, weight: .semibold))
-                                            .foregroundStyle(DS.Colors.paper)
-                                            .padding(.horizontal, 14)
-                                            .frame(height: 36)
-                                            .background(DS.Colors.accent, in: Capsule())
+                                            .foregroundStyle(DS.Colors.accentText)
+                                            .padding(.horizontal, 12)
+                                            .frame(height: 34)
+                                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(DS.Colors.accent, lineWidth: 1.5))
+                                            .contentShape(Rectangle())
                                     }
                                     .buttonStyle(.plain)
                                 }

@@ -55,6 +55,11 @@ struct CardPlusView: View {
                         .foregroundStyle(DS.Colors.ink)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 8)
+                        .padding(.bottom, 12)
+                        // Fişin başlık çizgisi gibi
+                        .overlay(alignment: .bottom) {
+                            Rectangle().fill(DS.Colors.accent).frame(height: 2)
+                        }
 
                     // MARK: - Word Input Section
                     VStack(alignment: .leading, spacing: 12) {
@@ -98,8 +103,9 @@ struct CardPlusView: View {
                         PaperTextField(text: $viewModel.wordDescription, label: AL.s(.cardExampleSentence))
                     }
 
-                    // MARK: - Reminder Section
+                    // MARK: - Reminder Section (kutu yok: üstte ve altta çizgi, satırlar arası ince çizgi)
                     VStack(alignment: .leading, spacing: 0) {
+                        Hairline()
                         Toggle(isOn: $isOnToggle) {
                             Text(AL.s(.cardReminder))
                                 .font(DS.Font.ui(16, weight: .semibold))
@@ -127,12 +133,31 @@ struct CardPlusView: View {
                                 Text(AL.s(.cardRepeat))
                                     .font(DS.Font.ui(13, weight: .medium))
                                     .foregroundStyle(DS.Colors.muted)
-                                Picker(AL.s(.cardRepeat), selection: $reminderViewModel.repeatOption) {
+                                // Segmented yerine: seçilen seçeneğin altı terrakota kalemle çizilir
+                                HStack(spacing: 22) {
                                     ForEach(reminderViewModel.repeatOptions, id: \.self) { option in
-                                        Text(Self.repeatLabel(option)).tag(option)
+                                        let on = reminderViewModel.repeatOption == option
+                                        Button {
+                                            withAnimation(.easeOut(duration: 0.15)) {
+                                                reminderViewModel.repeatOption = option
+                                            }
+                                        } label: {
+                                            Text(Self.repeatLabel(option))
+                                                .font(DS.Font.ui(15, weight: on ? .semibold : .regular))
+                                                .foregroundStyle(on ? DS.Colors.ink : DS.Colors.muted)
+                                                .padding(.bottom, 4)
+                                                .overlay(alignment: .bottom) {
+                                                    Rectangle().fill(DS.Colors.accent).frame(height: 2).opacity(on ? 1 : 0)
+                                                }
+                                                .frame(minHeight: 32)
+                                                .contentShape(Rectangle())
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityAddTraits(on ? .isSelected : [])
                                     }
                                 }
-                                .pickerStyle(.segmented)
+                                .accessibilityElement(children: .contain)
+                                .accessibilityLabel(AL.s(.cardRepeat))
                             }
                             .padding(.vertical, 14)
 
@@ -151,10 +176,8 @@ struct CardPlusView: View {
                                 .padding(.vertical, 12)
                             }
                         }
+                        Hairline()
                     }
-                    .padding(.horizontal, 16)
-                    .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(DS.Colors.line, lineWidth: 1))
 
                     // MARK: - Save
                     VStack(spacing: 10) {
@@ -239,7 +262,7 @@ struct CardPlusView: View {
 // MARK: - Components
 
 private struct Hairline: View {
-    var body: some View { Rectangle().fill(DS.Colors.line).frame(height: 1) }
+    var body: some View { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
 }
 
 private struct LoadingRow: View {
@@ -251,10 +274,11 @@ private struct LoadingRow: View {
                 .font(DS.Font.ui(14))
                 .foregroundStyle(DS.Colors.muted)
         }
-        .frame(height: 40)
+        .frame(height: 36)
     }
 }
 
+/// Küçük eylem: çerçeveli buton yerine altı çizili terrakota bağlantı
 private struct SmallOutlineButton: View {
     let title: String
     let icon: String
@@ -262,19 +286,21 @@ private struct SmallOutlineButton: View {
     let action: () -> Void
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: icon).font(.system(size: 13, weight: .semibold))
-                Text(title).font(DS.Font.ui(15, weight: .semibold))
+            HStack(spacing: 6) {
+                Image(systemName: icon).font(.system(size: 12, weight: .semibold))
+                Text(title)
+                    .font(DS.Font.ui(14, weight: .semibold))
+                    .underline(enabled, color: DS.Colors.accent.opacity(0.5))
             }
-            .foregroundStyle(enabled ? DS.Colors.ink : DS.Colors.muted)
-            .padding(.horizontal, 14)
-            .frame(height: 40)
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(DS.Colors.line, lineWidth: 1.5))
+            .foregroundStyle(enabled ? DS.Colors.accentText : DS.Colors.muted)
+            .frame(height: 36)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 }
 
+/// Sayfaya yazılan alan: kutu yok, yalnızca alt çizgi; odakta terrakota kalem
 private struct PaperTextField: View {
     @Binding var text: String
     let label: String
@@ -282,24 +308,25 @@ private struct PaperTextField: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(DS.Font.ui(13, weight: .medium))
-                .foregroundStyle(DS.Colors.muted)
+                .foregroundStyle(isFocused ? DS.Colors.accentText : DS.Colors.muted)
             TextField("", text: $text)
-                .font(serif ? DS.Font.display(20, weight: .regular) : DS.Font.ui(17))
+                .font(serif ? DS.Font.display(24, weight: .semibold) : DS.Font.display(19, weight: .regular))
                 .foregroundStyle(DS.Colors.ink)
                 .tint(DS.Colors.accent)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .focused($isFocused)
-                .padding(.horizontal, 16)
-                .frame(minHeight: 52)
-                .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(isFocused ? DS.Colors.inkSoft : DS.Colors.line, lineWidth: 1)
-                )
+                .padding(.vertical, 8)
+                .frame(minHeight: 44, alignment: .bottomLeading)
+                .overlay(alignment: .bottom) {
+                    Rectangle()
+                        .fill(isFocused ? DS.Colors.accent : DS.Colors.line)
+                        .frame(height: isFocused ? 1.5 : 1)
+                }
+                .animation(.easeOut(duration: 0.15), value: isFocused)
         }
     }
 }

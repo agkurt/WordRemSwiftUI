@@ -80,6 +80,47 @@ enum TutorMode: Equatable {
     case languageSetup(code: String)
 }
 
+/// Öğrencinin ayarlardan seçtiği tercihler (Profil › Ayarlar). Hepsi cihazda, varsayılanlar bugünkü davranış.
+enum TutorPrefs {
+    static let speedKey = "prefs.tutorSpeed"            // 0 yavaş, 1 normal, 2 hızlı
+    static let cefrKey = "prefs.cefr"                   // 0 A1 … 4 C1; yoksa onboarding seviyesinden türetilir
+    static let correctionsKey = "prefs.corrections"     // 0 hepsini düzelt, 1 yalnızca önemlileri
+    static let alwaysTranslateKey = "prefs.alwaysTranslate"
+    static let hapticsKey = "prefs.haptics"
+    static let penKey = "prefs.penAnimation"
+
+    private static var d: UserDefaults { .standard }
+    static var speedIndex: Int { min(2, max(0, d.object(forKey: speedKey) as? Int ?? 1)) }
+    /// OpenAI ses motoru için ses hızı (sunucu yalnızca orada kullanıyor)
+    static var speed: Double { [0.85, 1.0, 1.15][speedIndex] }
+    /// Her motorda geçerli olsun diye hız talimata da yazılır (Gemini ses hızı parametresini almıyor)
+    static var speedNote: String {
+        switch speedIndex {
+        case 0: return "PACE: the learner asked you to speak SLOWLY. Speak noticeably slower than usual, articulate every word, and leave a short pause between phrases, especially around the phrases you teach."
+        case 2: return "PACE: the learner asked you to speak FASTER. Use a brisk, natural native pace; no exaggerated slow-downs."
+        default: return ""
+        }
+    }
+    static let cefrNames = ["A1", "A2", "B1", "B2", "C1"]
+    /// Öğrencinin seçtiği CEFR seviyesi; seçmediyse onboarding/ders seviyesinden türetilir
+    static var cefr: Int {
+        if let c = d.object(forKey: cefrKey) as? Int, cefrNames.indices.contains(c) { return c }
+        return [0, 0, 1, 2, 3][min(4, max(0, d.integer(forKey: "selectedProficiencyLevel")))]
+    }
+    static var cefrNote: String {
+        "LEVEL: the learner is CEFR \(cefrNames[cefr]). Match your vocabulary, grammar and sentence length to \(cefrNames[cefr]): " +
+        ["A1: only the most common words, very short present-tense sentences.",
+         "A2: everyday words, short simple sentences, basic past and future.",
+         "B1: everyday topics with some opinions and reasons, connected sentences.",
+         "B2: natural, varied language and idioms at normal speed; explain only rare words.",
+         "C1: fully natural native language, nuance and idioms; treat them almost as a native."][cefr]
+    }
+    static var correctImportantOnly: Bool { d.integer(forKey: correctionsKey) == 1 }
+    static var alwaysTranslate: Bool { d.bool(forKey: alwaysTranslateKey) }
+    static var haptics: Bool { d.object(forKey: hapticsKey) as? Bool ?? true }
+    static var penAnimation: Bool { d.object(forKey: penKey) as? Bool ?? true }
+}
+
 @MainActor
 enum TutorBrain {
 
@@ -102,8 +143,9 @@ enum TutorBrain {
     private static var targetName: String {
         Locale(identifier: "en").localizedString(forLanguageCode: targetCode) ?? "English"
     }
-    /// 0 başlangıç … 4 ileri
-    private static var proficiency: Int { UserDefaults.standard.integer(forKey: "selectedProficiencyLevel") }
+    /// 0 başlangıç … 4 ileri. Ayarlardaki CEFR seviyesi (A1…C1) anlatım dilini belirler:
+    /// A1–A2 ana dilde anlatım, B1 hedef dil ağırlıklı, B2–C1 neredeyse tamamen hedef dil.
+    private static var proficiency: Int { [1, 2, 3, 4, 4][TutorPrefs.cefr] }
 
     /// Konuşmanın dili seviyeye göre: başlangıçta öğretmen öğrencinin ana dilinde anlatır, yalnızca öğrettiği
     /// ifadeler öğrenilen dilde (Pingo gibi); seviye arttıkça öğrenilen dil ağırlık kazanır.
@@ -233,10 +275,21 @@ enum TutorBrain {
     private static var memoryBlock: String {
         let s = UserStore.shared.snapshot
         var lines: [String] = []
-        if !learnerName.isEmpty { lines.append("Learner's name: \(learnerName). Use it naturally, not every turn.") }
-        if let facts = s.tutorFacts, !facts.isEmpty { lines.append("Things you remember about the learner: " + facts.suffix(12).joined(separator: "; ") + ".") }
+        let name = learnerName
+        if !name.isEmpty {
+            lines.append("Learner's name: \(name). Use it naturally, not every turn. Never call them by any other name, even if an older note says so.")
+        }
+        // Başka bir ada dair eski not (diğer cihazdan iCloud ile geri gelmiş olabilir) gösterilmez
+        let facts = (s.tutorFacts ?? []).filter { name.isEmpty || $0.range(of: name, options: .caseInsensitive) != nil || !mentionsName($0) }
+        if !facts.isEmpty { lines.append("Things you remember about the learner: " + facts.suffix(12).joined(separator: "; ") + ".") }
         if let sums = s.tutorSummaries, !sums.isEmpty { lines.append("Recent sessions (oldest first): " + sums.suffix(3).joined(separator: " | ")) }
         return lines.isEmpty ? "This is your first conversation with the learner. Warmly ask their name early on." : lines.joined(separator: "\n")
+    }
+
+    /// Not öğrencinin adından mı bahsediyor ("Name is Ahmet", "Adı Ahmet", "Call me Ali")
+    private static func mentionsName(_ fact: String) -> Bool {
+        fact.range(of: #"\b(name|named|called|call (me|him|her|them))\b|(^|\s)(ad[ıi]|[iİ]smi|[iİ]sim)(?=[\s:,]|$)"#,
+                   options: [.regularExpression, .caseInsensitive]) != nil
     }
 
     /// Bugün tekrar zamanı gelen kelimeler (en fazla 6) — sohbette kullandırılır
@@ -264,7 +317,7 @@ enum TutorBrain {
     #endif
 
     /// Öğrencinin adı (Lupa'nın hitap ettiği)
-    private static var learnerName: String {
+    static var learnerName: String {
         #if DEBUG
         if studioNameless { return "" }
         #endif
@@ -386,6 +439,8 @@ enum TutorBrain {
         \(otherLanguageRule(for: mode))
         VOICE & DELIVERY: speak with a charming, smiling voice — warm, playful and friendly, confident and full of life, like you're grinning while you talk. Never flat, never robotic.
         \(languagePolicy)
+        \(TutorPrefs.cefrNote)
+        \(TutorPrefs.speedNote)
 
         EXAMPLES: quoted examples here and in the app's notes are in English only to show the idea; never repeat them word for word, \
         say the idea in your own words in the language you are speaking at that moment.
@@ -430,6 +485,7 @@ enum TutorBrain {
         6. Plain simple sentences; no dashes between words or sentences (use commas and periods).
         7. Only ever speak \(nativeName) or \(targetName), never switching language mid-sentence. Words arriving in another language or alphabet \
         are a speech recognition error: kindly say you didn't catch it and ask them to try again.
+        \(TutorPrefs.correctImportantOnly ? "9. Corrections: the learner asked you to correct only mistakes that change the meaning or would confuse a native speaker; let small slips (an article, an ending, a slight accent) pass without comment." : "9. Corrections: gently correct every mistake you hear, one at a time, then let them say it right.")
         \(proficiency <= 2 && mode != .demo ? "8. The learner is a beginner: every sentence you say is in \(nativeName), from your very first greeting; \(targetName) appears only inside quotes for the phrases you teach and in your short in-character roleplay lines." : "")
         \(mode == .freeChat ? (chatOpener.map { "Start now: greet them by name in one short sentence, then ask out loud in \(targetName): \"\($0)\" (for a beginner, add its meaning). Then show a natural \(targetName) answer about their own life as the card." } ?? "Wait for the learner to speak first.") : mode == .demo ? "Start now with step 1." : { () -> String? in if case .goal = mode { return "Start now with your opening turn: greet them by name, say in one or two sentences what this lesson is about and what they'll be able to do by the end, then SAY OUT LOUD in \(targetName) \"How are you today?\" (in \(targetName), with its meaning for a beginner), and only after asking it show their \(targetName) answer as the card." }; return nil }() ?? "Start now: greet them warmly by name and ASK a real question out loud, ending with a question mark (how they are or how their day is going). Don't talk about asking; ask it. Then show their answer as the card.")
         """
@@ -444,6 +500,7 @@ enum TutorBrain {
         The learner\(name.isEmpty ? "" : " (\(name))") already studies \(targetName) with you and just chose to ADD \(newName). \
         This is a short setup call to build their personal \(newName) plan.
         VOICE: charming, smiling, full of life. Never robotic.
+        \(TutorPrefs.speedNote)
         LANGUAGE: speak \(nativeName) for the whole call — they may not know any \(newName) yet. You may say one tiny \(newName) word or greeting, always with its meaning.
         FLOW — one short step per turn (1–2 sentences), chatty and natural, never like a form. End each turn with your question and wait:
         1) Happily confirm you're adding \(newName) and ask what they want to do with \(newName) (travel, work, school, friends, culture…).
@@ -506,7 +563,8 @@ enum TutorBrain {
         guard let key = progressKey(for: mode),
               let p = UserStore.shared.snapshot.voiceProgress?[key],
               Date().timeIntervalSince(p.updatedAt) < 14 * 86_400, !p.lines.isEmpty else { return "" }
-        let transcript = p.lines.map { ($0.ai ? "Tutor: " : "Learner: ") + $0.text }.joined(separator: "\n")
+        let transcript = p.lines.filter { $0.card != true }.suffix(10)
+            .map { ($0.ai ? "Tutor: " : "Learner: ") + $0.text }.joined(separator: "\n")
         return """
         RESUMING: the learner left this lesson in the middle last time. Their last exchange was:
         \(transcript)
@@ -517,13 +575,26 @@ enum TutorBrain {
 
     static func saveProgress(for mode: TutorMode, turns: [RealtimeVoiceSession.Turn], step: Int) {
         guard let key = progressKey(for: mode) else { return }
-        let lines = turns.filter { !$0.text.isEmpty && $0.role != .card }.suffix(10).map { VoiceProgress.Line(ai: $0.role == .ai, text: $0.text) }
-        guard lines.count >= 2 else { return }
+        // Defter sayfası kartlarıyla birlikte saklanır: geri gelince kaldığı sayfa aynen görünür
+        let lines = turns.filter { !$0.text.isEmpty }.suffix(40).map {
+            VoiceProgress.Line(ai: $0.role == .ai, text: $0.text, card: $0.role == .card ? true : nil, detail: $0.detail)
+        }
+        guard lines.filter({ $0.card != true }).count >= 2 else { return }
         UserStore.shared.update { s in
             var all = s.voiceProgress ?? [:]
             all[key] = VoiceProgress(lines: Array(lines), updatedAt: Date(), step: step)
             s.voiceProgress = all
         }
+    }
+
+    /// Yarım kalan dersin defter sayfası (son 14 gün): ders açılınca soluk olarak en üstte durur
+    static func savedPage(for mode: TutorMode) -> (turns: [RealtimeVoiceSession.Turn], date: Date)? {
+        guard let key = progressKey(for: mode), let p = UserStore.shared.snapshot.voiceProgress?[key],
+              Date().timeIntervalSince(p.updatedAt) < 14 * 86_400, !p.lines.isEmpty else { return nil }
+        let turns = p.lines.map { l in
+            RealtimeVoiceSession.Turn(role: l.card == true ? .card : l.ai ? .ai : .user, text: l.text, detail: l.detail)
+        }
+        return (turns, p.updatedAt)
     }
 
     /// Yarım kalan derste tamamlanmış hedef sayısı

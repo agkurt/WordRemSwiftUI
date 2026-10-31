@@ -44,6 +44,14 @@ final class ReviewScheduler: ObservableObject {
         ReviewCore.save(states: states, activeDays: activeDays)
     }
 
+    /// Kelimeyi öğrenilenlerden ve tekrar planından siler
+    func remove(_ word: LearnedWord) {
+        LearnedWordsStore.remove(ids: [word.id])
+        states[word.id] = nil
+        save()
+        reload()
+    }
+
     func clear() {
         states = [:]; activeDays = []; words = []
         defaults?.removeObject(forKey: ReviewCore.statesKey)

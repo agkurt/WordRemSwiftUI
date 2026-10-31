@@ -176,6 +176,9 @@ struct VoiceProgress: Codable, Equatable {
     struct Line: Codable, Equatable {
         let ai: Bool
         let text: String
+        /// Defterde kart satırı (fosforlu ifade) ve çevirisi; eski kayıtlarda yok
+        var card: Bool? = nil
+        var detail: String? = nil
     }
     var lines: [Line]
     var updatedAt: Date
@@ -204,12 +207,14 @@ enum FreshUser {
         if let bundle = Bundle.main.bundleIdentifier { UserDefaults.standard.removePersistentDomain(forName: bundle) }
         UserDefaults.standard.set(UUID().uuidString, forKey: key)
         if let engine { UserDefaults.standard.set(engine, forKey: "voiceEngine") }
+        NotebookStore.stash(true)   // yeni kullanıcının defteri boş başlar
         relaunch()
     }
 
     /// Gerçek hesaba döner: test verisi silinir, açılışta iCloud ve satın alım geri gelir
     static func stop() {
         UserDefaults.standard.removeObject(forKey: key)
+        NotebookStore.stash(false)  // gerçek defter geri gelir
         relaunch()
     }
 

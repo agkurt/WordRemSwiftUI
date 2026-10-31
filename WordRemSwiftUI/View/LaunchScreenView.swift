@@ -29,19 +29,33 @@ struct LaunchScreenView: View {
 
     var body: some View {
         ZStack {
-            // Uygulamanın kendi zemini ve yazı karakteri: açılış ile uygulama aynı dili konuşur
-            DS.Colors.paper.ignoresSafeArea()
+            // Açılış defterin kapağıdır: arduvaz bez, üstten sarkan ayraçlar, ortada etiket
+            NotebookCover().ignoresSafeArea()
+            VStack {
+                HStack {
+                    Spacer()
+                    BookmarkMark(mood: .speaking, width: 17,
+                                 colors: [DS.Colors.ink, DS.Colors.accent, DS.Colors.paper, DS.Colors.margin])
+                        .padding(.trailing, 40)
+                }
+                Spacer()
+            }
 
             HStack(alignment: .center, spacing: 10) {
-                WordRemLogoText(size: 52)
+                WordRemLogoText(size: 44)
                 Text("AI")
-                    .font(DS.Font.ui(17, weight: .bold))
+                    .font(DS.Font.ui(15, weight: .bold))
                     .foregroundStyle(DS.Colors.paper)
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 5)
-                    .background(DS.Colors.accent, in: RoundedRectangle(cornerRadius: 9))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(DS.Colors.accent, in: RoundedRectangle(cornerRadius: 8))
                     .offset(y: 3)
             }
+            .padding(.horizontal, 26)
+            .padding(.vertical, 22)
+            .background(DS.Colors.paper, in: RoundedRectangle(cornerRadius: 8))
+            .rotationEffect(.degrees(-1))
+            .shadow(color: .black.opacity(0.22), radius: 14, y: 10)
             .scaleEffect(logoScale)
             .opacity(logoOpacity)
             .accessibilityElement(children: .combine)

@@ -53,7 +53,7 @@
               "locale": "en_US"
             }
           ],
-          "productID": "wordrem_annual_subscription",
+          "productID": "wordrem_pro_annual",
           "recurringSubscriptionPeriod": "P1Y",
           "referenceName": "WordRem Pro Annual",
           "subscriptionGroupID": "21985400",
@@ -75,7 +75,7 @@
               "locale": "en_US"
             }
           ],
-          "productID": "wordrem_ai_monthly",
+          "productID": "wordrem_pro_monthly",
           "recurringSubscriptionPeriod": "P1M",
           "referenceName": "Monthly Subscription",
           "subscriptionGroupID": "21985400",
@@ -97,7 +97,7 @@
               "locale": "en_US"
             }
           ],
-          "productID": "wordrem_weekly_subscription",
+          "productID": "wordrem_pro_weekly",
           "recurringSubscriptionPeriod": "P1W",
           "referenceName": "Weekly Subscription",
           "subscriptionGroupID": "21985400",

@@ -305,16 +305,14 @@ struct LupaWidgetView: View {
 
     private var card: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 6) {
-                Text("L")
-                    .font(.system(size: 12, weight: .bold, design: .serif))
-                    .foregroundStyle(.white)
-                    .frame(width: 20, height: 20)
-                    .background(Palette.accent, in: Circle())
+            HStack(alignment: .top, spacing: 6) {
                 Text(s.waiting.uppercased())
                     .font(.system(size: 10, weight: .bold)).tracking(1.0)
                     .foregroundStyle(Palette.accent)
                     .lineLimit(1).minimumScaleFactor(0.7)
+                    .padding(.top, 4)
+                Spacer(minLength: 4)
+                WidgetRibbons().padding(.top, -16)
             }
             Spacer(minLength: 6)
             Text(question)
@@ -333,10 +331,10 @@ struct LupaWidgetView: View {
                 Image(systemName: "mic.fill").font(.system(size: 11, weight: .bold))
                 Text(s.answer).font(.system(size: 13, weight: .semibold))
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Palette.ink)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(Palette.accent, in: Capsule())
+            .padding(.vertical, 7)
+            .overlay(Capsule().strokeBorder(Palette.ink, lineWidth: 1.5))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
@@ -487,5 +485,33 @@ struct StreakStrings {
     func dayStreak(_ n: Int) -> String {
         pick(["tr": "gün seri", "en": "day streak", "de": "Tage Serie", "fr": "jours d'affilée",
               "es": "días seguidos", "it": "giorni di fila", "ru": "дн. подряд", "zh": "天连续"])
+    }
+}
+
+/// Uygulamanın logosu: üst kenardan sarkan dört renkli kitap ayracı
+struct WidgetRibbons: View {
+    private let colors: [Color] = [Color(red: 0.11, green: 0.10, blue: 0.09), Palette.accent,
+                                   Color(red: 0.184, green: 0.294, blue: 0.361), Color(red: 0.878, green: 0.627, blue: 0.541)]
+    private let lengths: [CGFloat] = [24, 31, 20, 27]
+    var body: some View {
+        HStack(alignment: .top, spacing: 2) {
+            ForEach(0..<4, id: \.self) { i in
+                Ribbon().fill(colors[i]).frame(width: 7, height: lengths[i])
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private struct Ribbon: Shape {
+        func path(in r: CGRect) -> Path {
+            var p = Path()
+            p.move(to: CGPoint(x: r.minX, y: r.minY))
+            p.addLine(to: CGPoint(x: r.maxX, y: r.minY))
+            p.addLine(to: CGPoint(x: r.maxX, y: r.maxY))
+            p.addLine(to: CGPoint(x: r.midX, y: r.maxY - r.width * 0.55))
+            p.addLine(to: CGPoint(x: r.minX, y: r.maxY))
+            p.closeSubpath()
+            return p
+        }
     }
 }

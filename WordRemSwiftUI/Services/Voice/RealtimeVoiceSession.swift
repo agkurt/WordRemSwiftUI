@@ -395,6 +395,8 @@ final class RealtimeVoiceSession: ObservableObject {
         lastAnswerCorrect = ok
         answerCount += 1
         if let card = currentCard { onAnswer?(card, ok) }
+        // Serbest sohbette de doğru söylenen ifade hatırlanır: aynı kart bir daha gelmesin
+        if ok, targets.isEmpty, let card = currentCard { learnedCards.append(PhraseKey.words(card)) }
         var note: String
 
         if targetProgress < targets.count || pendingCombine || pendingPersonalize {
@@ -457,6 +459,8 @@ final class RealtimeVoiceSession: ObservableObject {
     ]
     /// Bu derste doğru söylenmiş kartlar: aynı ifade (ya da isim eklenmiş hali) tekrar kart olmasın
     private var learnedCards: [[String]] = []
+    /// Bu turda tekrar eden kart reddedildi: yedek kart da üretilmesin
+    private var skipFallbackCard = false
     /// Ders açılışındaki ısınma sorusu henüz cevaplanmadı
     private var warmupPending = false
     private func praiseNote(afterMiss: Bool) -> String {
@@ -638,6 +642,16 @@ final class RealtimeVoiceSession: ObservableObject {
     /// Kullanıcı yazıyla bir şey göndermek isterse (ör. konu seçimi çipleri)
     #if DEBUG
     /// Test sürücüsü: öğrencinin söylediğini sesle değil metinle verir; gerçek akış (cevap kontrolü, notlar, kartlar) aynen çalışır
+    #if DEBUG
+    /// Mağaza görselleri: sayfaya hazır bir konuşma yükler, sıra öğrencide görünür
+    func debugStage(_ staged: [(role: Turn.Role, text: String, detail: String?)]) {
+        turns = staged.map { Turn(role: $0.role, text: $0.text, detail: $0.detail) }
+        let lastAI = staged.last { $0.role == .ai }?.text ?? ""
+        caption = lastAI; captionFull = lastAI
+        phase = .listening
+    }
+    #endif
+
     func debugLearnerSays(_ text: String) {
         guard phase == .listening, !timeUp else { return }
         voiceLog.info("heard: \(text, privacy: .public)")
@@ -1227,7 +1241,7 @@ final class RealtimeVoiceSession: ObservableObject {
         case "response.created":
             // Yalnızca kart isteyen sessiz cevap: ekrandaki yazıyı/sesi bozma
             if silentCardPending { silentCardPending = false; silentCardActive = true; break }
-            fullAIText = ""; rawAIText = ""; phraseShownThisResponse = false; audioComplete = false
+            fullAIText = ""; rawAIText = ""; phraseShownThisResponse = false; audioComplete = false; skipFallbackCard = false
             preroll = []; prerolled = false
             caption = ""; captionFull = ""; responseFinished = false
             responseCount += 1
@@ -1253,14 +1267,27 @@ final class RealtimeVoiceSession: ObservableObject {
                                "output": "rejected: the lesson is over — no more cards. Just say a short goodbye if you haven't."]])
                 break
             }
-            // Öğretme sırasında zaten doğru söylenmiş ifade yeniden kart olmasın (birleştirme ve canlandırma hariç)
-            if name == "show_phrase", !silentCardActive, !targets.isEmpty, targetProgress < targets.count, !pendingCombine,
+            // Serbest sohbette sessiz kart isteği az önce söylenmiş ifadeyi geri getirirse kart hiç gösterilmez
+            // (öğretmen "sorunu sorabilirsin" dediğinde öğrenci kendi sözüyle konuşur, aynı kart tekrar gelmez)
+            if name == "show_phrase", silentCardActive, targets.isEmpty, translatingPhrase == nil,
                let p = args["phrase"] as? String,
                learnedCards.contains(where: { PhraseKey.isNearDuplicate($0, PhraseKey.words(p)) }) {
+                voiceLog.info("repeated free-chat card dropped: \(p, privacy: .public)")
+                send(["type": "conversation.item.create",
+                      "item": ["type": "function_call_output", "call_id": callId, "output": "rejected: already said; no card"]])
+                break
+            }
+            // Öğretme sırasında zaten doğru söylenmiş ifade yeniden kart olmasın (birleştirme ve canlandırma hariç)
+            if name == "show_phrase", !silentCardActive, targets.isEmpty || targetProgress < targets.count, !pendingCombine,
+               let p = args["phrase"] as? String,
+               learnedCards.contains(where: { PhraseKey.isNearDuplicate($0, PhraseKey.words(p)) }) {
+                if targets.isEmpty { skipFallbackCard = true }
                 voiceLog.info("already learned card rejected: \(p, privacy: .public)")
                 send(["type": "conversation.item.create",
                       "item": ["type": "function_call_output", "call_id": callId,
-                               "output": "rejected: the learner already said this line correctly. Teach something NEW: card a different, new line (or a genuinely longer sentence)."]])
+                               "output": targets.isEmpty
+                                   ? "rejected: the learner already said this line correctly. Don't repeat it. If you just invited them to ask or tell you something in their own words, no card is needed; otherwise card a genuinely new line."
+                                   : "rejected: the learner already said this line correctly. Teach something NEW: card a different, new line (or a genuinely longer sentence)."]])
                 break
             }
             // Tur başına tek kart: öğrenci ilkini söylemeden ikinci kart gelmesin (sohbet "söyle-söyle"ye dönmesin)
@@ -1318,7 +1345,10 @@ final class RealtimeVoiceSession: ObservableObject {
                 args["phrase"] = fixed
             }
             if name == "show_phrase", let p = args["phrase"] as? String {
-                args["phrase"] = Self.unsyllabify(p, spoken: fullAIText)
+                args["phrase"] = Self.withLearnerName(Self.unsyllabify(p, spoken: fullAIText), name: TutorBrain.learnerName)
+            }
+            if name == "show_phrase", let tr = args["translation"] as? String {
+                args["translation"] = Self.withLearnerName(tr, name: TutorBrain.learnerName)
             }
             if name == "show_phrase" {
                 phraseShownThisResponse = true
@@ -1360,8 +1390,12 @@ final class RealtimeVoiceSession: ObservableObject {
                 break
             }
             voiceLog.info("tutor said: \(self.fullAIText, privacy: .public)")
-            // Demoda son adımda öğretmen kendiliğinden vedalaştıysa: bitti say (yeni kart/tur açılmasın)
-            if answerCardsOnly, !lessonComplete, !targets.isEmpty, targetProgress >= targets.count - 1,
+            // Demoda son adımda öğretmen kendiliğinden vedalaştıysa: bitti say (yeni kart/tur açılmasın).
+            // Bir cevap sayılmadıysa adım sayacı geride kalabilir; öğrenci her adıma cevap verdiyse veda yine bitiriş sayılır
+            // (yoksa vedadan sonra eski adımın kartı "I live in ..." yeniden açılıyordu).
+            let userTurnCount = turns.filter { $0.role == .user && !$0.text.isEmpty }.count
+            if answerCardsOnly, !lessonComplete, !targets.isEmpty,
+               targetProgress >= targets.count - 1 || userTurnCount >= targets.count,
                fullAIText.range(of: #"see you|goodbye|bye for now|take care|görüşürüz|görüşmek üzere|hoşça kal|bis bald|tschüss|à bientôt|hasta pronto|nos vemos|a presto|ci vediamo|до встречи|再见"#, options: [.regularExpression, .caseInsensitive]) != nil {
                 lessonComplete = true
             }
@@ -1447,6 +1481,8 @@ final class RealtimeVoiceSession: ObservableObject {
         // Dil adı açıkça yazılır: "target language" deyince model bazen başka dil seçiyor
         let targetCode = Self.currentTarget
         let target = Locale(identifier: "en").localizedString(forLanguageCode: targetCode) ?? "English"
+        let name = TutorBrain.learnerName.trimmingCharacters(in: .whitespaces)
+        let nameNote = name.isEmpty ? "" : " The learner's name is \(name): if the line introduces them, use exactly that name, never a made-up one like Alex."
         let instructions = phrase.map {
             "Do not say anything. Call show_phrase with exactly this phrase: \"\($0)\" and its natural translation into \(native)."
         } ?? question.map {
@@ -1456,12 +1492,13 @@ final class RealtimeVoiceSession: ObservableObject {
             + (targetProgress < targets.count ? " The current step is: \(targets[targetProgress]) — show the line it specifies with show_phrase." : "")
         silentCardPending = true
         voiceLog.info("no card this turn → asking silently")
+        let fullInstructions = phrase == nil ? instructions + nameNote : instructions
         // Araç cevabın içinde de verilmeli, yoksa model zorunlu çağrıyı yok sayıyor
         send(["type": "response.create", "response": [
             "output_modalities": ["text"],
             "tools": [cardTool],
             "tool_choice": "required",
-            "instructions": instructions,
+            "instructions": fullInstructions,
         ] as [String: Any]])
     }
 
@@ -1516,6 +1553,26 @@ final class RealtimeVoiceSession: ObservableObject {
 
     /// Telaffuz için hecelenmiş kelime ("Ha-llo") kartta normal yazılsın; "E-Mail" gibi gerçek tireli kelimeler
     /// yalnızca birleşik hali konuşmada da geçiyorsa birleştirilir.
+    /// Kart öğrenciyi tanıtıyorsa uydurma bir ad ("Hi, I'm Alex") yerine öğrencinin kendi adı gelir
+    nonisolated static func withLearnerName(_ card: String, name: String) -> String {
+        let name = name.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty, !["Apple User", "Google User", "Guest", "Misafir"].contains(where: { name.hasPrefix($0) }) else { return card }
+        let placeholders: Set<String> = ["alex", "anna", "ana", "max", "sam", "john", "maria", "mary", "tom", "emma", "lucas", "leo",
+                                         "sara", "sarah", "mike", "david", "laura", "paul", "pedro", "juan", "carlos", "hans", "pierre",
+                                         "marco", "luca", "ivan", "li", "wei", "jane", "alice", "bob", "lisa", "james", "maxime", "jean",
+                                         "ayşe", "ali", "mehmet", "elif", "can"]
+        let intro = #"(?i)(I'm|I am|my name is|me llamo|mi nombre es|soy|ich heiße|ich bin|je m'appelle|je suis|mi chiamo|sono|меня зовут|я|我叫|ben|benim adım)\s+([\p{Lu}][\p{L}'’-]+)"#
+        guard let re = try? NSRegularExpression(pattern: intro) else { return card }
+        let ns = card as NSString
+        var out = card
+        for m in re.matches(in: card, range: NSRange(location: 0, length: ns.length)).reversed() {
+            let found = ns.substring(with: m.range(at: 2))
+            guard found.lowercased() != name.lowercased(), placeholders.contains(found.lowercased()) else { continue }
+            out = (out as NSString).replacingCharacters(in: m.range(at: 2), with: name)
+        }
+        return out
+    }
+
     nonisolated static func unsyllabify(_ card: String, spoken: String) -> String {
         let known = Set(spoken.lowercased().components(separatedBy: CharacterSet.letters.inverted).filter { $0.count > 1 })
         var out = card
@@ -1531,7 +1588,8 @@ final class RealtimeVoiceSession: ObservableObject {
     /// son tırnak içindeki ifadeyi kart yap.
     private func ensurePhraseCard() {
         let userTurns = turns.filter { $0.role == .user && !$0.text.isEmpty }.count
-        guard !noCards || cardAfterUserTurns == userTurns, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp else { return }
+        guard !noCards || cardAfterUserTurns == userTurns, !phraseShownThisResponse, !pendingToolFollowUp, !rawAIText.isEmpty, !lessonComplete, !timeUp,
+              !skipFallbackCard else { return }
         if needsAnswerCard {
             needsAnswerCard = false
             return requestCard(answerTo: fullAIText)
@@ -1568,7 +1626,9 @@ final class RealtimeVoiceSession: ObservableObject {
             if asked.hasSuffix("?") { requestCard(answerTo: asked) } else { requestCard() }
             return
         }
-        let card = Self.unsyllabify(phrase, spoken: fullAIText)
+        let card = Self.withLearnerName(Self.unsyllabify(phrase, spoken: fullAIText), name: TutorBrain.learnerName)
+        // Serbest sohbette az önce doğru söylenen ifade alıntıdan yeniden kart olmasın
+        if targets.isEmpty, learnedCards.contains(where: { PhraseKey.isNearDuplicate($0, PhraseKey.words(card)) }) { return }
         phraseShownThisResponse = true
         currentCard = card
         voiceLog.info("card: \(card, privacy: .public)")

@@ -7,12 +7,13 @@ import SwiftUI
 import GameKit
 
 struct ProfileView: View {
+    /// Ortak üst satırdaki kupa
+    var onOpenLeaderboard: () -> Void = {}
 
     @EnvironmentObject var langManager: LanguageManager
     @EnvironmentObject var authManager: AuthManager
     @Environment(\.openURL) private var openURL
     @StateObject private var vm = ProfileScreenViewModel()
-    @ObservedObject private var achievementService = AchievementService.shared
     @ObservedObject private var iap = InAppPurchaseManager.shared
     @ObservedObject private var gameCenter = GameCenterService.shared
     @State private var showPaywall = false
@@ -24,26 +25,30 @@ struct ProfileView: View {
     #endif
     @State private var showManageSubscription = false
     @State private var showUsernameSetup = false
-    @State private var showAllAchievements = false
+    @State private var showSettings = false
+    @State private var nativeOpen = false
+    // Ayarlar (Lupa ve uygulama tercihleri)
+    @AppStorage(TutorPrefs.speedKey) private var prefSpeed = 1
+    @AppStorage(TutorPrefs.cefrKey) private var prefCEFR = -1
+    @AppStorage(TutorPrefs.correctionsKey) private var prefCorrections = 0
+    @AppStorage(TutorPrefs.alwaysTranslateKey) private var prefTranslate = false
+    @AppStorage(TutorPrefs.hapticsKey) private var prefHaptics = true
+    @AppStorage(TutorPrefs.penKey) private var prefPen = true
     @State private var showResetConfirm = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 28) {
-                profileHeader
-                heroCard
-                if !iap.isPremium { proUpsellCard }
-                statsOverviewRow
-                streakCard
-                learningProgressCard
-                achievementsSection
-                settingsSection
-                accountSection
-                    .padding(.top, 4)
+                AppHeader(onOpenLeaderboard: onOpenLeaderboard)
+                    .padding(.horizontal, -4)
+                coverSection
+                reportList
+                weekSection
             }
             .padding(.horizontal, 24)
             .padding(.top, 12)
-            .padding(.bottom, 48)
+            // Alt menünün altında kalmasın
+            .padding(.bottom, 120)
             .frame(maxWidth: 620)
             .frame(maxWidth: .infinity)
         }
@@ -54,6 +59,21 @@ struct ProfileView: View {
         .paperBackground()
         .navigationBarHidden(true)
         .task { await vm.loadProfile() }
+        // Ayarlar: sağ üstteki yuvarlak düğmeyle alttan gelen sayfa
+        .sheet(isPresented: $showSettings) {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 24) {
+                    settingsSection
+                    accountSection
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 28)
+                .padding(.bottom, 32)
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+            .presentationBackground(DS.Colors.paper)
+        }
         .sheet(isPresented: $showPrivacy) {
             SafariWebView(url: URL(string: "https://api.wordremai.app/privacy")!)
         }
@@ -109,117 +129,161 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Header
-    private var profileHeader: some View {
-        Text(langManager.s(.tabProfile))
-            .font(DS.Font.display(34, weight: .bold))
-            .foregroundStyle(DS.Colors.ink)
-    }
+    // MARK: - Kapak: profil senin defterinin kapağı
+    // Etikette adın, dilin, seviyen ve sayfan; kapağa kazınmış seri çentikleri; köşede altın Pro çıkartması;
+    // sağ üstte ayarlar (alttan gelen sayfa).
+    private var coverSection: some View {
+        let code = LearningLanguages.current
+        let language = OL.languageName(for: code).capitalized(with: Locale(identifier: OL.nativeLangCode))
+        let done = LearningLanguages.doneCount(code)
+        let inLevel = done % 5
+        let level = LearningLanguages.level(code)
+        let pages = NotebookStore.shared.pages(for: code).count
+        let streak = vm.user?.streakDays ?? 0
+        let shape = UnevenRoundedRectangle(topLeadingRadius: 6, bottomLeadingRadius: 6, bottomTrailingRadius: 18, topTrailingRadius: 18)
+        return ZStack(alignment: .topLeading) {
+            NotebookCover().clipShape(shape)
 
-    // MARK: - Hero (kimlik + Pro durumu)
-    private var heroCard: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 16) {
-                Text(vm.initials)
-                    .font(DS.Font.display(24))
-                    .foregroundStyle(DS.Colors.ink)
-                    .frame(width: 56, height: 56)
-                    .background(DS.Colors.paperSunken, in: Circle())
-
-                VStack(alignment: .leading, spacing: 4) {
-                    if iap.isPremium {
-                        Eyebrow(text: "WordRem Pro", color: DS.Colors.slate)
+            // Etiket
+            VStack(alignment: .leading, spacing: 0) {
+                Text(ProfileText.thisNotebook)
+                    .font(DS.Font.ui(10, weight: .semibold))
+                    .tracking(1.4)
+                    .foregroundStyle(DS.Colors.muted)
+                HStack(spacing: 4) {
+                    Text(vm.username)
+                        .font(DS.Font.display(26, weight: .bold))
+                        .foregroundStyle(DS.Colors.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Spacer(minLength: 0)
+                    Button { showUsernameSetup = true } label: {
+                        Image(systemName: "pencil")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(DS.Colors.inkSoft)
+                            .frame(width: 36, height: 36)
                     }
-                    // Bu ad yalnızca öğretmenin hitabı; sıralamada Game Center adı görünür (aşağıda)
-                    Text(loc(["Öğretmen sana böyle seslenir", "Your tutor calls you", "Dein Tutor nennt dich", "Ton tuteur t'appelle",
-                              "Tu tutor te llama", "Il tutor ti chiama", "Репетитор называет тебя", "老师这样称呼你"]))
-                        .font(DS.Font.ui(12, weight: .medium))
-                        .foregroundStyle(DS.Colors.muted)
-                    HStack(spacing: 8) {
-                        Text(vm.username)
-                            .font(DS.Font.display(24))
-                            .foregroundStyle(DS.Colors.ink)
-                            .lineLimit(1)
-
-                        if true {
-                            Button { showUsernameSetup = true } label: {
-                                Image(systemName: "pencil")
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundStyle(DS.Colors.inkSoft)
-                                    .frame(width: 28, height: 28)
-                                    .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
-                            }
-                        }
+                    .accessibilityLabel(loc(["Adını değiştir", "Change name", "Namen ändern", "Changer de nom", "Cambiar nombre", "Cambia nome", "Изменить имя", "更改名字"]))
+                }
+                .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
+                Text("\(language) · \(LearningText.level(level)) · \(ProfileText.page(pages))")
+                    .font(DS.Font.ui(12, weight: .medium))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .padding(.top, 8)
+                HStack(spacing: 4) {
+                    ForEach(0..<5, id: \.self) { i in
+                        Capsule().fill(i < inLevel ? DS.Colors.accent : DS.Colors.line).frame(height: 5)
                     }
-                    Text("\(langManager.f(.profileLevelFormat, vm.userLevel)) · \(vm.user?.totalXp ?? 0) XP")
-                        .font(DS.Font.ui(13))
-                        .foregroundStyle(DS.Colors.muted)
-                    leaderboardNameRow
-                        .padding(.top, 2)
                 }
-                Spacer(minLength: 0)
+                .padding(.top, 8)
+                Text(ProfileText.toNext(5 - inLevel, level + 1))
+                    .font(.system(size: 12, design: .serif).italic())
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .padding(.top, 5)
+                leaderboardNameRow
+                    .padding(.top, 6)
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(DS.Colors.paper, in: RoundedRectangle(cornerRadius: 8))
+            .rotationEffect(.degrees(-1))
+            .shadow(color: .black.opacity(0.22), radius: 12, y: 8)
+            .padding(.leading, 40)
+            .padding(.trailing, 34)
+            .padding(.top, 62)
 
+            // Kapağa kazınmış seri
+            HStack(spacing: 10) {
+                TallyMarks(count: streak, color: DS.Colors.paper, accentLast: DS.Colors.margin, height: 20, maxShown: 10)
+                Text("\(streak) \(ProfileText.streak)")
+                    .font(DS.Font.ui(12, weight: .medium))
+                    .foregroundStyle(Color(hex: "#E5ECEF"))
+            }
+            .frame(maxHeight: .infinity, alignment: .bottomLeading)
+            .padding(.leading, 40)
+            .padding(.bottom, 20)
         }
-    }
-
-    // MARK: - Pro kartı (Pro olmayanlar): faydalar + tek dokunuşla ödeme ekranı
-    private var proUpsellCard: some View {
-        Button {
-            Track.screen("profile_pro_card")
-            showPaywall = true
-        } label: {
-            ProUpsellCard(
-                title: "WordRem Pro",
-                subtitle: loc(["Öğretmeninle sınırsız konuş", "Talk with your tutor without limits", "Sprich ohne Limit mit deinem Tutor",
-                               "Parle sans limite avec ton tuteur", "Habla sin límites con tu tutor", "Parla senza limiti con il tuo tutor",
-                               "Говори с репетитором без ограничений", "和你的老师无限畅聊"]),
-                perks: [
-                    loc(["Sınırsız sesli ders", "Unlimited voice lessons", "Unbegrenzte Sprachlektionen", "Leçons vocales illimitées",
-                         "Lecciones de voz ilimitadas", "Lezioni vocali illimitate", "Безлимитные голосовые уроки", "无限语音课"]),
-                    loc(["Tüm konular ve canlandırmalar", "Every topic and roleplay", "Alle Themen und Rollenspiele", "Tous les thèmes et jeux de rôle",
-                         "Todos los temas y juegos de rol", "Tutti i temi e i giochi di ruolo", "Все темы и ролевые игры", "所有主题和角色扮演"]),
-                    loc(["Sana özel günlük plan", "Your own daily plan", "Dein persönlicher Tagesplan", "Ton plan quotidien personnalisé",
-                         "Tu plan diario personal", "Il tuo piano giornaliero", "Личный план на каждый день", "专属每日计划"]),
-                ],
-                cta: langManager.s(.profileUpgradePro))
-        }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Stats Overview Row
-    private var statsOverviewRow: some View {
-        HStack(spacing: 0) {
-            ProfileStat(value: "\(vm.stats.totalAttempts)", label: AL.s(.profTotalQuestions))
-            ProfileHairline()
-            ProfileStat(value: String(format: "%.0f%%", vm.stats.accuracy), label: AL.s(.hcAccuracy))
-            ProfileHairline()
-            ProfileStat(value: "\(vm.stats.completedLevels)", label: AL.s(.profCompleted))
-        }
-        .padding(.vertical, 4)
-    }
-
-    // MARK: - Streak Card
-    private var streakCard: some View {
-        PaperCard {
-            VStack(alignment: .leading, spacing: 20) {
-                Text(AL.s(.profStreak))
-                    .font(DS.Font.display(20))
-                    .foregroundStyle(DS.Colors.ink)
-
-                HStack(spacing: 0) {
-                    ProfileStat(value: "\(vm.user?.streakDays ?? 0)",
-                                label: AL.s(.hcDailyStreak),
-                                tint: (vm.user?.streakDays ?? 0) > 0 ? DS.Colors.gold : DS.Colors.ink)
-                    ProfileHairline()
-                    ProfileStat(value: "\(vm.bestStreak)", label: AL.s(.hcBestStreak))
+        .frame(height: 330)
+        // Ayraçlar ve ayarlar düğmesi (sağ üst)
+        .overlay(alignment: .topTrailing) {
+            HStack(alignment: .top, spacing: 14) {
+                BookmarkMark(width: 10, colors: [DS.Colors.ink, DS.Colors.accent, DS.Colors.paper, DS.Colors.margin])
+                Button { showSettings = true } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 17, weight: .regular))
+                        .foregroundStyle(DS.Colors.paperRaised)
+                        .frame(width: 40, height: 40)
+                        .background(Color.white.opacity(0.14), in: Circle())
                 }
-
-                Rectangle().fill(DS.Colors.line).frame(height: 1)
-
-                // Haftalık Takvim
-                weeklyCalendarView
+                .accessibilityLabel(LearningText.settings)
+                .padding(.top, 10)
             }
+            .padding(.trailing, 12)
+        }
+        // Altın Pro çıkartması
+        .overlay(alignment: .bottomTrailing) { proSticker.padding(14) }
+        .shadow(color: Color(red: 0.24, green: 0.16, blue: 0.08).opacity(0.16), radius: 14, y: 10)
+    }
+
+    /// Kapağa yapıştırılmış altın çıkartma: Pro değilse "Pro'ya geç" düğmesi (hafifçe sallanır), Pro'ysa mühür
+    @ViewBuilder
+    private var proSticker: some View {
+        if iap.isPremium {
+            Button { showManageSubscription = true } label: {
+                VStack(spacing: 1) {
+                    Text("PRO").font(DS.Font.display(17, weight: .bold))
+                    Image(systemName: "checkmark").font(.system(size: 10, weight: .heavy))
+                }
+                .foregroundStyle(DS.Colors.ink)
+                .frame(width: 70, height: 70)
+                .background(DS.Colors.gold, in: Circle())
+                .overlay(Circle().strokeBorder(DS.Colors.ink.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [2, 2])).padding(5))
+                .rotationEffect(.degrees(12))
+                .shadow(color: .black.opacity(0.3), radius: 4, y: 3)
+            }
+            .accessibilityLabel(ProfileText.proActive)
+        } else {
+            Button {
+                Track.screen("profile_pro_card")
+                showPaywall = true
+            } label: {
+                VStack(spacing: 1) {
+                    Text("PRO").font(DS.Font.display(19, weight: .bold))
+                    Text(ProfileText.go).font(DS.Font.ui(9, weight: .bold)).tracking(0.8)
+                }
+                .foregroundStyle(DS.Colors.ink)
+                .frame(width: 78, height: 78)
+                .background(DS.Colors.gold, in: Circle())
+                .overlay(Circle().strokeBorder(DS.Colors.ink.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [2, 2])).padding(5))
+                .shadow(color: .black.opacity(0.3), radius: 4, y: 3)
+                .phaseAnimator([12.0, 4.0, 12.0]) { v, angle in v.rotationEffect(.degrees(angle)) } animation: { _ in .easeInOut(duration: 1.4) }
+            }
+            .accessibilityLabel(langManager.s(.profileUpgradePro))
+        }
+    }
+
+    // MARK: - Karnem: noktalı satırlarda sayılar
+    private var reportList: some View {
+        let code = LearningLanguages.current
+        let minutes = (UserStore.shared.snapshot.voiceSeconds ?? 0) / 60
+        return VStack(alignment: .leading, spacing: 12) {
+            Eyebrow(text: ProfileText.reportCard, color: DS.Colors.accentText)
+                .padding(.bottom, 2)
+            LeaderRow(label: ProfileText.minutesLabel, value: ProfileText.minutesValue(minutes))
+            LeaderRow(label: ProfileText.lessonsLabel, value: "\(LearningLanguages.doneCount(code))")
+            LeaderRow(label: ProfileText.wordsLabel, value: "\(LearnedWordsStore.load().count)")
+            LeaderRow(label: ProfileText.pagesLabel, value: "\(NotebookStore.shared.pages.count)")
+            LeaderRow(label: AL.s(.hcBestStreak), value: "\(vm.bestStreak)")
+        }
+    }
+
+    // MARK: - Bu hafta: çalışılan günler mühürlü
+    private var weekSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Eyebrow(text: ProfileText.thisWeek, color: DS.Colors.accentText)
+            weeklyCalendarView
         }
     }
 
@@ -235,9 +299,11 @@ struct ProfileView: View {
             lastActive = today
         }
 
-        // Bugünden 6 gün geriye: 7 günlük pencere
+        // Bu hafta, her zaman pazartesiden pazara (ISO hafta); bugün kendi yerinde, sonraki günler boş
+        let iso = Calendar(identifier: .iso8601)
+        let monday = iso.dateInterval(of: .weekOfYear, for: today)?.start ?? today
         let days = (0..<7).map { i -> Date in
-            calendar.date(byAdding: .day, value: -6 + i, to: today)!
+            iso.date(byAdding: .day, value: i, to: monday)!
         }
         // Pzt..Paz sırası — seçili dile göre kısa gün adları
         var dayFormatter = Calendar(identifier: .gregorian)
@@ -257,119 +323,24 @@ struct ProfileView: View {
                         .font(DS.Font.ui(11, weight: isToday ? .bold : .medium))
                         .foregroundStyle(isToday ? DS.Colors.ink : DS.Colors.muted)
 
+                    // Çalışılan gün: terrakota mühür; bugün: kesik çizgili boş mühür
                     ZStack {
-                        Circle()
-                            .fill(isActive ? DS.Colors.ink : Color.clear)
-                        Circle()
-                            .stroke(isToday ? DS.Colors.gold : (isActive ? DS.Colors.ink : DS.Colors.line),
-                                    lineWidth: isToday ? 2 : 1)
                         if isActive {
+                            Circle().strokeBorder(DS.Colors.accent, lineWidth: 2)
                             Image(systemName: "checkmark")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(DS.Colors.paperRaised)
+                                .font(.system(size: 11, weight: .heavy))
+                                .foregroundStyle(DS.Colors.accent)
+                        } else if isToday {
+                            Circle().strokeBorder(style: StrokeStyle(lineWidth: 1.5, dash: [3, 3])).foregroundStyle(DS.Colors.ink)
+                        } else {
+                            Circle().strokeBorder(DS.Colors.line, lineWidth: 1)
                         }
                     }
-                    .frame(width: 30, height: 30)
+                    .frame(width: 32, height: 32)
+                    .rotationEffect(.degrees(isActive ? Double((i * 37) % 21) - 10 : 0))
                 }
                 .frame(maxWidth: .infinity)
             }
-        }
-    }
-
-    // MARK: - Learning Progress Card
-    private var learningProgressCard: some View {
-        let xp = vm.user?.totalXp ?? 0
-        let xpPerLevel = 50
-        let currentLevel = max(1, xp / xpPerLevel + 1)
-        let xpInLevel = xp % xpPerLevel
-        let xpProgress = Double(xpInLevel) / Double(xpPerLevel)
-
-        return PaperCard {
-            VStack(alignment: .leading, spacing: 18) {
-                Text(AL.s(.hcProgress))
-                    .font(DS.Font.display(20))
-                    .foregroundStyle(DS.Colors.ink)
-
-                // XP Level Progress
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(AL.f(.profLevelN, currentLevel))
-                            .font(DS.Font.ui(15, weight: .semibold))
-                            .foregroundStyle(DS.Colors.ink)
-                        Spacer()
-                        Text("\(xp) XP")
-                            .font(DS.Font.ui(13, weight: .medium))
-                            .foregroundStyle(DS.Colors.muted)
-                            .monospacedDigit()
-                    }
-
-                    ProfileProgressBar(progress: xpProgress)
-
-                    HStack {
-                        Text("\(xpInLevel)/\(xpPerLevel) XP")
-                        Spacer()
-                        Text(AL.s(.profNextLevel))
-                    }
-                    .font(DS.Font.ui(12))
-                    .foregroundStyle(DS.Colors.muted)
-                }
-
-                Rectangle().fill(DS.Colors.line).frame(height: 1)
-
-                HStack(spacing: 0) {
-                    ProfileStat(value: "\(xp)", label: AL.s(.profTotalXP), size: 22)
-                    ProfileHairline(height: 32)
-                    ProfileStat(value: "\(vm.stats.completedLevels)", label: AL.s(.profLevels), size: 22)
-                    ProfileHairline(height: 32)
-                    ProfileStat(value: String(format: "%.0f%%", vm.stats.accuracy),
-                                label: AL.s(.hcAccuracy), size: 22)
-                }
-            }
-        }
-    }
-
-    // MARK: - Achievements
-    private var achievementsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header row
-            HStack(alignment: .firstTextBaseline) {
-                Text(langManager.s(.profileAchievements))
-                    .font(DS.Font.display(20))
-                    .foregroundStyle(DS.Colors.ink)
-
-                let unlockedCount = achievementService.localized.filter { $0.isUnlocked }.count
-                Text("\(unlockedCount)/\(achievementService.localized.count)")
-                    .font(DS.Font.ui(13, weight: .medium))
-                    .foregroundStyle(DS.Colors.muted)
-                    .monospacedDigit()
-
-                Spacer()
-
-                Button {
-                    showAllAchievements = true
-                } label: {
-                    Text(langManager.s(.achievementViewMore))
-                        .font(DS.Font.ui(14, weight: .semibold))
-                        .foregroundStyle(DS.Colors.accent)
-                }
-            }
-
-            // İlk 8 rozet (önce açılanlar, sonra kilitliler)
-            let sorted = achievementService.localized.sorted {
-                if $0.isUnlocked != $1.isUnlocked { return $0.isUnlocked }
-                return false
-            }
-            let preview = Array(sorted.prefix(8))
-
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4),
-                      alignment: .center, spacing: 18) {
-                ForEach(preview) { ach in
-                    ProfileAchievementCell(icon: ach.icon, title: ach.title, isUnlocked: ach.isUnlocked)
-                }
-            }
-        }
-        .sheet(isPresented: $showAllAchievements) {
-            AllAchievementsSheet(achievements: achievementService.localized)
         }
     }
 
@@ -414,70 +385,141 @@ struct ProfileView: View {
     }
 
     private var settingsSection: some View {
-        let target = (UserDefaults.standard.string(forKey: "selectedTargetLanguageCode") ?? "en").lowercased()
-        return VStack(alignment: .leading, spacing: 12) {
+        let target = LearningLanguages.current
+        let targetName = OL.languageName(for: target).capitalized(with: Locale(identifier: OL.nativeLangCode))
+        return VStack(alignment: .leading, spacing: 26) {
             Text(LearningText.settings)
-                .font(DS.Font.display(22, weight: .bold))
+                .font(DS.Font.display(28, weight: .bold))
                 .foregroundStyle(DS.Colors.ink)
-            VStack(spacing: 0) {
-                Menu {
-                    ForEach(LanguageManager.supportedCodes.filter { $0 != target }, id: \.self) { code in
-                        Button {
-                            Track.language("ui_change", from: langManager.currentLanguageCode, to: code, entryPoint: "profile")
-                            langManager.setLanguage(code)
-                        } label: {
-                            Text("\(LearningLanguages.flags[code] ?? "") \(Self.endonym(code))")
-                        }
-                    }
-                } label: {
-                    settingsRow(icon: "globe",
-                                title: loc(["Ana dil", "Native language", "Muttersprache", "Langue maternelle", "Idioma nativo", "Lingua madre", "Родной язык", "母语"]),
-                                value: Self.endonym(langManager.currentLanguageCode))
+
+            // LUPA: dersin nasıl geçeceği
+            VStack(alignment: .leading, spacing: 18) {
+                Eyebrow(text: "Lupa", color: DS.Colors.accentText)
+                prefRow(SettingsText.speed, SettingsText.speedHint) {
+                    NotebookSegment(options: SettingsText.speeds, selection: $prefSpeed)
                 }
-                if iap.isPremium {
-                    Divider().padding(.leading, 48)
-                    Button { showManageSubscription = true } label: {
-                        settingsRow(icon: "creditcard",
-                                    title: loc(["Aboneliği yönet", "Manage subscription", "Abo verwalten", "Gérer l'abonnement", "Gestionar suscripción", "Gestisci abbonamento", "Управление подпиской", "管理订阅"]))
+                prefRow(SettingsText.level(targetName), SettingsText.levelHint) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Seçilmediyse mevcut seviyeden türetilen işaretli gelir
+                        NotebookSegment(options: TutorPrefs.cefrNames,
+                                        selection: Binding(get: { prefCEFR >= 0 ? prefCEFR : TutorPrefs.cefr },
+                                                           set: { prefCEFR = $0 }))
+                        Text(SettingsText.levelMeaning(prefCEFR >= 0 ? prefCEFR : TutorPrefs.cefr))
+                            .font(.system(size: 14, design: .serif).italic())
+                            .foregroundStyle(DS.Colors.inkSoft)
                     }
                 }
-                Divider().padding(.leading, 48)
-                Button { openURL(ReviewPrompt.writeReviewURL) } label: {
-                    settingsRow(icon: "star",
-                                title: loc(["WordRem AI'ı puanla", "Rate WordRem AI", "WordRem AI bewerten", "Noter WordRem AI", "Valorar WordRem AI", "Valuta WordRem AI", "Оценить WordRem AI", "为 WordRem AI 评分"]))
+                prefRow(SettingsText.corrections, nil) {
+                    NotebookSegment(options: SettingsText.correctionOptions, selection: $prefCorrections)
                 }
-                Divider().padding(.leading, 48)
-                Button { showPrivacy = true } label: {
-                    settingsRow(icon: "hand.raised",
-                                title: loc(["Gizlilik Politikası", "Privacy Policy", "Datenschutz", "Confidentialité", "Privacidad", "Privacy", "Конфиденциальность", "隐私政策"]))
-                }
-                Divider().padding(.leading, 48)
-                Button { showTerms = true } label: {
-                    settingsRow(icon: "doc.text",
-                                title: loc(["Kullanım Şartları", "Terms of Use", "Nutzungsbedingungen", "Conditions d'utilisation", "Términos de uso", "Termini d'uso", "Условия использования", "使用条款"]))
-                }
-                #if DEBUG
-                Divider().padding(.leading, 48)
-                Button { FreshUser.isOn ? FreshUser.stop() : FreshUser.start() } label: {
-                    settingsRow(icon: "person.badge.plus",
-                                title: FreshUser.isOn ? "Test: gerçek hesaba dön" : "Test: yeni kullanıcı olarak başla")
-                }
-                Divider().padding(.leading, 48)
-                Button {
-                    VoiceEngineChoice.next()
-                    voiceEngine = VoiceEngineChoice.current
-                } label: {
-                    settingsRow(icon: "waveform", title: "Test: ses motoru \(voiceEngine) (dokun: değiştir)")
-                }
-                Divider().padding(.leading, 48)
-                Button { showStudio = true } label: {
-                    settingsRow(icon: "video", title: "Stüdyo: sosyal medya kaydı")
-                }
-                #endif
+                toggleRow(SettingsText.alwaysTranslate, SettingsText.alwaysTranslateHint, isOn: $prefTranslate)
             }
-            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20).stroke(DS.Colors.line, lineWidth: 1))
+
+            // UYGULAMA
+            VStack(alignment: .leading, spacing: 14) {
+                Eyebrow(text: SettingsText.app, color: DS.Colors.accentText)
+                NotebookDropdown(
+                    title: loc(["Ana dil", "Native language", "Muttersprache", "Langue maternelle", "Idioma nativo", "Lingua madre", "Родной язык", "母语"]),
+                    value: Self.endonym(langManager.currentLanguageCode),
+                    options: LanguageManager.supportedCodes.filter { $0 != target }.map { ($0, Self.endonym($0)) },
+                    selected: langManager.currentLanguageCode,
+                    isOpen: $nativeOpen
+                ) { code in
+                    Track.language("ui_change", from: langManager.currentLanguageCode, to: code, entryPoint: "profile")
+                    langManager.setLanguage(code)
+                }
+                toggleRow(SettingsText.haptics, nil, isOn: $prefHaptics)
+                toggleRow(SettingsText.pen, SettingsText.penHint, isOn: $prefPen)
+            }
+
+            // HESAP ve yasal
+            VStack(alignment: .leading, spacing: 4) {
+                Eyebrow(text: SettingsText.account, color: DS.Colors.accentText)
+                VStack(spacing: 0) {
+                    if iap.isPremium {
+                        Button { showManageSubscription = true } label: {
+                            settingsRow(icon: "creditcard",
+                                        title: loc(["Aboneliği yönet", "Manage subscription", "Abo verwalten", "Gérer l'abonnement", "Gestionar suscripción", "Gestisci abbonamento", "Управление подпиской", "管理订阅"]))
+                        }
+                        Rectangle().fill(DS.Colors.rule).frame(height: 1).padding(.leading, 36)
+                    }
+                    Button { openURL(ReviewPrompt.writeReviewURL) } label: {
+                        settingsRow(icon: "star",
+                                    title: loc(["WordRem AI'ı puanla", "Rate WordRem AI", "WordRem AI bewerten", "Noter WordRem AI", "Valorar WordRem AI", "Valuta WordRem AI", "Оценить WordRem AI", "为 WordRem AI 评分"]))
+                    }
+                    Rectangle().fill(DS.Colors.rule).frame(height: 1).padding(.leading, 36)
+                    Button { showPrivacy = true } label: {
+                        settingsRow(icon: "hand.raised",
+                                    title: loc(["Gizlilik Politikası", "Privacy Policy", "Datenschutz", "Confidentialité", "Privacidad", "Privacy", "Конфиденциальность", "隐私政策"]))
+                    }
+                    Rectangle().fill(DS.Colors.rule).frame(height: 1).padding(.leading, 36)
+                    Button { showTerms = true } label: {
+                        settingsRow(icon: "doc.text",
+                                    title: loc(["Kullanım Şartları", "Terms of Use", "Nutzungsbedingungen", "Conditions d'utilisation", "Términos de uso", "Termini d'uso", "Условия использования", "使用条款"]))
+                    }
+                    #if DEBUG
+                    Rectangle().fill(DS.Colors.rule).frame(height: 1).padding(.leading, 36)
+                    Button { FreshUser.isOn ? FreshUser.stop() : FreshUser.start() } label: {
+                        settingsRow(icon: "person.badge.plus",
+                                    title: FreshUser.isOn ? "Test: gerçek hesaba dön" : "Test: yeni kullanıcı olarak başla")
+                    }
+                    Rectangle().fill(DS.Colors.rule).frame(height: 1).padding(.leading, 36)
+                    Button {
+                        VoiceEngineChoice.next()
+                        voiceEngine = VoiceEngineChoice.current
+                    } label: {
+                        settingsRow(icon: "waveform", title: "Test: ses motoru \(voiceEngine) (dokun: değiştir)")
+                    }
+                    Rectangle().fill(DS.Colors.rule).frame(height: 1).padding(.leading, 36)
+                    Button { showStudio = true } label: {
+                        settingsRow(icon: "video", title: "Stüdyo: sosyal medya kaydı")
+                    }
+                    #endif
+                }
+                .overlay(alignment: .top) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
+                .overlay(alignment: .bottom) { Rectangle().fill(DS.Colors.line).frame(height: 1) }
+            }
         }
+    }
+
+    private func prefRow<Control: View>(_ title: String, _ hint: String?, @ViewBuilder _ control: () -> Control) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(DS.Font.ui(16, weight: .semibold))
+                .foregroundStyle(DS.Colors.ink)
+            if let hint {
+                Text(hint)
+                    .font(DS.Font.ui(13))
+                    .foregroundStyle(DS.Colors.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            control()
+        }
+    }
+
+    private func toggleRow(_ title: String, _ hint: String?, isOn: Binding<Bool>) -> some View {
+        Button { withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) { isOn.wrappedValue.toggle() }; Haptics.tap() } label: {
+            HStack(alignment: .center, spacing: 14) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(DS.Font.ui(16, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                    if let hint {
+                        Text(hint)
+                            .font(DS.Font.ui(13))
+                            .foregroundStyle(DS.Colors.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Spacer(minLength: 8)
+                PaperToggle(isOn: isOn.wrappedValue)
+            }
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityValue(isOn.wrappedValue ? "1" : "0")
+        .accessibilityAddTraits(.isButton)
     }
 
     /// Dil seçicide her dil kendi adıyla görünür (Deutsch, Français…), herkes kendi dilini bulsun
@@ -490,8 +532,8 @@ struct ProfileView: View {
     private func settingsRow(icon: String, title: String, value: String? = nil) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(DS.Colors.accent)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundStyle(DS.Colors.accentText)
                 .frame(width: 22)
             Text(title)
                 .font(DS.Font.ui(16, weight: .medium))
@@ -506,7 +548,7 @@ struct ProfileView: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(DS.Colors.muted)
         }
-        .padding(.horizontal, 16).padding(.vertical, 15)
+        .padding(.vertical, 15)
         .contentShape(Rectangle())
     }
 
@@ -602,275 +644,6 @@ final class ProfileScreenViewModel: ObservableObject {
 // MARK: - Subviews
 // MARK: ═══════════════════════════════════════════════════════════
 
-/// Serif sayı + soluk etiket (TodayView istatistik satırı)
-private struct ProfileStat: View {
-    let value: String
-    let label: String
-    var tint: Color = DS.Colors.ink
-    var size: CGFloat = 28
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(value)
-                .font(DS.Font.display(size, weight: .bold))
-                .foregroundStyle(tint)
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-            Text(label)
-                .font(DS.Font.ui(12, weight: .medium))
-                .foregroundStyle(DS.Colors.muted)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-/// Dikey ince ayraç
-private struct ProfileHairline: View {
-    var height: CGFloat = 40
-    var body: some View {
-        Rectangle().fill(DS.Colors.line).frame(width: 1, height: height)
-    }
-}
-
-/// 4pt ince ilerleme çubuğu
-private struct ProfileProgressBar: View {
-    let progress: Double
-    var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                Capsule().fill(DS.Colors.line)
-                Capsule()
-                    .fill(DS.Colors.ink)
-                    .frame(width: geo.size.width * min(max(progress, 0), 1))
-            }
-        }
-        .frame(height: 4)
-    }
-}
-
-/// Dolu SF Symbol yerine çizgisel varyantı (varsa)
-private func profileOutlineSymbol(_ name: String) -> String {
-    guard name.hasSuffix(".fill") else { return name }
-    let outline = name.replacingOccurrences(of: ".fill", with: "")
-    return UIImage(systemName: outline) != nil ? outline : name
-}
-
-/// Rozet: çizgisel ikon (açık → mürekkep, kilitli → soluk + kilit)
-private struct ProfileAchievementCell: View {
-    let icon: String
-    let title: String
-    let isUnlocked: Bool
-    var circle: CGFloat = 52
-
-    var body: some View {
-        VStack(spacing: 8) {
-            ZStack(alignment: .bottomTrailing) {
-                Image(systemName: profileOutlineSymbol(icon))
-                    .font(.system(size: circle * 0.38, weight: .regular))
-                    .foregroundStyle(isUnlocked ? DS.Colors.ink : DS.Colors.muted.opacity(0.7))
-                    .frame(width: circle, height: circle)
-                    .background(isUnlocked ? DS.Colors.paperRaised : Color.clear, in: Circle())
-                    .overlay(Circle().stroke(isUnlocked ? DS.Colors.ink.opacity(0.85) : DS.Colors.line,
-                                             lineWidth: 1))
-
-                if !isUnlocked {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 9, weight: .semibold))
-                        .foregroundStyle(DS.Colors.muted)
-                        .frame(width: 18, height: 18)
-                        .background(DS.Colors.paper, in: Circle())
-                        .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
-                        .offset(x: 2, y: 2)
-                }
-            }
-
-            Text(title)
-                .font(DS.Font.ui(11, weight: .medium))
-                .foregroundStyle(isUnlocked ? DS.Colors.inkSoft : DS.Colors.muted)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .top)
-    }
-}
-
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - All Achievements Sheet
-// MARK: ═══════════════════════════════════════════════════════════
-
-struct AllAchievementsSheet: View {
-    @EnvironmentObject var langManager: LanguageManager
-    let achievements: [Achievement]
-    @Environment(\.dismiss) private var dismiss
-
-    private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
-
-    // Group by rarity
-    private var grouped: [(String, [Achievement])] {
-        let order: [AchievementRarity] = [.common, .rare, .epic, .legendary]
-        return order.compactMap { rarity in
-            let items = achievements.filter { $0.rarity == rarity }
-            guard !items.isEmpty else { return nil }
-            return (rarity.label, items)
-        }
-    }
-
-    var body: some View {
-        NavigationStack {
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 32) {
-                    Text(langManager.s(.achievementAllTitle))
-                        .font(DS.Font.display(30, weight: .bold))
-                        .foregroundStyle(DS.Colors.ink)
-
-                    ForEach(grouped, id: \.0) { groupName, items in
-                        VStack(alignment: .leading, spacing: 16) {
-                            // Section header
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                Eyebrow(text: groupName, color: DS.Colors.muted)
-                                let unlocked = items.filter { $0.isUnlocked }.count
-                                Text("\(unlocked)/\(items.count)")
-                                    .font(DS.Font.ui(12, weight: .medium))
-                                    .foregroundStyle(DS.Colors.muted)
-                                    .monospacedDigit()
-                            }
-
-                            LazyVGrid(columns: columns, spacing: 20) {
-                                ForEach(items) { ach in
-                                    AchievementGridCell(achievement: ach)
-                                }
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
-                .padding(.bottom, 32)
-                .frame(maxWidth: 620)
-                .frame(maxWidth: .infinity)
-            }
-            .paperBackground()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(DS.Colors.inkSoft)
-                            .frame(width: 32, height: 32)
-                            .overlay(Circle().stroke(DS.Colors.line, lineWidth: 1))
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct AchievementGridCell: View {
-    @EnvironmentObject var langManager: LanguageManager
-    let achievement: Achievement
-
-    var body: some View {
-        VStack(spacing: 6) {
-            ProfileAchievementCell(icon: achievement.icon,
-                                   title: achievement.title,
-                                   isUnlocked: achievement.isUnlocked,
-                                   circle: 60)
-            if achievement.isUnlocked {
-                Text(langManager.s(.achievementUnlockedBadge))
-                    .font(DS.Font.ui(10, weight: .medium))
-                    .foregroundStyle(DS.Colors.muted)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .top)
-    }
-}
-
-// MARK: ═══════════════════════════════════════════════════════════
-// MARK: - Character Picker Sheet
-// MARK: ═══════════════════════════════════════════════════════════
-
-struct CharacterPickerSheet: View {
-    @EnvironmentObject var langManager: LanguageManager
-    @Binding var selected: String?
-    @Environment(\.dismiss) private var dismiss
-
-    /// Asset adlarını buraya ekle (kullanıcı dolduracak)
-    private let characters: [String] = [
-        // Örnek: "char_1", "char_2", "char_3"
-        // Kendi karakterlerini xcassets'e ekleyip buraya yaz
-    ]
-
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 3)
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if characters.isEmpty {
-                    // Placeholder — karakterler eklenince dolacak
-                    Spacer()
-                    VStack(spacing: 8) {
-                        Text("Karakterler yakında!")
-                            .font(DS.Font.display(22))
-                            .foregroundStyle(DS.Colors.ink)
-                        Text("xcassets'e karakter görselleri eklenecek")
-                            .font(DS.Font.ui(14))
-                            .foregroundStyle(DS.Colors.muted)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.horizontal, 32)
-                    Spacer()
-                } else {
-                    ScrollView(showsIndicators: false) {
-                        LazyVGrid(columns: columns, spacing: 20) {
-                            ForEach(characters, id: \.self) { name in
-                                Button {
-                                    selected = (selected == name) ? nil : name
-                                    dismiss()
-                                } label: {
-                                    Image(name)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 88, height: 88)
-                                        .clipShape(Circle())
-                                        .background(DS.Colors.paperSunken, in: Circle())
-                                        .overlay(
-                                            Circle().stroke(selected == name ? DS.Colors.ink : DS.Colors.line,
-                                                            lineWidth: selected == name ? 2 : 1)
-                                        )
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                        }
-                        .padding(24)
-                    }
-                }
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(langManager.s(.profileClose)) { dismiss() }
-                        .font(DS.Font.ui(15, weight: .semibold))
-                        .foregroundStyle(DS.Colors.inkSoft)
-                }
-            }
-            .paperBackground()
-        }
-        .presentationDetents([.medium, .large])
-        .presentationCornerRadius(24)
-    }
-}
-
-
-
 // MARK: - Username Setup Popup (mandatory, kapatılamaz)
 private struct UsernameSetupPopup: View {
     @EnvironmentObject var langManager: LanguageManager
@@ -898,7 +671,7 @@ private struct UsernameSetupPopup: View {
             DS.Colors.ink.opacity(0.4)
                 .ignoresSafeArea()
 
-            PaperCard(padding: 24) {
+            StickyNote(angle: -1) {
                 VStack(alignment: .leading, spacing: 0) {
                     // Close butonu — her zaman (ilk kurulumda da atlanabilir; Apple 4.8 / 5.1.1)
                     HStack(alignment: .top) {
@@ -937,16 +710,13 @@ private struct UsernameSetupPopup: View {
                         .padding(.top, 8)
 
                     TextField(langManager.s(.profileUsernamePlaceholder), text: $username)
-                        .font(DS.Font.ui(16, weight: .medium))
+                        .font(DS.Font.display(24, weight: .semibold))
                         .foregroundStyle(DS.Colors.ink)
                         .tint(DS.Colors.accent)
-                        .padding(.horizontal, 16)
                         .frame(height: 52)
-                        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: DS.Radius.button)
-                                .stroke(focused ? DS.Colors.inkSoft : DS.Colors.line, lineWidth: 1)
-                        )
+                        .overlay(alignment: .bottom) {
+                            Rectangle().fill(focused ? DS.Colors.accent : DS.Colors.inkSoft).frame(height: 1.5)
+                        }
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.words)
                         .focused($focused)
@@ -992,73 +762,185 @@ private struct UsernameSetupPopup: View {
         .environmentObject(AuthManager())
 }
 
-/// Profildeki Pro kartı: imza renginde, ara ara üstünden geçen parlama ve hafifçe atan düğme
-private struct ProUpsellCard: View {
-    let title: String
-    let subtitle: String
-    let perks: [String]
-    let cta: String
-    @State private var shine = false
-    @State private var pulse = false
+/// Profil metinleri (sıra: tr, en, de, fr, es, it, ru, zh)
+private enum ProfileText {
+    static var thisNotebook: String { PageText.t(["BU DEFTER", "THIS NOTEBOOK", "DIESES HEFT", "CE CARNET", "ESTE CUADERNO", "QUESTO QUADERNO", "ЭТА ТЕТРАДЬ", "这本笔记本"]) }
+    static func page(_ n: Int) -> String { PageText.t(["\(n). sayfa", "page \(n)", "Seite \(n)", "page \(n)", "página \(n)", "pagina \(n)", "стр. \(n)", "第 \(n) 页"]) }
+    static var thisWeek: String { PageText.t(["BU HAFTA", "THIS WEEK", "DIESE WOCHE", "CETTE SEMAINE", "ESTA SEMANA", "QUESTA SETTIMANA", "ЭТА НЕДЕЛЯ", "本周"]) }
+    static var reportCard: String { PageText.t(["KARNEM", "MY REPORT CARD", "MEIN ZEUGNIS", "MON BULLETIN", "MI BOLETÍN", "LA MIA PAGELLA", "МОЙ ТАБЕЛЬ", "我的成绩单"]) }
+    static var streak: String { PageText.t(["günlük seri", "day streak", "Tage in Folge", "jours d'affilée", "días seguidos", "giorni di fila", "дней подряд", "天连续"]) }
+    static func toNext(_ n: Int, _ level: Int) -> String {
+        PageText.t(["Seviye \(level) için \(n) ders kaldı", "\(n) lessons to level \(level)", "Noch \(n) Lektionen bis Niveau \(level)", "Encore \(n) leçons avant le niveau \(level)", "Faltan \(n) lecciones para el nivel \(level)", "Mancano \(n) lezioni al livello \(level)", "До уровня \(level): \(n) уроков", "距离 \(level) 级还差 \(n) 节课"])
+    }
+    static var go: String { PageText.t(["GEÇ", "GET", "HOLEN", "PASSER", "PASAR", "PASSA", "ВЗЯТЬ", "开通"]) }
+    static var proActive: String { PageText.t(["Pro üyeliğin aktif", "Your Pro membership is active", "Deine Pro-Mitgliedschaft ist aktiv", "Ton abonnement Pro est actif", "Tu suscripción Pro está activa", "Il tuo abbonamento Pro è attivo", "Подписка Pro активна", "Pro 会员已激活"]) }
+    static var minutesLabel: String { PageText.t(["Konuştuğun süre", "Time spoken", "Gesprochene Zeit", "Temps de parole", "Tiempo hablado", "Tempo parlato", "Время разговора", "口语时长"]) }
+    static func minutesValue(_ m: Int) -> String { PageText.t(["\(m) dk", "\(m) min", "\(m) Min.", "\(m) min", "\(m) min", "\(m) min", "\(m) мин", "\(m) 分钟"]) }
+    static var lessonsLabel: String { PageText.t(["Biten ders", "Lessons done", "Fertige Lektionen", "Leçons terminées", "Lecciones hechas", "Lezioni finite", "Пройдено уроков", "完成的课程"]) }
+    static var wordsLabel: String { PageText.t(["Öğrenilen kelime", "Words learned", "Gelernte Wörter", "Mots appris", "Palabras aprendidas", "Parole imparate", "Выучено слов", "学会的单词"]) }
+    static var pagesLabel: String { PageText.t(["Dolan sayfa", "Pages written", "Beschriebene Seiten", "Pages écrites", "Páginas escritas", "Pagine scritte", "Исписано страниц", "已写页数"]) }
+}
+
+// MARK: - Ayar bileşenleri (defter dili)
+
+/// Defter sekmesi gibi seçenek şeridi: seçili olan not kâğıdı renginde, altı terrakota çizgili
+private struct NotebookSegment: View {
+    let options: [String]
+    @Binding var selection: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 10) {
-                Image(systemName: "crown.fill")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(DS.Colors.accent)
-                    .frame(width: 32, height: 32)
-                    .background(DS.Colors.paperRaised, in: Circle())
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(DS.Font.display(22, weight: .bold))
-                        .foregroundStyle(DS.Colors.paperRaised)
-                    Text(subtitle)
-                        .font(DS.Font.ui(13, weight: .medium))
-                        .foregroundStyle(DS.Colors.paperRaised.opacity(0.85))
+        HStack(spacing: 0) {
+            ForEach(options.indices, id: \.self) { i in
+                let on = i == selection
+                Button {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { selection = i }
+                    Haptics.tap()
+                } label: {
+                    Text(options[i])
+                        .font(DS.Font.ui(14, weight: on ? .semibold : .regular))
+                        .foregroundStyle(on ? DS.Colors.ink : DS.Colors.muted)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity, minHeight: 42)
+                        .background(on ? DS.Colors.note : .clear)
+                        .overlay(alignment: .bottom) {
+                            Rectangle().fill(on ? DS.Colors.accent : .clear).frame(height: 2)
+                        }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? .isSelected : [])
+                if i < options.count - 1 {
+                    Rectangle().fill(DS.Colors.line).frame(width: 1, height: 22)
                 }
             }
-            VStack(alignment: .leading, spacing: 7) {
-                ForEach(perks, id: \.self) { perk in
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(DS.Colors.accent)
-                            .frame(width: 18, height: 18)
-                            .background(DS.Colors.paperRaised, in: Circle())
-                        Text(perk)
-                            .font(DS.Font.ui(14, weight: .medium))
-                            .foregroundStyle(DS.Colors.paperRaised)
+        }
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(DS.Colors.line, lineWidth: 1))
+    }
+}
+
+/// Kâğıt anahtar: kapalıyken boş kutu, açıkken terrakota ve kalem tiki
+private struct PaperToggle: View {
+    let isOn: Bool
+    var body: some View {
+        ZStack(alignment: isOn ? .trailing : .leading) {
+            Capsule()
+                .fill(isOn ? DS.Colors.accent : DS.Colors.paperSunken)
+                .overlay(Capsule().stroke(isOn ? DS.Colors.accent : DS.Colors.line, lineWidth: 1))
+            Circle()
+                .fill(DS.Colors.paperRaised)
+                .frame(width: 24, height: 24)
+                .overlay {
+                    if isOn {
+                        PenTick()
+                            .stroke(DS.Colors.accent, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                            .frame(width: 12, height: 10)
                     }
                 }
-            }
-            HStack {
-                Text(cta)
-                    .font(DS.Font.ui(16, weight: .semibold))
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 14, weight: .bold))
-            }
-            .foregroundStyle(DS.Colors.accentDeep)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 13)
-            .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: DS.Radius.button))
-            .scaleEffect(pulse ? 1.03 : 1)
+                .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+                .padding(3)
         }
-        .padding(18)
-        .background(DS.Colors.accent, in: RoundedRectangle(cornerRadius: 22))
-        .overlay {
-            GeometryReader { geo in
-                LinearGradient(colors: [.clear, .white.opacity(0.28), .clear], startPoint: .leading, endPoint: .trailing)
-                    .frame(width: geo.size.width * 0.35)
-                    .rotationEffect(.degrees(20))
-                    .offset(x: shine ? geo.size.width * 1.3 : -geo.size.width * 0.6)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 22))
-            .allowsHitTesting(false)
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { pulse = true }
-            withAnimation(.easeInOut(duration: 1.8).delay(0.6).repeatForever(autoreverses: false)) { shine = true }
-        }
+        .frame(width: 52, height: 30)
     }
+}
+
+/// Özel açılır liste: satıra dokununca altında seçenekler açılır, seçili olanın yanında kalem tiki
+private struct NotebookDropdown: View {
+    let title: String
+    let value: String
+    let options: [(id: String, label: String)]
+    let selected: String
+    @Binding var isOpen: Bool
+    var onPick: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button { withAnimation(.spring(response: 0.32, dampingFraction: 0.85)) { isOpen.toggle() } } label: {
+                HStack(spacing: 12) {
+                    Text(title)
+                        .font(DS.Font.ui(16, weight: .semibold))
+                        .foregroundStyle(DS.Colors.ink)
+                    Spacer()
+                    Text(value)
+                        .font(.system(size: 16, design: .serif).italic())
+                        .foregroundStyle(DS.Colors.accentText)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                        .rotationEffect(.degrees(isOpen ? 180 : 0))
+                }
+                .padding(.horizontal, 14)
+                .frame(minHeight: 50)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            if isOpen {
+                VStack(spacing: 0) {
+                    ForEach(options, id: \.id) { o in
+                        Button {
+                            onPick(o.id)
+                            Haptics.tap()
+                            withAnimation(.easeOut(duration: 0.2)) { isOpen = false }
+                        } label: {
+                            HStack(spacing: 12) {
+                                Text(o.label)
+                                    .font(DS.Font.display(17, weight: o.id == selected ? .semibold : .regular))
+                                    .foregroundStyle(DS.Colors.ink)
+                                Spacer()
+                                if o.id == selected {
+                                    PenTick()
+                                        .stroke(DS.Colors.accent, style: StrokeStyle(lineWidth: 2.4, lineCap: .round, lineJoin: .round))
+                                        .frame(width: 18, height: 15)
+                                }
+                            }
+                            .padding(.horizontal, 14)
+                            .frame(minHeight: 46)
+                            .overlay(alignment: .top) { Rectangle().fill(DS.Colors.rule).frame(height: 1) }
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(isOpen ? DS.Colors.accent.opacity(0.6) : DS.Colors.line, lineWidth: 1))
+    }
+}
+
+/// Ayarlar metinleri (sıra: tr, en, de, fr, es, it, ru, zh)
+private enum SettingsText {
+    static var speed: String { PageText.t(["Konuşma hızı", "Speaking speed", "Sprechtempo", "Vitesse de parole", "Velocidad al hablar", "Velocità del parlato", "Скорость речи", "语速"]) }
+    static var speedHint: String { PageText.t(["Lupa ne kadar hızlı konuşsun", "How fast Lupa talks", "Wie schnell Lupa spricht", "À quelle vitesse Lupa parle", "Qué tan rápido habla Lupa", "Quanto velocemente parla Lupa", "Как быстро говорит Лупа", "Lupa 说话的快慢"]) }
+    static var speeds: [String] { [PageText.t(["Yavaş", "Slow", "Langsam", "Lent", "Lento", "Lento", "Медленно", "慢"]),
+                                   PageText.t(["Normal", "Normal", "Normal", "Normal", "Normal", "Normale", "Обычно", "正常"]),
+                                   PageText.t(["Hızlı", "Fast", "Schnell", "Rapide", "Rápido", "Veloce", "Быстро", "快"])] }
+    static func level(_ lang: String) -> String { PageText.t(["\(lang) seviyen", "Your \(lang) level", "Dein \(lang)-Niveau", "Ton niveau de \(lang)", "Tu nivel de \(lang)", "Il tuo livello di \(lang)", "Твой уровень: \(lang)", "你的\(lang)水平"]) }
+    static var levelHint: String { PageText.t(["Lupa anlatım dilini, kelimeleri ve cümle uzunluğunu buna göre ayarlar", "Lupa adapts her explanations, words and sentence length to it", "Lupa passt Erklärungen, Wörter und Satzlänge daran an", "Lupa adapte ses explications, ses mots et la longueur des phrases", "Lupa adapta sus explicaciones, palabras y frases a tu nivel", "Lupa adatta spiegazioni, parole e lunghezza delle frasi", "Лупа подстраивает объяснения, слова и длину фраз", "Lupa 会据此调整讲解语言、词汇和句子长度"]) }
+    static func levelMeaning(_ i: Int) -> String {
+        let tr = ["A1 · Yeni başlıyorum, Lupa Türkçe anlatsın", "A2 · Temel ifadeleri biliyorum", "B1 · Günlük konularda sohbet edebiliyorum", "B2 · Rahat konuşuyorum, doğal dil istiyorum", "C1 · Akıcıyım, ana dili gibi konuşsun"]
+        let en = ["A1 · I'm just starting, explain in my language", "A2 · I know basic phrases", "B1 · I can chat about everyday topics", "B2 · I speak comfortably, give me natural language", "C1 · I'm fluent, talk like a native"]
+        let de = ["A1 · Ich fange gerade an", "A2 · Ich kenne einfache Sätze", "B1 · Ich kann über Alltägliches sprechen", "B2 · Ich spreche sicher, bitte natürlich", "C1 · Ich bin fließend, sprich wie ein Muttersprachler"]
+        let fr = ["A1 · Je débute", "A2 · Je connais les phrases de base", "B1 · Je peux parler du quotidien", "B2 · Je parle à l'aise, langue naturelle", "C1 · Je suis courant, parle comme un natif"]
+        let es = ["A1 · Estoy empezando", "A2 · Conozco frases básicas", "B1 · Puedo charlar sobre lo cotidiano", "B2 · Hablo con soltura, lenguaje natural", "C1 · Tengo fluidez, habla como un nativo"]
+        let it = ["A1 · Sto iniziando", "A2 · Conosco le frasi di base", "B1 · So parlare della vita quotidiana", "B2 · Parlo con sicurezza, lingua naturale", "C1 · Sono fluente, parla come un madrelingua"]
+        let ru = ["A1 · Только начинаю", "A2 · Знаю базовые фразы", "B1 · Могу говорить о повседневном", "B2 · Говорю уверенно, нужен живой язык", "C1 · Свободно, говори как носитель"]
+        let zh = ["A1 · 刚开始学", "A2 · 会基本表达", "B1 · 能聊日常话题", "B2 · 说得流利，要自然的语言", "C1 · 很流利，像母语者一样说"]
+        let i = min(4, max(0, i))
+        return PageText.t([tr[i], en[i], de[i], fr[i], es[i], it[i], ru[i], zh[i]])
+    }
+    static var corrections: String { PageText.t(["Düzeltmeler", "Corrections", "Korrekturen", "Corrections", "Correcciones", "Correzioni", "Исправления", "纠错"]) }
+    static var correctionOptions: [String] { [PageText.t(["Her hatayı", "Every mistake", "Jeder Fehler", "Chaque erreur", "Cada error", "Ogni errore", "Каждую ошибку", "每个错误"]),
+                                              PageText.t(["Sadece önemliler", "Only important", "Nur wichtige", "Les importantes", "Solo importantes", "Solo importanti", "Только важные", "只纠正重要的"])] }
+    static var alwaysTranslate: String { PageText.t(["Kartlarda çeviri hep açık", "Always show translations", "Übersetzung immer zeigen", "Toujours afficher la traduction", "Mostrar siempre la traducción", "Mostra sempre la traduzione", "Всегда показывать перевод", "总是显示翻译"]) }
+    static var alwaysTranslateHint: String { PageText.t(["Söyleyeceğin cümlenin anlamı hemen altında yazsın", "The meaning appears right under the line you say", "Die Bedeutung steht direkt unter dem Satz", "Le sens s'affiche sous la phrase à dire", "El significado aparece bajo la frase", "Il significato appare sotto la frase", "Перевод сразу под фразой", "要说的句子下方直接显示意思"]) }
+    static var app: String { PageText.t(["Uygulama", "App", "App", "App", "App", "App", "Приложение", "应用"]) }
+    static var haptics: String { PageText.t(["Titreşim", "Haptics", "Vibration", "Vibrations", "Vibración", "Vibrazione", "Вибрация", "振动"]) }
+    static var pen: String { PageText.t(["Kalemle yazma efekti", "Handwriting effect", "Schreibeffekt", "Effet d'écriture", "Efecto de escritura", "Effetto scrittura", "Эффект письма", "手写效果"]) }
+    static var penHint: String { PageText.t(["Lupa'nın sözleri harf harf yazılsın", "Lupa's words appear letter by letter", "Lupas Worte erscheinen Buchstabe für Buchstabe", "Les mots de Lupa s'écrivent lettre par lettre", "Las palabras de Lupa aparecen letra a letra", "Le parole di Lupa appaiono lettera per lettera", "Слова Лупы появляются по буквам", "Lupa 的话逐字出现"]) }
+    static var account: String { PageText.t(["Hesap", "Account", "Konto", "Compte", "Cuenta", "Account", "Аккаунт", "账户"]) }
 }

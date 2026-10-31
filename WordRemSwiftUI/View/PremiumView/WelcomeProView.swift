@@ -13,7 +13,6 @@ struct WelcomeProView: View {
     var onContinue: () -> Void
 
     @State private var appear = false
-    @State private var burst = 0
 
     // Paywall'da vaat edilenlerle birebir aynı maddeler
     private var features: [(String, String, String)] {[
@@ -28,28 +27,16 @@ struct WelcomeProView: View {
             DS.Colors.paper.ignoresSafeArea()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    // Kutlama rozeti
-                    ZStack {
-                        Circle()
-                            .fill(RadialGradient(colors: [DS.Colors.accent.opacity(0.22), DS.Colors.accent.opacity(0)],
-                                                 center: .center, startRadius: 8, endRadius: 110))
-                            .frame(width: 170, height: 170)
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 32, weight: .semibold))
-                            .foregroundStyle(DS.Colors.paper)
-                            .frame(width: 76, height: 76)
-                            .background(DS.Colors.accent, in: Circle())
-                            .scaleEffect(appear ? 1 : 0.4)
-                            .rotationEffect(.degrees(appear ? 0 : -25))
-                    }
-                    .frame(height: 140)
-                    .padding(.top, 8)
+                    // Sayfaya basılan "Pro" mührü
+                    InkStamp(top: "WORDREM",
+                             title: "Pro",
+                             bottom: Date().formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: OL.nativeLangCode))).uppercased(),
+                             size: 150)
+                        .scaleEffect(appear ? 1 : 2.2)
+                        .opacity(appear ? 1 : 0)
+                        .frame(height: 170)
+                        .padding(.top, 8)
 
-                    Text("WORDREM PRO")
-                        .font(DS.Font.ui(13, weight: .bold))
-                        .tracking(1.6)
-                        .foregroundStyle(DS.Colors.accent)
-                        .padding(.top, 4)
                     Text(AL.s(.proWelcomeTitle))
                         .font(DS.Font.display(30, weight: .bold))
                         .foregroundStyle(DS.Colors.ink)
@@ -66,10 +53,9 @@ struct WelcomeProView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(Array(features.enumerated()), id: \.offset) { i, f in
                             HStack(alignment: .top, spacing: 16) {
-                                Image(systemName: f.0)
-                                    .font(.system(size: 17, weight: .medium))
-                                    .foregroundStyle(DS.Colors.accent)
-                                    .frame(width: 24)
+                                PenTick()
+                                    .stroke(DS.Colors.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                                    .frame(width: 26, height: 22)
                                     .padding(.top, 2)
                                 VStack(alignment: .leading, spacing: 3) {
                                     Text(f.1)
@@ -107,12 +93,10 @@ struct WelcomeProView: View {
                     .frame(maxWidth: .infinity)
                     .background(DS.Colors.paper)
             }
-            ConfettiBurst(origin: .top, count: 90, trigger: burst).ignoresSafeArea()
         }
         .onAppear {
             Haptics.success()
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.6).delay(0.1)) { appear = true }
-            burst += 1
+            withAnimation(.spring(response: 0.38, dampingFraction: 0.55).delay(0.15)) { appear = true }
         }
     }
 

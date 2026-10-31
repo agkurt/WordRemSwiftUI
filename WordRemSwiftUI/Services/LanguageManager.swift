@@ -86,10 +86,6 @@ final class LanguageManager: ObservableObject {
         OL.quizDecoyWords(for: currentLanguageCode)
     }
 
-    // MARK: - Paywall Yorumları
-    var paywallReviews: [(String, String)] {
-        AL.paywallReviews(for: currentLanguageCode)
-    }
 
     // MARK: - Dil İsmi Yardımcısı
     /// İstenen ISO kodu için seçili dilde yazılmış dil ismini döner.

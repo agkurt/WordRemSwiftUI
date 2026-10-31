@@ -35,7 +35,7 @@ struct CardDetailDesignView: View {
         for currentWord in words {
             if currentWord.contains(word) {
                 highlightedText = highlightedText + Text(currentWord)
-                    .foregroundColor(DS.Colors.accent)
+                    .foregroundColor(DS.Colors.accentText)
                     .fontWeight(.semibold) + Text(" ")
             } else {
                 highlightedText = highlightedText + Text(currentWord)
@@ -55,9 +55,9 @@ struct CardDetailDesignView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Eyebrow + actions
+            // Fişin başlığı: dil etiketi + eylemler; altında kırmızı çizgi (arka yüzde ince)
             HStack(alignment: .center, spacing: 4) {
-                Eyebrow(text: languageLabel, color: isFront ? DS.Colors.accent : DS.Colors.muted)
+                Eyebrow(text: languageLabel, color: isFront ? DS.Colors.accentText : DS.Colors.muted)
                 Spacer()
                 if let onEdit = onEdit {
                     Button(action: onEdit) {
@@ -79,8 +79,15 @@ struct CardDetailDesignView: View {
                 }
             }
             .frame(height: 34)
+            .padding(.bottom, 6)
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(isFront ? DS.Colors.accent : DS.Colors.line)
+                    .frame(height: isFront ? 2 : 1)
+                    .padding(.horizontal, -22)
+            }
 
-            // Word / meaning
+            // Kelime (ön yüz) / anlam (arka yüz)
             Group {
                 if let name = wordName, !name.isEmpty {
                     Text(name)
@@ -90,19 +97,14 @@ struct CardDetailDesignView: View {
                 if let mean = wordMean, !mean.isEmpty {
                     Text(mean)
                         .font(DS.Font.display(30, weight: .regular))
-                        .foregroundStyle(DS.Colors.inkSoft)
+                        .foregroundStyle(DS.Colors.slate)
                 }
             }
             .lineLimit(2)
             .minimumScaleFactor(0.6)
-            .padding(.top, 10)
+            .padding(.top, 12)
 
-            Rectangle()
-                .fill(isFront ? DS.Colors.accent : DS.Colors.line)
-                .frame(width: 32, height: 2)
-                .padding(.top, 14)
-
-            // Interactive sentence with audio
+            // Örnek cümle (sesli, dokunarak çeviri)
             if let desc = wordDescription, !desc.isEmpty, let word = wordName, !word.isEmpty {
                 InteractiveSentenceView(
                     sentence: desc,
@@ -117,9 +119,18 @@ struct CardDetailDesignView: View {
         .padding(.top, 16)
         .padding(.bottom, 22)
         .frame(maxWidth: .infinity, minHeight: 160, maxHeight: .infinity, alignment: .topLeading)
-        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 24))
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(DS.Colors.line, lineWidth: 1))
-        .contentShape(RoundedRectangle(cornerRadius: 24))
+        .background {
+            // Fiş kartı: ön yüz açık mavi çizgili, arka yüz düz
+            ZStack(alignment: .top) {
+                DS.Colors.paperRaised
+                if isFront {
+                    RuledLines(pitch: 36, color: DS.Colors.cardRule).padding(.top, 66)
+                }
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(DS.Colors.line, lineWidth: 1))
+        .contentShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
