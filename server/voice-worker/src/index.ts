@@ -212,10 +212,29 @@ async function allowance(env: Env, user: string, plan: Plan, device?: string): P
   return Math.max(0, Math.min(session, Number(env.TRIAL_DAILY_SECONDS) - u.ds, plan.monthlySeconds - u.ms));
 }
 
+/**
+ * Öğrenci adını değiştirince (ör. "Ahmet" → "Aleyna") eski hafıza notları ve sohbet özetleri eski adı taşır ve model
+ * ona döner. Uygulamanın gönderdiği "Learner's name: X." satırı tek doğru kabul edilir: adla ilgili eski notlar atılır
+ * ve en başa kesin bir hitap kuralı eklenir (başta: kısaltılan talimatlarda kaybolmasın). Ad satırı yoksa olduğu gibi kalır.
+ */
+function pinLearnerName(instructions: string): string {
+  const m = instructions.match(/Learner's name: ([^\n.]{1,40})\. Use it naturally/);
+  if (!m) return instructions;
+  const name = m[1].trim();
+  const out = instructions.replace(/(Things you remember about the learner: )([^\n]*)/, (_all, head: string, list: string) => {
+    const facts = list.replace(/\.$/, "").split("; ")
+      .filter((f) => f.includes(name) || !/\b(name|named|called|call (?:me|him|her|them))\b|(?:^|\s)(?:ad[ıi]|[iİ]smi|[iİ]sim)(?=[\s:,]|$)/iu.test(f));
+    return facts.length ? `${head}${facts.join("; ")}.` : "";
+  });
+  return `NAME RULE (overrides any other name in the notes or session summaries below): the learner's name is ${name}. ` +
+    `Always call them ${name}. Older notes may mention a different name; that was a previous user of this phone, ignore it.\n\n${out}`;
+}
+
 async function createSession(req: Request, env: Env): Promise<Response> {
   const body = (await req.json().catch(() => null)) as SessionRequest | null;
   if (!body?.appUserId || !body.instructions) return json({ error: "bad_request" }, 400);
   if (body.instructions.length > 24000) return json({ error: "instructions_too_long" }, 400);
+  body.instructions = pinLearnerName(body.instructions);
 
   const plan = await planFor(env, body.appUserId);
   const { tier } = plan;
@@ -521,7 +540,7 @@ async function cascade(req: Request, env: Env, step: string): Promise<Response> 
     const calls = Number((await cacheGet(callsKey)) ?? 0);
     if (calls >= 500) return json({ error: "time_up" }, 402);
     await cachePut(callsKey, String(calls + 1), 60 * 60 * 3);
-    const system = typeof body.instructions === "string" && body.instructions ? body.instructions.slice(0, 4000) : s.instructions ?? "";
+    const system = typeof body.instructions === "string" && body.instructions ? pinLearnerName(body.instructions).slice(0, 4000) : s.instructions ?? "";
     const payload: Record<string, unknown> = {
       model: s.model || env.CASCADE_MODEL,
       messages: [{ role: "system", content: system }, ...body.messages],
