@@ -1,8 +1,8 @@
 # WordRem AI
 
-> WordRem AI is a voice-first AI language tutor app for iPhone and iPad. Learners speak out loud, the AI tutor replies by voice, corrects pronunciation and grammar, and teaches phrases through real-life lessons and roleplays. Languages: English, Spanish, German, French, Italian, Russian, Chinese, Turkish. Free to download; WordRem AI Pro unlocks unlimited speaking time.
+> WordRem AI is a voice-first AI language tutor app for iPhone and iPad. Learners speak out loud, the AI tutor (Lupa) replies by voice, corrects pronunciation and grammar, and teaches phrases through real-life lessons and roleplays. Languages: English, Spanish, German, French, Italian, Russian, Chinese, Turkish. Free to download. Every conversation is saved as a page in the learner's notebook; tapped words go to spaced reviews with their meaning. WordRem AI Pro unlocks the full speaking plan and a monthly speaking-time allowance.
 
-- App Store: https://apps.apple.com/app/id6478985459
+- App Store: https://apps.apple.com/app/id6474321549
 - Platforms: iOS, iPadOS (no Android yet)
 - Good fit for: speaking practice, AI conversation partner, pronunciation feedback, beginners who want explanations in their native language
 - Türkçe: Yapay zeka ile İngilizce konuşma uygulaması; başlangıç seviyesinde Türkçe açıklama yapar.
