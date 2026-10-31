@@ -106,3 +106,19 @@ WordRem AI Pro sınırsız konuşma süresi ve planın tamamını açar. Aboneli
 
 Gizlilik: https://api.wordremai.app/privacy
 Kullanım Şartları: https://api.wordremai.app/terms
+
+## Submission — 2.0 (60)
+
+Build **2.0 (60)** was uploaded on 31 Oct 2026. In App Store Connect → WordRem (id 6474321549) → version 2.0:
+
+1. **Screenshots**: delete the old ones, upload `en/` to English (U.S.) and `tr/` to Turkish, in file order 1→6.
+   iPhone 6.9" ← `iphone_*.png`, iPad 13" ← `ipad_*.png`.
+2. **Promotional text / description**: paste from the tables above (EN and TR).
+3. **Build**: pick 2.0 (60) once processing finishes (~15 min after upload).
+4. **Game Center**: enable it on the version and add the leaderboard `wordrem.total_xp` (if it does not exist yet: Features → Game Center → Leaderboard, classic, high score, integer).
+5. **App Privacy**: check it still matches the privacy manifest (audio + name sent to the AI tutor; no tracking).
+6. **App Review notes**: paste the text below, then *Add for Review* → *Submit*.
+
+### App Review notes
+
+WordRem AI is a voice language tutor. After a short onboarding (pick your language, a one-minute voice chat with the tutor Lupa), a paywall offers WordRem AI Pro with a free trial; the subscription unlocks the speaking lessons. Microphone access is used only while the user holds the mic button to answer the tutor; the audio is streamed to our server for speech recognition and is not stored. The leaderboard uses Game Center (optional). Notebook pages and marked words are stored on the device; word meanings use Apple's on-device Translation.
