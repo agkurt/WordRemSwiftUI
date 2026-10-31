@@ -7,7 +7,9 @@ Screenshots: `en/` and `tr/`, 6 slides each.
 Order: speaking lesson (`talk`) → notebook page (`notebook`) → today's page (`today`) → contents/plan (`plan`) → lesson complete (`done`) → notebook-cover profile (`profile`).
 Source: simulator shots with `-DemoData YES` (Lupa's lesson, saved notebook pages, 42 min / 12-day demo streak), composed in HTML. No ratings, reviews or user-count claims on the slides.
 
-## English (U.S.) — also used for the other storefronts
+## English (U.S.)
+
+The other localizations in App Store Connect (en-GB, de, fr, it, es-ES, es-MX, ru, zh-Hans) carry translations of this same text.
 
 | Field | Text | Length |
 |---|---|---|
@@ -52,7 +54,9 @@ MADE FOR YOUR LEVEL
 8 LANGUAGES
 Spanish, English, German, French, Italian, Russian, Chinese and Turkish. Add a new language with a one-minute voice setup and keep separate progress for each.
 
-WordRem AI Pro unlocks unlimited speaking time and the full plan. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the period. Manage or cancel anytime in your App Store account settings.
+WordRem AI Pro unlocks the full speaking plan and generous monthly speaking time. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the period. Manage or cancel anytime in your App Store account settings.
+
+The voice tutor is powered by AI from Google (Gemini) and OpenAI. Your voice is sent to them through our server only while you hold the talk button, and we don't store recordings.
 
 Privacy: https://api.wordremai.app/privacy
 Terms: https://api.wordremai.app/terms
@@ -102,20 +106,22 @@ SENİN SEVİYENE GÖRE
 8 DİL
 İngilizce, İspanyolca, Almanca, Fransızca, İtalyanca, Rusça, Çince ve Türkçe. Yeni bir dili bir dakikalık sesli kurulumla ekle; her dilin ilerlemesi ayrı tutulur.
 
-WordRem AI Pro sınırsız konuşma süresi ve planın tamamını açar. Abonelik, dönem bitiminden en az 24 saat önce iptal edilmezse otomatik yenilenir. App Store hesap ayarlarından istediğin zaman yönetebilir veya iptal edebilirsin.
+WordRem AI Pro konuşma planının tamamını ve her ay bol konuşma süresi açar. Abonelik, dönem bitiminden en az 24 saat önce iptal edilmezse otomatik yenilenir. App Store hesap ayarlarından istediğin zaman yönetebilir veya iptal edebilirsin.
+
+Sesli öğretmen Google (Gemini) ve OpenAI yapay zekâsıyla çalışır. Sesin yalnızca konuşma düğmesine basılı tuttuğunda sunucumuz üzerinden onlara gönderilir; kayıtları saklamayız.
 
 Gizlilik: https://api.wordremai.app/privacy
 Kullanım Şartları: https://api.wordremai.app/terms
 
-## Submission — 2.0 (60)
+## Submission — 2.0 (61)
 
-Build **2.0 (60)** was uploaded on 31 Oct 2026. In App Store Connect → WordRem (id 6474321549) → version 2.0:
+Build **2.0 (61)** was uploaded on 31 Oct 2026 (60 had the old leaderboard ID). In App Store Connect → WordRem (id 6474321549) → version 2.0:
 
 1. **Screenshots**: delete the old ones, upload `en/` to English (U.S.) and `tr/` to Turkish, in file order 1→6.
    iPhone 6.9" ← `iphone_*.png`, iPad 13" ← `ipad_*.png`.
 2. **Promotional text / description**: paste from the tables above (EN and TR).
-3. **Build**: pick 2.0 (60) once processing finishes (~15 min after upload).
-4. **Game Center**: enable it on the version and add the leaderboard `wordrem.total_xp` (if it does not exist yet: Features → Game Center → Leaderboard, classic, high score, integer).
+3. **Build**: pick 2.0 (61) once processing finishes (~15 min after upload).
+4. **Game Center**: enable it on the version and add the leaderboard `wordremai.total_xp` (classic, best score, high to low, integer; "Total XP" / "Toplam XP"). `wordrem.total_xp` is taken by another app record on the team, so it cannot be used here.
 5. **App Privacy**: check it still matches the privacy manifest (audio + name sent to the AI tutor; no tracking).
 6. **App Review notes**: paste the text below, then *Add for Review* → *Submit*.
 

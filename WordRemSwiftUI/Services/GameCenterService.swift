@@ -14,7 +14,7 @@ import UIKit
 final class GameCenterService: ObservableObject {
 
     static let shared = GameCenterService()
-    static let leaderboardID = "wordrem.total_xp"
+    static let leaderboardID = "wordremai.total_xp"
 
     @Published private(set) var isAuthenticated = false
     @Published private(set) var playerName: String?
