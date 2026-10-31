@@ -80,7 +80,7 @@ def jsonld(page):
         "@context": "https://schema.org", "@type": "MobileApplication", "name": "WordRem AI",
         "operatingSystem": "iOS", "applicationCategory": "EducationalApplication",
         "description": page["desc"], "url": SITE + page["path"], **({"downloadUrl": APP_URL, "installUrl": APP_URL} if LIVE else {}),
-        "image": f"{SITE}/img/icon-192.png", "inLanguage": page["lang"],
+        "image": f"{SITE}/img/logo-192.png", "inLanguage": page["lang"],
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
         "publisher": {"@type": "Organization", "name": "WordRem AI", "url": SITE},
     }
@@ -120,13 +120,13 @@ def soon_page(source):
                  f"<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}"
                  f"gtag('consent','default',{{analytics_storage:'denied',region:{json.dumps(EEA)}}});"
                  f"gtag('js',new Date());gtag('config','{GA_ID}',{{send_page_view:false}});"
-                 f"gtag('event','app_redirect',{{source:new URLSearchParams(location.search).get('src')||'{source}',app_live:false}});</script>")
+                 f"gtag('event','app_redirect',{{link_source:new URLSearchParams(location.search).get('src')||'{source}',app_live:false}});</script>")
     return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex"><title>WordRem AI</title>{track}
 <style>body{{font-family:-apple-system,sans-serif;background:#F6F2EA;color:#1C1A17;display:grid;place-items:center;min-height:100vh;margin:0;padding:0 24px;text-align:center}}
 img{{width:88px;height:88px;border-radius:20px}}p{{font-size:19px;line-height:1.5;max-width:420px}}a{{color:#9E3F22;font-weight:600}}
 @media (prefers-color-scheme:dark){{body{{background:#1C1A17;color:#F6F2EA}}a{{color:#E07A55}}}}</style>
-</head><body><main><img src="/img/icon-192.png" alt="WordRem AI"><p id="t"></p><a id="h" href="/"></a></main>
+</head><body><main><img src="/img/logo-192.png" alt="WordRem AI"><p id="t"></p><a id="h" href="/"></a></main>
 <script>var T={texts},H={homes};var l=(navigator.language||'en').slice(0,2).toLowerCase();if(!T[l])l='en';
 document.getElementById('t').textContent=T[l].page;var a=document.getElementById('h');a.textContent=T[l].home;a.href=H[l]||'/';</script>
 </body></html>
@@ -142,7 +142,7 @@ def redirect_page(source):
                  f"gtag('consent','default',{{analytics_storage:'denied',region:{json.dumps(EEA)}}});"
                  f"gtag('js',new Date());gtag('config','{GA_ID}',{{send_page_view:false}});"
                  f"var src=new URLSearchParams(location.search).get('src')||'{source}';"
-                 f"gtag('event','app_redirect',{{source:src,transport_type:'beacon',event_callback:go}});</script>")
+                 f"gtag('event','app_redirect',{{link_source:src,transport_type:'beacon',event_callback:go}});</script>")
     return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex"><title>WordRem AI</title>
 <script>var done=false;function go(){{if(done)return;done=true;location.replace('{APP_URL}')}}setTimeout(go,700);</script>
@@ -197,10 +197,10 @@ def render(page):
 <meta property="og:title" content="{e(page["title"])}">
 <meta property="og:description" content="{e(page["desc"])}">
 <meta property="og:url" content="{SITE}{page["path"]}">
-<meta property="og:image" content="{SITE}/img/og.jpg">
+<meta property="og:image" content="{SITE}/img/og-v2.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-v2.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon-v2.png">
 {jsonld(page)}
 {analytics(page["lang"])}
 <style>{CSS}</style>
@@ -208,7 +208,7 @@ def render(page):
 <body>
 <div class="wrap">
 <div class="ribbons" aria-hidden="true"><i style="height:44px;background:#1C1A17"></i><i style="height:60px;background:#C2512F"></i><i style="height:38px;background:#2F4B5C"></i><i style="height:52px;background:#E0A08A"></i></div>
-<header class="top"><a class="brand" href="{home_path}"><img src="/img/icon-192.png" alt="" width="36" height="36">WordRem AI</a><nav class="langs" aria-label="Language">{lang_nav}</nav></header>
+<header class="top"><a class="brand" href="{home_path}"><img src="/img/logo-192.png" alt="" width="36" height="36">WordRem AI</a><nav class="langs" aria-label="Language">{lang_nav}</nav></header>
 <main>
 <div class="hero paper">
 <div>

@@ -3,7 +3,15 @@
 Few events, rich parameters. Every event answers one question; the `action` parameter says what happened
 inside it. Code: `WordRemSwiftUI/Services/Analytics/Track.swift` (the only place that calls Firebase).
 
-Firebase project: `wordrem-ai` (GA4 property in the "WordRem" Analytics account).
+Firebase project: `wordrem-ai`. One GA4 property for app + web: **wordrem-ai (560916431)** in the "WordRem" account.
+
+| Stream | ID | Notes |
+|---|---|---|
+| WordRem AI iOS (App Store 2.0) | Firebase app `1:278616197261:ios:776bcff8cf8b0260c37ac4`, bundle `com.twinflare.reminderToWords` | `GoogleService-Info.plist` from build 62 on |
+| WordRem AI iOS | Firebase app `…ios:eeae47279ac519bcc37ac4`, bundle `com.twinflare.WordRemSwiftUI` | Builds up to 61 (2.0 in review) still send here |
+| WordRem AI Web | `G-FLKXCM0JHB` | wordremai.app (`web/content.py` → `GA_ID`) |
+
+Old properties `WordRem` (415115834, old reminderToWords stream), `wordrem-ce662` and `WordRem - IOS` are not used.
 
 ## Identity & user properties
 
@@ -88,6 +96,13 @@ For a free trial start `value` is 0 (real revenue comes from RevenueCat → Fire
 
 ### 8. `screen_view` (GA4 recommended)
 `screen_name`: `home`, `words`, `profile`, `lesson`, `paywall`, `learning_sheet`, `quiz`, `onboarding`.
+
+## Website events (wordremai.app)
+- `cta_click`: `cta_location` (`hero` / `final`), `page_lang`
+- `lang_switch`: `to_lang`, `from_lang`
+- `faq_open`: `question`, `page_lang`
+- `app_redirect` (/app, /indir, /download short links and the QR): `link_source` (`qr`, `tiktok`, …), `app_live`
+Registered as event dimensions: `page_lang`, `cta_location`, `question`, `link_source` (`to_lang`/`from_lang` shared with the app).
 
 ## Key events (conversions)
 - `purchase`
