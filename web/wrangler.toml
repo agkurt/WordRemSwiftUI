@@ -1,0 +1,13 @@
+# wordremai.app tanıtım sitesi: sadece statik dosyalar (web/public), sunucu kodu yok.
+# Önce `python3 build.py`, sonra bu klasörde `npx wrangler deploy`
+name = "wordrem-site"
+compatibility_date = "2026-09-01"
+workers_dev = false
+routes = [
+  { pattern = "wordremai.app", custom_domain = true },
+  { pattern = "www.wordremai.app", custom_domain = true }
+]
+
+[assets]
+directory = "./public"
+not_found_handling = "404-page"
