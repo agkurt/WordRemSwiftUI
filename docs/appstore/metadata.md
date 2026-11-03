@@ -128,3 +128,17 @@ Build **2.0 (61)** was uploaded on 31 Oct 2026 (60 had the old leaderboard ID). 
 ### App Review notes
 
 WordRem AI is a voice language tutor. After a short onboarding (pick your language, a one-minute voice chat with the tutor Lupa), a paywall offers WordRem AI Pro with a free trial; the subscription unlocks the speaking lessons. Microphone access is used only while the user holds the mic button to answer the tutor; the audio is streamed through our server to the AI speech provider and we do not store recordings. The leaderboard uses Game Center (optional). Notebook pages and marked words are stored on the device; word meanings use Apple's on-device Translation.
+
+## Resubmission — 2.0 (63), after the 3 Nov 2026 rejection (4.3(a) + 5.1.1(i)/5.1.2(i))
+
+### Reply to App Review (draft)
+
+Hello, thank you for the detailed review.
+
+Guideline 4.3(a): the other record on our account ("WordRem AI: Language Learning", Apple ID 6478985459) was an earlier attempt at this same app. It was never released and it is now removed from every storefront (Country or Region Availability: None). This app (6474321549) is the only one we distribute, so the storefronts no longer overlap.
+
+Guidelines 5.1.1(i) and 5.1.2(i): build 2.0 (63) asks for the user's permission before any data is sent to a third-party AI service. Before the first conversation with the voice tutor (in onboarding and before any lesson), a full-screen consent page explains what is sent (the user's voice while holding the mic button, the conversation text, what the user tells the tutor about themselves, their name, native language, learning language and level), who receives it (OpenAI and Google Gemini, through our server) and why. The tutor does not connect unless the user taps "I agree, continue". Users can withdraw consent anytime in Profile › Settings › AI conversation permission. Our privacy policy (https://api.wordremai.app/privacy) now lists the same data, recipients and purposes, and states that these providers protect the data equally.
+
+### App Review notes (add)
+
+AI data consent: on first use of the voice tutor a consent page shows what is sent, to whom (OpenAI, Google Gemini) and why; nothing is sent until the user agrees. Withdraw: Profile › Settings › AI conversation permission. The other app record 6478985459 is not distributed in any storefront.
