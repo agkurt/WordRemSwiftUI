@@ -28,6 +28,8 @@ struct VoiceTutorView: View {
     @State private var verdicts: [UUID: Bool] = [:]
     /// Bu sohbetin defterdeki sayfası (Defterlerim'de çevrilir)
     @State private var pageId = UUID()
+    /// Yapay zekâ veri paylaşımı izni henüz verilmedi: bağlanmadan önce izin sayfası gösterilir
+    @State private var showConsent = false
     /// Ders ekranında o an açık yaprak: ilk satırı (nil = en baştan) ve kaçıncı yaprak olduğu
     /// Ders yaprakları: her yaprağın ilk satırı (ilk yaprak en baştan, nil). Son yaprak canlı.
     @State private var pageStarts: [UUID?] = [nil]
@@ -80,16 +82,25 @@ struct VoiceTutorView: View {
                 return
             }
             #endif
-            // Ücretsiz süresi bitmiş, Pro olmayan kullanıcı: sunucuya gitmeden ödeme ekranı
-            if FreeTrial.exhausted, !InAppPurchaseManager.shared.isPremium {
-                await InAppPurchaseManager.shared.syncPremiumStatus()   // yeni alınmış Pro geç görünmesin
-                if !InAppPurchaseManager.shared.isPremium {
-                    Track.tutor("trial_exhausted_gate", mode: modeName)
-                    if isDemo { onFinished(true) } else { showPaywall = true }
-                    return
-                }
+            // Ses, konuşma metni ve ad yapay zekâ servislerine gitmeden önce kullanıcının izni alınır
+            guard AIConsent.granted else {
+                showConsent = true
+                return
             }
-            await begin()
+            await start()
+        }
+        .overlay {
+            if showConsent {
+                AIConsentView {
+                    AIConsent.set(true)
+                    withAnimation(.easeOut(duration: 0.25)) { showConsent = false }
+                    Task { await start() }
+                } onDecline: {
+                    Track.tutor("ai_consent_decline", mode: modeName)
+                    if isDemo { onFinished(false) } else { dismiss() }
+                }
+                .transition(.opacity)
+            }
         }
         .onDisappear { saveAndStop() }
         .animation(.spring(response: 0.55, dampingFraction: 0.85), value: isConnecting)
@@ -174,6 +185,19 @@ struct VoiceTutorView: View {
         .fullScreenCover(isPresented: $showPaywall, onDismiss: { dismiss() }) {
             OnboardingPaywallView(onContinue: { showPaywall = false }, entryPoint: "lesson_limit")
         }
+    }
+
+    /// İzin alındıktan sonra: ücretsiz süresi bitmiş, Pro olmayan kullanıcı sunucuya gitmeden ödeme ekranını görür
+    private func start() async {
+        if FreeTrial.exhausted, !InAppPurchaseManager.shared.isPremium {
+            await InAppPurchaseManager.shared.syncPremiumStatus()   // yeni alınmış Pro geç görünmesin
+            if !InAppPurchaseManager.shared.isPremium {
+                Track.tutor("trial_exhausted_gate", mode: modeName)
+                if isDemo { onFinished(true) } else { showPaywall = true }
+                return
+            }
+        }
+        await begin()
     }
 
     private func begin() async {
@@ -1257,3 +1281,138 @@ final class StudioDirector: NSObject, AVSpeechSynthesizerDelegate {
     }
 }
 #endif
+
+
+// MARK: - Yapay zekâ veri paylaşımı izni
+
+/// Lupa ile ilk konuşmadan önce: ne gönderilir, kime gider, neden. Kabul edilmezse sesli öğretmen bağlanmaz.
+struct AIConsentView: View {
+    var onAccept: () -> Void
+    var onDecline: () -> Void
+    @State private var showPrivacy = false
+
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 0) {
+                BookmarkMark(width: 16)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.top, 8)
+                Text(ConsentText.title)
+                    .font(DS.Font.display(30, weight: .bold))
+                    .foregroundStyle(DS.Colors.ink)
+                    .padding(.top, 8)
+                Text(ConsentText.intro)
+                    .font(DS.Font.ui(16))
+                    .foregroundStyle(DS.Colors.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 10)
+
+                section(ConsentText.whatTitle, items: ConsentText.whatItems)
+                section(ConsentText.whoTitle, items: [ConsentText.who])
+                section(ConsentText.whyTitle, items: [ConsentText.why])
+
+                Text(ConsentText.note)
+                    .font(.system(size: 14, design: .serif).italic())
+                    .foregroundStyle(DS.Colors.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 22)
+                Button(ConsentText.privacy) { showPrivacy = true }
+                    .font(DS.Font.ui(14, weight: .semibold))
+                    .foregroundStyle(DS.Colors.accentText)
+                    .padding(.top, 8)
+
+                VStack(spacing: 10) {
+                    Button(ConsentText.accept, action: onAccept)
+                        .buttonStyle(InkButtonStyle())
+                    Button(ConsentText.decline, action: onDecline)
+                        .font(DS.Font.ui(15, weight: .medium))
+                        .foregroundStyle(DS.Colors.inkSoft)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .padding(.top, 26)
+                .padding(.bottom, 30)
+            }
+            .padding(.horizontal, 24)
+            .frame(maxWidth: 560)
+            .frame(maxWidth: .infinity)
+        }
+        .background(DS.Colors.paper.ignoresSafeArea())
+        .sheet(isPresented: $showPrivacy) {
+            SafariWebView(url: URL(string: "https://api.wordremai.app/privacy")!)
+        }
+    }
+
+    private func section(_ title: String, items: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Eyebrow(text: title, color: DS.Colors.accentText)
+            ForEach(items, id: \.self) { item in
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Circle().fill(DS.Colors.accent).frame(width: 5, height: 5).offset(y: -3)
+                    Text(item)
+                        .font(DS.Font.ui(15))
+                        .foregroundStyle(DS.Colors.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DS.Colors.paperRaised, in: RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(DS.Colors.line, lineWidth: 1))
+        .padding(.top, 16)
+    }
+}
+
+/// İzin sayfasının metinleri (sıra: tr, en, de, fr, es, it, ru, zh)
+enum ConsentText {
+    static var title: String { PageText.t(["Lupa ile konuşmadan önce", "Before you talk with Lupa", "Bevor du mit Lupa sprichst", "Avant de parler avec Lupa", "Antes de hablar con Lupa", "Prima di parlare con Lupa", "Прежде чем говорить с Лупой", "在和 Lupa 对话之前"]) }
+    static var intro: String { PageText.t([
+        "Lupa yapay zekâ ile çalışan sesli bir öğretmen. Seninle konuşabilmesi için bazı verilerin sunucumuz üzerinden üçüncü taraf yapay zekâ servislerine gönderilmesi gerekiyor.",
+        "Lupa is an AI voice tutor. To talk with you, some of your data has to be sent through our server to third-party AI services.",
+        "Lupa ist ein KI-Sprachtutor. Damit Lupa mit dir sprechen kann, müssen einige deiner Daten über unseren Server an KI-Dienste von Drittanbietern gesendet werden.",
+        "Lupa est un tuteur vocal IA. Pour parler avec toi, certaines de tes données doivent être envoyées via notre serveur à des services d'IA tiers.",
+        "Lupa es un tutor de voz con IA. Para hablar contigo, algunos de tus datos tienen que enviarse a través de nuestro servidor a servicios de IA de terceros.",
+        "Lupa è un tutor vocale IA. Per parlare con te, alcuni tuoi dati devono essere inviati tramite il nostro server a servizi di IA di terze parti.",
+        "Лупа — голосовой ИИ-репетитор. Чтобы разговаривать с вами, часть ваших данных нужно передать через наш сервер сторонним ИИ-сервисам.",
+        "Lupa 是一位 AI 语音老师。为了和你对话，你的部分数据需要通过我们的服务器发送给第三方 AI 服务。"]) }
+    static var whatTitle: String { PageText.t(["NE GÖNDERİLİR", "WHAT IS SENT", "WAS GESENDET WIRD", "CE QUI EST ENVOYÉ", "QUÉ SE ENVÍA", "COSA VIENE INVIATO", "ЧТО ПЕРЕДАЁТСЯ", "发送哪些数据"]) }
+    static var whatItems: [String] { [
+        PageText.t(["Sesin, yalnızca mikrofon düğmesine basılı tuttuğunda", "Your voice, only while you hold the mic button", "Deine Stimme, nur solange du die Mikrofontaste gedrückt hältst", "Ta voix, uniquement pendant que tu maintiens le bouton micro", "Tu voz, solo mientras mantienes pulsado el botón del micrófono", "La tua voce, solo mentre tieni premuto il pulsante del microfono", "Ваш голос — только пока вы удерживаете кнопку микрофона", "你的声音，仅在你按住麦克风按钮时"]),
+        PageText.t(["Konuşmanın metni ve öğretmene kendinle ilgili anlattıkların", "The conversation text and what you tell the tutor about yourself", "Der Gesprächstext und was du Lupa über dich erzählst", "Le texte de la conversation et ce que tu racontes de toi au tuteur", "El texto de la conversación y lo que le cuentas al tutor sobre ti", "Il testo della conversazione e ciò che racconti di te al tutor", "Текст разговора и то, что вы рассказываете о себе", "对话文字，以及你向老师讲述的关于自己的内容"]),
+        PageText.t(["Adın, ana dilin, öğrendiğin dil ve seviyen", "Your name, your native language, the language you learn and your level", "Dein Name, deine Muttersprache, die Sprache, die du lernst, und dein Niveau", "Ton prénom, ta langue maternelle, la langue que tu apprends et ton niveau", "Tu nombre, tu idioma nativo, el idioma que aprendes y tu nivel", "Il tuo nome, la tua lingua madre, la lingua che impari e il tuo livello", "Ваше имя, родной язык, изучаемый язык и уровень", "你的名字、母语、正在学习的语言和水平"]),
+    ] }
+    static var whoTitle: String { PageText.t(["KİME GİDER", "WHO RECEIVES IT", "WER SIE ERHÄLT", "QUI LES REÇOIT", "QUIÉN LOS RECIBE", "CHI LI RICEVE", "КТО ПОЛУЧАЕТ", "接收方"]) }
+    static var who: String { PageText.t([
+        "OpenAI ve Google (Gemini): konuşmanı anlayan ve Lupa'nın cevabını üreten yapay zekâ servisleri.",
+        "OpenAI and Google (Gemini): the AI services that understand your speech and generate Lupa's replies.",
+        "OpenAI und Google (Gemini): die KI-Dienste, die deine Sprache verstehen und Lupas Antworten erzeugen.",
+        "OpenAI et Google (Gemini) : les services d'IA qui comprennent ta voix et génèrent les réponses de Lupa.",
+        "OpenAI y Google (Gemini): los servicios de IA que entienden tu voz y generan las respuestas de Lupa.",
+        "OpenAI e Google (Gemini): i servizi di IA che capiscono la tua voce e generano le risposte di Lupa.",
+        "OpenAI и Google (Gemini): ИИ-сервисы, которые распознают вашу речь и создают ответы Лупы.",
+        "OpenAI 和 Google（Gemini）：理解你的语音并生成 Lupa 回复的 AI 服务。"]) }
+    static var whyTitle: String { PageText.t(["NEDEN", "WHY", "WOZU", "POURQUOI", "PARA QUÉ", "PERCHÉ", "ЗАЧЕМ", "用途"]) }
+    static var why: String { PageText.t([
+        "Söylediğini anlamak, sana sesli cevap vermek ve hatalarını düzeltmek için. Kayıtlarını sunucumuzda saklamayız ve veriler reklam için kullanılmaz.",
+        "To understand what you say, answer you by voice and correct your mistakes. We don't store your recordings on our servers, and the data is not used for advertising.",
+        "Um zu verstehen, was du sagst, dir per Stimme zu antworten und deine Fehler zu korrigieren. Wir speichern deine Aufnahmen nicht auf unseren Servern, und die Daten werden nicht für Werbung verwendet.",
+        "Pour comprendre ce que tu dis, te répondre à voix haute et corriger tes erreurs. Nous ne conservons pas tes enregistrements sur nos serveurs et les données ne servent pas à la publicité.",
+        "Para entender lo que dices, responderte por voz y corregir tus errores. No guardamos tus grabaciones en nuestros servidores y los datos no se usan para publicidad.",
+        "Per capire cosa dici, risponderti a voce e correggere i tuoi errori. Non conserviamo le tue registrazioni sui nostri server e i dati non vengono usati per la pubblicità.",
+        "Чтобы понимать, что вы говорите, отвечать голосом и исправлять ошибки. Мы не храним ваши записи на наших серверах, и данные не используются для рекламы.",
+        "用于理解你说的话、用语音回答你并纠正你的错误。我们不会在服务器上保存你的录音，这些数据也不会用于广告。"]) }
+    static var note: String { PageText.t(["İznini istediğin zaman Profil › Ayarlar'dan geri alabilirsin.", "You can withdraw your permission anytime in Profile › Settings.", "Du kannst deine Erlaubnis jederzeit unter Profil › Einstellungen widerrufen.", "Tu peux retirer ton autorisation à tout moment dans Profil › Réglages.", "Puedes retirar tu permiso cuando quieras en Perfil › Ajustes.", "Puoi revocare il permesso in qualsiasi momento da Profilo › Impostazioni.", "Вы можете отозвать разрешение в любой момент: Профиль › Настройки.", "你可以随时在“个人资料 › 设置”中撤回许可。"]) }
+    static var privacy: String { PageText.t(["Gizlilik Politikası", "Privacy Policy", "Datenschutzerklärung", "Politique de confidentialité", "Política de privacidad", "Informativa sulla privacy", "Политика конфиденциальности", "隐私政策"]) }
+    static var accept: String { PageText.t(["Kabul ediyorum, devam et", "I agree, continue", "Einverstanden, weiter", "J'accepte, continuer", "Acepto, continuar", "Accetto, continua", "Согласен, продолжить", "同意并继续"]) }
+    static var decline: String { PageText.t(["Şimdi değil", "Not now", "Jetzt nicht", "Pas maintenant", "Ahora no", "Non ora", "Не сейчас", "暂不"]) }
+    static var settingsTitle: String { PageText.t(["Yapay zekâ ile konuşma izni", "AI conversation permission", "Erlaubnis für KI-Gespräche", "Autorisation des conversations IA", "Permiso para conversar con la IA", "Permesso per le conversazioni IA", "Разрешение на разговоры с ИИ", "AI 对话许可"]) }
+    static var settingsHint: String { PageText.t([
+        "Konuşurken sesin, konuşma metni ve adın OpenAI ve Google'a gönderilir. Kapatırsan Lupa ile konuşamazsın.",
+        "While you talk, your voice, the conversation text and your name are sent to OpenAI and Google. Turn it off and you can't talk with Lupa.",
+        "Beim Sprechen werden deine Stimme, der Gesprächstext und dein Name an OpenAI und Google gesendet. Ohne Erlaubnis kannst du nicht mit Lupa sprechen.",
+        "Pendant que tu parles, ta voix, le texte de la conversation et ton prénom sont envoyés à OpenAI et Google. Sans autorisation, tu ne peux pas parler avec Lupa.",
+        "Mientras hablas, tu voz, el texto de la conversación y tu nombre se envían a OpenAI y Google. Sin permiso no puedes hablar con Lupa.",
+        "Mentre parli, la tua voce, il testo della conversazione e il tuo nome vengono inviati a OpenAI e Google. Senza permesso non puoi parlare con Lupa.",
+        "Во время разговора ваш голос, текст разговора и имя передаются OpenAI и Google. Без разрешения говорить с Лупой нельзя.",
+        "对话时，你的声音、对话文字和名字会发送给 OpenAI 和 Google。关闭后将无法与 Lupa 对话。"]) }
+}

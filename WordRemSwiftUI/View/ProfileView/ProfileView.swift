@@ -34,6 +34,7 @@ struct ProfileView: View {
     @AppStorage(TutorPrefs.alwaysTranslateKey) private var prefTranslate = false
     @AppStorage(TutorPrefs.hapticsKey) private var prefHaptics = true
     @AppStorage(TutorPrefs.penKey) private var prefPen = true
+    @AppStorage(AIConsent.key) private var aiConsent = false
     @State private var showResetConfirm = false
 
     var body: some View {
@@ -413,6 +414,8 @@ struct ProfileView: View {
                     NotebookSegment(options: SettingsText.correctionOptions, selection: $prefCorrections)
                 }
                 toggleRow(SettingsText.alwaysTranslate, SettingsText.alwaysTranslateHint, isOn: $prefTranslate)
+                toggleRow(ConsentText.settingsTitle, ConsentText.settingsHint,
+                          isOn: Binding(get: { aiConsent }, set: { AIConsent.set($0) }))
             }
 
             // UYGULAMA

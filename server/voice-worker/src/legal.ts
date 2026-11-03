@@ -4,7 +4,7 @@
  *   GET /terms    → Kullanım şartları: Apple standart EULA + abonelik koşulları
  */
 
-const UPDATED = "October 27, 2026";
+const UPDATED = "November 3, 2026";
 
 function page(title: string, body: string): Response {
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -30,8 +30,11 @@ export function privacyPage(): Response {
 <li>If iCloud is enabled, this progress is synced between your own Apple devices through Apple's iCloud. We cannot access it.</li>
 <li>Reminders are local notifications scheduled on your device.</li></ul>
 <h2>Voice tutor</h2>
-<ul><li>When you hold the talk button, your voice audio is sent through our server to our AI providers to understand what you said and to generate the tutor's spoken reply in real time: OpenAI turns your speech into text, and Google (Gemini) generates the tutor's reply. The conversation text and the name you give the tutor are part of that request.</li>
-<li>We do not store your recordings or conversation transcripts on our servers. Our providers process this data under their API terms and do not use it to train their models.</li>
+<ul><li><b>Your permission first.</b> Before your first conversation with the tutor (Lupa), the app shows what is sent and to whom and asks for your permission. Without it the voice tutor does not connect. You can withdraw it anytime in Profile › Settings › AI conversation permission.</li>
+<li><b>What is sent:</b> your voice audio (only while you hold the talk button), the conversation text, what you tell the tutor about yourself, the name you give the tutor, your native language, the language you learn and your level.</li>
+<li><b>Who receives it:</b> our third-party AI providers OpenAI (speech recognition, voice and replies) and Google (Gemini, replies). The data goes through our server to them.</li>
+<li><b>Why:</b> only to understand what you say, answer you by voice and correct your mistakes in real time. It is not used for advertising.</li>
+<li>We do not store your recordings or conversation transcripts on our servers. OpenAI and Google process this data under their API data-processing terms, which give it protection equal to this policy, and do not use it to train their models.</li>
 <li>To enforce talk-time limits, our server keeps an anonymous app user ID, an anonymous device ID and the number of seconds used. This contains no name, email or audio.</li></ul>
 <h2>Purchases</h2>
 <p>Subscriptions are processed by Apple. We use RevenueCat to check whether your subscription is active, using an anonymous app user ID. We never see your payment details.</p>
@@ -51,8 +54,11 @@ export function privacyPage(): Response {
 <li>iCloud açıksa bu ilerleme Apple'ın iCloud'u üzerinden yalnızca kendi Apple cihazların arasında senkronlanır; biz erişemeyiz.</li>
 <li>Hatırlatmalar cihazında kurulan yerel bildirimlerdir.</li></ul>
 <h2>Sesli öğretmen</h2>
-<ul><li>Konuşma düğmesine basılı tuttuğunda sesin, ne söylediğini anlamak ve öğretmenin sesli cevabını anlık üretmek için sunucumuz üzerinden yapay zekâ sağlayıcılarımıza gönderilir: konuşmanı OpenAI yazıya çevirir, öğretmenin cevabını Google (Gemini) üretir. Konuşma metni ve öğretmene verdiğin ad da bu isteğe dahildir.</li>
-<li>Ses kayıtlarını ve konuşma metinlerini sunucularımızda saklamayız. Sağlayıcılarımız bu verileri API koşullarına göre işler ve modellerini eğitmek için kullanmaz.</li>
+<ul><li><b>Önce izin.</b> Öğretmenle (Lupa) ilk konuşmandan önce uygulama neyin kime gönderildiğini gösterir ve iznini ister. İzin vermezsen sesli öğretmen bağlanmaz. İznini istediğin zaman Profil › Ayarlar › Yapay zekâ ile konuşma izni'nden geri alabilirsin.</li>
+<li><b>Ne gönderilir:</b> sesin (yalnızca konuşma düğmesine basılı tuttuğunda), konuşma metni, öğretmene kendinle ilgili anlattıkların, öğretmene verdiğin ad, ana dilin, öğrendiğin dil ve seviyen.</li>
+<li><b>Kime gider:</b> üçüncü taraf yapay zekâ sağlayıcılarımız OpenAI (konuşma tanıma, ses ve cevaplar) ve Google (Gemini, cevaplar). Veriler sunucumuz üzerinden onlara iletilir.</li>
+<li><b>Neden:</b> yalnızca söylediğini anlamak, sana sesli cevap vermek ve hatalarını anlık düzeltmek için. Reklam için kullanılmaz.</li>
+<li>Ses kayıtlarını ve konuşma metinlerini sunucularımızda saklamayız. OpenAI ve Google bu verileri, bu politikayla eşit koruma sağlayan API veri işleme koşullarına göre işler ve modellerini eğitmek için kullanmaz.</li>
 <li>Konuşma süresi sınırları için sunucumuz yalnızca anonim bir uygulama kimliği, anonim bir cihaz kimliği ve kullanılan saniye sayısını tutar; ad, e-posta veya ses içermez.</li></ul>
 <h2>Satın almalar</h2>
 <p>Abonelikler Apple tarafından işlenir. Aboneliğinin aktif olup olmadığını anonim bir kimlikle RevenueCat üzerinden kontrol ederiz. Ödeme bilgilerini asla görmeyiz.</p>

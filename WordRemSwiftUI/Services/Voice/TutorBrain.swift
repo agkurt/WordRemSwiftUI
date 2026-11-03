@@ -121,6 +121,26 @@ enum TutorPrefs {
     static var penAnimation: Bool { d.object(forKey: penKey) as? Bool ?? true }
 }
 
+/// Yapay zekâ veri paylaşımı izni (App Store 5.1.1/5.1.2): Lupa ile ilk konuşmadan önce ne gönderildiği,
+/// kime gittiği (OpenAI, Google) gösterilir ve izin istenir. İzin yokken sesli öğretmen hiç bağlanmaz.
+/// Profil › Ayarlar'dan geri alınabilir.
+enum AIConsent {
+    static let key = "ai.dataConsent"
+
+    static var granted: Bool {
+        #if DEBUG
+        if DemoData.isOn { return true }   // mağaza görselleri
+        #endif
+        return UserDefaults.standard.bool(forKey: key)
+    }
+
+    static func set(_ on: Bool) {
+        UserDefaults.standard.set(on, forKey: key)
+        if on { UserDefaults.standard.set(Date(), forKey: key + ".date") }
+        Track.tutor(on ? "ai_consent_accept" : "ai_consent_revoke", mode: "consent")
+    }
+}
+
 @MainActor
 enum TutorBrain {
 
